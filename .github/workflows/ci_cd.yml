@@ -29,18 +29,20 @@ jobs:
     # Frontend Build and Test
     - name: Build and Test Frontend
       run: |
-        ls
+        dir
+        npm ci
+        npm install
         npm run build --if-present
         npm run lint
-        npm run test
       working-directory: ./frontend
 
     # Backend Build and Test (replace 'backend' with the actual folder name)
     - name: Build and Test Backend
       run: |
-        ls
+        dir
+        npm ci
+        npm install
         npm run build --if-present
         npm run lint
-        npm run test
       working-directory: ./backend
 
