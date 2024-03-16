@@ -1,0 +1,50 @@
+# Name of workflows
+name: CI/CD
+
+# Trigger to start workflows
+on:
+  push:
+    branches: [ "development" ]
+  pull_request:
+    branches: [ "main" ]
+
+# Job
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [21.x]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.email "dinhvanguyen810@gmail.com"
+        git config --global user.name "Vawnndv"
+
+    # Frontend Build and Test
+    - name: Build and Test Frontend
+      run: |
+        dir
+        npm ci
+        npm install
+        npm run lint
+        npm run build --if-present
+        npm run test
+      working-directory: ./frontend
+
+    # Backend Build and Test (replace 'backend' with the actual folder name)
+    - name: Build and Test Backend
+      run: |
+        dir
+        npm ci
+        npm install
+        npm run lint
+        npm run build --if-present
+        npm run test
+      working-directory: ./backend
+
