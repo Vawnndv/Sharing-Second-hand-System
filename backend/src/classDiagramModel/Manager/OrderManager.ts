@@ -1,22 +1,22 @@
-import { Order } from "../Order";
+import { Order } from '../Order';
 
-export class OrderManager{
-    public constructor(){
+export class OrderManager {
+  public constructor() {
 
-    }
+  }
 
-    public createOrder(orderID: string): boolean{
-        // code here
-        return true;
-    }
+  public createOrder(orderID: string): boolean {
+    // code here
+    return true;
+  }
 
-    public showOrders(userID: string): Order[]{
-        // code here
-        return []
-    }
+  public showOrders(userID: string): Order[] {
+    // code here
+    return [];
+  }
 
-    public getOrderDetails(orderID: string): Order{
-        // code here
-        return new Order('');
-    }
+  public getOrderDetails(orderID: string): Order {
+    // code here
+    return new Order('');
+  }
 }

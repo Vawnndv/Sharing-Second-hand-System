@@ -1,12 +1,12 @@
-import { PostManager } from "./PostManager";
+import { PostManager } from './PostManager';
 
-export class CollaboratPostManager extends PostManager{
-    public constructor(){
-        super()
-    }
+export class CollaboratPostManager extends PostManager {
+  public constructor() {
+    super();
+  }
 
-    public approvePost(postID: string) : boolean{
-        // code here
-        return true;
-    }
+  public approvePost(postID: string) : boolean {
+    // code here
+    return true;
+  }
 }

@@ -1,26 +1,27 @@
-import { Status } from "./Status";
+import { Status } from './Status';
 
-export class Trace{
-    private traceID: string | undefined;
-    private itemID: string | undefined;
+export class Trace {
+  private traceID: string | undefined;
 
-    public constructor(traceID: string, itemID: string){
-        this.traceID = traceID;
-        this.itemID = itemID;
-    }
+  private itemID: string | undefined;
 
-    public getListStatus(): Status[]{
-        // code here
-        return[];
-    }
+  public constructor(traceID: string, itemID: string) {
+    this.traceID = traceID;
+    this.itemID = itemID;
+  }
 
-    public updateStatus(status: string, time: string): void{
-        // code here
-    }
+  public getListStatus(): Status[] {
+    // code here
+    return [];
+  }
 
-    public getCurrentStatus(): Status{
-        // code here
-        return new Status('', '', '');
-    }
+  public updateStatus(status: string, time: string): void {
+    // code here
+  }
+
+  public getCurrentStatus(): Status {
+    // code here
+    return new Status('', '', '');
+  }
 
 }

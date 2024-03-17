@@ -1,3 +1,3 @@
 export interface ILogin {
-    login(username: string, password: string) : boolean;
+  login(username: string, password: string) : boolean;
 }

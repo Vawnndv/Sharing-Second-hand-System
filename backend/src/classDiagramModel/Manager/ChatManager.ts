@@ -1,16 +1,16 @@
-import { Message } from "../Message";
+import { Message } from '../Message';
 
-export class ChatManager{
-    public constructor(){
+export class ChatManager {
+  public constructor() {
 
-    }
+  }
 
-    public sendMessage(message: Message): void{
-        // code here
-    }
+  public sendMessage(message: Message): void {
+    // code here
+  }
 
-    public showChatSegment(userId1: string, userId2: string): Message[]{
-        // code here        
-        return [];
-    }
+  public showChatSegment(userId1: string, userId2: string): Message[] {
+    // code here        
+    return [];
+  }
 }

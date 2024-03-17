@@ -1,23 +1,23 @@
-import { Card } from "../Card/Card";
+import { Card } from '../Card/Card';
 
-export class CardManager{
+export class CardManager {
 
-    public constructor(){
+  public constructor() {
 
-    }
+  }
 
-    public viewListCard(warehouseID: string): Card[]{
-        // code here
-        return [];
-    }
+  public viewListCard(warehouseID: string): Card[] {
+    // code here
+    return [];
+  }
 
-    public viewCardDetails(cardID: string): Card{
-        // code here
-        return new Card('');
-    }
+  public viewCardDetails(cardID: string): Card {
+    // code here
+    return new Card('');
+  }
 
-    public editCard(cardID: string): boolean{
-        // code here
-        return true;
-    }
+  public editCard(cardID: string): boolean {
+    // code here
+    return true;
+  }
 }

@@ -1,11 +1,11 @@
-import { Card } from "./Card";
+import { Card } from './Card';
 
-export class OutputCard extends Card{
-    public constructor(cardID: string){
-        super(cardID);
-    }
+export class OutputCard extends Card {
+  public constructor(cardID: string) {
+    super(cardID);
+  }
 
-    public updateStatus(): void {
-        // code here
-    }
+  public updateStatus(): void {
+    // code here
+  }
 }
