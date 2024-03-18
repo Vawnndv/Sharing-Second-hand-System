@@ -14,6 +14,7 @@ module.exports = {
     'import',
     '@typescript-eslint',
   ],
+  ignorePatterns: ['src/classDiagramModel/**'],
   rules: {
     'comma-dangle': 0,
     'no-underscore-dangle': 0,
@@ -28,7 +29,7 @@ module.exports = {
       '@typescript-eslint/parser': [
         '.ts',
         '.tsx',
-      ]
+      ],
     },
     'import/resolver': {
       typescript: {},
