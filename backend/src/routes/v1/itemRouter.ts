@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Item } from '../../classDiagramModel/Item';
+import { ItemManager } from '../../classDiagramModel/Manager/ItemManager';
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.post('/items', async (req: Request, res: Response) => {
   const { name, quantity, itemtypeID } = req.body;
   
   try {
-    const newItem = Item.createItem(name, quantity, itemtypeID);
+    const newItem = ItemManager.createItem(name, quantity, itemtypeID);
     res.status(201).json({ message: 'Item created successfully', item: newItem });
   } catch (error) {
     console.error(error);
