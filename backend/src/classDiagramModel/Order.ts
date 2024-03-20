@@ -1,6 +1,7 @@
 import { Item } from './Item';
 import { Status } from './Status';
 import { Trace } from './Trace';
+import pool from '../config/DatabaseConfig';
 
 export class Order {
   private orderID: string | undefined;
