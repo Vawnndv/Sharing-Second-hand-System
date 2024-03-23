@@ -40,13 +40,15 @@ export class Account {
   public static async createItem(username: string, email: string, password: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO User(username, email, password, roleid) 
+        INSERT INTO "User"(username, email, password, roleid) 
         VALUES($1, $2, $3, $4)
-        RETURNING *
+        RETURNING *;
       `;
     const values : any = [username, email, password, roleid];
     try {
-      const result: QueryResult = await client.query(query, values);
+      const result = await client.query(query, values);
+      console.log('User inserted successfully:', result.rows[0]);
+
       return result.rows[0];
     } catch (error) {
       console.error(error);
@@ -56,16 +58,17 @@ export class Account {
 
   public static async findUserByEmail(email: string): Promise<any> {
     const client = await pool.connect();
-    const query = `SELECT * FROM user WHERE email = $1`;
-    const values : any = [email];
     try {
-      console.log(email)
-      const result: QueryResult = await client.query(query, values);
-      console.log(result.rows[0])
+      const result = await client.query('SELECT * FROM "User" WHERE email like $1', [email]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
       return result.rows[0];
-    } catch (error) {
-      console.error(error);
-      return null
-    } 
+      // return new Item(row.itemId, row.name, row.quantity);
+    } catch(error) {
+      console.log(error);
+      return null;
+    }
   }
 }

@@ -1,11 +1,9 @@
-require('dotenv').config();
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
+dotenv.config();
 import asyncHandle from 'express-async-handler';
 import nodemailer from 'nodemailer';
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
 import { Account } from '../classDiagramModel/Account';
@@ -102,18 +100,42 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
     1,
   );
 
+
   res.status(200).json({
     message: 'Register new user successfully',
     data: {
       email,
-      // id: newUser.userid,
-      newUser,
-      accessToken: await getJsonWebToken(email, 1),
+      id: newUser.userid,
+      newUser,  
+      accessToken: await getJsonWebToken(email, newUser.userid),
     },
   });
 });
 
-module.exports = {
-  register,
-  verification,
-};
+export const login = asyncHandle(async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  const existingUser = await Account.findUserByEmail(email);
+
+  if (!existingUser) {
+    res.status(403);
+    throw new Error('User not found');
+  }
+
+  const isMatchPassword = await bcrypt.compare(password, existingUser.password);
+
+  if (!isMatchPassword) {
+    res.status(401);
+    throw new Error('Email or Password is not correct!!!');
+  }
+
+  res.status(200).json({
+    message: 'Login successfully!!!',
+    data: {
+      id: existingUser.id,
+      email: existingUser.email,
+      accessToken: await getJsonWebToken(email, existingUser.id),
+    },
+  });
+});
+
