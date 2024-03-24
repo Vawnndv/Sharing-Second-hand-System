@@ -26,7 +26,10 @@ const RegisterScreen = ({navigation}: any) => {
   };
 
   const handleRegister = async () => {
-
+    navigation.navigate('VerificationScreen', {
+      code: 1234,
+      ...values,  
+    })
   };
 
   return (
@@ -54,7 +57,16 @@ const RegisterScreen = ({navigation}: any) => {
           <InputComponent
             value={values.password}
             placeholder="******"
-            onChange={val => handleChangeValue('email', val)}
+            onChange={val => handleChangeValue('password', val)}
+            allowClear
+            isPassword
+            affix={<Lock size={22} color={appColors.gray} />}
+            onEnd={() => {}}
+          />
+          <InputComponent
+            value={values.confirmPassword}
+            placeholder="******"
+            onChange={val => handleChangeValue('confirmPassword', val)}
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
@@ -72,7 +84,7 @@ const RegisterScreen = ({navigation}: any) => {
             onPress={handleRegister}
             text="SIGN UP"
             type="primary"
-            disable={isDisable}
+            // disable={isDisable}
           />
         </SectionComponent>
         <SectionComponent>
