@@ -1,26 +1,17 @@
 import {
-  useFonts,
-  Roboto_100Thin,
-  Roboto_100Thin_Italic,
-  Roboto_300Light,
-  Roboto_300Light_Italic,
   Roboto_400Regular,
-  Roboto_400Regular_Italic,
   Roboto_500Medium,
-  Roboto_500Medium_Italic,
-  Roboto_700Bold,
-  Roboto_700Bold_Italic,
-  Roboto_900Black,
-  Roboto_900Black_Italic,
+  Roboto_700Bold
 } from '@expo-google-fonts/roboto';
+import { NavigationContainer } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import AuthNavigator from './src/navigators/AuthNavigator';
-import {NavigationContainer} from '@react-navigation/native';
 
 import Entypo from '@expo/vector-icons/Entypo';
-import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'react-native';
+import AppRouters from './src/screens/auth/AppRouters';
+import TabNavigator from './src/navigators/TabNavigator';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -75,7 +66,8 @@ export default function App() {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       <NavigationContainer onReady={onLayoutRootView}>
-        <AuthNavigator />
+        {/* <AppRouters /> */}
+        <TabNavigator />
       </NavigationContainer>
     </>
   );

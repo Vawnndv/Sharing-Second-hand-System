@@ -1,15 +1,23 @@
 import SplashScreen from "./SplashScreen";
-import LoginScreen from "./home/auth/LoginScreen";
+import LoginScreen from "./auth/LoginScreen";
 import HomeScreen from "./home/HomeScreen";
-import RegisterScreen from "./home/auth/RegisterScreen";
-import ForgotPasswordScreen from "./home/auth/ForgotPasswordScreen";
-import VerificationScreen from "./home/auth/VerificationScreen";
+import RegisterScreen from "./auth/RegisterScreen";
+import ForgotPasswordScreen from "./auth/ForgotPasswordScreen";
+import VerificationScreen from "./auth/VerificationScreen";
+import ScanScreen from "./scans/ScanScreen";
+import AddScreen from "./adds/AddScreen";
+import MessageScreen from "./messages/MessageScreen";
+import ProfileScreen from "./profiles/ProfileScreen";
 
 export {
-  HomeScreen,
   LoginScreen,
   SplashScreen,
   RegisterScreen,
   ForgotPasswordScreen,
-  VerificationScreen
+  VerificationScreen,
+  HomeScreen,
+  ScanScreen,
+  AddScreen,
+  MessageScreen,
+  ProfileScreen,
 }

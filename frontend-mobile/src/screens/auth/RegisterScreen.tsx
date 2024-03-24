@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native'
 import React, { useState } from 'react'
-import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../../components';
+import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { Lock, Sms, User } from 'iconsax-react-native';
-import { appColors } from '../../../constants/appColors';
-import { LoadingModal } from '../../../modals';
+import { appColors } from '../../constants/appColors';
+import { LoadingModal } from '../../modals';
 
 const initValue = {
   username: '',

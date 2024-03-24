@@ -1,8 +1,9 @@
 import { View, Text, Switch } from 'react-native'
 import React, { useState } from 'react'
-import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../../components'
+import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { Lock, Sms } from 'iconsax-react-native';
-import { appColors } from '../../../constants/appColors';
+import { appColors } from '../../constants/appColors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,14 @@ const LoginScreen = ({navigation}: any) => {
   const [isDisable, setIsDisable] = useState(true);
 
   // const dispatch = useDispatch();
+
+  const handleLogin = async () => {
+    try {
+      // await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email)
+    } catch (error) {
+
+    }
+  };
 
   return (
     <ContainerComponent isImageBackground isScroll>

@@ -1,10 +1,10 @@
 import { View, Text } from 'react-native'
 import React, { useState } from 'react'
-import { Validate } from '../../../utils/Validation';
-import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../../components';
+import { Validate } from '../../utils/Validation';
+import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { ArrowRight, Sms } from 'iconsax-react-native';
-import { appColors } from '../../../constants/appColors';
-import { LoadingModal } from '../../../modals';
+import { appColors } from '../../constants/appColors';
+import { LoadingModal } from '../../modals';
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');

@@ -1,11 +1,11 @@
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
-import { ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../../components';
-import { appColors } from '../../../constants/appColors';
-import { fontFamilies } from '../../../constants/fontFamilies';
-import { globalStyles } from '../../../styles/globalStyles';
+import { ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
+import { appColors } from '../../constants/appColors';
+import { fontFamilies } from '../../constants/fontFamilies';
+import { globalStyles } from '../../styles/globalStyles';
 import { ArrowRight } from 'iconsax-react-native';
-import { LoadingModal } from '../../../modals';
+import { LoadingModal } from '../../modals';
 
 const VerificationScreen = ({navigation, route}: any) => {
   const limitTime = 120;
