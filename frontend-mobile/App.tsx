@@ -1,4 +1,3 @@
-import AppLoading from 'expo-app-loading';
 import {
   useFonts,
   Roboto_100Thin,
@@ -21,6 +20,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+import { StatusBar } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -66,17 +66,17 @@ export default function App() {
     }
   }, [appIsReady]);
 
-  // if (!fontsLoaded) {
-  //   return <AppLoading />;
-  // }
   if (!appIsReady) {
     return null;
   }
 
 
   return (
-    <NavigationContainer onReady={onLayoutRootView}>
-      <AuthNavigator />
-    </NavigationContainer>
+    <>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      <NavigationContainer onReady={onLayoutRootView}>
+        <AuthNavigator />
+      </NavigationContainer>
+    </>
   );
 }

@@ -1,5 +1,4 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
+import { StyleSheet } from 'react-native'
 import { appColors } from '../constants/appColors'
 import { fontFamilies } from '../constants/fontFamilies'
 
@@ -41,6 +40,12 @@ export const globalStyles = StyleSheet.create({
     paddingBottom: 20,
   },
 
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -49,6 +54,4 @@ export const globalStyles = StyleSheet.create({
     height: 30,
     borderRadius: 100,
   }
-})
-
-export default globalStyles
+});
