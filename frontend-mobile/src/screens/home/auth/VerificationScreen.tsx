@@ -28,6 +28,16 @@ const VerificationScreen = ({navigation, route}: any) => {
     ref1.current.focus();
   }, []);
 
+  useEffect(() => {
+    if (limit > 0) {
+      const interval = setInterval(() => {
+        setLimit(limit => limit - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [limit]);
+
   const handleChangeCode = (val: string, index: number) => {
     const data = [...codeValues];
     data[index] = val;
@@ -36,7 +46,7 @@ const VerificationScreen = ({navigation, route}: any) => {
   }
   const handleVerification = () => {
 
-  }
+  };
   
   return (
     <ContainerComponent
@@ -88,7 +98,7 @@ const VerificationScreen = ({navigation, route}: any) => {
             />
           <TextInput
             keyboardType="number-pad"
-            ref={ref1}
+            ref={ref4}
             value={codeValues[3]}
             style={[styles.input]}
             maxLength={1}
@@ -133,7 +143,11 @@ const VerificationScreen = ({navigation, route}: any) => {
         {limit > 0 ? (
           <RowComponent justify="center">
             <TextComponent text="Re-send code in " flex={0} />
-            <TextComponent text="00: 20" />
+            <TextComponent 
+              text={`${(limit - (limit % 60)) / 60}:${limit - (limit - (limit % 60))}`}
+              color={appColors.link}
+              flex={0}
+            />
           </RowComponent>
         ) : (
           <RowComponent>
