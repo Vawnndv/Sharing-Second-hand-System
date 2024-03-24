@@ -4,7 +4,7 @@ import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, Sect
 import { Lock, Sms } from 'iconsax-react-native';
 import { appColors } from '../../../constants/appColors';
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isRemember, setIsRemember] = useState(true);
@@ -33,7 +33,7 @@ const LoginScreen = () => {
           <InputComponent
           value={password}
           placeholder="Password"
-          onChange={val => setEmail(val)}
+          onChange={val => setPassword(val)}
           isPassword
           allowClear
           affix={<Lock size={22} color={appColors.gray} />}
@@ -51,7 +51,7 @@ const LoginScreen = () => {
           </RowComponent>
           <ButtonComponent 
             text="Forgot password?" 
-            onPress={() => {}}
+            onPress={() => navigation.navigate('ForgotPasswordScreen')}
             type="text"
           />
         </RowComponent>
@@ -68,7 +68,7 @@ const LoginScreen = () => {
       <SectionComponent>
         <RowComponent justify="center">
           <TextComponent text="Don't have an account? " />
-          <ButtonComponent type="link" text='="Sign up' onPress={() => {}} />
+          <ButtonComponent type="link" text="Sign up" onPress={() => navigation.navigate('RegisterSCreen')} />
         </RowComponent>
       </SectionComponent>
     </ContainerComponent>
