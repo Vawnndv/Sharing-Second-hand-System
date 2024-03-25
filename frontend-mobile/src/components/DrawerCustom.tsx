@@ -9,6 +9,7 @@ import { CardTick, Home, Information, ShoppingCart, Timer, User } from 'iconsax-
 import { AntDesign, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
 
 const DrawerCustom = ({navigation}: any) => {
+  
   const user =  {
     name: 'Nguyen Dinh Van',
     imageUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
@@ -20,52 +21,61 @@ const DrawerCustom = ({navigation}: any) => {
       key: 'Home',
       title: 'Trang chủ',
       icon: <Home size={size} color={color} />,
-      
+      screen: '',
     },
     {
       key: 'MyOrder',
       title: 'Đơn hàng của bạn',
       icon: <AntDesign name="shoppingcart" size={size} color={color} />,
+      screen: 'OrderScreen',
     },
     {
       key: 'History',
       title: 'Lịch sử giao dịch',
       icon: <MaterialCommunityIcons name="history" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'Notification',
       title: 'Thông báo',
       icon: <Ionicons name="notifications-outline" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'MyHeart',
       title: 'Bài viết đã thích',
       icon: <Ionicons name="heart-outline" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'MyProfile',
       title: 'Thông tin tài khoản',
       icon: <User size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'Setting',
       title: 'Cài đặt',
       icon: <Ionicons name="settings-outline" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'Location',
       title: 'Vị trí',
       icon: <SimpleLineIcons name="location-pin" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'Contact',
       title: 'Liên hệ',
       icon: <AntDesign name="contacts" size={size} color={color} />,
+      screen: '',
     },
     {
       key: 'Help',
       title: 'Trợ giúp',
       icon: <Feather name="help-circle" size={size} color={color} />,
+      screen: '',
     },
   ];
 
@@ -109,14 +119,16 @@ const DrawerCustom = ({navigation}: any) => {
         renderItem={({item, index}) => (
           <RowComponent
             styles={[localStyles.listItem]}
-            onPress={
-              item.key === 'SignOut'
-                ? () => handleSignOut()
-                : () => {
-                  console.log(item.key);
-                  navigation.closeDrawer();
-                }
-              }
+            onPress={() => {
+              // item.key === 'SignOut'
+              //   ? () => handleSignOut()
+              //   : () => {
+              //     console.log(item.key);
+              //     navigation.closeDrawer();
+              //   }
+              if (item.screen) {
+                navigation.navigate(item.screen) // Điều hướng đến màn hình được chỉ định
+              }}}  
           >
             {item.icon}
             <TextComponent
