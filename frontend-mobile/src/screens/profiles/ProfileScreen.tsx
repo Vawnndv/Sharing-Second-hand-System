@@ -1,11 +1,15 @@
-import { View, Text } from 'react-native'
 import React from 'react'
+import { Text } from 'react-native'
+import { ContainerComponent, HeaderComponent, SectionComponent } from '../../components'
 
 const ProfileScreen = () => {
   return (
-    <View>
-      <Text>ProfileScreen</Text>
-    </View>
+    <ContainerComponent isImageBackground isScroll>
+      <HeaderComponent />
+      <SectionComponent>
+        <Text>ProfileScreen</Text>
+      </SectionComponent>
+    </ContainerComponent>
   )
 }
 

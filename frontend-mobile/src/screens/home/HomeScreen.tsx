@@ -1,23 +1,10 @@
-import { View, Text, StatusBar, Platform, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { ContainerComponent, RowComponent, SectionComponent } from '../../components'
-import { globalStyles } from '../../styles/globalStyles'
-import { appColors } from '../../constants/appColors'
-import { HambergerMenu, Location, nLocation } from 'iconsax-react-native'
+import { ContainerComponent, HeaderComponent } from '../../components'
 
-const HomeScreen = ({navigation}: any) => {
+const HomeScreen = () => {
   return (
     <ContainerComponent isImageBackground isScroll>
-      <SectionComponent styles={{marginTop: 25,}}>
-        <RowComponent justify='space-between'>
-          <Text>Hello</Text>
-          <RowComponent>
-            <TouchableOpacity onPress={() => navigation.openDrawer()}>
-              <HambergerMenu size={24} color={appColors.gray} />
-            </TouchableOpacity>
-          </RowComponent>
-        </RowComponent>
-      </SectionComponent>
+      <HeaderComponent />
     </ContainerComponent>
   )
 }
