@@ -10,7 +10,7 @@ const HeaderComponent = () => {
   const navigation: any = useNavigation();
 
   return (
-    <SectionComponent styles={{marginTop: 25,}}>
+    <SectionComponent>
     <RowComponent justify='space-between'>
       <Text>Hello</Text>
       <RowComponent>

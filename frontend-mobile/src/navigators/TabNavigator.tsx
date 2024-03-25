@@ -9,6 +9,7 @@ import HomeNavigator from './HomeNavigator';
 import MessagesNavigator from './MessagesNavigator';
 import ProfileNavigator from './ProfileNavigator';
 import ScanNavigator from './ScanNavigator';
+import DrawerStack from './DrawerStack';
 
 interface TabBarIconProps {
   focused: boolean;

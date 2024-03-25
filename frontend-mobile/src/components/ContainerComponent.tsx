@@ -1,4 +1,4 @@
-import { View, Text, ImageBackground, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, ImageBackground, SafeAreaView, TouchableOpacity, ScrollView, Platform, StatusBar } from 'react-native'
 import React, { ReactNode } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { AntDesign } from '@expo/vector-icons';
@@ -91,8 +91,12 @@ const ContainerComponent = (props: Props) => {
     </ImageBackground>
   ) : (
     <SafeAreaView style={[globalStyles.container]}>
-      <View>
-        {returnContainer}
+      <View
+        style={[
+          globalStyles.container,
+          {paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0},
+        ]}>
+        {headerComponent()}
       </View>
     </SafeAreaView>
   )

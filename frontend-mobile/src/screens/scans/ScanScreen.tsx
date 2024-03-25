@@ -4,8 +4,8 @@ import { ContainerComponent, HeaderComponent, SectionComponent } from '../../com
 
 const ScanScreen = () => {
   return (
-    <ContainerComponent  isScroll>
-      <HeaderComponent />
+  <ContainerComponent isScroll>
+    <HeaderComponent />
       <SectionComponent>
         <Text>ScanScreen</Text>
       </SectionComponent>

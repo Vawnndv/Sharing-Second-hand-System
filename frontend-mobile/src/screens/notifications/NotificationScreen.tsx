@@ -1,14 +1,14 @@
+import { View, Text } from 'react-native'
 import React from 'react'
 import { ContainerComponent, HeaderComponent } from '../../components'
-import { Text } from 'react-native'
 
-const HomeScreen = () => {
+const NotificationScreen = () => {
   return (
     <ContainerComponent isScroll>
       <HeaderComponent />
-      <Text>HomeScreen</Text>
+      <Text>NotificationScreen</Text>
     </ContainerComponent>
   )
 }
 
-export default HomeScreen
+export default NotificationScreen
