@@ -75,7 +75,16 @@ const DrawerCustom = ({navigation}: any) => {
 
   return (
     <View style={[localStyles.container]}>
-      <RowComponent justify="space-between">
+      <RowComponent 
+        justify="space-between"
+        onPress={() => {
+          navigation.closeDrawer('');
+          navigation.navigate('Profile', {
+            screen: 'ProfileScreen',
+            // params: {},
+          });
+        }}
+      >
         {user.imageUrl ? (
           <Image source={{uri: user.imageUrl}} style={[localStyles.avatar]} />
         ) : (
