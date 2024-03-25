@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
-import TabNavigator from './TabNavigator';
+import DrawerNavigator from './DrawerNavigator';
 
 const MainNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -11,7 +11,7 @@ const MainNavigator = () => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="Main" component={TabNavigator} />
+      <Stack.Screen name="Main" component={DrawerNavigator} />
     </Stack.Navigator>
   )
 }

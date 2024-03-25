@@ -11,7 +11,6 @@ import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'react-native';
 import AppRouters from './src/screens/auth/AppRouters';
-import TabNavigator from './src/navigators/TabNavigator';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -66,8 +65,7 @@ export default function App() {
     <>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       <NavigationContainer onReady={onLayoutRootView}>
-        {/* <AppRouters /> */}
-        <TabNavigator />
+        <AppRouters />
       </NavigationContainer>
     </>
   );
