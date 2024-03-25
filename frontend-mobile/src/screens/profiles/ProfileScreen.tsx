@@ -4,7 +4,7 @@ import { ContainerComponent, HeaderComponent, SectionComponent } from '../../com
 
 const ProfileScreen = () => {
   return (
-    <ContainerComponent isImageBackground isScroll>
+    <ContainerComponent isScroll>
       <HeaderComponent />
       <SectionComponent>
         <Text>ProfileScreen</Text>
