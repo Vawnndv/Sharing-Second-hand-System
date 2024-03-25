@@ -6,11 +6,9 @@ const AppRouters = () => {
   const Stack = createNativeStackNavigator();
 
   return (
-    <Stack.Navigator screenOptions={{
-      headerShown: false,
-    }}>
-      <Stack.Screen name="Main" component={MainNavigator} />
-    </Stack.Navigator>
+    <>
+      <MainNavigator />
+    </>
   )
 }
 

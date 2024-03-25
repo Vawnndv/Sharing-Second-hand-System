@@ -1,16 +1,14 @@
-import React, { ReactNode } from 'react'
-import { HomeScreen } from '../screens';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AddSquare, Home, Message, Scan, User } from 'iconsax-react-native';
+import React, { ReactNode } from 'react';
+import { Platform } from 'react-native';
+import { CircleComponent, TextComponent } from '../components';
+import { appColors } from '../constants/appColors';
+import AddNavigator from './AddNavigator';
 import HomeNavigator from './HomeNavigator';
-import ScanNavigator from './ScanNavigator';
 import MessagesNavigator from './MessagesNavigator';
 import ProfileNavigator from './ProfileNavigator';
-import AddNavigator from './AddNavigator';
-import { Platform } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { appColors } from '../constants/appColors';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { AddSquare, Home, Home2, Message, Profile, Scan } from 'iconsax-react-native';
-import { CircleComponent, TextComponent } from '../components';
+import ScanNavigator from './ScanNavigator';
 
 interface TabBarIconProps {
   focused: boolean;
@@ -55,7 +53,7 @@ const TabNavigator = () => {
               icon = <Message size={size} fill={color} color={color} variant={variant} />
               break;
             case 'Profile':
-              icon = <Profile size={size} color={color} variant={variant} />
+              icon = <User size={size} color={color} variant={variant} />
               break;
           }
           return icon;

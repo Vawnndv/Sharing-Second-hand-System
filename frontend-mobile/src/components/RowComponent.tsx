@@ -24,6 +24,7 @@ const RowComponent = (props: Props) => {
     <TouchableOpacity 
       activeOpacity={0.9}
       style={localStyle}
+      onPress={onPress}
     >
       {children}
     </TouchableOpacity>  
