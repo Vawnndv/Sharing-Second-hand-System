@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Modal } from '
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconA from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native';
-import ViewDetailOrder from '../../screen/modals/ViewDetailOrder';
+import ViewDetailOrder from '../../modals/ViewDetailOrder';
 
 const CardOrderView: React.FC<{ title: string, locationgive: string, givetype: string, status: string, image: string }> = ({ title, locationgive, givetype, status, image }) => {
   // const router = useRouter();

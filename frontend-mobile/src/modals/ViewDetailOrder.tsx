@@ -5,7 +5,7 @@ import { Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-paper';
-import StepIndicatorOrder from '../../components/OrderManagement/StepIndicatorOrder';
+import StepIndicatorOrder from '../components/OrderManagement/StepIndicatorOrder';
 
 interface Data {
   title: string;
