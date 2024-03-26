@@ -63,7 +63,7 @@ export const verification = asyncHandle(async (req, res) => {
   
   try {
     const data = {
-      from: '\'Support EvenHub Application\' <$ {process.env.USERNAME_EMAIL}>', 
+      from: `"Support EvenHub Application" <${process.env.USERNAME_EMAIL}>`, 
       to: email,
       subject: 'Verification email code', 
       text: 'Your code to verification email',
@@ -143,3 +143,41 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
   });
 });
 
+export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  console.log(email);
+  const randomPassword = Math.round(100000 + Math.random() * 99000);
+
+  const data = {
+    from: `"New Password" <${process.env.USERNAME_EMAIL}>`, 
+    to: email,
+    subject: 'Verification email code', 
+    text: 'Your code to verification email',
+    html: `<h1>${randomPassword}</h1>`,
+  };
+
+  const user = await Account.findUserByEmail(email);
+  
+  if (user) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
+
+    const updateUser = await Account.updateAccount(user.userid, user.username, hashedPassword, user.phonenumber, user.avatar);
+
+    if (updateUser) {
+      await handleSendMail(data).then(() => {
+        res.status(200).json({
+          message: 'Send my new password successfully!!!',
+          data: {},
+        });
+      });
+    } else {
+      res.status(400);
+      throw new Error('Update error!!!');
+    }
+  } else {
+    res.status(401);
+    throw new Error('User not found!!!');
+  }
+});

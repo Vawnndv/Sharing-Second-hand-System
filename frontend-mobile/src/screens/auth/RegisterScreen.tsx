@@ -1,9 +1,11 @@
 import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { Lock, Sms, User } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
+import authenticationAPI from '../../apis/authApi';
+import { Validate } from '../../utils/Validation';
 
 const initValue = {
   username: '',
@@ -14,8 +16,24 @@ const initValue = {
 const RegisterScreen = ({navigation}: any) => {
   const [values, setValues] = useState(initValue);
   const [isLoading, setIsLoading] = useState(false);
-  const [ErrorMessage, setErrorMessage] = useState<any>();
+  const [errorMessage, setErrorMessage] = useState<any>();
   const [isDisable, setIsDisable] = useState(true);
+
+  useEffect(() => {
+    if (!errorMessage 
+      || errorMessage 
+        && (errorMessage.email 
+          || errorMessage.password 
+          || errorMessage.confirmPassword) 
+      || !values.email 
+      || !values.password 
+      || !values.confirmPassword
+    ) {
+      setIsDisable(true);
+    } else {
+      setIsDisable(false);
+    }
+  }, [errorMessage, values]);
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = {...values};
@@ -25,11 +43,55 @@ const RegisterScreen = ({navigation}: any) => {
     setValues(data);
   };
 
+  const formValidator = (key: string) => {
+    const data = {...errorMessage};
+    let message = '';
+
+    switch (key) {
+      case 'email':
+        if (!values.email) {
+          message = 'Email is required';
+        } else if (!Validate.email(values.email)) {
+          message = 'Email is not invalid';
+        } else {
+          message = '';
+        }
+        break;
+      
+        case 'password':
+        message = !values.password ? 'Password is required!!!' : '';
+        break;
+
+        case 'confirmPassword':
+          if (!values.confirmPassword) {
+            message = 'Please type confirm password';
+          } else if (values.confirmPassword !== values.password) {
+            message = 'Password is not match';
+          } else {
+            message = '';
+          }
+          break;
+    }
+
+    data[`${key}`] = message;
+
+    setErrorMessage(data);
+  };
+
   const handleRegister = async () => {
-    navigation.navigate('VerificationScreen', {
-      code: 1234,
-      ...values,  
-    })
+    setIsLoading(true);
+    try {
+      const res = await authenticationAPI.HandleAuthentication('/verification', {email: values.email}, 'post');
+
+      setIsLoading(false);
+      navigation.navigate('VerificationScreen', {
+        code: res.data.code,
+        ...values,  
+      })
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -44,7 +106,6 @@ const RegisterScreen = ({navigation}: any) => {
             onChange={val => handleChangeValue('username', val)}
             allowClear
             affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => {}}
           />
           <InputComponent
             value={values.email}
@@ -52,7 +113,7 @@ const RegisterScreen = ({navigation}: any) => {
             onChange={val => handleChangeValue('email', val)}
             allowClear
             affix={<Sms size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('email')}
           />
           <InputComponent
             value={values.password}
@@ -61,7 +122,8 @@ const RegisterScreen = ({navigation}: any) => {
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('password')}
+
           />
           <InputComponent
             value={values.confirmPassword}
@@ -70,7 +132,7 @@ const RegisterScreen = ({navigation}: any) => {
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('confirmPassword')}
           />
         </SectionComponent>
         {/* {ErrorMessage && (
@@ -84,7 +146,7 @@ const RegisterScreen = ({navigation}: any) => {
             onPress={handleRegister}
             text="SIGN UP"
             type="primary"
-            // disable={isDisable}
+            disable={isDisable}
           />
         </SectionComponent>
         <SectionComponent>

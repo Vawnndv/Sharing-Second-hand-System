@@ -1,10 +1,11 @@
-import { View, Text } from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { Validate } from '../../utils/Validation';
 import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { ArrowRight, Sms } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
+import authenticationAPI from '../../apis/authApi';
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');
@@ -17,7 +18,17 @@ const ForgotPasswordScreen = () => {
   };
 
   const handleForgotPassword = async () => {
+    setIsLoading(true);
+    try {
+      const res: any = await authenticationAPI.HandleAuthentication('/forgotPassword', {email}, 'post');
 
+      console.log(res);
+      Alert.alert('Send mail', 'We sended a email includes new password!!!');
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(`Can not create new password api forgot password, ${error}`);
+    }
   };
 
   return (
