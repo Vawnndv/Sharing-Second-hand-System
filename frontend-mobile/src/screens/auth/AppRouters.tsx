@@ -9,6 +9,7 @@ const AppRouters = () => {
   const {getItem} = useAsyncStorage('auth');
 
   const auth = useSelector(authSelector);
+  console.log(auth)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -17,13 +18,13 @@ const AppRouters = () => {
 
   const checkLogin = async () => {
     const res = await getItem();
-
+    console.log(res)
     res && dispatch(addAuth(JSON.parse(res)));
   };
 
   return (
     <>
-      {auth.accessToken ? <MainNavigator /> : <AuthNavigator />}
+      {auth.accessToken ? <MainNavigator roleID={auth.roleID} /> : <AuthNavigator />}
     </>
   )
 }
