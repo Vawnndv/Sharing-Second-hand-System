@@ -83,4 +83,24 @@ export class Account {
       return null;
     }
   }
+
+  public static async updateAccount(userid: number, username: string, password: string, phonenumber: string, avatar: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "User"
+      SET username = $1, password = $2, phonenumber = $3, avatar = $4
+      WHERE userid = $5
+      RETURNING *;
+    `;
+    const values: any = [username,  password, phonenumber, avatar, userid];
+    try {
+      const result = await client.query(query, values);
+      console.log('User updated successfully:', result.rows[0]);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } 
+  };
 }
