@@ -8,8 +8,7 @@ interface OrderFunctionProbs {
     timeStart: string,
     departure: string,
     destination: string,
-    size: string,
-    weight: number,
+    quantity: string,
     itemName: string
 }
 const OrderComponent: React.FC<OrderFunctionProbs> = ({avatar,
@@ -17,8 +16,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({avatar,
     timeStart,
     departure,
     destination,
-    size,
-    weight,
+    quantity,
     itemName}) => {
     // Xây dựng và trả về JSX.Element tương ứng với thông tin của đơn hàng
         return (
@@ -31,34 +29,37 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({avatar,
                     }}
                 />
 
-                <View style={{flex: 1}}>
-                    <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
+                <View style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+                    <View style={{width: '90%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginLeft: 5}}>
+                        <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
 
-                        <View style= {{ marginLeft: 10, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style= {{ fontWeight: "bold", fontSize: 16}}>{name}</Text>
-                            <IconEvil name="clock" size={20}
-                                style= {{ marginLeft: 10}}/>
-                            <Text style= {{fontSize: 14}}>{timeStart}</Text>
+                            <View style= {{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                <Text style= {{ fontWeight: "bold", fontSize: 16}}>{name}</Text>
+                                <IconEvil name="clock" size={20}
+                                    style= {{ marginLeft: 10}}/>
+                                <Text style= {{fontSize: 14}}>{timeStart}</Text>
+                            </View>
+
+                            <View style= {{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                                <IconEntypo name="pin" size={20}/>
+                            </View>
                         </View>
 
-                        <View style= {{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                            <IconEntypo name="pin" size={20}/>
+                        <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                                <IconEvil name="location" size={20}/>
+                                <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text>
+                            </View>
+                        </View>
+
+                        <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                                <IconEvil name="location" size={20} color='red'/>
+                                <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text>
+                            </View>
                         </View>
                     </View>
-
-                    <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                        <View style= {{marginLeft: 10, marginTop: 5, display: 'flex', flexDirection: 'row'}}>
-                            <IconEvil name="location" size={20}/>
-                            <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text>
-                        </View>
-                    </View>
-
-                    <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                        <View style= {{marginLeft: 10, marginTop: 5, display: 'flex', flexDirection: 'row'}}>
-                            <IconEvil name="location" size={20} color='red'/>
-                            <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text>
-                        </View>
-                    </View>
+                    
                 </View>
             </View>
 
@@ -66,11 +67,11 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({avatar,
                 <Image
                     style={{width: 80, height: 80}}
                     source={
-                        require('../assets/item.png')
+                        require('../.../../../../assets/item.png')
                     }/>
                 
                 <View style={{flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style= {{fontSize: 14, marginLeft: 5, fontWeight: 'bold'}}>{size} - {weight}kg - {itemName}</Text>
+                    <Text style= {{fontSize: 14, marginLeft: 5, fontWeight: 'bold'}}>Số lượng {quantity} - {itemName}</Text>
                     <IconEntypo name="chevron-right" size={25}/>
                 </View>
             </View>

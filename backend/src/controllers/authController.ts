@@ -139,6 +139,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
       id: existingUser.id,
       email: existingUser.email,
       accessToken: await getJsonWebToken(email, existingUser.id),
+      roleID: existingUser.roleid,
     },
   });
 });

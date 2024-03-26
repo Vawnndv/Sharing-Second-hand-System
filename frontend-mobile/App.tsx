@@ -13,6 +13,9 @@ import { StatusBar } from 'react-native';
 import AppRouters from './src/screens/auth/AppRouters';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
+import OrderCollaboratorNavigator from './src/navigators/OrderCollaboratorNavigator';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import OrderDetailsCollaboratorNavigator from './src/navigators/OrderDetailsCollaboratorNavigator';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -61,6 +64,8 @@ export default function App() {
   if (!appIsReady) {
     return null;
   }
+
+  const Stack = createNativeStackNavigator();
 
   return (
     <>

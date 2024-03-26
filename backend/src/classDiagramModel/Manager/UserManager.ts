@@ -28,6 +28,7 @@ export class UserManager {
           user.phonenumber,
           user.lastname,
           user.firstname,
+          user.address,
           user.username,
           user.password
         )

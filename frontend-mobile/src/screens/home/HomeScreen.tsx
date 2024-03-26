@@ -1,12 +1,14 @@
 import React from 'react'
 import { ContainerComponent, HeaderComponent } from '../../components'
 import { Text } from 'react-native'
+import OrdersScreen from '../collaborator/OrdersScreen'
+import OrderDetailsScreen from '../collaborator/OrderDetailsScreen'
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation} : any) => {
   return (
     <ContainerComponent isScroll>
-      <HeaderComponent />
-      <Text>HomeScreen</Text>
+      <HeaderComponent/>
+      <OrdersScreen />
     </ContainerComponent>
   )
 }
