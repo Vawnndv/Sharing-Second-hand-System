@@ -4,7 +4,7 @@ import OrderManagementScreen from './OrderManagementScreen'
 
 const OrderScreen = () => {
   return (
-    <ContainerComponent isScroll>
+    <ContainerComponent>
       <HeaderComponent />
       <OrderManagementScreen/>
     </ContainerComponent>

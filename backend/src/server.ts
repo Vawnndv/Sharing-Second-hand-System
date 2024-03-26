@@ -7,6 +7,7 @@ import express from 'express';
 import routerItem from './routes/v1/itemRouter';
 import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
 import authRouter from './routes/v1/authRouter';
+import orderRouter from './routes/v1/orderRouter';
 import cors from 'cors';
 
 const app = express();
@@ -35,7 +36,7 @@ app.use(express.json());
 
 app.use(routerItem);
 app.use('/auth', authRouter);
-
+app.use('/order', orderRouter);
 
 app.listen(port, hostname, () => {
   // eslint-disable-next-line no-console
