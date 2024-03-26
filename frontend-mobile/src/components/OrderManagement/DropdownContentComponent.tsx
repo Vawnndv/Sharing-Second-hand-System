@@ -3,11 +3,15 @@ import { View, Text, TouchableOpacity, Animated, StyleSheet, ScrollView, Image }
 import CardOrderView from './CardOrderView';
 
 interface Item {
-    Title: string;
-    LocationGive: string;
-    GiveType: string;
-    Status: string;
+    title: string;
+    location: string;
+    givetype: string;
+    statusname: string;
     image: string;
+    status: string;
+    createdat: string;
+    orderid: string;
+    statuscreatedat: string;
 }
 
 interface DropdownContentProps {
@@ -54,16 +58,30 @@ const DropdownContentComponent: React.FC<DropdownContentProps> = ({ title, data 
         <ScrollView 
             style={styles.scrollView}>
             {/* Các component con */}
-            {data.map((item, index) => (
-              <CardOrderView
-                key={index}
-                title={item.Title}
-                locationgive={item.LocationGive}
-                givetype={item.GiveType}
-                status={item.Status}
-                image={item.image}
-              />
-            ))}
+            {data.length !== 0 ? (
+              data.map((item, index) => (
+                  <CardOrderView
+                      key={index}
+                      title={item.title}
+                      location={item.location}
+                      givetype={item.givetype}
+                      statusname={item.statusname}
+                      image={item.image}
+                      status={item.status}
+                      createdat={item.createdat}
+                      orderid={item.orderid}
+                      statuscreatedat={item.statuscreatedat}
+                  />
+              ))
+          ) : (
+              <View style={{ height: height, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Image
+                      source={require('../../../assets/images/shopping.png')}
+                      style={styles.image} 
+                      resizeMode="contain"
+                  />
+              </View>
+          )}
         </ScrollView>
       </Animated.View>
     </View>

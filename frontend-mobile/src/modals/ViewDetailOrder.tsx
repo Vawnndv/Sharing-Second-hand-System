@@ -6,13 +6,18 @@ import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-paper';
 import StepIndicatorOrder from '../components/OrderManagement/StepIndicatorOrder';
+import { formatDateTime } from '../utils/FormatDateTime';
 
 interface Data {
   title: string;
-  locationgive: string;
+  location: string;
   givetype: string;
-  status: string;
+  statusname: string;
   image: string;
+  status: string;
+  createdat: string;
+  orderid: string;
+  statuscreatedat: string;
 }
 export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModalVisible: (isVisible: boolean) => void, data: Data }) {
   return (
@@ -21,7 +26,7 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
         <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ justifyContent: 'flex-start' }}>
           <Ionicons name="arrow-back" size={28}></Ionicons>
         </TouchableOpacity>
-        <Text style={{marginLeft: '25%', fontSize: 18, fontWeight: 'bold'}}>{data.status}</Text>
+        <Text style={{marginLeft: '25%', fontSize: 18, fontWeight: 'bold'}}>{data.statusname}</Text>
       </View>
 
       <View style={styles.body}>
@@ -36,12 +41,12 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
             <Text style={{ fontWeight: 'bold' }}>{data.title}</Text>
             <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon name="map-pin" size={20} color="#552466" />
-                <Text style={{ paddingLeft: 20 }}>{data.locationgive}</Text>
+                <Text style={{ paddingLeft: 20 }}>{data.location}</Text>
             </View>
 
             <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold' }}> {data.status} </Text>
-                <Text style={{ color: 'red', fontWeight: 'bold' }}> Thứ 6, 17/01/2024</Text>
+                <Text style={{ fontWeight: 'bold' }}> {data.statusname} </Text>
+                <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data.statuscreatedat)}</Text>
             </View>
           </View>
         </View>
@@ -58,14 +63,14 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontWeight: 'bold' }}>Mã đơn hàng</Text>
-              <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>YE873</Text>
+              <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>{data.orderid}</Text>
             </View>
           </View>
 
           <View style={{borderBottomWidth: 1, marginTop: 4, borderBottomColor: 'grey'}}/>
 
           <ScrollView>
-            <StepIndicatorOrder/>
+            <StepIndicatorOrder orderID={data.orderid}/>
           </ScrollView>
         </View>
 
@@ -108,8 +113,10 @@ const styles = StyleSheet.create({
   },
   infomation: {
     width: '70%',
-    // flexDirection: 'row',
-    flexWrap: 'wrap',
+    height: 80,
+    // flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingLeft: 10,
   },
   image: {
     width: 90,
@@ -123,9 +130,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: 'grey',
     borderWidth: 1,
-    // display: 'flex',
-    // flexDirection: 'row',
-    // alignItems: 'center',
     flexGrow: 1, // Thiết lập để mở rộng theo chiều cao
   },
   title: {

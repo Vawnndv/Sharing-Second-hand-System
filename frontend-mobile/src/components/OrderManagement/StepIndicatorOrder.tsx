@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { View, StyleSheet, Text, Dimensions } from "react-native";
 import StepIndicator from "react-native-step-indicator";
+import { formatDateTime } from "../../utils/FormatDateTime";
+import React, { useEffect } from 'react';
+import orderAPI from '../../apis/orderApi';
 
 const jsonData = [
   {
@@ -64,58 +67,82 @@ const customStyles = {
   currentStepLabelColor: '#552466',
 }
 
-const labels = jsonData.map(item => item.label);
+interface Item {
+  statusname: string;
+  createdat: string;
+}
+
+// const labels = jsonData.map(item => item.label);
 
 const {width, height} = Dimensions.get("window");
 
-function formatDateTime(dateTimeStr : string) {
-  const dateTime = new Date(dateTimeStr);
+export default function StepIndicatorOrder ({orderID}: any) {
+  const [currentPosition, setCurrentPosition] = useState(0);
+  const [data, setData] = useState<any>([]);
+  const [labels, setLabels] = useState<any>([]);
 
-  const hours = dateTime.getHours();
-  const minutes = dateTime.getMinutes();
-  const day = dateTime.getDate();
-  const month = dateTime.getMonth() + 1; // Tháng trong JavaScript bắt đầu từ 0, vì vậy cần phải cộng thêm 1
-  const year = dateTime.getFullYear();
+  useEffect(() => {
+    getTrackingList()
+  }, []);
 
-  // Chuyển đổi giờ sang định dạng 12 giờ và xác định buổi sáng hoặc buổi tối
-  let ampm = hours >= 12 ? 'pm' : 'am';
-  let formattedHours = hours % 12;
-  formattedHours = formattedHours ? formattedHours : 12; // Nếu giờ là 0, chuyển thành 12
+  // useEffect(() => {
+  //   console.log('data', data);
+  //   console.log('label', labels);
+  //   console.log('currentPosition', currentPosition);
+  // }, [data, labels, currentPosition]);
 
-  // Chuẩn hóa định dạng phút
-  const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+  const getTrackingList = async () => {
+    try {
+      const res = await orderAPI.HandleOrder(
+        `/tracking?orderID=${orderID}`,
+        'get'
+      );
 
-  return `${formattedHours}:${formattedMinutes} ${ampm} - ${day}/${month}/${year}`;
-}
+      const responseData: Item[] = res.data;
+      setData(responseData);
+      setLabels(responseData.map(item => item.statusname));
+      setCurrentPosition(labels.length + 1)
 
-export default function StepIndicatorOrder () {
-  const [currentPosition, setCurrentPosition] = useState(2);
+      console.log('RES', res.data)
+      console.log('data', data);
+      console.log('label', labels)
+      console.log('currentPosition', currentPosition)
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
-    <View style={styles.indicatorContainer}>
-      <StepIndicator
-        customStyles={customStyles}
-        currentPosition={currentPosition}
-        labels={labels}
-        direction="vertical"
-        stepCount={labels.length}
-        renderLabel={({position, label}) => {
-          return (
-            <View style={{ padding: 10, paddingLeft: 5, width: width - 100}}>
-              <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{jsonData[position].label}</Text>
-              <Text style={{ fontSize: 14, color: 'grey' }}>{jsonData[position].status}</Text>
-              <Text style={{ fontSize: 14, color: 'grey' }}>{formatDateTime(jsonData[position].dateTime)}</Text>
-            </View>
-          );
-         }}
-      />
+    <View style={[styles.indicatorContainer, { padding: 10, paddingLeft: 5, height: height - (height / (labels.length < 2 ? 2 : labels.length)) }]}>
+      {
+        labels.length === 0 ? (
+          <></>
+        ) : (
+          <StepIndicator
+            customStyles={customStyles}
+            currentPosition={currentPosition}
+            labels={labels}
+            direction="vertical"
+            stepCount={labels.length}
+            renderLabel={({position, label}) => {
+              return (
+                <View style={{ padding: 10, paddingLeft: 5, width: width - 100}}>
+                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{data[position].statusname}</Text>
+                  {/* <Text style={{ fontSize: 14, color: 'grey' }}>{jsonData[position].status}</Text> */}
+                  <Text style={{ fontSize: 14, color: 'grey' }}>{formatDateTime(data[position].createdat)}</Text>
+                </View>
+              );
+             }}
+          />
+        )
+      }
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   indicatorContainer: {
-    height: height - 170,
     width: width - 30,
     padding: 20,
     paddingTop: 0,

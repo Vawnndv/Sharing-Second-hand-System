@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Modal } from 'react-native';
+import { View, Text, StyleSheet, Image, Modal, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconA from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native';
 import ViewDetailOrder from '../../modals/ViewDetailOrder';
+import { fontFamilies } from '../../constants/fontFamilies';
 
-const CardOrderView: React.FC<{ title: string, locationgive: string, givetype: string, status: string, image: string }> = ({ title, locationgive, givetype, status, image }) => {
+const {width, height} = Dimensions.get("window");
+
+const CardOrderView: React.FC<{ title: string, location: string, givetype: string, statusname: string, image: string, status: string, createdat: string, orderid: string, statuscreatedat: string }> = ({ title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat}) => {
   // const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -29,28 +32,28 @@ const CardOrderView: React.FC<{ title: string, locationgive: string, givetype: s
       >
         <View style={styles.card}>
             <View style={styles.content}>
-            <Image
-                source={{ uri: image }} 
-                style={styles.image} 
-                resizeMode="contain"
-            />
+              <Image
+                  source={{ uri: image }} 
+                  style={styles.image} 
+                  resizeMode="contain"
+              />
 
-            <View style={styles.infomation}>
-                <Text style={{ fontWeight: 'bold' }}>{title}</Text>
-                <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name="map-pin" size={20} color="#552466" />
-                    <Text style={{ paddingLeft: 20 }}>{locationgive}</Text>
-                </View>
+              <View style={styles.infomation}>
+                  <Text style={{ fontWeight: 'bold', fontFamily: fontFamilies.bold }}>{title}</Text>
+                  <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
+                      <Icon name="map-pin" size={20} color="#552466" />
+                      <Text style={{ paddingLeft: 20 }}>{location}</Text>
+                  </View>
 
-                <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <IconA name="profile" size={20} color="#552466" />
-                    <Text style={{ paddingLeft: 10, fontWeight: 'bold' }}> Phương thức: </Text>
-                    <Text> {givetype} </Text>
-                </View>
+                  <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <IconA name="profile" size={20} color="#552466" />
+                      <Text style={{ paddingLeft: 10, fontWeight: 'bold' }}> Phương thức: </Text>
+                      <Text> {givetype} </Text>
+                  </View>
+              </View>
             </View>
-            </View>
 
-            <Text style={{ textAlign: 'right', color: 'red'}}> {status} </Text>
+            <Text style={{ textAlign: 'right', color: 'red', paddingRight: 5}}> {statusname} </Text>
         </View>
       </Pressable>
 
@@ -64,10 +67,14 @@ const CardOrderView: React.FC<{ title: string, locationgive: string, givetype: s
           setIsModalVisible={setIsModalVisible} 
           data={{
             title: title,
-            locationgive: locationgive,
+            location: location,
             givetype: givetype,
+            statusname: statusname,
+            image: image,
             status: status,
-            image: image
+            createdat: createdat,
+            orderid: orderid,
+            statuscreatedat: statuscreatedat,
           }} 
         />
       </Modal>
@@ -97,9 +104,11 @@ const styles = StyleSheet.create({
   },
   infomation: {
     height: 80,
-    width: '70%',
-    flexDirection: 'row',
+    width: width - 90,
+    flexDirection: 'column',
     flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingLeft: 10
   }
 });
 
