@@ -11,7 +11,9 @@ export class Admin extends Account {
 
   private warehouseManager: WarehouseManager | undefined;
 
-  public constructor(userID: string) {
-    super(userID);
+  public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
+    email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
+    password: string) {
+    super(userID, roleID, dateOfBirth, avatar, email, phoneNumber, lastName, firstName, username, password);
   }
 }
