@@ -5,6 +5,7 @@
 import express from 'express';
 // import { mapOrder } from './utils/sorts.ts';
 import routerItem from './routes/v1/itemRouter';
+import orderRoute from './routes/orderRoutes/orderRoute';
 import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
 import authRouter from './routes/v1/authRouter';
 import orderRouter from './routes/v1/orderRouter';
@@ -37,6 +38,8 @@ app.use(express.json());
 app.use(routerItem);
 app.use('/auth', authRouter);
 app.use('/order', orderRouter);
+
+app.use(orderRoute);
 
 app.listen(port, hostname, () => {
   // eslint-disable-next-line no-console
