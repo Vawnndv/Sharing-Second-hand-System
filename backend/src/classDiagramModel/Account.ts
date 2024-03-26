@@ -4,6 +4,7 @@ import pool from '../config/DatabaseConfig';
 import { QueryResult } from 'pg';
 
 export class Account {
+
   protected userID: string | undefined;
 
   protected roleID: string | undefined;
@@ -28,8 +29,19 @@ export class Account {
 
   protected chat: ChatManager | undefined;
 
-  public constructor(userID: string) {
+  public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
+    email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
+    password: string) {
     this.userID = userID;
+    this.roleID = roleID;
+    this.dateOfBirth = dateOfBirth;
+    this.avatar = avatar;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.username = username;
+    this.password = password;
   }
 
   public editProfile(): void {
