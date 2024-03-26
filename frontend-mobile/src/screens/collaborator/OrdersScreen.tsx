@@ -17,13 +17,13 @@ export default function OrdersScreen({navigation}: any) {
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
-    const [indexGive, setIndexGive] = useState(0)
+    const [tab, setTab] = useState('Pending')
     const [orders, setOrders] = useState([])
 
     useEffect(() => {
         const fetchAPI = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=31&type=Pending`)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=31&type=${tab}`)
                 // console.log(response.data.orders)
                 setOrders(response.data.orders)
             }catch(error){
@@ -53,15 +53,15 @@ export default function OrdersScreen({navigation}: any) {
                 <View style={styles.wrapper}>
                     <View style={styles.header}>
                         <TouchableOpacity
-                            onPress={()=>{setIndexGive(0)}}>
-                            <Text style={[styles.defaultText, indexGive === 0 ? styles.tabSelected : styles.defaultTab]}>
+                            onPress={()=>{setTab('Pending')}}>
+                            <Text style={[styles.defaultText, tab === 'Pending' ? styles.tabSelected : styles.defaultTab]}>
                                 Chờ lấy
                             </Text>
                         </TouchableOpacity>
                         
                         <TouchableOpacity
-                            onPress={()=>{setIndexGive(1)}}>
-                            <Text style={[styles.defaultText, indexGive === 1 ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
+                            onPress={()=>{setTab('Completed')}}>
+                            <Text style={[styles.defaultText, tab === 'Completed' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
                                 Đã lấy
                             </Text>
                         </TouchableOpacity>
@@ -93,7 +93,7 @@ export default function OrdersScreen({navigation}: any) {
                         orders.map((order: any, index) => {
                             return (
                                 <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                    order: order
+                                    orderID: order.orderID
                                   })} key={index}>
                                     <OrderComponent
                                         avatar={order.receiver.avatar}
