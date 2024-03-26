@@ -29,7 +29,7 @@ export class Account {
 
   protected chat: ChatManager | undefined;
 
-  public constructor(userID: number, roleID: number, dateOfBirth: string, avatar: string,
+  public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
     password: string) {
     this.userID = userID;

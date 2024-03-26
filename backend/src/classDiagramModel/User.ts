@@ -17,7 +17,7 @@ export class User extends Account {
 
   protected reportManager: ReportManager | undefined;
 
-  public constructor(userID: number, roleID: number, dateOfBirth: string, avatar: string,
+  public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
     password: string) {
     super(userID, roleID, dateOfBirth, avatar, email, phoneNumber
