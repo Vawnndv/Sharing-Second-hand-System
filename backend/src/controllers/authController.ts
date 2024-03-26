@@ -145,6 +145,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     data: {
       id: existingUser.id,
       email: existingUser.email,
+      username: existingUser.username,
       accessToken: await getJsonWebToken(email, existingUser.id),
     },
   });

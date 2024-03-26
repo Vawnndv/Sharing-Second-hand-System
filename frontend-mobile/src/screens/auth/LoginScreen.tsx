@@ -10,40 +10,81 @@ import { Validate } from '../../utils/Validation';
 import { addAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 
+interface ErrorMessages {
+  email: string;
+  password: string;
+}
+
+const initValue = {
+  email: '',
+  password: '',
+};
+
 const LoginScreen = ({navigation}: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [values, setValues] = useState(initValue);
   const [isRemember, setIsRemember] = useState(true);
   const [isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const emailValidation = Validate.email(email);
+    const emailValidation = Validate.email(values.email);
 
-    if (!email || !password || !emailValidation) {
+    if (!values.email || !values.password || !emailValidation || errorMessage.email || errorMessage.password) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
     }
-  }, [email, password]);
+  }, [values, errorMessage]);
+
+  const handleChangeValue = (key: string, value: string) => {
+    const data: any = {...values};
+
+    data[`${key}`] = value;
+    
+    setValues(data);
+  };
+
+  const formValidator = (key: string) => {
+    let updatedErrorMessage = {...errorMessage}; // Tạo một bản sao mới của errorMessage
+    
+    switch (key) {
+      case 'email':
+        if (!values.email) {
+          updatedErrorMessage.email = 'Email is required';
+        } else if (!Validate.email(values.email)) {
+          updatedErrorMessage.email = 'Email is not invalid';
+        } else {
+          updatedErrorMessage.email = '';
+        }
+        break;
+  
+      case 'password':
+        updatedErrorMessage.password = !values.password ? 'Password is required!!!' : '';
+        break;
+    }
+  
+    setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
+  };
 
   const handleLogin = async () => {
     setIsLoading(true);
-    const emailValidation = Validate.email(email);
+    const emailValidation = Validate.email(values.email );
 
     if (emailValidation) {
       try {
         const res = await authenticationAPI.HandleAuthentication(
           '/login',
-          {email, password},
+          {email: values.email , password: values.password},
           'post'
         );
+        console.log(res);
 
         dispatch(addAuth(res.data));
 
-        await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email);
+        await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
         setIsLoading(false);
       } catch (error) {
         console.log(error);
@@ -64,22 +105,27 @@ const LoginScreen = ({navigation}: any) => {
           marginTop: 75,
         }}
       >
-        <TextComponent text="Sign In" title size={24} />
+        <TextComponent text="Sign In" title size={24} color={appColors.primary} />
         <SpaceComponent height={21} />
         <InputComponent
-          value={email}
+          value={values.email }
           placeholder="Email"
-          onChange={val => setEmail(val)}
+          onChange={val => handleChangeValue('email', val)}
           allowClear
           affix={<Sms size={22} color={appColors.gray} />}
+          onEnd={() => formValidator('email')}
+          error={errorMessage['email'] ? true : false}
         />
-          <InputComponent
-          value={password}
+        {errorMessage['email'] && <TextComponent text={errorMessage['email']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+        <InputComponent
+          value={values.password}
           placeholder="Password"
-          onChange={val => setPassword(val)}
+          onChange={val => handleChangeValue('password', val)}
           isPassword
           allowClear
           affix={<Lock size={22} color={appColors.gray} />}
+          onEnd={() => formValidator('password')}
+          error={errorMessage['password'] ? true : false}
         />
         <RowComponent justify="space-between" styles={{width: '100%', }}>
           <RowComponent onPress={() => setIsRemember(!isRemember)}>

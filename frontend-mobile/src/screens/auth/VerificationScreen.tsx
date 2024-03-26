@@ -12,7 +12,7 @@ import { addAuth } from '../../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerificationScreen = ({navigation, route}: any) => {
-  const limitTime = 30;
+  const limitTime = 120;
   const {code, email, password, username} = route.params;
 
   const [currentCode, setCurrentCode] = useState(code);
@@ -110,7 +110,7 @@ const VerificationScreen = ({navigation, route}: any) => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Verification" title />
+        <TextComponent text="Verification"  size={24} title color={appColors.primary} />
         <SpaceComponent height={12} />
         <TextComponent text={`We 've send you the verification code on`} />
         <TextComponent text={`We've send you the verification code on ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} />

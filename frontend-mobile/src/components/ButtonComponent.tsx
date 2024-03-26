@@ -66,7 +66,7 @@ const ButtonComponent = (props: Props) => {
         text={text} 
         color={
           type === 'link' 
-          ? appColors.primary 
+          ? appColors.link 
           : appColors.text
         }
       />
