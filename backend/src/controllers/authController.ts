@@ -143,9 +143,8 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
   res.status(200).json({
     message: 'Login successfully!!!',
     data: {
-      id: existingUser.id,
+      id: existingUser.userid,
       email: existingUser.email,
-      username: existingUser.username,
       accessToken: await getJsonWebToken(email, existingUser.id),
     },
   });
