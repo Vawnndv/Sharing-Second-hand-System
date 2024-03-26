@@ -59,6 +59,13 @@ const handleSendMail = async (val: {}) => {
 export const verification = asyncHandle(async (req, res) => {
   const { email } = req.body;
 
+  const existingUser = await Account.findUserByEmail(email);
+
+  if (existingUser) {
+    res.status(401);
+    throw new Error('User has already exist!!!');
+  }
+  
   const verificationCode = Math.round(1000 + Math.random() * 9000);
   
   try {

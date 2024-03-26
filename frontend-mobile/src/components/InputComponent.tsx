@@ -14,15 +14,19 @@ interface Props {
   allowClear?: boolean;
   type?: KeyboardType;
   onEnd?: () => void;
+  error?: boolean;
 };
 
 const InputComponent = (props: Props) => {
-  const {value, onChange, affix, suffix, placeholder, isPassword, allowClear, type, onEnd} = props;
+  const {value, onChange, affix, suffix, placeholder, isPassword, allowClear, type, onEnd, error} = props;
 
   const [isShowPassword, setIsShowPassword] = useState(isPassword ?? false);
-  
+
+  const localStyle: any = {
+    marginBottom: error ? 10 : 19,
+  };
   return (
-    <View style={[styles.inputContainer]}>
+    <View style={[styles.inputContainer, localStyle]}>
       {affix ?? affix}
       <TextInput
         style={[styles.input, globalStyles.text]}
@@ -69,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 15,
     backgroundColor: appColors.white,
-    marginBottom: 19,
   },
 
   input: {

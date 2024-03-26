@@ -95,7 +95,6 @@ export class Account {
     const values: any = [username,  password, phonenumber, avatar, userid];
     try {
       const result = await client.query(query, values);
-      console.log('User updated successfully:', result.rows[0]);
   
       return result.rows[0];
     } catch (error) {

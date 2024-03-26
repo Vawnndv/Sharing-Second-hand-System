@@ -8,12 +8,14 @@ import authenticationAPI from '../../apis/authApi';
 import { useDispatch } from 'react-redux';
 import { Validate } from '../../utils/Validation';
 import { addAuth } from '../../redux/reducers/authReducers';
+import { LoadingModal } from '../../modals';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isRemember, setIsRemember] = useState(true);
   const [isDisable, setIsDisable] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -28,6 +30,7 @@ const LoginScreen = ({navigation}: any) => {
   }, [email, password]);
 
   const handleLogin = async () => {
+    setIsLoading(true);
     const emailValidation = Validate.email(email);
 
     if (emailValidation) {
@@ -41,10 +44,13 @@ const LoginScreen = ({navigation}: any) => {
         dispatch(addAuth(res.data));
 
         await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       }
     } else {
+      setIsLoading(false);
       Alert.alert('email is not correct!!!');
     }
   };
@@ -108,7 +114,9 @@ const LoginScreen = ({navigation}: any) => {
           <ButtonComponent type="link" text="Sign up" onPress={() => navigation.navigate('RegisterSCreen')} />
         </RowComponent>
       </SectionComponent>
+      <LoadingModal visible={isLoading} />
     </ContainerComponent>
+
   )
 }
 
