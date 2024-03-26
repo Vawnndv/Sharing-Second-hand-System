@@ -1,8 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
+// eslint-disable-next-line import/no-extraneous-dependencies
 import asyncHandle from 'express-async-handler';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import nodemailer from 'nodemailer';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcrypt';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
