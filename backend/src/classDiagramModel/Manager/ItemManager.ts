@@ -25,17 +25,18 @@ export class ItemManager {
     return [];
   }
 
-  static async viewDetailsItem(itemId: number): Promise<Item | null> {
+  public static async viewDetailsItem(itemId: number): Promise<Item | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT * FROM items WHERE id = $1', [itemId]);
+      const result = await client.query(`SELECT * FROM "item" WHERE itemid = $1`, [itemId]);
       if (result.rows.length === 0) {
         return null;
       }
       const row = result.rows[0];
-      return new Item(row.itemId, row.name, row.quantity);
+      console.log(row)
+      return new Item(row.itemId, row.name, row.quantity, row.itemtypeid);
     } finally {
-      return null;
+      client.release()
     }
   }
 

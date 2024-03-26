@@ -14,6 +14,6 @@
     "./*.js",
     "src/**/*.ts",
     "test/**/*.ts",
-    ".eslintrc.cjs",
+    ".eslintrc.cjs", "src/server.ts",
   ],
 }

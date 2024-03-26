@@ -2,9 +2,9 @@ import { ChatManager } from './Manager/ChatManager';
 import { NotiManager } from './Manager/NotiManager';
 
 export class Account {
-  protected userID: string | undefined;
+  protected userID: number | undefined;
 
-  protected roleID: string | undefined;
+  protected roleID: number | undefined;
 
   protected dateOfBirth: string | undefined;
 
@@ -26,8 +26,19 @@ export class Account {
 
   protected chat: ChatManager | undefined;
 
-  public constructor(userID: string) {
+  public constructor(userID: number, roleID: number, dateOfBirth: string, avatar: string,
+    email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
+    password: string) {
     this.userID = userID;
+    this.roleID = roleID;
+    this.dateOfBirth = dateOfBirth;
+    this.avatar = avatar;
+    this.email = email;
+    this.phoneNumber = phoneNumber;
+    this.lastName = lastName;
+    this.firstName = firstName;
+    this.username = username;
+    this.password = password;
   }
 
   public editProfile(): void {

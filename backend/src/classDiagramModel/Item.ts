@@ -11,17 +11,18 @@ export class Item {
 
   private itemtypeid: number | undefined;
     
-  public constructor(itemID: number, name: string, quantity: number) {
+  public constructor(itemID: number, name: string, quantity: number, itemtypeid: number) {
     this.itemID = itemID;
     this.name = name;
     this.quantity = quantity;
+    this.itemtypeid = itemtypeid;
   }
 
   static async getAllItems(): Promise<Item[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query('SELECT * FROM item');
-      return result.rows.map((row: any) => new Item(row.itemID, row.name, row.quantity));
+      return result.rows.map((row: any) => new Item(row.itemID, row.name, row.quantity, row.itemtypeid));
     } finally {
       return null;
     }
