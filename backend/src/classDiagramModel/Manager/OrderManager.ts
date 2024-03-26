@@ -102,7 +102,8 @@ export class OrderManager {
                   i.Path AS Image, 
                   o.OrderID,
                   ts.StatusName,
-                  th.Time AS StatusCreatedAt
+                  th.Time AS StatusCreatedAt,
+                  o.GiveType
               FROM 
                   Orders o
               JOIN 

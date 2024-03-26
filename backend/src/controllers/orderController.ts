@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const getOrderList = async (req: Request, res: Response) => {
-  const { userID } = req.body;
+  const userID : any = req.query.userID;
   
   try {
     const orderList = await  OrderManager.getOrderList(userID);
@@ -16,7 +16,7 @@ export const getOrderList = async (req: Request, res: Response) => {
 };
 
 export const getOrderFinishList = async (req: Request, res: Response) => {
-  const { userID } = req.body;
+  const userID : any = req.query.userID;
   
   try {
     const orderListFinish = await  OrderManager.getOrderFinishList(userID);
@@ -28,7 +28,7 @@ export const getOrderFinishList = async (req: Request, res: Response) => {
 };
 
 export const getTrackingStatus = async (req: Request, res: Response) => {
-  const { orderID } = req.body;
+  const orderID : any = req.query.orderID;
   
   try {
     const trackingList = await  OrderManager.getTrackingOrderByID(orderID);
