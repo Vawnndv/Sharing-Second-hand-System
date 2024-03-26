@@ -1,9 +1,13 @@
-import { View, Text, Switch } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Switch, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { Lock, Sms } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import authenticationAPI from '../../apis/authApi';
+import { useDispatch } from 'react-redux';
+import { Validate } from '../../utils/Validation';
+import { addAuth } from '../../redux/reducers/authReducers';
 
 const LoginScreen = ({navigation}: any) => {
   const [email, setEmail] = useState('');
@@ -11,13 +15,37 @@ const LoginScreen = ({navigation}: any) => {
   const [isRemember, setIsRemember] = useState(true);
   const [isDisable, setIsDisable] = useState(true);
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const emailValidation = Validate.email(email);
+
+    if (!email || !password || !emailValidation) {
+      setIsDisable(true);
+    } else {
+      setIsDisable(false);
+    }
+  }, [email, password]);
 
   const handleLogin = async () => {
-    try {
-      // await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email)
-    } catch (error) {
+    const emailValidation = Validate.email(email);
 
+    if (emailValidation) {
+      try {
+        const res = await authenticationAPI.HandleAuthentication(
+          '/login',
+          {email, password},
+          'post'
+        );
+
+        dispatch(addAuth(res.data));
+
+        await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : email);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      Alert.alert('email is not correct!!!');
     }
   };
 
@@ -69,7 +97,7 @@ const LoginScreen = ({navigation}: any) => {
       <SectionComponent>
         <ButtonComponent
           disable={isDisable}
-          onPress={() => {}}
+          onPress={handleLogin}
           text="SIGN IN"
           type='primary'
         />

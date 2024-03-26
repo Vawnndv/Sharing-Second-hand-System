@@ -7,8 +7,14 @@ import express from 'express';
 import routerItem from './routes/v1/itemRouter';
 import orderRoute from './routes/orderRoutes/orderRoute';
 import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
+import authRouter from './routes/v1/authRouter';
+import orderRouter from './routes/v1/orderRouter';
+import cors from 'cors';
 
 const app = express();
+
+app.use(cors());
+app.use(express.json());
 
 const hostname = 'localhost';
 const port = 8017;
@@ -30,6 +36,8 @@ app.get('/', (req, res) => {
 app.use(express.json());
 
 app.use(routerItem);
+app.use('/auth', authRouter);
+app.use('/order', orderRouter);
 
 app.use(orderRoute);
 
