@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeNavigator from "./HomeNavigator";
-import StatisticNavigator from "./StatisticNavigator";
+import StatisticNavigator from "./statisticNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import { Platform, TextComponent } from "react-native";
 import { appColors } from "../../constants/appColors";
