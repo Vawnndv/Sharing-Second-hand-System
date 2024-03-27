@@ -3,15 +3,17 @@ import React from 'react';
 import OrderScreen from '../../screens/order/OrderScreen';
 import OrderDetailsScreen from '../../screens/collaborator/OrderDetailsScreen';
 import StatisticScreen from '../../screens/collaborator/StatisticScreen';
+import { ProfileScreen } from '../../screens';
 
-const StatisticNavigator = () => {
+const ProfileNavigator = () => {
   const Stack = createNativeStackNavigator();
 
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="StatisticScreen" component={StatisticScreen} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      
     </Stack.Navigator>
   )
 }
 
-export default StatisticNavigator
+export default ProfileNavigator
