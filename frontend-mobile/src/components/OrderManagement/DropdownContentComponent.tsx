@@ -17,9 +17,10 @@ interface Item {
 interface DropdownContentProps {
     title: string;
     data: Item[]; // Dữ liệu JSON
+    isVisibleConfirm: boolean;
 }
 
-const DropdownContentComponent: React.FC<DropdownContentProps> = ({ title, data }) => {
+const DropdownContentComponent: React.FC<DropdownContentProps> = ({ title, data, isVisibleConfirm }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [heightAnim] = useState(new Animated.Value(0));
   const [height, setHeight] = useState(0);
@@ -71,6 +72,7 @@ const DropdownContentComponent: React.FC<DropdownContentProps> = ({ title, data 
                       createdat={item.createdat}
                       orderid={item.orderid}
                       statuscreatedat={item.statuscreatedat}
+                      isVisibleConfirm={isVisibleConfirm}
                   />
               ))
           ) : (

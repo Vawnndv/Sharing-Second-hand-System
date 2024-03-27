@@ -241,7 +241,9 @@ export class OrderManager {
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
-    } 
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   };
 
   public static async getOrderFinishList (userID: string): Promise<any> {
@@ -293,7 +295,9 @@ export class OrderManager {
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
-    } 
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   };
 
   public static async getTrackingOrderByID (orderID: string): Promise<any> {
@@ -322,7 +326,9 @@ export class OrderManager {
       return result.rows
     } catch (error) {
       console.error('Error get orders:', error);
-    } 
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   };
 
 }
