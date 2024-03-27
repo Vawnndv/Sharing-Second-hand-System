@@ -1,7 +1,7 @@
 import { View, Text, Switch, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
-import { Lock, Sms } from 'iconsax-react-native';
+import { ArrowRight, Lock, Sms } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authenticationAPI from '../../apis/authApi';
@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { Validate } from '../../utils/Validation';
 import { addAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
+import { globalStyles } from '../../styles/globalStyles';
 
 interface ErrorMessages {
   email: string;
@@ -101,11 +102,10 @@ const LoginScreen = ({navigation}: any) => {
       <SectionComponent 
         styles={{
           justifyContent: 'center',
-          alignItems: 'center',
           marginTop: 75,
         }}
       >
-        <TextComponent text="Sign In" title size={24} color={appColors.primary} />
+        <TextComponent text="Sign In" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
         <SpaceComponent height={21} />
         <InputComponent
           value={values.email }
@@ -152,12 +152,29 @@ const LoginScreen = ({navigation}: any) => {
           onPress={handleLogin}
           text="SIGN IN"
           type='primary'
+          iconFlex="right"
+          icon={
+            <View style={[
+              globalStyles.iconContainer,
+              {
+                backgroundColor: isDisable  
+                  ? appColors.gray 
+                  : appColors.primary
+              },
+            ]}>
+              <ArrowRight size={18} color={appColors.white} />
+            </View>
+          }
         />
       </SectionComponent>
       <SectionComponent>
         <RowComponent justify="center">
           <TextComponent text="Don't have an account? " />
-          <ButtonComponent type="link" text="Sign up" onPress={() => navigation.navigate('RegisterSCreen')} />
+          <ButtonComponent 
+            type="link" 
+            text="Sign up" 
+            onPress={() => navigation.navigate('RegisterSCreen')} 
+          />
         </RowComponent>
       </SectionComponent>
       <LoadingModal visible={isLoading} />

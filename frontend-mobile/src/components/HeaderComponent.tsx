@@ -10,16 +10,13 @@ const HeaderComponent = () => {
   const navigation: any = useNavigation();
 
   return (
-    <SectionComponent>
-    <RowComponent justify='space-between'>
-      <Text>Hello</Text>
+    <RowComponent justify='flex-end'>
       <RowComponent>
         <TouchableOpacity onPress={() => navigation.openDrawer()}>
           <HambergerMenu size={24} color={appColors.gray} />
         </TouchableOpacity>
       </RowComponent>
     </RowComponent>
-  </SectionComponent>
   )
 }
 

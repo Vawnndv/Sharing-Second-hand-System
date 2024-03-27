@@ -27,8 +27,6 @@ const RegisterScreen = ({navigation}: any) => {
   const [isDisable, setIsDisable] = useState(true);
 
   useEffect(() => {
-    console.log(values)
-    console.log(errorMessage)
     if (
       errorMessage.username ||
       errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword

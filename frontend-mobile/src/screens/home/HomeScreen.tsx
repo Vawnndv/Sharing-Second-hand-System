@@ -7,8 +7,8 @@ import StatisticScreen from '../collaborator/StatisticScreen'
 
 const HomeScreen = ({navigation} : any) => {
   return (
-    <ContainerComponent isScroll>
-      <HeaderComponent/>
+    <ContainerComponent isScroll title='Home Screen' right back>
+      {/* <HeaderComponent/> */}
       <StatisticScreen/>
     </ContainerComponent>
   )
