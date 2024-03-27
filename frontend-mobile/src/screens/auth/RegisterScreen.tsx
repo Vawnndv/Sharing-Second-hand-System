@@ -27,8 +27,6 @@ const RegisterScreen = ({navigation}: any) => {
   const [isDisable, setIsDisable] = useState(true);
 
   useEffect(() => {
-    console.log(values)
-    console.log(errorMessage)
     if (
       errorMessage.username ||
       errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword
@@ -111,7 +109,7 @@ const RegisterScreen = ({navigation}: any) => {
     <>
       <ContainerComponent isImageBackground isScroll back>
         <SectionComponent>
-          <TextComponent text="Sign Up" title size={24} />
+          <TextComponent text="Sign Up" title size={24} color={appColors.primary} />
           <SpaceComponent height={21} />
           <InputComponent
             value={values.username}
@@ -172,7 +170,7 @@ const RegisterScreen = ({navigation}: any) => {
         </SectionComponent>
         <SectionComponent>
           <RowComponent justify="center">
-            <TextComponent text="Don't have an account?" />
+            <TextComponent text="Don't have an account? " />
             <ButtonComponent 
               type="link" 
               text="Sign In" 

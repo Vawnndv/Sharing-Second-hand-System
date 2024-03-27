@@ -8,7 +8,7 @@ import { fontFamilies } from '../../constants/fontFamilies';
 
 const {width, height} = Dimensions.get("window");
 
-const CardOrderView: React.FC<{ title: string, location: string, givetype: string, statusname: string, image: string, status: string, createdat: string, orderid: string, statuscreatedat: string }> = ({ title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat}) => {
+const CardOrderView: React.FC<{ title: string, location: string, givetype: string, statusname: string, image: string, status: string, createdat: string, orderid: string, statuscreatedat: string, isVisibleConfirm: boolean }> = ({ title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat, isVisibleConfirm}) => {
   // const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -75,6 +75,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
             createdat: createdat,
             orderid: orderid,
             statuscreatedat: statuscreatedat,
+            isVisibleConfirm: isVisibleConfirm
           }} 
         />
       </Modal>

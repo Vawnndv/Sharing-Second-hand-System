@@ -11,11 +11,12 @@ const MainNavigator = () => {
   let isAdmin;
   if (auth.roleID === 1){
     isAdmin = false
-  }else
+  else
     isAdmin = true
   console.log(isAdmin)
 
   const Stack = createNativeStackNavigator();
+
 
   return isAdmin ? (<>
     <Stack.Navigator
@@ -26,6 +27,7 @@ const MainNavigator = () => {
       <Stack.Screen name="Main" component={MainTabNavigator} />
     </Stack.Navigator>
   </>) : (
+    
     <Stack.Navigator
       screenOptions={{
         headerShown: false,

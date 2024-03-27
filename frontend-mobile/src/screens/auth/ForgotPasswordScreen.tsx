@@ -1,5 +1,5 @@
 import { View, Text, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Validate } from '../../utils/Validation';
 import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { ArrowRight, Sms } from 'iconsax-react-native';
@@ -11,10 +11,34 @@ const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');
   const[isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleCheckEmail = () => {
-    const isValidEmail = Validate.email(email);
-    setIsDisable(!isValidEmail);
+  // const handleCheckEmail = () => {
+  //   const isValidEmail = Validate.email(email);
+  //   setIsDisable(!isValidEmail);
+  // };
+
+  useEffect(() => {
+    const emailValidation = Validate.email(email);
+
+    if (!email || !emailValidation || errorMessage) {
+      setIsDisable(true);
+    } else {
+      setIsDisable(false);
+    }
+  }, [email, errorMessage]);
+  
+  const formValidator = () => {
+    let message = '';
+      if (!email) {
+        message = 'Email is required';
+      } else if (!Validate.email(email)) {
+        message = 'Email is not invalid';
+      } else {
+        message = '';
+      }
+  
+    setErrorMessage(message); 
   };
 
   const handleForgotPassword = async () => {
@@ -38,7 +62,7 @@ const ForgotPasswordScreen = () => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Reset Password" title />
+        <TextComponent text="Reset Password" title  size={24} color={appColors.primary} />
         <SpaceComponent height={12} />
         <TextComponent text="Please enter your email address to request a password reset" />
         <SpaceComponent height={16} />
@@ -47,8 +71,12 @@ const ForgotPasswordScreen = () => {
           onChange={val => setEmail(val)}
           affix={<Sms size={20} color={appColors.gray}/> }
           placeholder="abc@gmail.com"
-          onEnd={handleCheckEmail}
+          allowClear
+          // onEnd={handleCheckEmail}
+          onEnd={formValidator}
+          error={errorMessage ? true : false}
         />
+        {errorMessage && <TextComponent text={errorMessage}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       </SectionComponent>
       <SectionComponent>
         <ButtonComponent

@@ -145,6 +145,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     data: {
       id: existingUser.userid,
       email: existingUser.email,
+      username: existingUser.username,
       accessToken: await getJsonWebToken(email, existingUser.userid),
       roleID: existingUser.roleid,
     },

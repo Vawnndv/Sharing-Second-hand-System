@@ -7,6 +7,7 @@ import TextComponent from './TextComponent';
 import { fontFamilies } from '../constants/fontFamilies';
 import RowComponent from './RowComponent';
 import {globalStyles} from '../styles/globalStyles';
+import HeaderComponent from './HeaderComponent';
 
 interface Props {
   isImageBackground?: boolean;
@@ -14,10 +15,11 @@ interface Props {
   title?: string;
   children: ReactNode;
   back?: boolean; 
+  right?: boolean;
 };
 
 const ContainerComponent = (props: Props) => {
-  const {children, isScroll, isImageBackground, title, back} = props;
+  const {children, isScroll, isImageBackground, title, back, right} = props;
 
   const navigation: any = useNavigation();
 
@@ -26,7 +28,7 @@ const ContainerComponent = (props: Props) => {
       <View 
         style={{
           flex:1,
-          paddingTop: 30,
+          // paddingTop: 30,
         }}
       >
         {(title || back) && (
@@ -36,7 +38,7 @@ const ContainerComponent = (props: Props) => {
               paddingVertical: 10,
               minWidth: 48,
               minHeight: 48,
-              justifyContent: 'flex-start'
+              justifyContent: 'flex-start',
             }}
           >
             {back && (
@@ -57,7 +59,12 @@ const ContainerComponent = (props: Props) => {
                   flex={1} 
                 />
             ) : (
-              <></>
+              <RowComponent styles={{flex: 1}}>
+
+              </RowComponent>
+            )}
+            {right && (
+              <HeaderComponent />
             )}
           </RowComponent>
         )}

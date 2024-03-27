@@ -18,6 +18,7 @@ interface Data {
   createdat: string;
   orderid: string;
   statuscreatedat: string;
+  isVisibleConfirm: boolean;
 }
 export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModalVisible: (isVisible: boolean) => void, data: Data }) {
   return (
@@ -51,9 +52,13 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
           </View>
         </View>
 
-        <Button mode="contained" onPress={() => console.log('Xác nhận')} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-          Xác nhận
-        </Button>
+        {
+          data.isVisibleConfirm ? (
+            <Button mode="contained" onPress={() => console.log('Xác nhận')} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+              Xác nhận
+            </Button>
+          ) : (<View style={{ marginVertical: 10 }}></View>)
+        }
 
         <View style={styles.process}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 3 }}>

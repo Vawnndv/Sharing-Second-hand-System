@@ -7,12 +7,13 @@ import RowComponent from './RowComponent';
 import { globalStyles } from '../styles/globalStyles';
 import { CardTick, Home, Information, ShoppingCart, Timer, User } from 'iconsax-react-native';
 import { AntDesign, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../redux/reducers/authReducers';
+import SpaceComponent from './SpaceComponent';
 
 const DrawerCustom = ({navigation}: any) => {
-  const user =  {
-    name: 'Nguyen Dinh Van',
-    imageUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  };
+  const user = useSelector(authSelector);
+
   const size = 24
   const color = appColors.gray;
   const profileMenu = [
@@ -76,7 +77,7 @@ const DrawerCustom = ({navigation}: any) => {
   return (
     <View style={[localStyles.container]}>
       <RowComponent 
-        justify="space-between"
+        justify='flex-start'
         onPress={() => {
           navigation.closeDrawer('');
           navigation.navigate('Profile', {
@@ -91,7 +92,7 @@ const DrawerCustom = ({navigation}: any) => {
           <View style={[
             localStyles.avatar,
             {
-              backgroundColor :appColors.gray2
+              backgroundColor :appColors.primary
             }
           ]}>
             <TextComponent
@@ -99,14 +100,15 @@ const DrawerCustom = ({navigation}: any) => {
               size={22}
               color={appColors.white}
               text={
-                user.name
-                  ? user.name.split(' ')[user.name.split(' ').length - 1].substring(0,1)
+                user.username
+                  ? user.username.split(' ')[user.username.split(' ').length - 1].substring(0,1).toUpperCase()
                   : ''
               }
             />
           </View>
         )}
-        <TextComponent text={user.name} title size={20} />
+        <SpaceComponent width={20} />
+        <TextComponent text={user.username} title size={20} />
       </RowComponent>
       <FlatList
         showsVerticalScrollIndicator={false}

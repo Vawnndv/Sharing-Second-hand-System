@@ -11,9 +11,7 @@ const ProfileScreen = () => {
   const dispatch = useDispatch();
 
   return (
-    <ContainerComponent isScroll>
-      <HeaderComponent />
-
+    <ContainerComponent isScroll title='Profile Screen' right>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text>ProfileScreen</Text>
         <SpaceComponent height={12} />
