@@ -1,14 +1,29 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import React from 'react'
-import { Text } from 'react-native'
-import { ContainerComponent, HeaderComponent, SectionComponent } from '../../components'
+import { Button, Text, View } from 'react-native'
+import { useDispatch } from 'react-redux'
+import { ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent } from '../../components'
+import { removeAuth } from '../../redux/reducers/authReducers'
+import { globalStyles } from '../../styles/globalStyles'
+import { appColors } from '../../constants/appColors'
 
 const ProfileScreen = () => {
+  const dispatch = useDispatch();
+
   return (
-    <ContainerComponent isScroll>
-      <HeaderComponent />
-      <SectionComponent>
+    <ContainerComponent isScroll title='Profile Screen' right>
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text>ProfileScreen</Text>
-      </SectionComponent>
+        <SpaceComponent height={12} />
+        <Button
+          title="Logout"
+          color={appColors.primary}
+          onPress={async () => {
+            await AsyncStorage.clear();
+            dispatch(removeAuth({}));
+          }}
+        />
+      </View>
     </ContainerComponent>
   )
 }

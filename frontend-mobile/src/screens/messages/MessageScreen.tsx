@@ -4,8 +4,7 @@ import { ContainerComponent, HeaderComponent, SectionComponent } from '../../com
 
 const MessageScreen = () => {
   return (
-    <ContainerComponent isImageBackground isScroll>
-      <HeaderComponent />
+    <ContainerComponent isScroll title='Message Screen' right>
       <SectionComponent>
         <Text>MessageScreen</Text>
       </SectionComponent>
