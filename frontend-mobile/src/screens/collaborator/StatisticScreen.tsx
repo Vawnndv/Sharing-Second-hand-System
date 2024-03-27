@@ -1,4 +1,4 @@
-import { View, Text, Dimensions, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Dimensions, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 import {
     LineChart,
     BarChart,
@@ -8,15 +8,19 @@ import {
     StackedBarChart
   } from "react-native-chart-kit";
 import OrderComponent from "../../components/OrderCollaborator/OrderComponent";
-import { ScrollView } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import axios from "axios";
 import { appInfo } from "../../constants/appInfos";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducers";
+import { ContainerComponent } from "../../components";
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function StatisticScreen({navigation}: any) {
+
+    const auth = useSelector(authSelector)
 
     const [orderData, setOrderData] = useState([0,0])
     const [orders, setOrders] = useState([])
@@ -56,7 +60,7 @@ export default function StatisticScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPIOrders = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrdersOnWeekCollab?userID=31`)
+                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrdersOnWeekCollab?userID=${auth.id}`)
                 console.log(response.data.ordersOnWeek)
                 setOrders(response.data.ordersOnWeek)
             }catch(error){
@@ -66,7 +70,7 @@ export default function StatisticScreen({navigation}: any) {
 
         const fetchAPIData = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=31`)
+                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=${auth.id}`)
                 // console.log(response.data.orders)
                 setOrderData(response.data.statisticOrder)
             }catch(error){
@@ -78,43 +82,46 @@ export default function StatisticScreen({navigation}: any) {
         fetchAPIOrders()
     }, [])
     return(
-        <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
-            <View style={styles.container}>
-                <View style={{backgroundColor: 'white'}}>
-                    <LineChartExample/>
-                </View>
-                {/* // seperate */}
-                <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
-
-                <View style={styles.content}>
-                    <View>
-                        <Text style={{fontWeight: 'bold', fontSize: 20}}>Các đơn hàng trong tuần này</Text>
+        <ContainerComponent back>
+            <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
+                <View style={styles.container}>
+                    <View style={{backgroundColor: 'white'}}>
+                        <LineChartExample/>
                     </View>
+                    {/* // seperate */}
+                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
-                    {
-                        orders &&
-                        orders.map((order: any, index) => {
-                            return (
-                                <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                    orderID: order.orderID
-                                  })} key={index}>
-                                    <OrderComponent
-                                        avatar={order.receiver.avatar}
-                                        name={`${order.receiver.firstName} ${order.receiver.lastName}`}
-                                        timeStart={moment(order.time).format("DD-MM-YYYY")}
-                                        departure={order.location}
-                                        destination={order.receiver.address}
-                                        quantity={order.item.quantity}
-                                        itemName={order.item.name}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })
-                    }
+                    <View style={styles.content}>
+                        <View>
+                            <Text style={{fontWeight: 'bold', fontSize: 20}}>Các đơn hàng trong tuần này</Text>
+                        </View>
+
+                        {
+                            orders &&
+                            orders.map((order: any, index) => {
+                                return (
+                                    <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
+                                        orderID: order.orderID
+                                    })} key={index}>
+                                        <OrderComponent
+                                            avatar={order.receiver.avatar}
+                                            name={`${order.receiver.firstName} ${order.receiver.lastName}`}
+                                            timeStart={moment(order.time).format("DD-MM-YYYY")}
+                                            departure={order.location}
+                                            destination={order.receiver.address}
+                                            quantity={order.item.quantity}
+                                            itemName={order.item.name}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
+                    </View>
                 </View>
-            </View>
-            
-        </ScrollView>
+                
+            </ScrollView>
+        </ContainerComponent>
+        
     )
 }
 

@@ -24,7 +24,7 @@ const AppRouters = () => {
 
   return (
     <>
-      {auth.accessToken ? <MainNavigator roleID={auth.roleID} /> : <AuthNavigator />}
+      {auth.accessToken ? <MainNavigator/> : <AuthNavigator />}
     </>
   )
 }
