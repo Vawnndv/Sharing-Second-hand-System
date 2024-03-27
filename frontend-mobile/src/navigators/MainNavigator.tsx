@@ -11,8 +11,10 @@ const MainNavigator = () => {
   let isAdmin;
   if (auth.roleID === 1){
     isAdmin = false
-  else
+  }else{
     isAdmin = true
+  }
+    
   console.log(isAdmin)
 
   const Stack = createNativeStackNavigator();
