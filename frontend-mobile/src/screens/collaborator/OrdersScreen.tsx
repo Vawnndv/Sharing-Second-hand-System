@@ -29,7 +29,7 @@ export default function OrdersScreen({navigation}: any) {
             try{
                 console.log('fetchAPI')
                 console.log(orders)
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${37}&type=${tab}`)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}`)
                 console.log(response.data.orders)
                 setOrders(response.data.orders)
             }catch(error){
@@ -38,7 +38,7 @@ export default function OrdersScreen({navigation}: any) {
         }
 
         fetchAPI()
-    },[])
+    },[tab])
     return(
         <ContainerComponent>
             <View style={styles.container}>
