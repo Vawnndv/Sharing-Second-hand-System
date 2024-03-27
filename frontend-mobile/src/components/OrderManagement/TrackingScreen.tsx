@@ -10,7 +10,7 @@ export default function TrackingScreen() {
   const [orderGive, setOrderGive] = useState([]);
   const [orderReceive, setOrderReceive] = useState([]);
 
-  useEffect(() => {
+  useEffect(function(){
     getOrderList()
   }, []);
 
@@ -34,8 +34,8 @@ export default function TrackingScreen() {
     <View style={styles.container}>
       <FilterOrder/>
       <View style={styles.content}>
-        <DropdownContentComponent title="Đồ cho" data={orderGive}/>
-        <DropdownContentComponent title="Đồ nhận" data={orderReceive}/>
+        <DropdownContentComponent title="Đồ cho" data={orderGive} isVisibleConfirm={false}/>
+        <DropdownContentComponent title="Đồ nhận" data={orderReceive} isVisibleConfirm={true}/>
       </View>
     </View>
   );

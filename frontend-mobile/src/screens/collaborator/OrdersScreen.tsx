@@ -1,16 +1,20 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView} from "react-native";
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
-import { ScrollView } from "react-native-gesture-handler";
 import OrderComponent from "../../components/OrderCollaborator/OrderComponent";
 import { useState } from "react";
 import FilterModal from "../../modals/FilterModal";
 import axios from "axios";
 import { appInfo } from "../../constants/appInfos";
 import moment from "moment";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducers";
+import { ContainerComponent, HeaderComponent } from "../../components";
 
 export default function OrdersScreen({navigation}: any) {
+
+    const auth = useSelector(authSelector)
     
     const [visible, setVisible] = useState(false);
 
@@ -23,8 +27,10 @@ export default function OrdersScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPI = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=31&type=${tab}`)
-                // console.log(response.data.orders)
+                console.log('fetchAPI')
+                console.log(orders)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${37}&type=${tab}`)
+                console.log(response.data.orders)
                 setOrders(response.data.orders)
             }catch(error){
                 console.log(error)
@@ -34,88 +40,78 @@ export default function OrdersScreen({navigation}: any) {
         fetchAPI()
     },[])
     return(
-        // <View>
-        //     <Text>
-        //         Home Screen
-        //     </Text>
-
-        //     <TouchableOpacity onPress={() => navigation.navigate('MapScreen')}>
-        //         <Text>link to map</Text>
-        //     </TouchableOpacity>
-
-        //     <TouchableOpacity onPress={() => navigation.navigate('ViewOrders')}>
-        //         <Text>link to orders</Text>
-        //     </TouchableOpacity>
-        // </View>
-        <View style={styles.container}>
+        <ContainerComponent>
             <View style={styles.container}>
+                <View style={styles.container}>
 
-                <View style={styles.wrapper}>
-                    <View style={styles.header}>
-                        <TouchableOpacity
-                            onPress={()=>{setTab('Pending')}}>
-                            <Text style={[styles.defaultText, tab === 'Pending' ? styles.tabSelected : styles.defaultTab]}>
-                                Chờ lấy
-                            </Text>
-                        </TouchableOpacity>
-                        
-                        <TouchableOpacity
-                            onPress={()=>{setTab('Completed')}}>
-                            <Text style={[styles.defaultText, tab === 'Completed' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
-                                Đã lấy
-                            </Text>
-                        </TouchableOpacity>
+                    <View style={styles.wrapper}>
+                        <View style={styles.header}>
+                            <TouchableOpacity
+                                onPress={()=>{setTab('Pending')}}>
+                                <Text style={[styles.defaultText, tab === 'Pending' ? styles.tabSelected : styles.defaultTab]}>
+                                    Chờ lấy
+                                </Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity
+                                onPress={()=>{setTab('Completed')}}>
+                                <Text style={[styles.defaultText, tab === 'Completed' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
+                                    Đã lấy
+                                </Text>
+                            </TouchableOpacity>
 
+                        </View>
+
+                        <ScrollView style={[, {marginTop: 20}]}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}>
+                            <TouchableOpacity style={styles.itemFilter}
+                                onPress={showModal}>
+                                <IconFeather name="filter" size={20}/>
+                            </TouchableOpacity>
+                        </ScrollView>
                     </View>
 
-                    <ScrollView style={[, {marginTop: 20}]}
-                        horizontal
-                        showsHorizontalScrollIndicator={false}>
-                        <TouchableOpacity style={styles.itemFilter}
-                            onPress={showModal}>
-                            <IconFeather name="filter" size={20}/>
-                        </TouchableOpacity>
+                    {/* // seperate */}
+                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+
+                    <View style={styles.wrapper}>
+                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày 20/11/2024</Text>
+                    </View>
+                    {/* // seperate */}
+                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+
+                    <ScrollView style={{width: '90%', marginTop: 10}}
+                        horizontal={false}>
+                        {
+                            orders.map((order: any, index) => {
+                                return (
+                                    <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
+                                        orderID: order.orderID
+                                    })} key={index}>
+                                        <OrderComponent
+                                            avatar={order.receiver.avatar}
+                                            name={`${order.receiver.firstName} ${order.receiver.lastName}`}
+                                            timeStart={moment(order.time).format("DD-MM-YYYY")}
+                                            departure={order.location}
+                                            destination={order.receiver.address}
+                                            quantity={order.item.quantity}
+                                            itemName={order.item.name}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
                     </ScrollView>
+
+
+
                 </View>
 
-                {/* // seperate */}
-                <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
-
-                <View style={styles.wrapper}>
-                    <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày 20/11/2024</Text>
-                </View>
-                {/* // seperate */}
-                <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
-
-                <ScrollView style={{width: '90%', marginTop: 10}}
-                    horizontal={false}>
-                    {
-                        orders.map((order: any, index) => {
-                            return (
-                                <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                    orderID: order.orderID
-                                  })} key={index}>
-                                    <OrderComponent
-                                        avatar={order.receiver.avatar}
-                                        name={`${order.receiver.firstName} ${order.receiver.lastName}`}
-                                        timeStart={moment(order.time).format("DD-MM-YYYY")}
-                                        departure={order.location}
-                                        destination={order.receiver.address}
-                                        quantity={order.item.quantity}
-                                        itemName={order.item.name}
-                                    />
-                                </TouchableOpacity>
-                            )
-                        })
-                    }
-                </ScrollView>
-
-
-
+                <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
             </View>
-
-            <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
-        </View>
+        </ContainerComponent>
+        
         
     )
 }

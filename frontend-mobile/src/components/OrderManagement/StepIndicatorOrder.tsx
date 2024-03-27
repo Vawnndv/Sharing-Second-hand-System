@@ -81,7 +81,7 @@ export default function StepIndicatorOrder ({orderID}: any) {
   const [data, setData] = useState<any>([]);
   const [labels, setLabels] = useState<any>([]);
 
-  useEffect(() => {
+  useEffect(function() {
     getTrackingList()
   }, []);
 
