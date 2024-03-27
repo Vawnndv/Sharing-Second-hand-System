@@ -6,6 +6,7 @@ import { ArrowRight, Sms } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
 import authenticationAPI from '../../apis/authApi';
+import { globalStyles } from '../../styles/globalStyles';
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');
@@ -84,8 +85,19 @@ const ForgotPasswordScreen = () => {
           disable={isDisable}
           text="Send"
           type="primary"
-          icon={<ArrowRight size={20} color={appColors.white} />}
           iconFlex="right"
+          icon={
+          <View style={[
+            globalStyles.iconContainer,
+            {
+              backgroundColor: isDisable  
+                ? appColors.gray 
+                : appColors.primary2
+            },
+          ]}>
+            <ArrowRight size={18} color={appColors.white} />
+            </View>
+          }
         />
       </SectionComponent>
       <LoadingModal visible={isLoading} />

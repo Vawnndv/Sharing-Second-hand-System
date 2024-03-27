@@ -89,7 +89,7 @@ const ContainerComponent = (props: Props) => {
   return isImageBackground ? (
     <ImageBackground
       source={require('../../assets/images/splash-img.png')}
-      style={{flex: 1}}
+      style={{flex: 1, paddingTop: 30}}
       imageStyle={{flex: 1}}
     >
       <SafeAreaView style={{flex: 1}}>

@@ -1,21 +1,32 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { HambergerMenu, Location } from 'iconsax-react-native'
 import React from 'react'
-import SectionComponent from './SectionComponent'
-import RowComponent from './RowComponent'
-import { HambergerMenu } from 'iconsax-react-native'
+import { TouchableOpacity } from 'react-native'
 import { appColors } from '../constants/appColors'
-import { useNavigation } from '@react-navigation/native';
+import RowComponent from './RowComponent'
+import SpaceComponent from './SpaceComponent'
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
 const HeaderComponent = () => {
   const navigation: any = useNavigation();
 
   return (
     <RowComponent justify='flex-end'>
-      <RowComponent>
-        <TouchableOpacity onPress={() => navigation.openDrawer()}>
-          <HambergerMenu size={24} color={appColors.gray} />
-        </TouchableOpacity>
-      </RowComponent>
+      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <Ionicons name="notifications-outline" size={26} color={'black'} />
+      </TouchableOpacity>
+      <SpaceComponent width={10} />
+      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <Ionicons name="search-outline" size={26} color={'black'} />
+      </TouchableOpacity>
+      <SpaceComponent width={10} />
+      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <Ionicons name="location-outline" size={26} color={'black'} />
+      </TouchableOpacity>
+      <SpaceComponent width={10} />
+      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+        <Ionicons name="menu-outline" size={30} color={'black'} />
+      </TouchableOpacity>
     </RowComponent>
   )
 }

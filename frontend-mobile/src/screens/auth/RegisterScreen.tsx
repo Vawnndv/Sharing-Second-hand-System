@@ -1,11 +1,12 @@
 import { View, Text, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
-import { Lock, Sms, User } from 'iconsax-react-native';
+import { ArrowRight, Lock, Sms, User } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
 import authenticationAPI from '../../apis/authApi';
 import { Validate } from '../../utils/Validation';
+import { globalStyles } from '../../styles/globalStyles';
 
 interface ErrorMessages {
   username: string,
@@ -133,7 +134,7 @@ const RegisterScreen = ({navigation}: any) => {
           {errorMessage['email'] && <TextComponent text={errorMessage['email']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
           <InputComponent
             value={values.password}
-            placeholder="******"
+            placeholder="Password"
             onChange={val => handleChangeValue('password', val)}
             allowClear
             isPassword
@@ -144,7 +145,7 @@ const RegisterScreen = ({navigation}: any) => {
           {errorMessage['password'] && <TextComponent text={errorMessage['password']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
           <InputComponent
             value={values.confirmPassword}
-            placeholder="******"
+            placeholder="Confirm password"
             onChange={val => handleChangeValue('confirmPassword', val)}
             allowClear
             isPassword
@@ -166,6 +167,18 @@ const RegisterScreen = ({navigation}: any) => {
             text="SIGN UP"
             type="primary"
             disable={isDisable}
+            icon={
+              <View style={[
+                globalStyles.iconContainer,
+                {
+                  backgroundColor: isDisable  
+                    ? appColors.gray 
+                    : appColors.primary2
+                },
+              ]}>
+                <ArrowRight size={18} color={appColors.white} />
+              </View>
+            }
           />
         </SectionComponent>
         <SectionComponent>

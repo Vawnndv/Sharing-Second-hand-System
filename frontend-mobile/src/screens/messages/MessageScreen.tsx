@@ -4,7 +4,7 @@ import { ContainerComponent, HeaderComponent, SectionComponent } from '../../com
 
 const MessageScreen = () => {
   return (
-    <ContainerComponent isScroll title='Message Screen Screen' right>
+    <ContainerComponent isScroll title='Message Screen' right>
       <SectionComponent>
         <Text>MessageScreen</Text>
       </SectionComponent>

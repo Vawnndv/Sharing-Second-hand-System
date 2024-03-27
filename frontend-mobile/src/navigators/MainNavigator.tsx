@@ -5,14 +5,16 @@ import DrawerNavigator from './DrawerNavigator';
 const MainNavigator = ({roleID} : any) => {
 
   let isAdmin;
-  if (roleID === 2){
+  if (roleID === 1){
     isAdmin = false
   }else
     isAdmin = true
 
   const Stack = createNativeStackNavigator();
 
-  return (
+  return isAdmin ? (<>
+  
+  </>) : (
     <Stack.Navigator
       screenOptions={{
         headerShown: false,

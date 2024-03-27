@@ -76,6 +76,7 @@ const DrawerCustom = ({navigation}: any) => {
 
   return (
     <View style={[localStyles.container]}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <RowComponent 
         justify='flex-start'
         onPress={() => {

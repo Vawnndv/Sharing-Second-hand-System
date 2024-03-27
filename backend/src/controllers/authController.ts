@@ -70,7 +70,7 @@ export const verification = asyncHandle(async (req, res) => {
   
   try {
     const data = {
-      from: `"Support EvenHub Application" <${process.env.USERNAME_EMAIL}>`, 
+      from: `"Retreasure Application" <${process.env.USERNAME_EMAIL}>`, 
       to: email,
       subject: 'Verification email code', 
       text: 'Your code to verification email',
@@ -130,14 +130,14 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 
   if (!existingUser) {
     res.status(403);
-    throw new Error('User not found');
+    throw new Error('Email is invalid!!!');
   }
 
   const isMatchPassword = await bcrypt.compare(password, existingUser.password);
 
   if (!isMatchPassword) {
     res.status(401);
-    throw new Error('Email or Password is not correct!!!');
+    throw new Error('Password is invalid!!!');
   }
 
   res.status(200).json({
