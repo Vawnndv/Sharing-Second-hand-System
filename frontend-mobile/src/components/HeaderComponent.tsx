@@ -16,7 +16,7 @@ const HeaderComponent = () => {
         <Ionicons name="notifications-outline" size={26} color={'black'} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
-      <TouchableOpacity onPress={() => navigation.openDrawer()}>
+      <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')}>
         <Ionicons name="search-outline" size={26} color={'black'} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
