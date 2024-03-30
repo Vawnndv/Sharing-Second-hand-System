@@ -5,15 +5,11 @@ import { ArrowRight, Lock, Sms, User } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
 import authenticationAPI from '../../apis/authApi';
-import { Validate } from '../../utils/Validation';
+import {  Validator } from '../../utils/Validation';
 import { globalStyles } from '../../styles/globalStyles';
+import { ErrorMessages } from '../../models/ErrorMessages';
 
-interface ErrorMessages {
-  username: string,
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+
 
 const initValue = {
   username: '',
@@ -21,17 +17,18 @@ const initValue = {
   password: '',
   confirmPassword: '',
 };
+
 const RegisterScreen = ({navigation}: any) => {
   const [values, setValues] = useState(initValue);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorRegister, setErrorRegister] = useState('');
   const [isDisable, setIsDisable] = useState(true);
 
   useEffect(() => {
     if (
       errorMessage.username ||
-      errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword
-        
+      errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword 
     ) {
       setIsDisable(true);
     } else {
@@ -47,44 +44,8 @@ const RegisterScreen = ({navigation}: any) => {
     setValues(data);
   };
 
-  const formValidator = (key: string) => {
-    let updatedErrorMessage = {...errorMessage}; // Tạo một bản sao mới của errorMessage
-    
-    switch (key) {
-      case 'username':
-        if (!values.username) {
-          updatedErrorMessage.username = 'Username is required!!!';
-        } else {
-          updatedErrorMessage.username = '';
-        }
-        break;
-  
-      case 'email':
-        if (!values.email) {
-          updatedErrorMessage.email = 'Email is required';
-        } else if (!Validate.email(values.email)) {
-          updatedErrorMessage.email = 'Email is not invalid';
-        } else {
-          updatedErrorMessage.email = '';
-        }
-        break;
-  
-      case 'password':
-        updatedErrorMessage.password = !values.password ? 'Password is required!!!' : '';
-        break;
-  
-      case 'confirmPassword':
-        if (!values.confirmPassword) {
-          updatedErrorMessage.confirmPassword = 'Please type confirm password';
-        } else if (values.confirmPassword !== values.password) {
-          updatedErrorMessage.confirmPassword = 'Password is not match';
-        } else {
-          updatedErrorMessage.confirmPassword = '';
-        }
-        break;
-    }
-  
-    setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
+  const formValidator = (key: keyof ErrorMessages) => {
+    setErrorMessage(Validator.Validation(key, errorMessage, values));
   };
   
   const handleRegister = async () => {
@@ -101,7 +62,7 @@ const RegisterScreen = ({navigation}: any) => {
     } catch (error) {
       console.log(error);
       setIsLoading(false);
-      Alert.alert('email is exist! in system!!!');
+      Alert.alert('email is exist in system!!!');
       setIsDisable(false);
     }
   };
@@ -119,9 +80,8 @@ const RegisterScreen = ({navigation}: any) => {
             allowClear
             affix={<User size={22} color={appColors.gray} />}
             onEnd={() => formValidator('username')}
-            error={errorMessage['username'] ? true : false}
+            error={errorMessage['username']}
           />
-          {errorMessage['username'] && <TextComponent text={errorMessage['username']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
           <InputComponent
             value={values.email}
             placeholder="abc@gmail.com"
@@ -129,9 +89,9 @@ const RegisterScreen = ({navigation}: any) => {
             allowClear
             affix={<Sms size={22} color={appColors.gray} />}
             onEnd={() => formValidator('email')}
-            error={errorMessage['email'] ? true : false}
+            error={errorMessage['email']}
           />
-          {errorMessage['email'] && <TextComponent text={errorMessage['email']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+          
           <InputComponent
             value={values.password}
             placeholder="Password"
@@ -140,9 +100,8 @@ const RegisterScreen = ({navigation}: any) => {
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
             onEnd={() => formValidator('password')}
-            error={errorMessage['password'] ? true : false}
+            error={errorMessage['password']}
           />
-          {errorMessage['password'] && <TextComponent text={errorMessage['password']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
           <InputComponent
             value={values.confirmPassword}
             placeholder="Confirm password"
@@ -151,9 +110,8 @@ const RegisterScreen = ({navigation}: any) => {
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
             onEnd={() => formValidator('confirmPassword')}
-            error={errorMessage['confirmPassword'] ? true : false}
+            error={errorMessage['confirmPassword']}
           />
-          {errorMessage['confirmPassword'] && <TextComponent text={errorMessage['confirmPassword']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </SectionComponent>
         {/* {ErrorMessage && (
           <SectionComponent>

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Text, View } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent } from '../../components'
@@ -10,8 +10,14 @@ import { appColors } from '../../constants/appColors'
 const ProfileScreen = () => {
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getProfile = () => {
+    setIsLoading(true);
+  }
+
   return (
-    <ContainerComponent isScroll title='Profile Screen' right>
+    <ContainerComponent isScroll title='Profile' back right>
       <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
         <Text>ProfileScreen</Text>
         <SpaceComponent height={12} />

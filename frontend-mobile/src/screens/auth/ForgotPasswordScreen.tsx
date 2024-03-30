@@ -1,51 +1,51 @@
 import { View, Text, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Validate } from '../../utils/Validation';
 import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { ArrowRight, Sms } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
 import authenticationAPI from '../../apis/authApi';
 import { globalStyles } from '../../styles/globalStyles';
+import { Validator } from '../../utils/Validation';
+import { ErrorMessages } from '../../models/ErrorMessages';
+
+const initValue = {
+  email: '',
+};
 
 const ForgotPasswordScreen = () => {
-  const [email, setEmail] = useState('');
+  const [values, setValues] = useState(initValue);
   const[isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
 
-  // const handleCheckEmail = () => {
-  //   const isValidEmail = Validate.email(email);
-  //   setIsDisable(!isValidEmail);
-  // };
+  const handleChangeValue = (key: string, value: string) => {
+    const data: any = {...values};
+
+    data[`${key}`] = value;
+    
+    setValues(data);
+  };
 
   useEffect(() => {
-    const emailValidation = Validate.email(email);
+    const emailValidation = Validator.email(values.email);
 
-    if (!email || !emailValidation || errorMessage) {
+    if (!values.email || !emailValidation || errorMessage.email) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
     }
-  }, [email, errorMessage]);
+  }, [values, errorMessage]);
   
-  const formValidator = () => {
-    let message = '';
-      if (!email) {
-        message = 'Email is required';
-      } else if (!Validate.email(email)) {
-        message = 'Email is not invalid';
-      } else {
-        message = '';
-      }
-  
-    setErrorMessage(message); 
+  const formValidator = (key: keyof ErrorMessages) => { 
+    setErrorMessage(Validator.Validation(key, errorMessage, values));
+
   };
 
   const handleForgotPassword = async () => {
     setIsLoading(true);
     try {
-      const res: any = await authenticationAPI.HandleAuthentication('/forgotPassword', {email}, 'post');
+      const res: any = await authenticationAPI.HandleAuthentication('/forgotPassword', {email: values.email}, 'post');
 
       console.log(res);
       Alert.alert('Send mail', 'We sended a email includes new password!!!');
@@ -68,16 +68,15 @@ const ForgotPasswordScreen = () => {
         <TextComponent text="Please enter your email address to request a password reset" />
         <SpaceComponent height={16} />
         <InputComponent
-          value={email}
-          onChange={val => setEmail(val)}
+          value={values.email}
+          onChange={val => handleChangeValue('email', val)}
           affix={<Sms size={20} color={appColors.gray}/> }
           placeholder="abc@gmail.com"
           allowClear
-          // onEnd={handleCheckEmail}
-          onEnd={formValidator}
-          error={errorMessage ? true : false}
+          onEnd={() => formValidator('email')}
+          error={errorMessage['email']}
+
         />
-        {errorMessage && <TextComponent text={errorMessage}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       </SectionComponent>
       <SectionComponent>
         <ButtonComponent

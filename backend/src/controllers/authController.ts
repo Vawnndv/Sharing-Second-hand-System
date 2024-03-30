@@ -1,12 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
-// eslint-disable-next-line import/no-extraneous-dependencies
 import asyncHandle from 'express-async-handler';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import nodemailer from 'nodemailer';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcrypt';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
@@ -62,7 +58,10 @@ export const verification = asyncHandle(async (req, res) => {
   const existingUser = await Account.findUserByEmail(email);
 
   if (existingUser) {
-    res.status(401);
+    res.status(401).json({
+      message: 'User has already exist!!!',
+      data: null,
+    });
     throw new Error('User has already exist!!!');
   }
   

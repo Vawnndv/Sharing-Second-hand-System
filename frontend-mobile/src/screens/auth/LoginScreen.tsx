@@ -6,15 +6,11 @@ import { appColors } from '../../constants/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authenticationAPI from '../../apis/authApi';
 import { useDispatch } from 'react-redux';
-import { Validate } from '../../utils/Validation';
+import { Validator } from '../../utils/Validation';
 import { addAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 import { globalStyles } from '../../styles/globalStyles';
-
-interface ErrorMessages {
-  email: string;
-  password: string;
-}
+import { ErrorMessages } from '../../models/ErrorMessages';
 
 const initValue = {
   email: '',
@@ -31,7 +27,7 @@ const LoginScreen = ({navigation}: any) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const emailValidation = Validate.email(values.email);
+    const emailValidation = Validator.email(values.email);
 
     if (!values.email || !values.password || !emailValidation || errorMessage.email || errorMessage.password) {
       setIsDisable(true);
@@ -48,31 +44,14 @@ const LoginScreen = ({navigation}: any) => {
     setValues(data);
   };
 
-  const formValidator = (key: string) => {
-    let updatedErrorMessage = {...errorMessage}; // Tạo một bản sao mới của errorMessage
-    
-    switch (key) {
-      case 'email':
-        if (!values.email) {
-          updatedErrorMessage.email = 'Email is required';
-        } else if (!Validate.email(values.email)) {
-          updatedErrorMessage.email = 'Email is not invalid';
-        } else {
-          updatedErrorMessage.email = '';
-        }
-        break;
-  
-      case 'password':
-        updatedErrorMessage.password = !values.password ? 'Password is required!!!' : '';
-        break;
-    }
-  
+  const formValidator = (key: keyof ErrorMessages) => {
+    let updatedErrorMessage = Validator.Validation(key, errorMessage, values);
     setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
   };
 
   const handleLogin = async () => {
     setIsLoading(true);
-    const emailValidation = Validate.email(values.email );
+    const emailValidation = Validator.email(values.email );
 
     if (emailValidation) {
       try {
@@ -114,9 +93,8 @@ const LoginScreen = ({navigation}: any) => {
           allowClear
           affix={<Sms size={22} color={appColors.gray} />}
           onEnd={() => formValidator('email')}
-          error={errorMessage['email'] ? true : false}
+          error={errorMessage['email']}
         />
-        {errorMessage['email'] && <TextComponent text={errorMessage['email']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         <InputComponent
           value={values.password}
           placeholder="Password"
@@ -125,7 +103,7 @@ const LoginScreen = ({navigation}: any) => {
           allowClear
           affix={<Lock size={22} color={appColors.gray} />}
           onEnd={() => formValidator('password')}
-          error={errorMessage['password'] ? true : false}
+          error={errorMessage['password']}
         />
         <RowComponent justify="space-between" styles={{width: '100%', }}>
           <RowComponent onPress={() => setIsRemember(!isRemember)}>
