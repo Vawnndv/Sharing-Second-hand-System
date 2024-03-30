@@ -18,6 +18,7 @@ const ForgotPasswordScreen = () => {
   const[isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorForgotPassword, setErrorForgotPassword] = useState('');
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = {...values};
@@ -50,9 +51,17 @@ const ForgotPasswordScreen = () => {
       console.log(res);
       Alert.alert('Send mail', 'We sended a email includes new password!!!');
       setIsLoading(false);
-    } catch (error) {
+      setIsDisable(true);
+      setErrorForgotPassword('');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorForgotPassword(error.message);
+        console.log(error.message)
+      } else {
+        setErrorForgotPassword("Network Error");
+      }
       setIsLoading(false);
-      console.log(`Can not create new password api forgot password, ${error}`);
+      setIsDisable(false);
     }
   };
 
@@ -78,6 +87,13 @@ const ForgotPasswordScreen = () => {
 
         />
       </SectionComponent>
+      {errorForgotPassword ? (
+        <SectionComponent>
+          <TextComponent text={errorForgotPassword} color={appColors.danger} />
+        </SectionComponent>
+      ) : (
+        <SpaceComponent height={16} />
+      )}
       <SectionComponent>
         <ButtonComponent
           onPress={handleForgotPassword}

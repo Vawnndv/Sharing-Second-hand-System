@@ -23,13 +23,13 @@ const LoginScreen = ({navigation}: any) => {
   const [isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorLogin, setErrorLogin] = useState('');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const emailValidation = Validator.email(values.email);
 
-    if (!values.email || !values.password || !emailValidation || errorMessage.email || errorMessage.password) {
+    if (!values.email || !values.password || errorMessage.email || errorMessage.password) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
@@ -51,34 +51,30 @@ const LoginScreen = ({navigation}: any) => {
 
   const handleLogin = async () => {
     setIsLoading(true);
-    const emailValidation = Validator.email(values.email );
 
-    if (emailValidation) {
-      try {
-        const res = await authenticationAPI.HandleAuthentication(
-          '/login',
-          {email: values.email , password: values.password},
-          'post'
-        );
-        console.log(res);
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/login',
+        {email: values.email , password: values.password},
+        'post'
+      );
 
-        dispatch(addAuth(res.data));
-
-        await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
-        setIsLoading(false);
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.log(error.message);
-        } else {
-          console.log("Network Error");
-        }
-        setIsLoading(false);
-      }
-    } else {
+      dispatch(addAuth(res.data));
+      setIsDisable(true);
+      setErrorLogin('');
+      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
       setIsLoading(false);
-      Alert.alert('email is not correct!!!');
+      
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorLogin(error.message);
+      } else {
+        setErrorLogin("Network Error");
+      }
+      setIsLoading(false);
+      setIsDisable(false);
     }
-  };
+  }; 
 
   return (
     <ContainerComponent isImageBackground isScroll>
@@ -127,7 +123,13 @@ const LoginScreen = ({navigation}: any) => {
           />
         </RowComponent>
       </SectionComponent>
-      <SpaceComponent height={16} />
+      {errorLogin ? (
+        <SectionComponent>
+          <TextComponent text={errorLogin} color={appColors.danger} />
+        </SectionComponent>
+      ) : (
+        <SpaceComponent height={16} />
+      )}
       <SectionComponent>
         <ButtonComponent
           disable={isDisable}

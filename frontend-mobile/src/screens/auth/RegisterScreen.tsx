@@ -58,6 +58,7 @@ const RegisterScreen = ({navigation}: any) => {
         code: res.data.code,
         ...values,  
       })
+      setIsDisable(true);
       setErrorRegister('');
     } catch (error: unknown) {
       if (error instanceof Error) {

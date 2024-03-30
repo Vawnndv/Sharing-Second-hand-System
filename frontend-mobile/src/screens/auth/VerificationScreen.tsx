@@ -60,6 +60,7 @@ const VerificationScreen = ({navigation, route}: any) => {
   const handleResendVerification = async () => {
     setCodeValues(['', '', '', '']);
     setNewCode('');
+    setErrorMessage('');
 
     setIsLoading(true);
 

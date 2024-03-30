@@ -151,7 +151,6 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
   const { email } = req.body;
 
-  console.log(email);
   const randomPassword = Math.round(100000 + Math.random() * 99000);
 
   const data = {
