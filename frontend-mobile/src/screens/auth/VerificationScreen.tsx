@@ -201,7 +201,7 @@ const VerificationScreen = ({navigation, route}: any) => {
           <RowComponent justify="center">
             <TextComponent text="Re-send code in " flex={0} />
             <TextComponent 
-              text={`${(limit - (limit % 60)) / 60}:${limit - (limit - (limit % 60))}`}
+              text={`${String((limit - (limit % 60)) / 60).padStart(2, '0')}:${String(limit - (limit - (limit % 60))).padStart(2, '0')}`}
               color={appColors.link}
               flex={0}
             />

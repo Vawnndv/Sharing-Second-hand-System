@@ -128,6 +128,7 @@ const RegisterScreen = ({navigation}: any) => {
             onPress={handleRegister}
             text="SIGN UP"
             type="primary"
+            iconFlex="right"
             disable={isDisable}
             icon={
               <View style={[
