@@ -53,16 +53,19 @@ const RegisterScreen = ({navigation}: any) => {
     setIsLoading(true);
     try {
       const res = await authenticationAPI.HandleAuthentication('/verification', {email: values.email}, 'post');
-      console.log(res);
       setIsLoading(false);
       navigation.navigate('VerificationScreen', {
         code: res.data.code,
         ...values,  
       })
-    } catch (error) {
-      console.log(error);
+      setErrorRegister('');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorRegister(error.message);
+      } else {
+        setErrorRegister("Network Error");
+      }
       setIsLoading(false);
-      Alert.alert('email is exist in system!!!');
       setIsDisable(false);
     }
   };
@@ -113,11 +116,11 @@ const RegisterScreen = ({navigation}: any) => {
             error={errorMessage['confirmPassword']}
           />
         </SectionComponent>
-        {/* {ErrorMessage && (
+        {errorRegister && (
           <SectionComponent>
-
+              <TextComponent text={errorRegister} color={appColors.danger} />
           </SectionComponent>
-        )} */}
+        )}
         <SpaceComponent height={16} />
         <SectionComponent>
           <ButtonComponent

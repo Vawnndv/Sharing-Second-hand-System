@@ -1,6 +1,6 @@
-import { getProfile } from './../../controllers/userController';
-import express from 'express';
+// import { getProfile } from './../../controllers/userController';
+// import express from 'express';
 
-const userRouter = express.Router();
+// const userRouter = express.Router();
 
-userRouter.get('/profile', getProfile);
+// userRouter.get('/profile', getProfile);

@@ -66,8 +66,12 @@ const LoginScreen = ({navigation}: any) => {
 
         await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
         setIsLoading(false);
-      } catch (error) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error.message);
+        } else {
+          console.log("Network Error");
+        }
         setIsLoading(false);
       }
     } else {

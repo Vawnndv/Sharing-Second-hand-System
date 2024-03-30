@@ -52,16 +52,13 @@ const handleSendMail = async (val: {}) => {
   }
 };
 
-export const verification = asyncHandle(async (req, res) => {
+export const verification = asyncHandle(async (req: Request, res: Response) => {
   const { email } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
 
   if (existingUser) {
-    res.status(401).json({
-      message: 'User has already exist!!!',
-      data: null,
-    });
+    res.status(401);
     throw new Error('User has already exist!!!');
   }
   
@@ -69,7 +66,7 @@ export const verification = asyncHandle(async (req, res) => {
   
   try {
     const data = {
-      from: `"Retreasure Application" <${process.env.USERNAME_EMAIL}>`, 
+      from: `"ReTreasure Application" <${process.env.USERNAME_EMAIL}>`, 
       to: email,
       subject: 'Verification email code', 
       text: 'Your code to verification email',
