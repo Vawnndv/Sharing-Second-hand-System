@@ -15,6 +15,7 @@ import { appInfo } from "../../constants/appInfos";
 import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { ContainerComponent } from "../../components";
+import { LoadingModal } from "../../modals";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -24,6 +25,8 @@ export default function StatisticScreen({navigation}: any) {
 
     const [orderData, setOrderData] = useState([0,0])
     const [orders, setOrders] = useState([])
+
+    const [isLoading, setIsLoading] = useState(true)
 
     const data = [
         { name: 'Hàng đã lấy', amount: orderData[0], color: '#FF6347', legendFontColor: '#7F7F7F', legendFontSize: 14 },
@@ -78,14 +81,21 @@ export default function StatisticScreen({navigation}: any) {
             }
         }
 
-        fetchAPIData()
-        fetchAPIOrders()
+        const fetchAPI = async () => {
+            setIsLoading(true)
+            await fetchAPIData()
+            await fetchAPIOrders()
+            setIsLoading(false)
+        }
+
+        fetchAPI()
     }, [])
     return(
         <ContainerComponent back>
             <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
                     <View style={{backgroundColor: 'white'}}>
+                        <Text style={{fontSize: 18, fontWeight: 'bold', marginLeft: 20}}>Thống kê</Text>
                         <LineChartExample/>
                     </View>
                     {/* // seperate */}
@@ -120,6 +130,8 @@ export default function StatisticScreen({navigation}: any) {
                 </View>
                 
             </ScrollView>
+
+            <LoadingModal visible={isLoading}/>
         </ContainerComponent>
         
     )

@@ -8,8 +8,9 @@ import MainTabNavigator from './collaborator/MainTabNavigator';
 const MainNavigator = () => {
 
   const auth = useSelector(authSelector);
+  console.log(auth)
   let isAdmin;
-  if (roleID === 2){
+  if (auth.roleID === 1){
     isAdmin = false
   }else{
     isAdmin = true
@@ -19,7 +20,16 @@ const MainNavigator = () => {
 
   const Stack = createNativeStackNavigator();
 
-  return (
+  return isAdmin ? (<>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="Main" component={MainTabNavigator} />
+    </Stack.Navigator>
+  </>) :
+
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
@@ -27,7 +37,7 @@ const MainNavigator = () => {
     >
       <Stack.Screen name="Main" component={DrawerNavigator} />
     </Stack.Navigator>
-  )
+  
 }
 
 export default MainNavigator

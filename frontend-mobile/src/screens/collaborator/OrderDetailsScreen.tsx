@@ -9,16 +9,25 @@ import moment from "moment";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { useSelector } from "react-redux";
 import { ContainerComponent } from "../../components";
+import { LoadingModal } from "../../modals";
 export default function OrderDetailsScreen({navigation, route}: any) {
     
-    const {orderID} = route.params
+    const {orderID, status} = route.params
     console.log('Details', orderID)
 
     const [orders, setOrders] = useState([])
     const [isLoading, setIsLoading] = useState(true)
 
+    const handleConfirm = async () => {
+        setIsLoading(true);
+        await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`);
+        setIsLoading(false);
+        navigation.goBack();
+    }
+
     useEffect(() => {
         const fetchAPI = async () => {
+            setIsLoading(true)
             const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             console.log(response.data.orders)
             setOrders(response.data.orders)
@@ -132,15 +141,19 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                     uri: "https://quangminh.vn/image/cache/catalog/product/may-cat-co-nhat-ban-husqvarna-226r-2766-700x700-product_popup.jpg"
                                                 }}
                                             />
-
-                                            <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
+                                            {
+                                                status === 'Pending' &&
+                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
                                                         paddingVertical: 15, paddingHorizontal: 20, borderRadius: 30,
                                                         display: 'flex', flexDirection: 'row', justifyContent: 'center',
-                                                        alignItems: 'center'}}>
-                                                <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>
-                                                    Xác nhận nhận hàng
-                                                </Text>
-                                            </TouchableOpacity>
+                                                        alignItems: 'center'}}
+                                                        onPress={() => handleConfirm()}>
+                                                    <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>
+                                                        Xác nhận nhận hàng
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            }
+                                            
                                         </View>
                                     </View>
                                 )
@@ -156,6 +169,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 
                 
             </View>
+            <LoadingModal visible={isLoading}/>
         </ContainerComponent>
         
     )
