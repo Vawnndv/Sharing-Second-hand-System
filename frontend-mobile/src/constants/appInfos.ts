@@ -7,7 +7,7 @@ export const appInfo = {
   },
 
   // BASE_URL: 'http://192.168.1.14:3000', // This is URL of TAANS
-}
+
 
   // BASE_URL: 'http://192.168.1.101:3000',  // This is URL of VWAN
   BASE_URL: 'http://192.168.1.8:3000',
