@@ -105,4 +105,23 @@ export class Account {
       return null;
     } 
   };
+
+  public static async updateAccountPassword(userid: number, password: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "User"
+      SET password = $2
+      WHERE userid = $1
+      RETURNING *;
+    `;
+    const values: any = [userid, password];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    };
+  }; 
 }

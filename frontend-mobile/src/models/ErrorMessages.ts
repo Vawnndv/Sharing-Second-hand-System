@@ -3,4 +3,5 @@ export interface ErrorMessages {
   email?: string;
   password?: string;
   confirmPassword?: string;
+  oldPassword?: string;
 }

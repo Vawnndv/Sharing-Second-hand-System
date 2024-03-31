@@ -1,32 +1,35 @@
 import { View, Text, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
-import { ArrowRight, Lock, Sms, User } from 'iconsax-react-native';
-import { appColors } from '../../constants/appColors';
-import { LoadingModal } from '../../modals';
-import authenticationAPI from '../../apis/authApi';
-import {  Validator } from '../../utils/Validation';
-import { globalStyles } from '../../styles/globalStyles';
+import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { ErrorMessages } from '../../models/ErrorMessages';
+import { Validator } from '../../utils/Validation';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
+import authenticationAPI from '../../apis/authApi';
+import { appColors } from '../../constants/appColors';
+import { ArrowRight, Lock } from 'iconsax-react-native';
+import { globalStyles } from '../../styles/globalStyles';
+import { LoadingModal } from '../../modals';
+import userAPI from '../../apis/userApi';
 
 const initValue = {
-  username: '',
-  email: '',
+  oldPassword: '',
   password: '',
   confirmPassword: '',
 };
 
-const RegisterScreen = ({navigation}: any) => {
+const AccountScreen = () => {
   const [values, setValues] = useState(initValue);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
   const [errorRegister, setErrorRegister] = useState('');
   const [isDisable, setIsDisable] = useState(true);
+  
+  const user = useSelector(authSelector);
 
   useEffect(() => {
     if (
-      errorMessage.username ||
-      errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword 
+      errorMessage.oldPassword || errorMessage.password || errorMessage.confirmPassword || !values.oldPassword || !values.password || !values.confirmPassword 
     ) {
       setIsDisable(true);
     } else {
@@ -50,12 +53,10 @@ const RegisterScreen = ({navigation}: any) => {
     setErrorMessage(initValue);
     setIsLoading(true);
     try {
-      const res = await authenticationAPI.HandleAuthentication('/verification', {email: values.email}, 'post');
+      const res = await userAPI.HandleUser('/password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.password}, 'post');
       setIsLoading(false);
-      navigation.navigate('VerificationScreen', {
-        code: res.data.code,
-        ...values,  
-      })
+      setValues(initValue);
+      Alert.alert('Change Password successfully!!!');
       setIsDisable(true);
       setErrorRegister('');
     } catch (error: unknown) {
@@ -68,44 +69,36 @@ const RegisterScreen = ({navigation}: any) => {
       setIsDisable(false);
     }
   };
-
+  
   return (
     <>
-      <ContainerComponent isImageBackground isScroll back>
+      <ContainerComponent back>
         <SectionComponent>
-          <TextComponent text="Sign Up" title size={24} color={appColors.primary} />
+          <TextComponent text="Change Password" title  size={24} color={appColors.primary} />
           <SpaceComponent height={21} />
           <InputComponent
-            value={values.username}
-            placeholder="Họ và tên"
-            onChange={val => handleChangeValue('username', val)}
-            allowClear
-            affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('username')}
-            error={errorMessage['username']}
-          />
+              value={values.oldPassword}
+              placeholder="Old Password"
+              onChange={val => handleChangeValue('oldPassword', val)}
+              allowClear
+              isPassword
+              affix={<Lock size={22} color={appColors.gray} />}
+              onEnd={() => formValidator('oldPassword')}
+              error={errorMessage['oldPassword']}
+            />
           <InputComponent
-            value={values.email}
-            placeholder="abc@gmail.com"
-            onChange={val => handleChangeValue('email', val)}
-            allowClear
-            affix={<Sms size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('email')}
-            error={errorMessage['email']}
-          />     
-          <InputComponent
-            value={values.password}
-            placeholder="Password"
-            onChange={val => handleChangeValue('password', val)}
-            allowClear
-            isPassword
-            affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('password')}
-            error={errorMessage['password']}
-          />
+              value={values.password}
+              placeholder="New Password"
+              onChange={val => handleChangeValue('password', val)}
+              allowClear
+              isPassword
+              affix={<Lock size={22} color={appColors.gray} />}
+              onEnd={() => formValidator('password')}
+              error={errorMessage['password']}
+            />
           <InputComponent
             value={values.confirmPassword}
-            placeholder="Confirm password"
+            placeholder="Confirm New Password"
             onChange={val => handleChangeValue('confirmPassword', val)}
             allowClear
             isPassword
@@ -123,7 +116,7 @@ const RegisterScreen = ({navigation}: any) => {
         <SectionComponent>
           <ButtonComponent
             onPress={handleRegister}
-            text="SIGN UP"
+            text="CHANGE PASSWORD"
             type="primary"
             iconFlex="right"
             disable={isDisable}
@@ -141,19 +134,10 @@ const RegisterScreen = ({navigation}: any) => {
             }
           />
         </SectionComponent>
-        <SectionComponent>
-          <RowComponent justify="center">
-            <TextComponent text="Don't have an account? " />
-            <ButtonComponent 
-              type="link" 
-              text="Sign In" 
-              onPress={() => navigation.navigate('LoginScreen')} />
-          </RowComponent>
-        </SectionComponent>
       </ContainerComponent>
       <LoadingModal visible={isLoading} />
     </>
   )
 }
 
-export default RegisterScreen
+export default AccountScreen

@@ -167,7 +167,7 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
 
-    const updateUser = await Account.updateAccount(user.userid, user.username, hashedPassword, user.phonenumber, user.avatar);
+    const updateUser = await Account.updateAccountPassword(user.userid, hashedPassword);
 
     if (updateUser) {
       await handleSendMail(data).then(() => {

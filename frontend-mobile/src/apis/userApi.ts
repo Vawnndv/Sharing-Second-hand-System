@@ -1,17 +1,18 @@
 import axiosClient from "./axiosClient"
 
-class AuthAPI {
+class UserAPI {
   HandleUser = async (
     url: string,
     data?: any,
     method?: 'get' | 'post' | 'put' | 'delete'
   ) => {
-    return await axiosClient(`/users${url}`, {
+    console.log(url, data, method)
+    return await axiosClient(`/user${url}`, {
       method: method ?? 'get',
       data,
     });
   };
 };
 
-const HandleUser = new AuthAPI();
-export default HandleUser;
+const userAPI = new UserAPI();
+export default userAPI;

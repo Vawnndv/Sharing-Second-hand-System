@@ -1,6 +1,10 @@
-// import { getProfile } from './../../controllers/userController';
-// import express from 'express';
+import express from 'express';
+import { changeUserPassword } from './../../controllers/userController';
 
-// const userRouter = express.Router();
+const userRouter = express.Router();
 
-// userRouter.get('/profile', getProfile);
+// userRouter.get('/profile/:email', getProfile);
+
+userRouter.post('/password', changeUserPassword);
+
+export default userRouter;

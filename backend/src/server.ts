@@ -13,6 +13,7 @@ import authRouter from './routes/v1/authRouter';
 import orderRouter from './routes/v1/orderRouter';
 import cors from 'cors';
 import errorMiddleHandle from './middlewares/errorMiddleware';
+import userRouter from './routes/v1/userRouter';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use(routerPost);
 app.use(routerItem);
 app.use('/auth', authRouter);
+app.use('/user', userRouter);
 app.use('/order', orderRouter);
 
 app.use(orderRoute);

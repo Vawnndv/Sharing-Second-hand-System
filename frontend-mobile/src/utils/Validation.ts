@@ -65,6 +65,16 @@ export class Validator {
           message = '';
         }
         break;
+
+      case 'password':
+        if (!values.password) {
+          message ='Old Password is required!!!';
+        } else if (values.password.length < 6) {
+          message = 'Old Password must contain at least 6 character!!!'
+        } else {
+          message = '';
+        }
+        break;
     }
     updatedErrorMessage[key] = message;
     return updatedErrorMessage; // Sử dụng bản sao mới của errorMessage
