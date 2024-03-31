@@ -6,15 +6,11 @@ import { appColors } from '../../constants/appColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import authenticationAPI from '../../apis/authApi';
 import { useDispatch } from 'react-redux';
-import { Validate } from '../../utils/Validation';
+import { Validator } from '../../utils/Validation';
 import { addAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 import { globalStyles } from '../../styles/globalStyles';
-
-interface ErrorMessages {
-  email: string;
-  password: string;
-}
+import { ErrorMessages } from '../../models/ErrorMessages';
 
 const initValue = {
   email: '',
@@ -27,13 +23,13 @@ const LoginScreen = ({navigation}: any) => {
   const [isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorLogin, setErrorLogin] = useState('');
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const emailValidation = Validate.email(values.email);
 
-    if (!values.email || !values.password || !emailValidation || errorMessage.email || errorMessage.password) {
+    if (!values.email || !values.password || errorMessage.email || errorMessage.password) {
       setIsDisable(true);
     } else {
       setIsDisable(false);
@@ -48,54 +44,37 @@ const LoginScreen = ({navigation}: any) => {
     setValues(data);
   };
 
-  const formValidator = (key: string) => {
-    let updatedErrorMessage = {...errorMessage}; // Tạo một bản sao mới của errorMessage
-    
-    switch (key) {
-      case 'email':
-        if (!values.email) {
-          updatedErrorMessage.email = 'Email is required';
-        } else if (!Validate.email(values.email)) {
-          updatedErrorMessage.email = 'Email is not invalid';
-        } else {
-          updatedErrorMessage.email = '';
-        }
-        break;
-  
-      case 'password':
-        updatedErrorMessage.password = !values.password ? 'Password is required!!!' : '';
-        break;
-    }
-  
+  const formValidator = (key: keyof ErrorMessages) => {
+    let updatedErrorMessage = Validator.Validation(key, errorMessage, values);
     setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
   };
 
   const handleLogin = async () => {
     setIsLoading(true);
-    const emailValidation = Validate.email(values.email );
 
-    if (emailValidation) {
-      try {
-        const res = await authenticationAPI.HandleAuthentication(
-          '/login',
-          {email: values.email , password: values.password},
-          'post'
-        );
-        console.log(res);
+    try {
+      const res = await authenticationAPI.HandleAuthentication(
+        '/login',
+        {email: values.email , password: values.password},
+        'post'
+      );
 
-        dispatch(addAuth(res.data));
-
-        await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-        setIsLoading(false);
-      }
-    } else {
+      dispatch(addAuth(res.data));
+      setIsDisable(true);
+      setErrorLogin('');
+      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
       setIsLoading(false);
-      Alert.alert('email is not correct!!!');
+      
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorLogin(error.message);
+      } else {
+        setErrorLogin("Network Error");
+      }
+      setIsLoading(false);
+      setIsDisable(false);
     }
-  };
+  }; 
 
   return (
     <ContainerComponent isImageBackground isScroll>
@@ -114,9 +93,8 @@ const LoginScreen = ({navigation}: any) => {
           allowClear
           affix={<Sms size={22} color={appColors.gray} />}
           onEnd={() => formValidator('email')}
-          error={errorMessage['email'] ? true : false}
+          error={errorMessage['email']}
         />
-        {errorMessage['email'] && <TextComponent text={errorMessage['email']}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         <InputComponent
           value={values.password}
           placeholder="Password"
@@ -125,7 +103,7 @@ const LoginScreen = ({navigation}: any) => {
           allowClear
           affix={<Lock size={22} color={appColors.gray} />}
           onEnd={() => formValidator('password')}
-          error={errorMessage['password'] ? true : false}
+          error={errorMessage['password']}
         />
         <RowComponent justify="space-between" styles={{width: '100%', }}>
           <RowComponent onPress={() => setIsRemember(!isRemember)}>
@@ -145,7 +123,13 @@ const LoginScreen = ({navigation}: any) => {
           />
         </RowComponent>
       </SectionComponent>
-      <SpaceComponent height={16} />
+      {errorLogin ? (
+        <SectionComponent>
+          <TextComponent text={errorLogin} color={appColors.danger} />
+        </SectionComponent>
+      ) : (
+        <SpaceComponent height={16} />
+      )}
       <SectionComponent>
         <ButtonComponent
           disable={isDisable}
@@ -159,7 +143,7 @@ const LoginScreen = ({navigation}: any) => {
               {
                 backgroundColor: isDisable  
                   ? appColors.gray 
-                  : appColors.primary
+                  : appColors.primary2
               },
             ]}>
               <ArrowRight size={18} color={appColors.white} />

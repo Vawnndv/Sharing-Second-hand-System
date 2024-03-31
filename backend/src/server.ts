@@ -12,6 +12,7 @@ import routerPost from './routes/v1/postRouter';
 import authRouter from './routes/v1/authRouter';
 import orderRouter from './routes/v1/orderRouter';
 import cors from 'cors';
+import errorMiddleHandle from './middlewares/errorMiddleware';
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.use('/auth', authRouter);
 app.use('/order', orderRouter);
 
 app.use(orderRoute);
+
+app.use(errorMiddleHandle);
 
 app.listen(port, (err?: Error) => {
   if (err) {

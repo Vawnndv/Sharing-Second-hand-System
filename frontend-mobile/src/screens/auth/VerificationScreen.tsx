@@ -12,7 +12,7 @@ import { addAuth } from '../../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerificationScreen = ({navigation, route}: any) => {
-  const limitTime = 120;
+  const limitTime = 20;
   const {code, email, password, username} = route.params;
 
   const [currentCode, setCurrentCode] = useState(code);
@@ -60,6 +60,7 @@ const VerificationScreen = ({navigation, route}: any) => {
   const handleResendVerification = async () => {
     setCodeValues(['', '', '', '']);
     setNewCode('');
+    setErrorMessage('');
 
     setIsLoading(true);
 
@@ -200,7 +201,7 @@ const VerificationScreen = ({navigation, route}: any) => {
           <RowComponent justify="center">
             <TextComponent text="Re-send code in " flex={0} />
             <TextComponent 
-              text={`${(limit - (limit % 60)) / 60}:${limit - (limit - (limit % 60))}`}
+              text={`${String((limit - (limit % 60)) / 60).padStart(2, '0')}:${String(limit - (limit - (limit % 60))).padStart(2, '0')}`}
               color={appColors.link}
               flex={0}
             />

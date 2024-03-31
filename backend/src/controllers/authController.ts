@@ -1,12 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
-// eslint-disable-next-line import/no-extraneous-dependencies
 import asyncHandle from 'express-async-handler';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import nodemailer from 'nodemailer';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcrypt';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
@@ -56,7 +52,7 @@ const handleSendMail = async (val: {}) => {
   }
 };
 
-export const verification = asyncHandle(async (req, res) => {
+export const verification = asyncHandle(async (req: Request, res: Response) => {
   const { email } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
@@ -70,7 +66,7 @@ export const verification = asyncHandle(async (req, res) => {
   
   try {
     const data = {
-      from: `"Retreasure Application" <${process.env.USERNAME_EMAIL}>`, 
+      from: `"ReTreasure Application" <${process.env.USERNAME_EMAIL}>`, 
       to: email,
       subject: 'Verification email code', 
       text: 'Your code to verification email',
@@ -155,7 +151,6 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
   const { email } = req.body;
 
-  console.log(email);
   const randomPassword = Math.round(100000 + Math.random() * 99000);
 
   const data = {

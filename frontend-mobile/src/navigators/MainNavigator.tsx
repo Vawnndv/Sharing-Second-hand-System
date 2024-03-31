@@ -4,12 +4,15 @@ import DrawerNavigator from './DrawerNavigator';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../redux/reducers/authReducers';
 import MainTabNavigator from './collaborator/MainTabNavigator';
+import SearchScreen from '../screens/search/SearchScreen';
+import SearchResultScreen from '../screens/search/SearchResultScreen';
 
 const MainNavigator = () => {
 
   const auth = useSelector(authSelector);
   console.log(auth)
   let isAdmin;
+
   if (auth.roleID === 1){
     isAdmin = false
   }else{
@@ -36,6 +39,9 @@ const MainNavigator = () => {
       }}
     >
       <Stack.Screen name="Main" component={DrawerNavigator} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen} />
+      <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+
     </Stack.Navigator>
   
 }
