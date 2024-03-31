@@ -24,13 +24,9 @@ const AppRouters = () => {
     setIsLoading(false); 
   };
 
-  if (isLoading) {
-    return <LoadingModal visible={isLoading} />;
-  }
-
   return (
     <>
-      {auth.accessToken ? <MainNavigator/> : <AuthNavigator />}
+      {isLoading ? <LoadingModal visible={isLoading}/> : auth.accessToken ? <MainNavigator/> : <AuthNavigator />}
     </>
   )
 }
