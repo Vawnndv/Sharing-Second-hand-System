@@ -29,7 +29,7 @@ export default function App() {
   }
 
   return (
-    <ContainerComponent>
+    <ContainerComponent title='Scan Screen' right>
         <View style={styles.container}>
           <BarCodeScanner
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}

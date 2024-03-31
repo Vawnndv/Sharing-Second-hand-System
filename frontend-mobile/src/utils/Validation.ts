@@ -66,11 +66,31 @@ export class Validator {
         }
         break;
 
-      case 'password':
-        if (!values.password) {
+        case 'confirmNewPassword':
+          if (!values.confirmNewPassword) {
+            message = 'Please type new confirm password';
+          } else if (values.confirmNewPassword !== values.newPassword) {
+            message = 'New Password is not match';
+          } else {
+            message = '';
+          }
+          break;
+
+      case 'oldPassword':
+        if (!values.oldPassword) {
           message ='Old Password is required!!!';
-        } else if (values.password.length < 6) {
+        } else if (values.oldPassword.length < 6) {
           message = 'Old Password must contain at least 6 character!!!'
+        } else {
+          message = '';
+        }
+        break;
+
+      case 'newPassword':
+        if (!values.newPassword) {
+          message ='New Password is required!!!';
+        } else if (values.newPassword.length < 6) {
+          message = 'New Password must contain at least 6 character!!!'
         } else {
           message = '';
         }

@@ -14,8 +14,8 @@ import userAPI from '../../apis/userApi';
 
 const initValue = {
   oldPassword: '',
-  password: '',
-  confirmPassword: '',
+  newPassword: '',
+  confirmNewPassword: '',
 };
 
 const AccountScreen = () => {
@@ -29,7 +29,7 @@ const AccountScreen = () => {
 
   useEffect(() => {
     if (
-      errorMessage.oldPassword || errorMessage.password || errorMessage.confirmPassword || !values.oldPassword || !values.password || !values.confirmPassword 
+      errorMessage.oldPassword || errorMessage.newPassword || errorMessage.confirmNewPassword || !values.oldPassword || !values.newPassword || !values.confirmNewPassword 
     ) {
       setIsDisable(true);
     } else {
@@ -53,7 +53,7 @@ const AccountScreen = () => {
     setErrorMessage(initValue);
     setIsLoading(true);
     try {
-      const res = await userAPI.HandleUser('/password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.password}, 'post');
+      const res = await userAPI.HandleUser('/password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.newPassword}, 'post');
       setIsLoading(false);
       setValues(initValue);
       Alert.alert('Change Password successfully!!!');
@@ -72,7 +72,7 @@ const AccountScreen = () => {
   
   return (
     <>
-      <ContainerComponent back>
+      <ContainerComponent back isScroll>
         <SectionComponent>
           <TextComponent text="Change Password" title  size={24} color={appColors.primary} />
           <SpaceComponent height={21} />
@@ -87,24 +87,24 @@ const AccountScreen = () => {
               error={errorMessage['oldPassword']}
             />
           <InputComponent
-              value={values.password}
+              value={values.newPassword}
               placeholder="New Password"
-              onChange={val => handleChangeValue('password', val)}
+              onChange={val => handleChangeValue('newPassword', val)}
               allowClear
               isPassword
               affix={<Lock size={22} color={appColors.gray} />}
-              onEnd={() => formValidator('password')}
-              error={errorMessage['password']}
+              onEnd={() => formValidator('newPassword')}
+              error={errorMessage['newPassword']}
             />
           <InputComponent
-            value={values.confirmPassword}
+            value={values.confirmNewPassword}
             placeholder="Confirm New Password"
-            onChange={val => handleChangeValue('confirmPassword', val)}
+            onChange={val => handleChangeValue('confirmNewPassword', val)}
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('confirmPassword')}
-            error={errorMessage['confirmPassword']}
+            onEnd={() => formValidator('confirmNewPassword')}
+            error={errorMessage['confirmNewPassword']}
           />
         </SectionComponent>
         {errorRegister && (
