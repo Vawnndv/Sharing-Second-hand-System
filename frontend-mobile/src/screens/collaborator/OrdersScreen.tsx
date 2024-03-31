@@ -11,12 +11,14 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { ContainerComponent, HeaderComponent } from "../../components";
+import { LoadingModal } from "../../modals";
 
 export default function OrdersScreen({navigation}: any) {
 
     const auth = useSelector(authSelector)
     
     const [visible, setVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(true)
 
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
@@ -27,11 +29,13 @@ export default function OrdersScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPI = async () => {
             try{
+                setIsLoading(true)
                 console.log('fetchAPI')
                 console.log(orders)
                 const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}`)
                 console.log(response.data.orders)
                 setOrders(response.data.orders)
+                setIsLoading(false)
             }catch(error){
                 console.log(error)
             }
@@ -39,9 +43,11 @@ export default function OrdersScreen({navigation}: any) {
 
         fetchAPI()
     },[tab])
+
+    console.log('isLoading',isLoading)
     return(
         <ContainerComponent>
-            <View style={styles.container}>
+            <View style={[styles.container, {marginTop: 10}]}>
                 <View style={styles.container}>
 
                     <View style={styles.wrapper}>
@@ -76,7 +82,7 @@ export default function OrdersScreen({navigation}: any) {
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
                     <View style={styles.wrapper}>
-                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày 20/11/2024</Text>
+                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày 27/03/2024 ( Hôm nay )</Text>
                     </View>
                     {/* // seperate */}
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
@@ -87,7 +93,8 @@ export default function OrdersScreen({navigation}: any) {
                             orders.map((order: any, index) => {
                                 return (
                                     <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                        orderID: order.orderID
+                                        orderID: order.orderID,
+                                        status: order.status
                                     })} key={index}>
                                         <OrderComponent
                                             avatar={order.receiver.avatar}
@@ -109,6 +116,7 @@ export default function OrdersScreen({navigation}: any) {
                 </View>
 
                 <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
+                <LoadingModal visible={isLoading}/>
             </View>
         </ContainerComponent>
         

@@ -331,4 +331,25 @@ export class OrderManager {
     }
   };
 
+  public static async updateStatusOrder (orderID: string) : Promise<boolean> {
+    console.log('updateStatusOrder')
+    const client = await pool.connect()
+
+    try{
+      const query = `
+        UPDATE "orders"
+        SET status = 'Completed'
+        WHERE orderid = $1
+      `
+
+      const result: QueryResult = await client.query(query, [orderID])
+      return true;
+    }catch(error){
+      console.log(error)
+      return false
+    }finally{
+      client.release()
+    }
+  }
+
 }

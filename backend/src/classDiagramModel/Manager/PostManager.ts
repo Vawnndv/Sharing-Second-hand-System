@@ -19,7 +19,6 @@ export class PostManager {
       if (result.rows.length === 0) {
         return null;
       }
-      console.log(result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -36,7 +35,6 @@ export class PostManager {
       if (result.rows.length === 0) {
         return null;
       }
-      console.log(result.rows[0]);
       const row = result.rows[0]
       return new Post(row.postid, row.title, row.itemid, row.time, row.owner, row.description, row.location, row.timestart, row.timeend)
     } catch (error) {

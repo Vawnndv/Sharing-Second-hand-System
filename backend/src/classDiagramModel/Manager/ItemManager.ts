@@ -33,7 +33,6 @@ export class ItemManager {
         return null;
       }
       const row = result.rows[0];
-      console.log(row)
       return new Item(row.itemId, row.name, row.quantity, row.itemtypeid);
     } finally {
       client.release()
