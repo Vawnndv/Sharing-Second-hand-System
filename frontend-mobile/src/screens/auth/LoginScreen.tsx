@@ -62,7 +62,7 @@ const LoginScreen = ({navigation}: any) => {
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
-      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : values.email);
+      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
       setIsLoading(false);
       
     } catch (error: unknown) {
@@ -143,7 +143,7 @@ const LoginScreen = ({navigation}: any) => {
               {
                 backgroundColor: isDisable  
                   ? appColors.gray 
-                  : appColors.primary
+                  : appColors.primary2
               },
             ]}>
               <ArrowRight size={18} color={appColors.white} />
