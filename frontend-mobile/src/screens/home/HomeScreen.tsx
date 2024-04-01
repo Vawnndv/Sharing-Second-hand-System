@@ -1,5 +1,5 @@
 import React from 'react'
-import { ContainerComponent, HeaderComponent } from '../../components'
+import { ContainerComponent, HeaderComponent, TextComponent } from '../../components'
 import { Text } from 'react-native'
 import OrdersScreen from '../collaborator/OrdersScreen'
 import OrderDetailsScreen from '../collaborator/OrderDetailsScreen'
@@ -9,7 +9,8 @@ const HomeScreen = ({navigation} : any) => {
   return (
     <ContainerComponent isScroll title='Bai dang   Kho hang' right>
       {/* <HeaderComponent/> */}
-      <StatisticScreen/>
+      {/* <StatisticScreen/> */}
+      <TextComponent text='Home' />
     </ContainerComponent>
   )
 }

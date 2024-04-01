@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {TextComponent} from '.';
 import {appColors} from '../constants/appColors';
 import {fontFamilies} from '../constants/fontFamilies';
 import {globalStyles} from '../styles/globalStyles';
+import TextComponent from './TextComponent';
 
 interface Props {
   avatar?: string;
@@ -48,7 +48,7 @@ const AvatarComponent = (props: Props) => {
               borderRadius: 100,
               borderWidth: 1,
               borderColor: appColors.white,
-              backgroundColor: appColors.gray2,
+              backgroundColor: appColors.primary,
             },
           ]}>
           <TextComponent
