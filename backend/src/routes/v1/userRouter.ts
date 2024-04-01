@@ -1,9 +1,9 @@
 import express from 'express';
-import { changeUserPassword } from './../../controllers/userController';
+import { changeUserPassword, getProfile } from './../../controllers/userController';
 
 const userRouter = express.Router();
 
-// userRouter.get('/profile/:email', getProfile);
+userRouter.get('/profile', getProfile);
 
 userRouter.post('/password', changeUserPassword);
 

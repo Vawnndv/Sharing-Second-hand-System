@@ -6,24 +6,28 @@ import bcrypt from 'bcrypt';
 
 import { Account } from '../classDiagramModel/Account';
 
-// export const getProfile = asyncHandle(async (req: Request, res: Response) => {
-//   const { email } = req.query;
+export const getProfile = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    console.log(userId);
+    const user = await Account.findUserById(userId);
 
-//   const existingUser = await Account.findUserByEmail(email);
-
-//   if (!existingUser) {
-//     res.status(401);
-//     throw new Error('Email is invalid!!!');
-//   }
-
-//   res.status(200).json({
-//     message: 'Login successfully!!!',
-//     data: {
-//       ...existingUser,
-//       password: null,
-//     },
-//   });
-// });
+    res.status(200).json({
+      message: 'Get user profile successfully!!!',
+      data: {
+        userId: user.userid,
+        createAt: user.createat,
+        address: user.address ?? '',
+        avatar: user.avatar ?? '',
+        username: user.username ?? '',
+        email: user.email ?? '',
+      },
+    });
+  } else {
+    res.sendStatus(401);
+    throw new Error('Missing uid');
+  }
+});
 
 
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {

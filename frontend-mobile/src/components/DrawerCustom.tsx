@@ -1,18 +1,19 @@
-import { View, Text, StyleSheet, Platform, StatusBar, Touchable, Image, FlatList } from 'react-native'
-import React from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Home, User } from 'iconsax-react-native';
+import React from 'react';
+import { Button, FlatList, Image, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { appColors } from '../constants/appColors';
-import TextComponent from './TextComponent';
+import { authSelector, removeAuth } from '../redux/reducers/authReducers';
+import AvatarComponent from './AvatarComponent';
 import RowComponent from './RowComponent';
-import { globalStyles } from '../styles/globalStyles';
-import { CardTick, Home, Information, ShoppingCart, Timer, User } from 'iconsax-react-native';
-import { AntDesign, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../redux/reducers/authReducers';
 import SpaceComponent from './SpaceComponent';
+import TextComponent from './TextComponent';
 
 const DrawerCustom = ({navigation}: any) => {
-  const user = useSelector(authSelector);
+  const auth = useSelector(authSelector);
+  const dispatch = useDispatch();
 
   const size = 24
   const color = appColors.gray;
@@ -70,9 +71,33 @@ const DrawerCustom = ({navigation}: any) => {
     },
   ];
 
-  const handleSignOut = () => {
-
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    dispatch(removeAuth({}));
   }
+
+  const handleNavigation = (key: string) => {
+    switch (key) {
+      case 'SignOut':
+        handleLogout();
+        break;
+
+      case 'MyProfile':
+        navigation.navigate('Profile', {
+          screen: 'ProfileScreen',
+          params: {
+            id: auth.id,
+          },
+        });
+        break;
+      default:
+        console.log(key);
+        navigation.navigate(key);
+        break;
+    }
+
+    navigation.closeDrawer();
+  };
 
   return (
     <View style={[localStyles.container]}>
@@ -87,29 +112,14 @@ const DrawerCustom = ({navigation}: any) => {
           });
         }}
       >
-        {user.imageUrl ? (
-          <Image source={{uri: user.imageUrl}} style={[localStyles.avatar]} />
-        ) : (
-          <View style={[
-            localStyles.avatar,
-            {
-              backgroundColor :appColors.primary
-            }
-          ]}>
-            <TextComponent
-              title
-              size={22}
-              color={appColors.white}
-              text={
-                user.username
-                  ? user.username.split(' ')[user.username.split(' ').length - 1].substring(0,1).toUpperCase()
-                  : ''
-              }
-            />
-          </View>
-        )}
-        <SpaceComponent width={20} />
-        <TextComponent text={user.username} title size={20} />
+        <AvatarComponent
+          avatar={auth.avatar}
+          username={auth.username ? auth.username : auth.email}
+          styles={localStyles.avatar}
+          size={60}
+        />
+        <SpaceComponent width={10} />
+        <TextComponent text={auth.username} title size={16} />
       </RowComponent>
       <FlatList
         showsVerticalScrollIndicator={false}
@@ -121,15 +131,7 @@ const DrawerCustom = ({navigation}: any) => {
         renderItem={({item, index}) => (
           <RowComponent
             styles={[localStyles.listItem]}
-            onPress={
-              item.key === 'SignOut'
-                ? () => handleSignOut()
-                : () => {
-                  console.log(item.key);
-                  navigation.closeDrawer();
-                  navigation.navigate(item.key)
-                }
-              }
+            onPress={() => handleNavigation(item.key)}
           >
             {item.icon}
             <TextComponent
@@ -139,6 +141,13 @@ const DrawerCustom = ({navigation}: any) => {
           </RowComponent>
         )}
       />
+      <RowComponent>
+          <Button
+            title="Logout"
+            color={appColors.primary}
+            onPress={() => handleNavigation('SignOut')}
+          />
+      </RowComponent>
     </View>
   )
 }
@@ -161,6 +170,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   listItem: {
     paddingVertical: 14,
     justifyContent: 'flex-start',

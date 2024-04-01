@@ -71,6 +71,22 @@ export class Account {
     } 
   };
 
+  public static async findUserById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM "User" WHERE userid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return result.rows[0];
+      // return new Item(row.itemId, row.name, row.quantity);
+    } catch(error) {
+      console.log(error);
+      return null;
+    }
+  }
+
   public static async findUserByEmail(email: string): Promise<any> {
     const client = await pool.connect();
     try {

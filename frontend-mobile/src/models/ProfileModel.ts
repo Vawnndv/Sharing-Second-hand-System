@@ -1,4 +1,7 @@
 export interface ProfileModel {
   username: string;
-  imageUrl: string;
+  avatar: string;
+  email: string;
+  address: string;
+  updateAt: string;
 }

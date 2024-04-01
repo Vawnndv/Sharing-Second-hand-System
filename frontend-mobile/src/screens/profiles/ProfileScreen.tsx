@@ -1,35 +1,61 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import React, { useState } from 'react'
-import { Button, Text, View } from 'react-native'
-import { useDispatch } from 'react-redux'
-import { ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent } from '../../components'
-import { removeAuth } from '../../redux/reducers/authReducers'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Button, Text, View } from 'react-native'
+import { useDispatch, useSelector } from 'react-redux'
+import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
+import userAPI from '../../apis/userApi'
+import { ProfileModel } from '../../models/ProfileModel'
+import { Avatar } from 'react-native-paper'
 
 const ProfileScreen = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [profile, setProfile] = useState<ProfileModel>();
+  
   const dispatch = useDispatch();
 
-  const [isLoading, setIsLoading] = useState(true);
+  const auth = useSelector(authSelector);
 
-  const getProfile = () => {
+  useEffect(() => {
+    if (auth) {
+      getProfile();
+    };
+  }, []);
+
+  const getProfile = async () => {
     setIsLoading(true);
-  }
+
+    try {
+      const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
+      res && res.data && setProfile(res.data);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    };
+  } ;
 
   return (
     <ContainerComponent isScroll title='Profile' back right>
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <Text>ProfileScreen</Text>
-        <SpaceComponent height={12} />
-        <Button
-          title="Logout"
-          color={appColors.primary}
-          onPress={async () => {
-            await AsyncStorage.clear();
-            dispatch(removeAuth({}));
-          }}
-        />
-      </View>
+      {isLoading ? (
+        <ActivityIndicator />
+      ) : profile ? (
+        <>
+          <SectionComponent>
+            <RowComponent>
+              <AvatarComponent 
+                avatar={profile.avatar}
+                username={profile.username ? profile.username : profile.email}
+                size={120}
+              />
+            </RowComponent>
+          </SectionComponent>
+        </>
+      ) : (
+        <TextComponent text="profile not found" />
+      )}
     </ContainerComponent>
   )
 }

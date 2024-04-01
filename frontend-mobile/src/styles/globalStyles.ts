@@ -53,5 +53,10 @@ export const globalStyles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 100,
+  },
+  
+  center: {
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });
