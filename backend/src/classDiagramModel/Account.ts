@@ -68,7 +68,9 @@ export class Account {
     } catch (error) {
       console.error(error);
       return null;
-    } 
+    } finally {
+      client.release();
+    }
   };
 
   public static async findUserById(userId: string): Promise<any> {
@@ -84,6 +86,8 @@ export class Account {
     } catch(error) {
       console.log(error);
       return null;
+    } finally {
+      client.release();
     }
   }
 
@@ -100,6 +104,8 @@ export class Account {
     } catch(error) {
       console.log(error);
       return null;
+    } finally {
+      client.release();
     }
   }
 
@@ -119,7 +125,9 @@ export class Account {
     } catch (error) {
       console.error(error);
       return null;
-    } 
+    } finally {
+      client.release();
+    }
   };
 
   public static async updateAccountPassword(userid: number, password: string): Promise<any> {
@@ -138,6 +146,8 @@ export class Account {
     } catch (error) {
       console.error(error);
       return null;
-    };
+    } finally {
+      client.release();
+    }
   }; 
 }

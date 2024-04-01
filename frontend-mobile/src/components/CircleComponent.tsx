@@ -1,7 +1,6 @@
-import { View, Text, StyleProp, ViewStyle } from 'react-native'
+import { View, Text, StyleProp, ViewStyle, TouchableOpacity } from 'react-native'
 import React, { ReactNode } from 'react'
 import { appColors } from '../constants/appColors';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {
   size?: number;

@@ -1,13 +1,11 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeNavigator from "./HomeNavigator";
-import StatisticNavigator from "./statisticNavigator";
-import ProfileNavigator from "./ProfileNavigator";
-import { Platform, TextComponent } from "react-native";
-import { appColors } from "../../constants/appColors";
+import { ChartSquare, Home, User } from "iconsax-react-native";
 import { ReactNode } from "react";
-import { AddSquare, Home, Message, Scan, User, ChartSquare } from "iconsax-react-native";
-import { CircleComponent } from "../../components";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Platform } from "react-native";
+import { appColors } from "../../constants/appColors";
+import HomeNavigator from "./HomeNavigator";
+import ProfileNavigator from "./ProfileNavigator";
+import StatisticNavigator from "./statisticNavigator";
 
 const MainTabNavigator = () => {
     
