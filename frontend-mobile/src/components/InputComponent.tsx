@@ -16,10 +16,11 @@ interface Props {
   type?: KeyboardType;
   onEnd?: () => void;
   error?: string;
+  editable?: boolean;
 };
 
 const InputComponent = (props: Props) => {
-  const {value, onChange, affix, suffix, placeholder, isPassword, allowClear, type, onEnd, error} = props;
+  const {value, onChange, affix, suffix, placeholder, isPassword, allowClear, type, onEnd, error, editable} = props;
   const [isShowPassword, setIsShowPassword] = useState(isPassword ?? false);
   const inputRef = useRef<any>();
 
@@ -44,6 +45,7 @@ const InputComponent = (props: Props) => {
           keyboardType={type ?? 'default'}
           autoCapitalize="none"
           onEndEditing={onEnd}
+          editable={editable ?? true}
         />
         {suffix ?? suffix}
         <TouchableOpacity 

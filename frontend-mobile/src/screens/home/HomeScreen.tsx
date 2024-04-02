@@ -4,13 +4,13 @@ import { Text } from 'react-native'
 import OrdersScreen from '../collaborator/OrdersScreen'
 import OrderDetailsScreen from '../collaborator/OrderDetailsScreen'
 import StatisticScreen from '../collaborator/StatisticScreen'
+import ItemTabComponent from './components/ItemTabComponent'
 
 const HomeScreen = ({navigation} : any) => {
   return (
-    <ContainerComponent isScroll title='Bai dang   Kho hang' right>
-      {/* <HeaderComponent/> */}
+    <ContainerComponent right title='Trang chủ'>
       {/* <StatisticScreen/> */}
-      <TextComponent text='Home' />
+      <ItemTabComponent />
     </ContainerComponent>
   )
 }

@@ -5,13 +5,14 @@ import { appColors } from '../constants/appColors'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { SpaceComponent } from '../components'
 import StyledText from '../components/StyleText'
+import { fontFamilies } from '../constants/fontFamilies'
 
 interface Props {
   modalVisible: boolean;
-  onBackPress?: () => void;
+  onBackPress: () => void;
   onCameraPress: () => void;
   onGalleryPress: () => void;
-  onRemovePress?: () => void;
+  onRemovePress: () => void;
   isLoading: boolean;
 }
 
@@ -33,32 +34,31 @@ const UploadModal = (props: Props) => {
         )}
         {!isLoading && (
           <View style={[localStyles.modalView, { backgroundColor: appColors.white }]}>
-            <StyledText big style={{ marginBottom: 10 }}>
+            <StyledText big style={{ marginBottom: 10, fontFamily: fontFamilies.bold }}>
               Profile Photo
             </StyledText>
-
             <View style={localStyles.decisionRow}>
               <TouchableOpacity
                 style={localStyles.optionBtn}
-                onPress={onCameraPress} // Modified onPress here
+                onPress={onCameraPress}
               >
-                <MaterialCommunityIcons name='camera-outline' size={30} color={'coral'} />
+                <MaterialCommunityIcons name='camera-outline' size={30} color={appColors.primary} />
                 <StyledText small>Camera</StyledText>
               </TouchableOpacity>
-              <SpaceComponent width={20} />
+              <SpaceComponent width={24} />
               <TouchableOpacity
                 style={localStyles.optionBtn}
-                onPress={onGalleryPress} // Modified onPress here
+                onPress={onGalleryPress}
               >
-                <MaterialCommunityIcons name='image-outline' size={30} color={'black'} />
+                <MaterialCommunityIcons name='image-outline' size={30} color={appColors.primary} />
                 <StyledText small>Gallery</StyledText>
               </TouchableOpacity>
-              <SpaceComponent width={20} />
+              <SpaceComponent width={24} />
               <TouchableOpacity
                 style={localStyles.optionBtn}
-                onPress={onRemovePress} // Modified onPress here
+                onPress={onRemovePress}
               >
-                <MaterialCommunityIcons name='trash-can-outline' size={30} color={'black'} />
+                <MaterialCommunityIcons name='trash-can-outline' size={30} color={appColors.danger} />
                 <StyledText small>Remove</StyledText>
               </TouchableOpacity>
             </View>
@@ -92,8 +92,10 @@ const localStyles = StyleSheet.create({
   },
   optionBtn: {
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: appColors.gray5,
-    padding: 10,
+    width: 65,
+    height: 65,
     borderRadius: 10,
   },
 });
