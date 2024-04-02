@@ -30,10 +30,7 @@ export default function OrdersScreen({navigation}: any) {
         const fetchAPI = async () => {
             try{
                 setIsLoading(true)
-                console.log('fetchAPI')
-                console.log(orders)
                 const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}`)
-                console.log(response.data.orders)
                 setOrders(response.data.orders)
                 setIsLoading(false)
             }catch(error){
@@ -44,7 +41,6 @@ export default function OrdersScreen({navigation}: any) {
         fetchAPI()
     },[tab])
 
-    console.log('isLoading',isLoading)
     return(
         <ContainerComponent>
             <View style={[styles.container, {marginTop: 10}]}>

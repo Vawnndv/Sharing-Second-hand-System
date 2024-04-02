@@ -13,7 +13,6 @@ import { LoadingModal } from "../../modals";
 export default function OrderDetailsScreen({navigation, route}: any) {
     
     const {orderID, status} = route.params
-    console.log('Details', orderID)
 
     const [orders, setOrders] = useState([])
     const [isLoading, setIsLoading] = useState(true)
@@ -29,7 +28,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         const fetchAPI = async () => {
             setIsLoading(true)
             const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
-            console.log(response.data.orders)
             setOrders(response.data.orders)
             setIsLoading(false)
         }
