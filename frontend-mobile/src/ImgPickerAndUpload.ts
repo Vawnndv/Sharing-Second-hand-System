@@ -5,29 +5,6 @@ import { Platform } from "react-native";
 import { appInfo } from "./constants/appInfos";import AWS from 'aws-sdk';
 import * as FileSystem from 'expo-file-system';
 
-const region = 'ap-southeast-2';
-const accessKeyId = 'AKIA2UC3DMHZX2UTZ47T';
-const secretAccessKey = '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';
-const bucket = 'retreasure';
-const URL = 'https://retreasure.s3.ap-southeast-2.amazonaws.com/';
-
-AWS.config.update({
-  accessKeyId: accessKeyId,
-  secretAccessKey: secretAccessKey,
-  region: region, // Ví dụ: 'us-east-1'
-});
-
-const s3 = new AWS.S3();
-
-const api = axios.create({
-    baseURL: appInfo.BASE_URL,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  
-
-
 export const getGallaryPermission = async (setGalleryPermission: any) => {
     const result = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if(result.granted){
