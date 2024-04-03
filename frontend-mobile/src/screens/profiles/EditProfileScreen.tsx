@@ -11,6 +11,7 @@ import { UploadModal } from '../../modals';
 import { ErrorMessages } from '../../models/ErrorMessages';
 import { Validator } from '../../utils/Validation';
 import { ProfileModel } from '../../models/ProfileModel';
+import { PickImage, TakePhoto, UploadImageToAws3, getCameraPermission, getGallaryPermission } from '../../ImgPickerAndUpload';
 
 const initValue = {
   email: '',
@@ -27,13 +28,15 @@ const FormData = global.FormData;
 const EditProfileScreen = ({navigation, route}: any) => {
   const {profile}: {profile:ProfileModel} = route.params;
   const [modalVisible, setModalVisible] = useState(false);
-  const [image, setImage] = useState<any>();
+  const [image, setImage] = useState<any>(null);
   const [savingChanges, setSavingChanges] = useState(false);
   const [values, setValues] = useState(initValue);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
   const [errorRegister, setErrorRegister] = useState('');
   const [isDisable, setIsDisable] = useState(true);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
+  const [hasCameraPermission, setHasCameraPermission] = useState(false)
 
   useEffect(() => {
     if (
@@ -45,6 +48,17 @@ const EditProfileScreen = ({navigation, route}: any) => {
       setIsDisable(false);
     }
   }, [errorMessage, values]);
+
+  useEffect(()  => {
+        
+    const getPermission = async () => {
+        await getCameraPermission(setHasCameraPermission);
+        await getGallaryPermission(setHasGalleryPermission);
+    }
+
+    getPermission()
+    
+}, [])
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = {...values};
@@ -59,26 +73,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
   };
   
   const handleRegister = async () => {
-    setErrorMessage(initValue);
-    setIsLoading(true);
-    try {
-      const res = await authenticationAPI.HandleAuthentication('/verification', {phone: values.phone}, 'post');
-      setIsLoading(false);
-      navigation.navigate('VerificationScreen', {
-        code: res.data.code,
-        ...values,  
-      })
-      setIsDisable(true);
-      setErrorRegister('');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setErrorRegister(error.message);
-      } else {
-        setErrorRegister("Network Error");
-      }
-      setIsLoading(false);
-      setIsDisable(false);
-    }
+    await UploadImageToAws3(image);
   };
 
   const uploadImage = async (mode: string) => {
@@ -118,6 +113,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
       setSavingChanges(true);
 
       setSavingChanges(false);
+    
       navigation.navigate("Profile");
     } catch ({message}: any) {
       alert(message);
@@ -181,12 +177,13 @@ const EditProfileScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent back title={'Edit Profile'}>
       <SectionComponent>
-        <AvatarUpload onButtonPress={() => setModalVisible(true)} uri={image} aviOnly={false} />
+        <AvatarUpload onButtonPress={() => setModalVisible(true)} uri={image ? image.uri : 'https://gamek.mediacdn.vn/133514250583805952/2022/5/18/photo-1-16528608926331302726659.jpg'} 
+          aviOnly={false} />
         <UploadModal 
           modalVisible={modalVisible}
           onBackPress={() => { setModalVisible(false); }}
-          onCameraPress={() => uploadImage('camera')} 
-          onGalleryPress={() => uploadImage('gallery')}
+          onCameraPress={() => TakePhoto(hasCameraPermission,setImage)} 
+          onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage)}
           onRemovePress={() => removeImage()}
           isLoading={false}    
         />
@@ -232,7 +229,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
             onPress={handleRegister}
             text="SAVE"
             type="primary"
-            disable={isDisable}           
+            disable={false}           
           />
         </SectionComponent>
     </ContainerComponent>
