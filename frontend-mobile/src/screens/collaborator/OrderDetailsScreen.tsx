@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { ContainerComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import * as ImagePicker from "expo-image-picker"
-import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3 } from "../../ImgPickerAndUpload";
+import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
 
 export default function OrderDetailsScreen({navigation, route}: any) {
     

@@ -13,6 +13,7 @@ import { StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import AppRouters from './src/screens/auth/AppRouters';
+import { registerRootComponent } from 'expo';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
@@ -73,3 +74,5 @@ export default function App() {
     </>
   );
 }
+
+registerRootComponent(App);
