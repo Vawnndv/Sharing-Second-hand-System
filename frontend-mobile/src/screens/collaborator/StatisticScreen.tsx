@@ -64,7 +64,6 @@ export default function StatisticScreen({navigation}: any) {
         const fetchAPIOrders = async () => {
             try{
                 const response = await axios.get(`${appInfo.BASE_URL}/statisticOrdersOnWeekCollab?userID=${auth.id}`)
-                console.log(response.data.ordersOnWeek)
                 setOrders(response.data.ordersOnWeek)
             }catch(error){
                 console.log(error)

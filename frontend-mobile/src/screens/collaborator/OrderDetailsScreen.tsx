@@ -10,17 +10,25 @@ import { authSelector } from "../../redux/reducers/authReducers";
 import { useSelector } from "react-redux";
 import { ContainerComponent } from "../../components";
 import { LoadingModal } from "../../modals";
+import * as ImagePicker from "expo-image-picker"
+import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
+
 export default function OrderDetailsScreen({navigation, route}: any) {
     
     const {orderID, status} = route.params
-    console.log('Details', orderID)
 
     const [orders, setOrders] = useState([])
     const [isLoading, setIsLoading] = useState(true)
 
+    const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
+    const [hasCameraPermission, setHasCameraPermission] = useState(false)
+
+    const [image, setImage] = useState(null)
+
     const handleConfirm = async () => {
         setIsLoading(true);
-        await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`);
+        // await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`);
+        await UploadImageToAws3(image)
         setIsLoading(false);
         navigation.goBack();
     }
@@ -29,12 +37,22 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         const fetchAPI = async () => {
             setIsLoading(true)
             const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
-            console.log(response.data.orders)
             setOrders(response.data.orders)
             setIsLoading(false)
         }
 
         fetchAPI()
+    }, [])
+
+    useEffect(()  => {
+        
+        const getPermission = async () => {
+            await getCameraPermission(setHasCameraPermission);
+            await getGallaryPermission(setHasGalleryPermission);
+        }
+
+        getPermission()
+        
     }, [])
 
     // const testOrder =  {departure: "Departure Order 3", description: "Description 3", giver: {address: null, avatar: null, dateOfBirth: null, email: "staff@example.com", firstName: "Staff", lastName: "User", password: "staff123", phoneNumber: "456789123", roleID: 19, userID: 30, username: "staff"}, item: {itemtypeid: 6, name: "Laptop", quantity: 10}, location: "Phạm Thế Hiển, Quận 8, Thành phố Hồ Chí Minh", orderCode: "ASD135", orderID: 5, qrCode: "QR789", receiver: {address: "Kho 2, 227 Nguyễn Văn Cừ, Quận 5, Thành phố Hồ Chí Minh", avatar: "https://upload.wikimedia.org/wikipedia/commons/5/59/The_look_of_John_Wick_from_the_movie.jpg", dateOfBirth: "2002-12-01T17:00:00.000Z", email: "collaborator1@gmail.com", firstName: "John", lastName: "Wick", password: "collaborator1", phoneNumber: "123123123", roleID: 1, userID: 31, username: "collaborator1"}, status: "Pending", time: "2024-03-25T08:03:16.426Z", title: "Order 3"}
@@ -123,7 +141,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                         <View style={styles.content}>
                                             <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
 
-                                            <View style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}>
+                                            <TouchableOpacity style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}
+                                                onPress={() => PickImage(hasCameraPermission,false, setImage)}>
                                                 <Image
                                                     style={{width: 60, height: 60, marginRight: 10}}
                                                     source={{
@@ -133,7 +152,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <View>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Thêm ảnh đã nhận hàng</Text>
                                                 </View>
-                                            </View>
+                                            </TouchableOpacity>
 
                                             <Image
                                                 style={{marginTop: 20, width: '100%', aspectRatio: 16/9, borderRadius: 10}}

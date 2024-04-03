@@ -11,6 +11,7 @@ import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ fi
 import routerPost from './routes/v1/postRouter';
 import authRouter from './routes/v1/authRouter';
 import orderRouter from './routes/v1/orderRouter';
+import uploadImageToAwsRoute from './routes/v1/uploadImageToAwsRoute';
 import cors from 'cors';
 import errorMiddleHandle from './middlewares/errorMiddleware';
 import userRouter from './routes/v1/userRouter';
@@ -33,6 +34,8 @@ app.use('/order', orderRouter);
 app.use(orderRoute);
 
 app.use(errorMiddleHandle);
+
+app.use('/aws3', uploadImageToAwsRoute);
 
 app.listen(port, (err?: Error) => {
   if (err) {
