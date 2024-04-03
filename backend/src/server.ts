@@ -4,17 +4,17 @@
 
 import express from 'express';
 // import { mapOrder } from './utils/sorts.ts';
-import routerItem from './routes/v1/itemRouter';
-import orderRoute from './routes/orderRoutes/orderRoute';
+import routerItem from './routes/itemRouter';
+import orderCollaboratorRoute from './routes/orderCollaboratorRoute';
 import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
 // import authRouter from './routes/v1/authRouter';
-import routerPost from './routes/v1/postRouter';
-import authRouter from './routes/v1/authRouter';
-import orderRouter from './routes/v1/orderRouter';
-import uploadImageToAwsRoute from './routes/v1/uploadImageToAwsRoute';
+import routerPost from './routes/postRouter';
+import authRouter from './routes/authRouter';
+import orderRouter from './routes/orderRouter';
+import uploadImageToAwsRoute from './routes/uploadImageToAwsRoute';
 import cors from 'cors';
 import errorMiddleHandle from './middlewares/errorMiddleware';
-import userRouter from './routes/v1/userRouter';
+import userRouter from './routes/userRouter';
 
 const app = express();
 
@@ -27,15 +27,14 @@ app.use(express.json());
 
 app.use(routerPost);
 app.use(routerItem);
+app.use(orderCollaboratorRoute);
+
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 app.use('/order', orderRouter);
-
-app.use(orderRoute);
+app.use('/aws3', uploadImageToAwsRoute);
 
 app.use(errorMiddleHandle);
-
-app.use('/aws3', uploadImageToAwsRoute);
 
 app.listen(port, (err?: Error) => {
   if (err) {

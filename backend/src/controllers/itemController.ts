@@ -1,5 +1,6 @@
 import { ItemManager } from '../classDiagramModel/Manager/ItemManager';
 import asyncHandle from 'express-async-handler';
+import { Item } from '../classDiagramModel/Item';
 
 export const getItemDetails = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
@@ -17,5 +18,35 @@ export const getItemDetails = asyncHandle(async (req, res) => {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Lỗi khi lấy món đồ:', error);
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+export const getAllItems = asyncHandle(async (req, res) => {
+  try {
+    // Call the static method getAllItems to fetch all items from the database
+    const items = await Item.getAllItems();
+    // If items are found, return them as a response
+    if (items) {
+      res.status(200).json(items);
+    } else {
+      // If no items are found, return an empty array
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    // If there's an error, return a 500 error
+    console.error('Error retrieving items:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+export const postNewItem = asyncHandle(async (req, res) => {
+  const { name, quantity, itemtypeID } = req.body;
+  
+  try {
+    const newItem = ItemManager.createItem(name, quantity, itemtypeID);
+    res.status(201).json({ message: 'Item created successfully', item: newItem });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
