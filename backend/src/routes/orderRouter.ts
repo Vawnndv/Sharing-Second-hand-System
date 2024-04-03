@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOrderList, getTrackingStatus, getOrderFinishList } from '../../controllers/orderController';
+import { getOrderList, getTrackingStatus, getOrderFinishList } from '../controllers/orderController';
 
 const router = express.Router();
 
