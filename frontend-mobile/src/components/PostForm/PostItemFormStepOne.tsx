@@ -23,7 +23,7 @@ interface StepOneProps {
   setFormData: (formData: FormData) => void;
 }
 
-const itemCategories = ['Quần áo', 'Nội thất', 'Văn phòng phẩm'];
+const itemCategories = ['1', '2', '3'];
 
 
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => {
@@ -60,25 +60,25 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   };
 
   const handleNext = () => {
-    // // Kiểm tra các trường bắt buộc
-    // if (!formData.itemName.trim()) {
-    //   alert('Tên món đồ là bắt buộc.');
-    //   return;
-    // }
-    // if (formData.itemPhotos.length < 1) {
-    //   alert('Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.');
-    //   return;
-    // }
+    // Kiểm tra các trường bắt buộc
+    if (!formData.itemName.trim()) {
+      alert('Tên món đồ là bắt buộc.');
+      return;
+    }
+    if (formData.itemPhotos.length < 1) {
+      alert('Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.');
+      return;
+    }
 
-    // if (!formData.itemQuantity.trim()) {
-    //   alert('Số lượng là bắt buộc.');
-    //   return;
-    // }
+    if (!formData.itemQuantity.trim()) {
+      alert('Số lượng là bắt buộc.');
+      return;
+    }
 
-    // if (!formData.itemCategory.trim()) {
-    //   alert('Loại món đồ là bắt buộc.');
-    //   return;
-    // }
+    if (!formData.itemCategory.trim()) {
+      alert('Loại món đồ là bắt buộc.');
+      return;
+    }
 
     setStep(2);
 
@@ -161,7 +161,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={4} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
       />  
       <Button mode="contained" onPress={handleNext}>Next</Button>
     </ScrollView>

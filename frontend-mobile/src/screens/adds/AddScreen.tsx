@@ -6,7 +6,6 @@ import MultiStepForm from '../../components/PostForm/MultiStepForm';
 const AddScreen = () => {
   return (
     <View>
-      <Text>AddScreen</Text>
       <MultiStepForm></MultiStepForm>
     </View>
   )

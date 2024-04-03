@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
 import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -27,16 +27,22 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
+  const [minEndDate, setMinEndDate] = useState<Date>(new Date());
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
+  
+  useEffect(() => {
+    if (startDate) {
+      setMinEndDate(startDate);
+    }
+  }, [startDate]);
 
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || startDate;
+    const currentDate = selectedDate  || startDate;
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
-    setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
+    setFormData({ ...formData,  postStartDate: moment(currentDate).format('DD-MM-YYYY') });
   };
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
@@ -46,11 +52,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       return;
     }
 
-    else{
+    if (startDate != null) {
       const currentDate = selectedDate || endDate;
       setEndDatePickerVisibility(Platform.OS === 'ios');
       setEndDate(currentDate);
-      setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
+      setFormData({ ...formData,  postEndDate: moment(currentDate).format('DD-MM-YYYY') }); // Cập nhật formData
     }
 
   };
@@ -84,12 +90,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={4} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+
       />  
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           label="Ngày bắt đầu"
-          value={startDate ? moment(startDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={startDate ? moment(startDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
         />
@@ -101,6 +108,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             mode="date"
             is24Hour={true}
             display="default"
+            minimumDate={new Date} // Đặt ngày tối thiểu có thể chọn cho DatePicker
             onChange={onChangeStartDate}
           />
         )}
@@ -108,7 +116,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
           label="Ngày kết thúc"
-          value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={endDate ? moment(endDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
         />
@@ -120,6 +128,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             mode="date"
             is24Hour={true}
             display="default"
+            minimumDate={minEndDate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
             onChange={onChangeEndDate}
           />
         )}

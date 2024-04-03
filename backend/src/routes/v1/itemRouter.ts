@@ -2,6 +2,9 @@ import express, { Request, Response } from 'express';
 import { ItemManager } from '../../classDiagramModel/Manager/ItemManager';
 import { Item } from '../../classDiagramModel//Item';
 
+import {  getItemDetails } from '../../controllers/itemController';
+
+
 
 const router = express.Router();
 
@@ -37,5 +40,7 @@ router.get('/items', async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+router.get('/items/:itemID', getItemDetails);
 
 export default router;

@@ -19,6 +19,8 @@ export class Post {
 
   private timeend: Date | undefined;
 
+  private receiverType: string | undefined;
+
 
   constructor(
     postID?: number,
@@ -29,7 +31,8 @@ export class Post {
     description?: string,
     location?: string,
     timestart?: Date,
-    timeend?: Date
+    timeend?: Date,
+    receiverType?: string
   ) {
     this.postID = postID;
     this.title = title;
@@ -40,6 +43,7 @@ export class Post {
     this.location = location;
     this.timestart = timestart;
     this.timeend = timeend;
+    this.receiverType = receiverType;
   }
 
   public update(): boolean {
