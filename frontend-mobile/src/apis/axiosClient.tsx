@@ -18,15 +18,22 @@ axios.interceptors.request.use(async (config: any) => {
   return config;
 });
 
-axiosClient.interceptors.response.use(res => {
-  if (res.data && res.status === 200) {
-    return res.data;
-  }
-  throw new Error('Error');
-  }, error => {
-    console.log(`Error api ${JSON.stringify(error)}`);
-    throw new Error(error.response);
-  }
+axiosClient.interceptors.response.use(
+  res => {
+    if (res.data && res.status === 200) {
+      return res.data;
+    }
+    throw new Error('Error');
+  },
+  error => {
+    // console.log(`Error api ${JSON.stringify(error)}`);
+    // throw new Error(error.response);
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    } else {
+      throw new Error('Network Error');
+    }
+  },
 );
 
 export default axiosClient

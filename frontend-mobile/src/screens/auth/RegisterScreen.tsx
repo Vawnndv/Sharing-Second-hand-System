@@ -1,9 +1,13 @@
-import { View, Text } from 'react-native'
-import React, { useState } from 'react'
+import { View, Text, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
-import { Lock, Sms, User } from 'iconsax-react-native';
+import { ArrowRight, Lock, Sms, User } from 'iconsax-react-native';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal } from '../../modals';
+import authenticationAPI from '../../apis/authApi';
+import {  Validator } from '../../utils/Validation';
+import { globalStyles } from '../../styles/globalStyles';
+import { ErrorMessages } from '../../models/ErrorMessages';
 
 const initValue = {
   username: '',
@@ -11,11 +15,24 @@ const initValue = {
   password: '',
   confirmPassword: '',
 };
+
 const RegisterScreen = ({navigation}: any) => {
   const [values, setValues] = useState(initValue);
   const [isLoading, setIsLoading] = useState(false);
-  const [ErrorMessage, setErrorMessage] = useState<any>();
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorRegister, setErrorRegister] = useState('');
   const [isDisable, setIsDisable] = useState(true);
+
+  useEffect(() => {
+    if (
+      errorMessage.username ||
+      errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword 
+    ) {
+      setIsDisable(true);
+    } else {
+      setIsDisable(false);
+    }
+  }, [errorMessage, values]);
 
   const handleChangeValue = (key: string, value: string) => {
     const data: any = {...values};
@@ -25,18 +42,38 @@ const RegisterScreen = ({navigation}: any) => {
     setValues(data);
   };
 
+  const formValidator = (key: keyof ErrorMessages) => {
+    setErrorMessage(Validator.Validation(key, errorMessage, values));
+  };
+  
   const handleRegister = async () => {
-    navigation.navigate('VerificationScreen', {
-      code: 1234,
-      ...values,  
-    })
+    setErrorMessage(initValue);
+    setIsLoading(true);
+    try {
+      const res = await authenticationAPI.HandleAuthentication('/verification', {email: values.email}, 'post');
+      setIsLoading(false);
+      navigation.navigate('VerificationScreen', {
+        code: res.data.code,
+        ...values,  
+      })
+      setIsDisable(true);
+      setErrorRegister('');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorRegister(error.message);
+      } else {
+        setErrorRegister("Network Error");
+      }
+      setIsLoading(false);
+      setIsDisable(false);
+    }
   };
 
   return (
     <>
       <ContainerComponent isImageBackground isScroll back>
         <SectionComponent>
-          <TextComponent text="Sign Up" title size={24} />
+          <TextComponent text="Sign Up" title size={24} color={appColors.primary} />
           <SpaceComponent height={21} />
           <InputComponent
             value={values.username}
@@ -44,7 +81,8 @@ const RegisterScreen = ({navigation}: any) => {
             onChange={val => handleChangeValue('username', val)}
             allowClear
             affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('username')}
+            error={errorMessage['username']}
           />
           <InputComponent
             value={values.email}
@@ -52,44 +90,60 @@ const RegisterScreen = ({navigation}: any) => {
             onChange={val => handleChangeValue('email', val)}
             allowClear
             affix={<Sms size={22} color={appColors.gray} />}
-            onEnd={() => {}}
-          />
+            onEnd={() => formValidator('email')}
+            error={errorMessage['email']}
+          />     
           <InputComponent
             value={values.password}
-            placeholder="******"
+            placeholder="Password"
             onChange={val => handleChangeValue('password', val)}
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('password')}
+            error={errorMessage['password']}
           />
           <InputComponent
             value={values.confirmPassword}
-            placeholder="******"
+            placeholder="Confirm password"
             onChange={val => handleChangeValue('confirmPassword', val)}
             allowClear
             isPassword
             affix={<Lock size={22} color={appColors.gray} />}
-            onEnd={() => {}}
+            onEnd={() => formValidator('confirmPassword')}
+            error={errorMessage['confirmPassword']}
           />
         </SectionComponent>
-        {/* {ErrorMessage && (
+        {errorRegister && (
           <SectionComponent>
-
+              <TextComponent text={errorRegister} color={appColors.danger} />
           </SectionComponent>
-        )} */}
+        )}
         <SpaceComponent height={16} />
         <SectionComponent>
           <ButtonComponent
             onPress={handleRegister}
             text="SIGN UP"
             type="primary"
-            // disable={isDisable}
+            iconFlex="right"
+            disable={isDisable}
+            icon={
+              <View style={[
+                globalStyles.iconContainer,
+                {
+                  backgroundColor: isDisable  
+                    ? appColors.gray 
+                    : appColors.primary2
+                },
+              ]}>
+                <ArrowRight size={18} color={appColors.white} />
+              </View>
+            }
           />
         </SectionComponent>
         <SectionComponent>
           <RowComponent justify="center">
-            <TextComponent text="Don't have an account?" />
+            <TextComponent text="Don't have an account? " />
             <ButtonComponent 
               type="link" 
               text="Sign In" 

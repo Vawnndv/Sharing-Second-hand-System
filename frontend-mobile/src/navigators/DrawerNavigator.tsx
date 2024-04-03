@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { createDrawerNavigator } from '@react-navigation/drawer'
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import React from 'react';
 import { DrawerCustom } from '../components';
-import TabNavigator from './TabNavigator';
-import OrderScreen from '../screens/order/OrderScreen';
 import NotificationScreen from '../screens/notifications/NotificationScreen';
+import OrderScreen from '../screens/order/OrderScreen';
+import TabNavigator from './TabNavigator';
+import AccountScreen from '../screens/auth/AccountScreen';
 
 const DrawerNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -20,7 +20,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="TabNavigator" component={TabNavigator} />
       <Drawer.Screen name="MyOrder" component={OrderScreen} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
-
+      <Drawer.Screen name="MyProfile" component={AccountScreen} />
     </Drawer.Navigator>
   )
 }

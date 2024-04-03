@@ -6,23 +6,28 @@ import { fontFamilies } from '../../constants/fontFamilies';
 import { globalStyles } from '../../styles/globalStyles';
 import { ArrowRight } from 'iconsax-react-native';
 import { LoadingModal } from '../../modals';
+import authenticationAPI from '../../apis/authApi';
+import { useDispatch } from 'react-redux';
+import { addAuth } from '../../redux/reducers/authReducers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerificationScreen = ({navigation, route}: any) => {
-  const limitTime = 120;
+  const limitTime = 20;
   const {code, email, password, username} = route.params;
 
   const [currentCode, setCurrentCode] = useState(code);
   const [codeValues, setCodeValues] = useState<string[]>([]);
-  const [newCode, setNewCOde] = useState('');
+  const [newCode, setNewCode] = useState('');
   const [limit, setLimit] = useState(limitTime);
   const [isLoading, setIsLoading] = useState(false);
-  const [isDisable, setIsDisable] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   const ref1 = useRef<any>();
   const ref2 = useRef<any>();
   const ref3 = useRef<any>();
   const ref4 = useRef<any>();
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     ref1.current.focus();
@@ -38,15 +43,66 @@ const VerificationScreen = ({navigation, route}: any) => {
     }
   }, [limit]);
 
+  useEffect(() => {
+    let item = '';
+    codeValues.forEach(val => (item += val));
+
+    setNewCode(item);
+  }, [codeValues]);
+
   const handleChangeCode = (val: string, index: number) => {
     const data = [...codeValues];
     data[index] = val;
 
     setCodeValues(data);
   }
-  const handleVerification = () => {
+  
+  const handleResendVerification = async () => {
+    setCodeValues(['', '', '', '']);
+    setNewCode('');
+    setErrorMessage('');
 
+    setIsLoading(true);
+
+    try {
+      const res: any = await authenticationAPI.HandleAuthentication('/verification', {email}, 'post');
+
+      setLimit(limitTime);
+      setCurrentCode(res.data.code);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(`Can not send verification code ${error}`);
+      setIsLoading(false);
+    }
   };
+
+  const handleVerification = async () => {
+    if (limit > 0) {
+      console.log(parseInt(newCode), parseInt(currentCode))
+      if (parseInt(newCode) !== parseInt(currentCode)) {
+        setErrorMessage('Invalid code!!!');
+      } else {
+        setErrorMessage('');
+
+        const data = {
+          email, password, username: username ?? '',
+        };
+
+        try {
+          const res: any = await authenticationAPI.HandleAuthentication('/register', data, 'post');
+
+          dispatch(addAuth(res.data));
+
+          await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+        } catch (error) {
+          setErrorMessage('Email has already exist!!!');
+          console.log(`Can not create new user ${error}`);
+        }
+      }
+    } else {
+      setErrorMessage('Time out verification code, please resend verification code!!!');
+    }
+  }
   
   return (
     <ContainerComponent
@@ -55,9 +111,10 @@ const VerificationScreen = ({navigation, route}: any) => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Verification" title />
+        <TextComponent text="Verification"  size={24} title color={appColors.primary} />
         <SpaceComponent height={12} />
         <TextComponent text={`We 've send you the verification code on`} />
+        <TextComponent text={`We've send you the verification code on ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} />
         <SpaceComponent height={26} />
         <RowComponent justify="space-around">
           <TextInput
@@ -111,7 +168,7 @@ const VerificationScreen = ({navigation, route}: any) => {
       </SectionComponent>
       <SectionComponent styles={{marginTop: 40}}>
         <ButtonComponent
-          disable={newCode.length > 4}
+          disable={newCode.length !== 4}
           onPress={handleVerification}
           text="Continue"
           type="primary"
@@ -144,7 +201,7 @@ const VerificationScreen = ({navigation, route}: any) => {
           <RowComponent justify="center">
             <TextComponent text="Re-send code in " flex={0} />
             <TextComponent 
-              text={`${(limit - (limit % 60)) / 60}:${limit - (limit - (limit % 60))}`}
+              text={`${String((limit - (limit % 60)) / 60).padStart(2, '0')}:${String(limit - (limit - (limit % 60))).padStart(2, '0')}`}
               color={appColors.link}
               flex={0}
             />
@@ -154,7 +211,7 @@ const VerificationScreen = ({navigation, route}: any) => {
             <ButtonComponent
               type="link"
               text="Resend email verification"
-              onPress={handleVerification}
+              onPress={handleResendVerification}
             />
           </RowComponent>
         )}

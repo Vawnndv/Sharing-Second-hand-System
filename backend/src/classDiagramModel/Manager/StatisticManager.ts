@@ -59,7 +59,7 @@ export class StatisticManager {
         const values: any = [userID];
         const result : QueryResult = await client.query(queryOrderCount, values);
         const row = result.rows[0];
-        return [row.order_pending_count, row.order_completed_count]
+        return [parseInt(row.order_pending_count), parseInt(row.order_completed_count)]
     }catch(error){
       []
     }finally{

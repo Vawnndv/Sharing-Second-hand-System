@@ -1,18 +1,20 @@
-import { View, Text, StyleSheet, Platform, StatusBar, Touchable, Image, FlatList } from 'react-native'
-import React from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Home, User } from 'iconsax-react-native';
+import React from 'react';
+import { Button, FlatList, Image, Platform, StatusBar, StyleSheet, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 import { appColors } from '../constants/appColors';
-import TextComponent from './TextComponent';
+import { authSelector, removeAuth } from '../redux/reducers/authReducers';
+import AvatarComponent from './AvatarComponent';
 import RowComponent from './RowComponent';
-import { globalStyles } from '../styles/globalStyles';
-import { CardTick, Home, Information, ShoppingCart, Timer, User } from 'iconsax-react-native';
-import { AntDesign, Feather, FontAwesome6, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
+import SpaceComponent from './SpaceComponent';
+import TextComponent from './TextComponent';
 
 const DrawerCustom = ({navigation}: any) => {
-  const user =  {
-    name: 'Nguyen Dinh Van',
-    imageUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
-  };
+  const auth = useSelector(authSelector);
+  const dispatch = useDispatch();
+
   const size = 24
   const color = appColors.gray;
   const profileMenu = [
@@ -69,14 +71,39 @@ const DrawerCustom = ({navigation}: any) => {
     },
   ];
 
-  const handleSignOut = () => {
-
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    dispatch(removeAuth({}));
   }
+
+  const handleNavigation = (key: string) => {
+    switch (key) {
+      case 'SignOut':
+        handleLogout();
+        break;
+
+      case 'MyProfile':
+        navigation.navigate('Profile', {
+          screen: 'ProfileScreen',
+          params: {
+            id: auth.id,
+          },
+        });
+        break;
+      default:
+        console.log(key);
+        navigation.navigate(key);
+        break;
+    }
+
+    navigation.closeDrawer();
+  };
 
   return (
     <View style={[localStyles.container]}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <RowComponent 
-        justify="space-between"
+        justify='flex-start'
         onPress={() => {
           navigation.closeDrawer('');
           navigation.navigate('Profile', {
@@ -85,28 +112,14 @@ const DrawerCustom = ({navigation}: any) => {
           });
         }}
       >
-        {user.imageUrl ? (
-          <Image source={{uri: user.imageUrl}} style={[localStyles.avatar]} />
-        ) : (
-          <View style={[
-            localStyles.avatar,
-            {
-              backgroundColor :appColors.gray2
-            }
-          ]}>
-            <TextComponent
-              title
-              size={22}
-              color={appColors.white}
-              text={
-                user.name
-                  ? user.name.split(' ')[user.name.split(' ').length - 1].substring(0,1)
-                  : ''
-              }
-            />
-          </View>
-        )}
-        <TextComponent text={user.name} title size={20} />
+        <AvatarComponent
+          avatar={auth.avatar}
+          username={auth.username ? auth.username : auth.email}
+          styles={localStyles.avatar}
+          size={60}
+        />
+        <SpaceComponent width={10} />
+        <TextComponent text={auth.username} title size={16} />
       </RowComponent>
       <FlatList
         showsVerticalScrollIndicator={false}
@@ -118,15 +131,7 @@ const DrawerCustom = ({navigation}: any) => {
         renderItem={({item, index}) => (
           <RowComponent
             styles={[localStyles.listItem]}
-            onPress={
-              item.key === 'SignOut'
-                ? () => handleSignOut()
-                : () => {
-                  console.log(item.key);
-                  navigation.closeDrawer();
-                  navigation.navigate(item.key)
-                }
-              }
+            onPress={() => handleNavigation(item.key)}
           >
             {item.icon}
             <TextComponent
@@ -136,6 +141,13 @@ const DrawerCustom = ({navigation}: any) => {
           </RowComponent>
         )}
       />
+      <RowComponent>
+          <Button
+            title="Logout"
+            color={appColors.primary}
+            onPress={() => handleNavigation('SignOut')}
+          />
+      </RowComponent>
     </View>
   )
 }
@@ -158,6 +170,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   listItem: {
     paddingVertical: 14,
     justifyContent: 'flex-start',

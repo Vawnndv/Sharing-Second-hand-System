@@ -3,6 +3,7 @@ import { Status } from './Status';
 import { Trace } from './Trace';
 import pool from '../config/DatabaseConfig';
 import { User } from './User';
+import { Post } from './Post';
 
 export class Order {
   private orderID: number | undefined;
@@ -35,9 +36,11 @@ export class Order {
 
   private currentStatus: Status | undefined;
 
+  private post: Post | null;
+
   public constructor(orderID: number, title: string, receiver: User | undefined, giver: User | undefined,
     orderCode: string, qrCode: string, status: string, location: string, description: string,
-    time: string, item: Item | null, departure: string) {
+    time: string, item: Item | null, departure: string, post: Post | null) {
     this.orderID = orderID;
     this.title = title;
     this.receiver = receiver;
@@ -50,6 +53,7 @@ export class Order {
     this.time = time;
     this.item = item;
     this.departure = departure;
+    this.post = post
     // this.item = item;
     // this.trace = trace;
     // this.currentStatus = currentStatus;

@@ -21,6 +21,8 @@ export class Account {
 
   protected firstName: string | undefined;
 
+  protected address: string | undefined;
+
   protected username: string | undefined;
 
   protected password: string | undefined;
@@ -30,7 +32,7 @@ export class Account {
   protected chat: ChatManager | undefined;
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
-    email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
+    email: string, phoneNumber: string, lastName: string, firstName: string, address: string, username: string,
     password: string) {
     this.userID = userID;
     this.roleID = roleID;
@@ -40,6 +42,7 @@ export class Account {
     this.phoneNumber = phoneNumber;
     this.lastName = lastName;
     this.firstName = firstName;
+    this.address = address;
     this.username = username;
     this.password = password;
   }
@@ -65,8 +68,28 @@ export class Account {
     } catch (error) {
       console.error(error);
       return null;
-    } 
+    } finally {
+      client.release();
+    }
   };
+
+  public static async findUserById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM "User" WHERE userid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return result.rows[0];
+      // return new Item(row.itemId, row.name, row.quantity);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
 
   public static async findUserByEmail(email: string): Promise<any> {
     const client = await pool.connect();
@@ -81,6 +104,50 @@ export class Account {
     } catch(error) {
       console.log(error);
       return null;
+    } finally {
+      client.release();
     }
   }
+
+  public static async updateAccount(userid: number, username: string, password: string, phonenumber: string, avatar: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "User"
+      SET username = $1, password = $2, phonenumber = $3, avatar = $4
+      WHERE userid = $5
+      RETURNING *;
+    `;
+    const values: any = [username,  password, phonenumber, avatar, userid];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+  public static async updateAccountPassword(userid: number, password: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "User"
+      SET password = $2
+      WHERE userid = $1
+      RETURNING *;
+    `;
+    const values: any = [userid, password];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }; 
 }

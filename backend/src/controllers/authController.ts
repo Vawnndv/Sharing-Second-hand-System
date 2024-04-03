@@ -1,12 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
-// eslint-disable-next-line import/no-extraneous-dependencies
 import asyncHandle from 'express-async-handler';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import nodemailer from 'nodemailer';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import bcrypt from 'bcrypt';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
@@ -56,14 +52,21 @@ const handleSendMail = async (val: {}) => {
   }
 };
 
-export const verification = asyncHandle(async (req, res) => {
+export const verification = asyncHandle(async (req: Request, res: Response) => {
   const { email } = req.body;
 
+  const existingUser = await Account.findUserByEmail(email);
+
+  if (existingUser) {
+    res.status(401);
+    throw new Error('User has already exist!!!');
+  }
+  
   const verificationCode = Math.round(1000 + Math.random() * 9000);
   
   try {
     const data = {
-      from: '\'Support EvenHub Application\' <$ {process.env.USERNAME_EMAIL}>', 
+      from: `"ReTreasure Application" <${process.env.USERNAME_EMAIL}>`, 
       to: email,
       subject: 'Verification email code', 
       text: 'Your code to verification email',
@@ -123,23 +126,62 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 
   if (!existingUser) {
     res.status(403);
-    throw new Error('User not found');
+    throw new Error('Email is invalid!!!');
   }
 
   const isMatchPassword = await bcrypt.compare(password, existingUser.password);
 
   if (!isMatchPassword) {
     res.status(401);
-    throw new Error('Email or Password is not correct!!!');
+    throw new Error('Password is invalid!!!');
   }
 
   res.status(200).json({
     message: 'Login successfully!!!',
     data: {
-      id: existingUser.id,
+      id: existingUser.userid,
       email: existingUser.email,
-      accessToken: await getJsonWebToken(email, existingUser.id),
+      username: existingUser.username,
+      accessToken: await getJsonWebToken(email, existingUser.userid),
+      roleID: existingUser.roleid,
     },
   });
 });
 
+export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const randomPassword = Math.round(100000 + Math.random() * 99000);
+
+  const data = {
+    from: `"New Password" <${process.env.USERNAME_EMAIL}>`, 
+    to: email,
+    subject: 'Verification email code', 
+    text: 'Your code to verification email',
+    html: `<h1>${randomPassword}</h1>`,
+  };
+
+  const user = await Account.findUserByEmail(email);
+  
+  if (user) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
+
+    const updateUser = await Account.updateAccountPassword(user.userid, hashedPassword);
+
+    if (updateUser) {
+      await handleSendMail(data).then(() => {
+        res.status(200).json({
+          message: 'Send my new password successfully!!!',
+          data: {},
+        });
+      });
+    } else {
+      res.status(400);
+      throw new Error('Update error!!!');
+    }
+  } else {
+    res.status(401);
+    throw new Error('User not found!!!');
+  }
+});

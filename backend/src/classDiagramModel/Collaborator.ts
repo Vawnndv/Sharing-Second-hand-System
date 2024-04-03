@@ -20,8 +20,8 @@ export class Collaborator extends User {
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
-    password: string) {
-    super(userID, roleID, dateOfBirth, avatar, email, phoneNumber, lastName, firstName, username, password);
+    password: string, address: string) {
+    super(userID, roleID, dateOfBirth, avatar, email, phoneNumber, lastName, firstName, username, password, address);
     this.postManager = new CollaboratPostManager();
     this.orderManager = new CollaboratorOrderManager();
   }

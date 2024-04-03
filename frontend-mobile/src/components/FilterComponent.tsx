@@ -1,5 +1,4 @@
-import { View, Image, StyleSheet, Text, Touchable, TouchableOpacity } from "react-native"
-import { ScrollView } from "react-native-gesture-handler";
+import { View, Image, StyleSheet, Text, Touchable, TouchableOpacity, ScrollView } from "react-native"
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { RadioButton } from 'react-native-paper';

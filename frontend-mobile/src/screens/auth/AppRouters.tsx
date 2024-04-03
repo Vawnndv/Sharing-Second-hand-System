@@ -1,12 +1,13 @@
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import AuthNavigator from '../../navigators/AuthNavigator';
 import MainNavigator from '../../navigators/MainNavigator';
 import { addAuth, authSelector } from '../../redux/reducers/authReducers';
-
+import { LoadingModal } from '../../modals';
 const AppRouters = () => {
   const {getItem} = useAsyncStorage('auth');
+  const [isLoading, setIsLoading] = useState(true); 
 
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
@@ -17,13 +18,15 @@ const AppRouters = () => {
 
   const checkLogin = async () => {
     const res = await getItem();
-
-    res && dispatch(addAuth(JSON.parse(res)));
+    if (res) {
+      dispatch(addAuth(JSON.parse(res)));
+    }
+    setIsLoading(false); 
   };
 
   return (
     <>
-      {auth.accessToken ? <MainNavigator /> : <AuthNavigator />}
+      {isLoading ? <LoadingModal visible={isLoading}/> : auth.accessToken ? <MainNavigator/> : <AuthNavigator />}
     </>
   )
 }

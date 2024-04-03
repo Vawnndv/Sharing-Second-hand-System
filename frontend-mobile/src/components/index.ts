@@ -1,3 +1,4 @@
+import AvatarComponent from "./AvatarComponent";
 import ButtonComponent from "./ButtonComponent";
 import CircleComponent from "./CircleComponent";
 import ContainerComponent from "./ContainerComponent";
@@ -20,4 +21,5 @@ export {
   CircleComponent,
   DrawerCustom,
   HeaderComponent,
+  AvatarComponent,
 }

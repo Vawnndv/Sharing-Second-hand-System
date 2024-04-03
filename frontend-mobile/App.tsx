@@ -10,10 +10,9 @@ import Entypo from '@expo/vector-icons/Entypo';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'react-native';
-import AppRouters from './src/screens/auth/AppRouters';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
-
+import AppRouters from './src/screens/auth/AppRouters';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
@@ -62,10 +61,11 @@ export default function App() {
     return null;
   }
 
+
   return (
     <>
-      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
       <Provider store={store}>
+        <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
         <NavigationContainer onReady={onLayoutRootView}>
           <AppRouters />
         </NavigationContainer>
