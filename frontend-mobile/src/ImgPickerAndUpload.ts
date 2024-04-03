@@ -31,7 +31,7 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsMultipleSelection: multiple,
-            quality: 1,
+            quality: 0.5,
             base64: false
         })
 
@@ -58,7 +58,7 @@ export const TakePhoto = async (permission: boolean, setImage: any) => {
     if(permission){
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
-            quality: 1,
+            quality: 0.5,
             base64: false
         })
     
@@ -68,6 +68,7 @@ export const TakePhoto = async (permission: boolean, setImage: any) => {
                 name: new Date().getTime(),
                 type: result.assets[0].mimeType,
             }
+            console.log(finalResult)
             setImage(finalResult)
             // setImage(result.assets[0])
         }
