@@ -45,6 +45,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         fetchAPI()
     }, [])
 
+    console.log(orders)
     useEffect(()  => {
         
         const getPermission = async () => {
@@ -76,8 +77,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <IconEvil name="location" size={25}/>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người cho</Text>
-                                                    <Text>{order.receiver.firstName} {order.receiver.lastName} - {order.receiver.phoneNumber}</Text>
-                                                    <Text>{order.location}</Text>
+                                                    <Text>{order.order.receiver.firstName} {order.order.receiver.lastName} - {order.order.receiver.phoneNumber}</Text>
+                                                    <Text>{order.order.location}</Text>
                                                 </View>
                                             </View>
 
@@ -85,8 +86,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <IconEvil name="location" color={'red'} size={25}/>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người lấy hàng</Text>
-                                                    <Text>{order.giver.firstName} - {order.giver.lastName} - {order.giver.phoneNumber}</Text>
-                                                    <Text>{order.receiver.address}</Text>
+                                                    <Text>{order.order.giver.firstName} - {order.order.giver.lastName} - {order.order.giver.phoneNumber}</Text>
+                                                    <Text>{order.order.receiver.address}</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -106,7 +107,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 />
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Lấy hàng trong ngày</Text>
-                                                    <Text>Hết hạn vào ngày {moment(order.post.timeend).format("DD-MM-YYYY")}</Text>
+                                                    <Text>Hết hạn vào ngày {moment(order.order.post.timeend).format("DD-MM-YYYY")}</Text>
                                                 </View>
                                             </View>
 
@@ -132,14 +133,14 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 />
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Hàng hóa</Text>
-                                                    <Text>Số lượng {order.item.quantity} - {order.item.name}</Text>
+                                                    <Text>Số lượng {order.order.item.quantity} - {order.order.item.name}</Text>
                                                 </View>
                                             </View>
 
                                             <Image
                                                 style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
                                                 source={{
-                                                    uri: "https://quangminh.vn/image/cache/catalog/product/may-cat-co-nhat-ban-husqvarna-226r-2766-700x700-product_popup.jpg"
+                                                    uri: order.image
                                                 }}
                                             />
                                         </View>

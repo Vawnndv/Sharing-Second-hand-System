@@ -28,6 +28,10 @@ export class Item {
     }
   }
 
+  public getItemID(): number {
+    return -1
+  }
+
 
   // static async createItem(name: string, quantity: number, itemtypeID: number): Promise<void> {
   //   const client = await pool.connect();

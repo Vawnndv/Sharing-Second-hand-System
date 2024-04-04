@@ -141,7 +141,7 @@ export class OrderManager {
     }
   }
 
-  public static async showOrderDetails(orderID: string | undefined): Promise<Order[] | null> {
+  public static async showOrderDetails(orderID: string | undefined): Promise<any | null> {
     // code here
     const client = await pool.connect();
 
@@ -159,21 +159,31 @@ export class OrderManager {
       const receive: User | undefined = await UserManager.getUser(ordersRow.userreceiveid);
       const item: Item | null = await ItemManager.viewDetailsItem(ordersRow.itemid);
       const post: Post | null = await PostManager.getDetailsPost(ordersRow.postid);
-      return [new Order(
-        ordersRow.orderid,
-        ordersRow.title,
-        receive,
-        giver,
-        ordersRow.ordercode,
-        ordersRow.qrcode,
-        ordersRow.status,
-        ordersRow.location,
-        ordersRow.description,
-        ordersRow.time,
-        item,
-        ordersRow.departure,
-        post
-      )];
+
+      const queryImageItem = `
+        SELECT path FROM "image" 
+        WHERE itemid = $1
+      `
+      const path = await client.query(queryImageItem, [ordersRow.itemid])
+      
+      return [{
+        order: new Order(
+          ordersRow.orderid,
+          ordersRow.title,
+          receive,
+          giver,
+          ordersRow.ordercode,
+          ordersRow.qrcode,
+          ordersRow.status,
+          ordersRow.location,
+          ordersRow.description,
+          ordersRow.time,
+          item,
+          ordersRow.departure,
+          post
+        ),
+        image: path.rows[0].path
+      }];
       
 
       // console.log(orders)
