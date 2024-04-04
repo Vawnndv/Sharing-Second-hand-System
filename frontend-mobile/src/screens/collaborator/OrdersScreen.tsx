@@ -26,6 +26,13 @@ export default function OrdersScreen({navigation}: any) {
     const [tab, setTab] = useState('Pending')
     const [orders, setOrders] = useState([])
 
+    const [filterValue, setFilterValue] = useState({
+        distance: 5,
+        time: 14,
+        category: "Tất cả"
+    })
+    console.log(filterValue)
+
     useEffect(() => {
         const fetchAPI = async () => {
             try{
@@ -40,6 +47,13 @@ export default function OrdersScreen({navigation}: any) {
 
         fetchAPI()
     },[tab])
+
+    const getDate = () => {
+        const day = new Date()
+        const date = day.getDate() > 9 ? day.getDate() : '0'+day.getDate()
+        const month = day.getMonth() > 9 ? day.getMonth() : '0'+day.getMonth()
+        return date + '/' + month + '/' + day.getFullYear()
+    }
 
     return(
         <ContainerComponent>
@@ -78,7 +92,7 @@ export default function OrdersScreen({navigation}: any) {
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
                     <View style={styles.wrapper}>
-                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày 27/03/2024 ( Hôm nay )</Text>
+                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày {getDate()} ( Hôm nay )</Text>
                     </View>
                     {/* // seperate */}
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
@@ -111,7 +125,7 @@ export default function OrdersScreen({navigation}: any) {
 
                 </View>
 
-                <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
+                <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} setFilterValue={setFilterValue}/>
                 <LoadingModal visible={isLoading}/>
             </View>
         </ContainerComponent>
