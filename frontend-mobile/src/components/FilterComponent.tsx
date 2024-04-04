@@ -5,13 +5,49 @@ import { RadioButton } from 'react-native-paper';
 import { useState } from "react";
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
-export default function FilterComponent({hideModal}: any) {
+const distance = [
+    1,
+    2,
+    5,
+    10,
+    15,
+    25
+]
 
-    const [indexDistance, setIndexDistance] = useState(0)
-    const [indexTime, setIndexTime] = useState(0)
+const time = [
+    1,
+    3,
+    7,
+    14,
+    20,
+]
+
+const category = [
+    "Tất cả",
+    "Quần áo",
+    "Giày dép",
+    "Đồ nội thất",
+    "Công cụ",
+    "Dụng cụ học tập",
+    "Thể thao",
+    "Khác"
+]
+export default function FilterComponent({hideModal, setFilterValue}: any) {
+
+    const [indexDistance, setIndexDistance] = useState(2)
+    const [indexTime, setIndexTime] = useState(3)
     const [indexCategory, setIndexCategory] = useState(0)
 
     const [checked, setChecked] = useState('first');
+
+    const handleApply = () => {
+        hideModal();
+        setFilterValue({
+            distance: distance[indexDistance],
+            time: time[indexTime],
+            category: category[indexCategory]
+        })
+    }
     return (
         <View style={styles.container}>
            
@@ -95,27 +131,35 @@ export default function FilterComponent({hideModal}: any) {
                     <View style={styles.groupItem}>
                         <TouchableOpacity style={[styles.item, indexCategory === 0 && styles.selectItem]}
                             onPress={() => {setIndexCategory(0)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Quần áo</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Khác</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 1 && styles.selectItem]}
                             onPress={() => {setIndexCategory(1)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 1 && styles.selectTextItem]}>Giày dép</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 1 && styles.selectTextItem]}>Quần áo</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 2 && styles.selectItem]}
                             onPress={() => {setIndexCategory(2)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 2 && styles.selectTextItem]}>Đồ nội thất</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 2 && styles.selectTextItem]}>Giày dép</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 3 && styles.selectItem]}
                             onPress={() => {setIndexCategory(3)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 3 && styles.selectTextItem]}>Công cụ</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 3 && styles.selectTextItem]}>Đồ nội thất</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 4 && styles.selectItem]}
                             onPress={() => {setIndexCategory(4)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 4 && styles.selectTextItem]}>Dụng cụ học tập</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 4 && styles.selectTextItem]}>Công cụ</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 5 && styles.selectItem]}
                             onPress={() => {setIndexCategory(5)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 5 && styles.selectTextItem]}>Thể thao</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 5 && styles.selectTextItem]}>Dụng cụ học tập</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.item, indexCategory === 6 && styles.selectItem]}
+                            onPress={() => {setIndexCategory(6)}}>
+                            <Text style={[{fontSize: 15}, indexCategory === 6 && styles.selectTextItem]}>Thể thao</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.item, indexCategory === 7 && styles.selectItem]}
+                            onPress={() => {setIndexCategory(7)}}>
+                            <Text style={[{fontSize: 15}, indexCategory === 7 && styles.selectTextItem]}>Khác</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -150,7 +194,7 @@ export default function FilterComponent({hideModal}: any) {
 
             <View style={styles.button}>
                 <TouchableOpacity style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
-                    onPress={hideModal}>
+                    onPress={handleApply}>
                     <Text style={{color: 'white'}}>Apply</Text>
                 </TouchableOpacity>
             </View>

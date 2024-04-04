@@ -32,7 +32,9 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
             allowsMultipleSelection: multiple,
             quality: 0.5,
-            base64: false
+            base64: false,
+            allowsEditing: true,
+            aspect: [8,5]
         })
 
     
@@ -59,7 +61,8 @@ export const TakePhoto = async (permission: boolean, setImage: any) => {
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
             quality: 0.5,
-            base64: false
+            base64: false,
+            aspect: [8,5]
         })
     
         if(!result.canceled){

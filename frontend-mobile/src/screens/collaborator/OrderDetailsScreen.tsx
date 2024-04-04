@@ -23,7 +23,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
     const [hasCameraPermission, setHasCameraPermission] = useState(false)
 
-    const [image, setImage] = useState(null)
+    const [image, setImage] = useState<any>(null)
+    console.log(image)
 
     const handleConfirm = async () => {
         setIsLoading(true);
@@ -134,12 +135,21 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                     <Text>Số lượng {order.item.quantity} - {order.item.name}</Text>
                                                 </View>
                                             </View>
+
+                                            <Image
+                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
+                                                source={{
+                                                    uri: "https://quangminh.vn/image/cache/catalog/product/may-cat-co-nhat-ban-husqvarna-226r-2766-700x700-product_popup.jpg"
+                                                }}
+                                            />
                                         </View>
+                                        
 
                                         <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
                                         <View style={styles.content}>
                                             <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
+                                            
 
                                             <TouchableOpacity style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}
                                                 onPress={() => PickImage(hasCameraPermission,false, setImage)}>
@@ -154,12 +164,15 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View>
                                             </TouchableOpacity>
 
-                                            <Image
-                                                style={{marginTop: 20, width: '100%', aspectRatio: 16/9, borderRadius: 10}}
-                                                source={{
-                                                    uri: "https://quangminh.vn/image/cache/catalog/product/may-cat-co-nhat-ban-husqvarna-226r-2766-700x700-product_popup.jpg"
-                                                }}
-                                            />
+                                            {
+                                                image !== null && <Image
+                                                    style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
+                                                    source={{
+                                                        uri: image.uri
+                                                    }}
+                                                />
+                                            }
+                                            
                                             {
                                                 status === 'Pending' &&
                                                 <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',

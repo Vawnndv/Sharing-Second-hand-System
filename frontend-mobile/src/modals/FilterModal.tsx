@@ -1,7 +1,7 @@
 import { View, StyleSheet, TouchableOpacity, ScrollView, Text, Modal, Alert, TouchableWithoutFeedback } from "react-native";
 import FilterComponent from "../components/FilterComponent";
 
-export default function FilterModal({visible, setVisible, hideModal, showModal}: any) {
+export default function FilterModal({visible, setVisible, hideModal, showModal, setFilterValue}: any) {
     // const [visible, setVisible] = useState(false);
 
     // const showModal = () => setVisible(true);
@@ -22,7 +22,7 @@ export default function FilterModal({visible, setVisible, hideModal, showModal}:
                         <TouchableWithoutFeedback onPress={hideModal}>
                             <View style={styles.overlay}>
                                 <TouchableWithoutFeedback>
-                                    <FilterComponent hideModal={hideModal} />
+                                    <FilterComponent hideModal={hideModal} setFilterValue={setFilterValue}/>
                                 </TouchableWithoutFeedback>
                             </View>
                         </TouchableWithoutFeedback>
