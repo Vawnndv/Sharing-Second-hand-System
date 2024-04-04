@@ -5,9 +5,15 @@ dotenv.config();
 
 export const getOrderList = async (req: Request, res: Response) => {
   const userID : any = req.query.userID;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
   
   try {
-    const orderList = await  OrderManager.getOrderList(userID);
+    const orderList = await  OrderManager.getOrderList(userID, distance, time, category, sort, latitude, longitude);
     res.status(200).json({ message: 'Get orders list success:', data: orderList });
   } catch (error) {
     console.error(error);
@@ -17,9 +23,15 @@ export const getOrderList = async (req: Request, res: Response) => {
 
 export const getOrderFinishList = async (req: Request, res: Response) => {
   const userID : any = req.query.userID;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
   
   try {
-    const orderListFinish = await  OrderManager.getOrderFinishList(userID);
+    const orderListFinish = await  OrderManager.getOrderFinishList(userID, distance, time, category, sort, latitude, longitude);
     res.status(200).json({ message: 'Get orders finish list success:', data: orderListFinish });
   } catch (error) {
     console.error(error);

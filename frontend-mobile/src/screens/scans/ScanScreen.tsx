@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import { Text, View, StyleSheet, Button, ImageBackground } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { ContainerComponent, SectionComponent } from '../../components'
+import { Ionicons } from '@expo/vector-icons';
 
-export default function App() {
+export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
 
@@ -29,15 +30,29 @@ export default function App() {
   }
 
   return (
-    <ContainerComponent title='Scan Screen' right>
-        <View style={styles.container}>
-          <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-            style={StyleSheet.absoluteFillObject}
-          />
-          {scanned && <Button title={'Chạm để quét lại lần nữa'} onPress={() => setScanned(false)} />}
-          <View style={styles.marker}/>
+    <ContainerComponent>
+      <View style={styles.container}>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={StyleSheet.absoluteFillObject}
+        />
+        {scanned && <Button title={'Chạm để quét lại lần nữa'} onPress={() => setScanned(false)} />}
+        {/* <View style={styles.marker}/> */}
+        <Ionicons
+          name="arrow-back"
+          size={24}
+          color="white"
+          style={{ paddingTop: 30, paddingLeft: 10 }}
+          onPress={() => navigation.goBack()}
+        />
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ImageBackground
+              source={require('../../../assets/images/scanner.png')}
+              style={{width: 250, height: 250}}
+          >
+          </ImageBackground>
         </View>
+      </View>
     </ContainerComponent>
   );
 }

@@ -4,7 +4,7 @@ import FilterModal from '../../modals/FilterModal';
 import React, { useState } from 'react';
 
 
-export default function FilterOrder() {
+export default function FilterOrder({filterValue, setFilterValue}: any) {
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -24,7 +24,7 @@ export default function FilterOrder() {
         <Ionicons name="options" size={26} color={'#552466'}/>
       </TouchableOpacity>
 
-      <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
+      <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
     </View>
   );
 }

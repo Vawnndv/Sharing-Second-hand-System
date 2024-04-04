@@ -3,6 +3,8 @@ import FilterOrder from './FilterOrder';
 import orderAPI from '../../apis/orderApi';
 import React, { useEffect, useState } from 'react';
 import CardOrderView from './CardOrderView';
+import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
+import { LoadingModal } from '../../modals';
 
 const userID = 29;
 
@@ -19,19 +21,35 @@ interface Item {
 }
 
 export default function ReceiveOrderScreen() {
+  const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
+  const [filterValue, setFilterValue] = useState({
+    distance: 5,
+    time: 14,
+    category: "Tất cả",
+    sort: "Mới nhất"
+  })
+  console.log(filterValue)
 
   useEffect(function(){
     getOrderList()
-  }, []);
+  }, [filterValue]);
 
   const getOrderList = async () => {
     try {
+      setIsLoading(true);
+      let location = await GetCurrentLocation();
+      if (!location) {
+        console.log("Failed to get location.");
+        return;
+      }
+
       const res = await orderAPI.HandleOrder(
-        `/list?userID=${userID}`,
+        `/list?userID=${userID}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`,
         'get'
       );
       
+      setIsLoading(false);
       setOrderReceive(res.data.orderReceive);
       
     } catch (error) {
@@ -41,7 +59,7 @@ export default function ReceiveOrderScreen() {
 
   return (
     <View style={styles.container}>
-      <FilterOrder/>
+      <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
       <View style={styles.content}>
       <ScrollView 
             style={styles.scrollView}>
@@ -71,6 +89,7 @@ export default function ReceiveOrderScreen() {
                   />
               </View>
           )}
+          <LoadingModal visible={isLoading} />
         </ScrollView>
       </View>
     </View>
