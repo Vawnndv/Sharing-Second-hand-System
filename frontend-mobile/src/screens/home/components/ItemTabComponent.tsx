@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import UserPostScreen from '../UserPostScreen';
 import WarehouseScreen from '../WarehouseScreen';
-import { fontFamilies } from '../../../constants/fontFamilies';
 
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
   },
 
   tabItem: {
-    width: '75%',
+    width: '60%',
     backgroundColor: 'transparent',
   },
 
@@ -50,8 +49,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
     color: '#552466',
     fontWeight:'bold',
-    fontFamily: fontFamilies.medium,
-    fontSize: 16,
+    fontSize: 17,
   },
 
   tabIndicator: {
