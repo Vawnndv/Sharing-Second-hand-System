@@ -9,24 +9,12 @@ import { fontFamilies } from '../../constants/fontFamilies';
 const {width, height} = Dimensions.get("window");
 
 const CardOrderView: React.FC<{ title: string, location: string, givetype: string, statusname: string, image: string, status: string, createdat: string, orderid: string, statuscreatedat: string, isVisibleConfirm: boolean }> = ({ title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat, isVisibleConfirm}) => {
-  // const router = useRouter();
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
     <View>
       <Pressable
         onPress={() => {
-          // router.navigate({
-          //   pathname: "/(modals)/ViewDetailOrder",
-          //   params: {
-          //     Title: Title,
-          //     LocationGive: LocationGive,
-          //     GiveType: GiveType,
-          //     Status: Status,
-          //     image: image
-          //   },
-          // });
-
           setIsModalVisible(true)
         }}
       >
@@ -39,10 +27,10 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
               />
 
               <View style={styles.infomation}>
-                  <Text style={{ fontWeight: 'bold', fontFamily: fontFamilies.bold }}>{title}</Text>
+                  <Text style={{ fontWeight: 'bold', fontFamily: fontFamilies.bold, width: width - 150 }}>{title}</Text>
                   <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
                       <Icon name="map-pin" size={20} color="#552466" />
-                      <Text style={{ paddingLeft: 20 }}>{location}</Text>
+                      <Text style={{ paddingLeft: 20, width: width - 150 }}>{location}</Text>
                   </View>
 
                   <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -53,7 +41,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
               </View>
             </View>
 
-            <Text style={{ textAlign: 'right', color: 'red', paddingRight: 5}}> {statusname} </Text>
+            <Text style={{ textAlign: 'right', color: 'red', marginBottom: 10, marginRight: 10}}> {statusname} </Text>
         </View>
       </Pressable>
 
@@ -85,14 +73,22 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
 
 const styles = StyleSheet.create({
   card: {
-    height: 140,
-    borderWidth: 2,
+    backgroundColor: '#fff',
+    marginVertical: 10,
+    marginHorizontal: '2%',
+    width: '96%',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowRadius: 4,
+    elevation: 5,
     borderRadius: 10,
-    margin: 10,
-    borderColor: 'grey',
   },
   content: {
-    height: 110,
+    marginVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -104,9 +100,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   infomation: {
-    height: 80,
     width: width - 90,
-    flexDirection: 'column',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingLeft: 10

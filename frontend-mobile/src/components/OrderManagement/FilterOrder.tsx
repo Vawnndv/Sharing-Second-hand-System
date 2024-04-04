@@ -32,7 +32,7 @@ export default function FilterOrder() {
 const styles = StyleSheet.create({
   filter: {
     height: 40,
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#fff',
     display: 'flex',
     justifyContent: 'center',
     paddingHorizontal: 20

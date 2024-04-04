@@ -27,7 +27,7 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
         <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ justifyContent: 'flex-start' }}>
           <Ionicons name="arrow-back" size={28}></Ionicons>
         </TouchableOpacity>
-        <Text style={{marginLeft: '25%', fontSize: 18, fontWeight: 'bold'}}>{data.statusname}</Text>
+        <Text style={{flex: 1, textAlign: 'center', alignItems: 'center', fontSize: 18, fontWeight: 'bold'}}>{data.statusname}</Text>
       </View>
 
       <View style={styles.body}>
@@ -111,24 +111,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderColor: 'grey',
     borderWidth: 1,
-    height: 110,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },
   infomation: {
     width: '70%',
-    height: 80,
-    // flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingLeft: 10,
+    marginVertical: 10
   },
   image: {
     width: 90,
     height: 90,
     objectFit: 'cover',
     borderRadius: 5,
-    marginHorizontal: 5
+    margin: 5
   },
   process: {
     height: 500,
