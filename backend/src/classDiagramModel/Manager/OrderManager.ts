@@ -22,9 +22,9 @@ interface FilterOrder {
   statusname: string;
   statuscreatedat: Date;
   givetype: string;
-  longitutegive: string;
+  longitudegive: string;
   latitudegive: string;
-  longitutereceive: string;
+  longitudereceive: string;
   latitudereceive: string;
   nametype: string;
   row_num: string;
@@ -61,10 +61,10 @@ function filterOrders(distance: string, time: string, category: string, sort: st
       // Lọc theo khoảng cách
       let isValidDistance: boolean = false;
       if (IsGiver) {
-          const distanceToReceiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudereceive), parseFloat(item.longitutereceive));
+          const distanceToReceiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudereceive), parseFloat(item.longitudereceive));
           isValidDistance = distanceToReceiver <= distanceFloat;
       } else {
-          const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudegive), parseFloat(item.longitutegive));
+          const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudegive), parseFloat(item.longitudegive));
           isValidDistance = distanceToGiver <= distanceFloat;
       }
 
@@ -88,11 +88,11 @@ function filterOrders(distance: string, time: string, category: string, sort: st
       filteredData.sort((a, b) => {
           let distanceA, distanceB;
           if (IsGiver) {
-              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudereceive), parseFloat(a.longitutereceive));
-              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudereceive), parseFloat(b.longitutereceive));
+              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudereceive), parseFloat(a.longitudereceive));
+              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudereceive), parseFloat(b.longitudereceive));
           } else {
-              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudegive), parseFloat(a.longitutegive));
-              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudegive), parseFloat(b.longitutegive));
+              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudegive), parseFloat(a.longitudegive));
+              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudegive), parseFloat(b.longitudegive));
           }
           return distanceA - distanceB;
       });
@@ -333,11 +333,12 @@ export class OrderManager {
                   ts.StatusName,
                   th.Time AS StatusCreatedAt,
                   o.GiveType,
-            adg.Longitute AS LongituteGive,
+            adg.Longitude AS LongitudeGive,
             adg.Latitude AS LatitudeGive,
-            adr.Longitute AS LongituteReceive,
+            adr.Longitude AS LongitudeReceive,
             adr.Latitude AS LatitudeReceive,
-            itt.NameType
+            itt.NameType,
+            o.imgconfirmreceive
               FROM 
                   Orders o
               JOIN 
@@ -403,11 +404,12 @@ export class OrderManager {
                   ts.StatusName,
                   th.Time AS StatusCreatedAt,
                   o.GiveType,
-            adg.Longitute AS LongituteGive,
+            adg.Longitude AS LongitudeGive,
             adg.Latitude AS LatitudeGive,
-            adr.Longitute AS LongituteReceive,
+            adr.Longitude AS LongitudeReceive,
             adr.Latitude AS LatitudeReceive,
-            itt.NameType
+            itt.NameType,
+            o.imgconfirmreceive
               FROM 
                   Orders o
               JOIN 
@@ -497,6 +499,25 @@ export class OrderManager {
       `
 
       const result: QueryResult = await client.query(query, [orderID])
+      return true;
+    }catch(error){
+      console.log(error)
+      return false
+    }finally{
+      client.release()
+    }
+  }
+
+  public static async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
+    const client = await pool.connect()
+    console.log('QUERY', orderid, imgconfirmreceive)
+    try{
+      const query = `
+        UPDATE "orders"
+        SET imgconfirmreceive = $1
+        WHERE orderid = $2
+      `
+      const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
       return true;
     }catch(error){
       console.log(error)

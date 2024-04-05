@@ -18,6 +18,7 @@ interface Item {
   createdat: string;
   orderid: string;
   statuscreatedat: string;
+  imgconfirmreceive:string;
 }
 
 export default function ReceiveHistoryScreen() {
@@ -78,6 +79,7 @@ console.log(filterValue)
                       orderid={item.orderid}
                       statuscreatedat={item.statuscreatedat}
                       isVisibleConfirm={false}
+                      imgconfirmreceive={item.imgconfirmreceive}
                   />
               ))
           ) : (

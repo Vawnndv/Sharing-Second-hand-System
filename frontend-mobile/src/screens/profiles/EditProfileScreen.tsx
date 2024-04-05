@@ -132,7 +132,8 @@ const EditProfileScreen = ({navigation, route}: any) => {
             onCameraPress={() => TakePhoto(hasCameraPermission,setImage,() => setModalVisible(false))} 
             onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
             onRemovePress={() => removeImage()}
-            isLoading={false}    
+            isLoading={false}
+            title='Profile photo'    
           />
           <SpaceComponent height={21} />
           <InputComponent
