@@ -46,6 +46,11 @@ export const globalStyles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  col: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+
   iconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -58,5 +63,14 @@ export const globalStyles = StyleSheet.create({
   center: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+
+  card: {
+    borderRadius: 12,
+    backgroundColor: appColors.white,
+    padding: 12,
+    marginHorizontal: 12,
+    marginVertical: 6,
+    marginBottom: 16,
+  },
 });
