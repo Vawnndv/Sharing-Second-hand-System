@@ -561,4 +561,26 @@ export class OrderManager {
     }
   }
 
+  public static async VerifyOrderQR(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.userreceiveid,
+          o.usergiveid,
+          o.postid
+        FROM orders AS o
+        WHERE o.orderid = $1
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
 }

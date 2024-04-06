@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, ImageBackground } from 'react-native';
+import { Text, View, StyleSheet, Button, ImageBackground, Modal } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { ContainerComponent, SectionComponent } from '../../components'
 import { Ionicons } from '@expo/vector-icons';
 import { appInfo } from '../../constants/appInfos';
+import orderAPI from '../../apis/orderApi';
+import ViewDetailOrder from '../../modals/ViewDetailOrder';
+import { LoadingModal } from '../../modals';
+
+const userID = 29
 
 export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
+  const [orderID, setOrderID] = useState(null);
+  const [postID, setPostID] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -18,9 +27,31 @@ export default function ScanScreen({navigation} : any) {
     getBarCodeScannerPermissions();
   }, []);
 
+  const verifyQRCode= async ({data} : any) => {
+    try {
+      const res = await orderAPI.HandleOrder(
+        `/verifyOrderQR?orderID=${data}`,
+        'get'
+      );
+      
+      if (res.data.userreceiveid === userID || res.data.usergiveid === userID) {
+        setOrderID(data);
+        setIsModalVisible(true);
+        setIsLoading(false);
+      }
+
+    } catch (error) {
+      // console.log(error);
+      setIsLoading(false);
+      alert(`Can't find posts or orders`);
+    }
+  };
+
   const handleBarCodeScanned = ({ type, data } : any) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    setIsLoading(true);
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    verifyQRCode({data})
   };
 
   if (hasPermission === null) {
@@ -54,6 +85,15 @@ export default function ScanScreen({navigation} : any) {
           </ImageBackground>
         </View>
       </View>
+      <Modal
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+        animationType='slide'
+        presentationStyle='pageSheet'
+      >
+        {orderID && <ViewDetailOrder setIsModalVisible={setIsModalVisible} orderid={orderID}/>}
+      </Modal>
+      <LoadingModal visible={isLoading} />
     </View>
   );
 }

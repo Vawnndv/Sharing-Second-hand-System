@@ -79,3 +79,16 @@ export const getOrderDetails = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Error network' });
   }
 });
+
+export const VerifyOrderQR = asyncHandle(async (req, res) => {
+  const orderID : any = req.query.orderID;
+  try {
+    const result = await  OrderManager.VerifyOrderQR(orderID);
+    if (result == null)
+      res.status(400).json({ message: 'Not found post or order', data: result });
+    res.status(200).json({ message: 'Verify success', data: result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
