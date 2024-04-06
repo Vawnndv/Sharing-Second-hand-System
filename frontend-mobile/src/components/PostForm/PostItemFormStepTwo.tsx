@@ -42,7 +42,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
     const currentDate = selectedDate  || startDate;
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
-    setFormData({ ...formData,  postStartDate: moment(currentDate).format('DD-MM-YYYY') });
+    setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') });
   };
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
@@ -56,7 +56,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       const currentDate = selectedDate || endDate;
       setEndDatePickerVisibility(Platform.OS === 'ios');
       setEndDate(currentDate);
-      setFormData({ ...formData,  postEndDate: moment(currentDate).format('DD-MM-YYYY') }); // Cập nhật formData
+      setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
     }
 
   };
@@ -96,7 +96,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           label="Ngày bắt đầu"
-          value={startDate ? moment(startDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={startDate ? moment(startDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
         />
@@ -116,7 +116,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
           label="Ngày kết thúc"
-          value={endDate ? moment(endDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
         />

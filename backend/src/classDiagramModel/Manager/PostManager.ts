@@ -32,7 +32,7 @@ export class PostManager {
   public static async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT postid, receiverid, comment, postreceiver.time, postreceiver.createdat, receivetype FROM postreceiver JOIN receivetype ON receivertypeid = receivetypeid where postid = $1;', [postID]);
+      const result = await client.query('SELECT receiverid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
       if (result.rows.length === 0) {
         return [];
       }
@@ -79,9 +79,12 @@ export class PostManager {
     try {
       const result: QueryResult = await client.query(query, values);
       console.log('Posts inserted successfully:', result.rows[0]);
+      return result.rows[0];
     } catch (error) {
       console.error('Error inserting product:', error);
-    } 
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   };
 
 

@@ -18,6 +18,8 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
         userId: user.userid,
         createAt: user.createat,
         address: user.address ?? '',
+        firstname: user.firstname ?? '',
+        lastname: user.lastname ?? '',
         avatar: user.avatar ?? '',
         phonenumber: user.phonenumber ?? '',
         username: user.username ?? '',

@@ -42,7 +42,7 @@ export class ItemManager {
     }
   }
 
-  public static async viewDItemPhoto(itemId: number): Promise<any[] | null> {
+  public static async viewItemImages(itemId: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`SELECT * FROM image WHERE itemid = $1`, [itemId]);
@@ -73,9 +73,12 @@ export class ItemManager {
     try {
       const result: QueryResult = await client.query(query, values);
       console.log('Product inserted successfully:', result.rows[0]);
+      return result.rows[0];
     } catch (error) {
       console.error('Error inserting product:', error);
-    } 
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   };
 
 }
