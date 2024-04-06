@@ -81,7 +81,9 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const auth = useSelector(authSelector);
 
   useEffect(() => {
-    const fetchPostDetails = async () => {
+    const fetchAllData = async () => {
+      let itemIDs = null;
+      let owner = null
       try {
         console.log(postID);
         setIsLoading(true);
@@ -94,28 +96,72 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
         }
         setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
         setItemID(res.data.postDetail.itemid);
+        itemIDs = res.data.postDetail.itemid;
+        owner = res.data.postDetail.owner;
         setIsUserPost(res.data.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
       } finally {
         setIsLoading(false);
       }
-    };
 
-    const fetchPostReceivers = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${post.postid}`)
+        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
         if (!res) {
-          throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
+          throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
         setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
-        console.error('Error fetching post details:', error);
+        console.error('Error fetching post receivers:', error);
       } finally {
         setIsLoading(false);
       }
+
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
+        // const res = await itemsAPI.HandleAuthentication(
+        //   `/${itemID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
+        }
+        setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+        // setItemID(data.id);
+      
+      } catch (error) {
+        console.error('Error fetching item details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+
+      try {
+        setIsLoading(true);
+        const res = await userAPI.HandleUser(`/profile?userId=${owner}`);
+        res && res.data && setProfile(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+
     };
+
+    // const fetchPostReceivers = async () => {
+    //   try {
+    //     setIsLoading(true);
+    //     const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+    //     if (!res) {
+    //       throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
+    //     }
+    //     setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+    //   } catch (error) {
+    //     console.error('Error fetching post receivers:', error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
 
     // const fetchItemDetails = async () => {
     //   try {
@@ -141,63 +187,67 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
     //   }
     // };
   
-    const fetchItemImages = async () => {
-      try {
-        if(!itemID){
-          return;
-        }
-        else{
-          setIsLoading(true);
-          const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemID}`)
-          // const res = await itemsAPI.HandleAuthentication(
-          //   `/${itemID}`,
-          // );
-          if (!res) {
-            throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
-          }
-          setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
-          // setItemID(data.id);
-        }
-      } catch (error) {
-        console.error('Error fetching item details:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    const fetchProfile = async () => {
-      try {
-        setIsLoading(true);
-        const res = await userAPI.HandleUser(`/profile?userId=${post.owner}`);
-        res && res.data && setProfile(res.data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
+    // const fetchProfile = async () => {
+    //   try {
+    //     setIsLoading(true);
+    //     const res = await userAPI.HandleUser(`/profile?userId=${post.owner}`);
+    //     res && res.data && setProfile(res.data);
+    //   } catch (error) {
+    //     console.log(error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
     if (postID) {
-      fetchPostDetails();
-      fetchItemImages();
-      fetchPostReceivers();
+      fetchAllData();
+      // fetchPostReceivers();
     }
-    if (auth) {
-      fetchProfile();   
-    };
+    // if (auth) {
+    //   fetchProfile();   
+    // };
 
     // fetchItemDetails();
-}, [])
+}, [postID])
 
 
-  // Nếu postDetails vẫn là null ở đây, bạn có thể hiển thị thông báo lỗi hoặc trạng thái trống
-  if (!post || !postReceivers || !itemImages || !profile) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>No data found</Text>
-      </View>
-    );
-  }
+// useEffect(() => {
+
+//   const fetchItemImages = async () => {
+//     try {
+//         setIsLoading(true);
+//         const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemID}`)
+//         // const res = await itemsAPI.HandleAuthentication(
+//         //   `/${itemID}`,
+//         // );
+//         if (!res) {
+//           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
+//         }
+//         setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+//         // setItemID(data.id);
+      
+//     } catch (error) {
+//       console.error('Error fetching item details:', error);
+//     } finally {
+//       setIsLoading(false);
+//     }
+//   };
+
+//   if (itemID) {
+//     fetchItemImages();
+//   }
+// }, [itemID]); // Chỉ khi itemID thay đổi, fetchItemImages sẽ được chạy
+
+
+  // // Nếu postDetails vẫn là null ở đây, bạn có thể hiển thị thông báo lỗi hoặc trạng thái trống
+  // if (!post || !postReceivers || !itemImages || !profile) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <Text>No data found</Text>
+  //     </View>
+  //   );
+  // }
 
   if (isLoading) {
     return (
@@ -207,7 +257,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
     );
   }
 
-  if(post && postReceivers && itemImages && profile){
+  if(!isLoading){
     return(
       <ScrollView>
         <View style={styles.screenContainer}>
@@ -241,7 +291,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                             />                          
                             <View style={styles.receiverInfo}>
                               <Text style={styles.username}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
-                              <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
+                              <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
                             </View>
                             {isUserPost && (
                               <Button style={styles.button} onPress={() => {}} mode="contained">Give</Button>
@@ -263,12 +313,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                 />
                 <View style={styles.username_timeContaner}>
                 {/* Hiển thị tên của user */}
-                  <Text style={styles.username}>{profile?.firstname ? profile.lastname ? profile.firstname + ' ' + profile.lastname : profile.username : profile.username}</Text>
+                  <Text style={styles.username}>{profile?.firstname ? profile.lastname ? profile.firstname + ' ' + profile.lastname : profile?.username ? profile?.username : ' ' : profile?.username ? profile?.username : ' '}</Text>
 
                   {/* Hiển thị ngày đăng */}
                   <View style={styles.timeContainer}>
                     <SimpleLineIcons name="clock" size={20} color="black" />
-                    <Text style={{marginLeft: 5}}>{moment(post.time).format('DD-MM-YYYY')}</Text>
+                    <Text style={{marginLeft: 5}}>{moment(post?.time).format('DD-MM-YYYY')}</Text>
                   </View>
                 </View>
 
@@ -281,10 +331,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                 )}
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
-              <Text style={styles.title}>{post.title}</Text>
+              <Text style={styles.title}>{post?.title}</Text>
 
               {/* Hiển thị mô tả bài đăng */}
-              <Text style={styles.description}>{post.description}</Text>
+              <Text style={styles.description}>{post?.description}</Text>
 
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {itemImages?.map((itemImage, index) => (
