@@ -472,7 +472,7 @@ export class OrderManager {
       WHERE 
           t.OrderID = $1
       ORDER BY 
-          th.Time DESC
+          th.Time ASC
       `;
     const values : any = [orderID];
     
@@ -524,6 +524,109 @@ export class OrderManager {
       return false
     }finally{
       client.release()
+    }
+  }
+
+  public static async getOrderDetails(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.usergiveid,
+          o.userreceiveid,
+          o.title,
+          ad.address,
+          grt.give_receivetype as givetype,
+          o.status,
+          i.Path AS Image,
+          th.Time AS StatusCreatedAt,
+          o.imgconfirmreceive
+        FROM orders AS o
+        JOIN Address ad ON ad.AddressID = o.LocationGive
+        JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
+        JOIN Image i ON o.ItemID = i.ItemID
+        JOIN Trace t ON o.OrderID = t.OrderID
+        JOIN Trace_History th ON t.TraceID = th.TraceID
+        WHERE o.orderid = $1
+        
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
+  public static async VerifyOrderQR(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.userreceiveid,
+          o.usergiveid,
+          o.postid
+        FROM orders AS o
+        WHERE o.orderid = $1
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
+  public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
+    const client = await pool.connect();
+    try {
+        const query = `
+        -- Khai báo biến và gán giá trị cho nó
+        DO $$
+        DECLARE
+            NewStatusName VARCHAR(255);
+            NewStraceID INTEGER;
+        
+        BEGIN
+            SELECT StatusName INTO NewStatusName
+            FROM Trace_Status
+            WHERE StatusID = '${statusID}';
+        
+            SELECT TraceID INTO NewStraceID
+            FROM Trace
+            WHERE OrderID = '${orderID}';
+        
+            UPDATE Trace
+            SET CurrentStatus = NewStatusName
+            WHERE OrderID = '${orderID}';
+        
+            INSERT INTO Trace_History (StatusName, Time, TraceID, StatusID)
+            VALUES (
+                NewStatusName,
+                CURRENT_TIMESTAMP,
+                NewStraceID,
+                '${statusID}'
+            );
+      
+            UPDATE Orders
+            SET Status = NewStatusName
+            WHERE OrderID = '${orderID}';
+        END $$;
+        `;
+
+        const result: QueryResult = await client.query(query);
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
+    } finally {
+        client.release();
     }
   }
 

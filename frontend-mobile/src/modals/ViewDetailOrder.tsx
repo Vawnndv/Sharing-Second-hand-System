@@ -12,21 +12,25 @@ import { PickImage, TakePhoto, getCameraPermission, getGallaryPermission } from 
 import ConfimReceiveModal from './ConfimReceiveModal';
 import ShowImageModal from './ShowImageModal';
 import QRCodeGenerator from '../components/GenerateQRCode';
+import orderAPI from '../apis/orderApi';
+import LoadingModal from './LoadingModal';
 
 interface Data {
   title: string;
-  location: string;
+  address: string;
   givetype: string;
-  statusname: string;
-  image: string;
   status: string;
-  createdat: string;
+  image: string;
   orderid: string;
   statuscreatedat: string;
-  isVisibleConfirm: boolean;
   imgconfirmreceive: string;
+  usergiveid: string,
+  userreceiveid: string,
 }
-export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModalVisible: (isVisible: boolean) => void, data: Data }) {
+
+const userID = '29'
+
+export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsModalVisible: (isVisible: boolean) => void, orderid: string }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
@@ -34,6 +38,28 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
   const [visible, setVisible] = useState(false)
   const [isShowQR, setIsShowQR] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<Data>();
+
+  useEffect(function(){
+    getOrderDetails()
+  }, []);
+
+  const getOrderDetails = async () => {
+    try {
+      setIsLoading(true);
+
+      const res = await orderAPI.HandleOrder(
+        `/${orderid}`,
+        'get'
+      );
+      
+      setIsLoading(false);
+      setData(res.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const removeImage = async () => {
     try {
@@ -75,34 +101,34 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
         <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ justifyContent: 'flex-start' }}>
           <Ionicons name="arrow-back" size={28}></Ionicons>
         </TouchableOpacity>
-        <Text style={{flex: 1, textAlign: 'center', alignItems: 'center', fontSize: 18, fontWeight: 'bold'}}>{data.statusname}</Text>
+        <Text style={{flex: 1, textAlign: 'center', alignItems: 'center', fontSize: 18, fontWeight: 'bold'}}>{data?.status}</Text>
       </View>
 
       <View style={styles.body}>
         <View style={styles.info}>
           <Image
-            source={{ uri: data.image }} 
+            source={{ uri: data?.image }} 
             style={styles.image} 
             resizeMode="contain"
           />
 
           <View style={styles.infomation}>
-            <Text style={{ fontWeight: 'bold' }}>{data.title}</Text>
+            <Text style={{ fontWeight: 'bold' }}>{data?.title}</Text>
             <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
                 <Icon name="map-pin" size={20} color="#552466" />
-                <Text style={{ paddingLeft: 20 }}>{data.location}</Text>
+                <Text style={{ paddingLeft: 20 }}>{data?.address}</Text>
             </View>
 
             <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold' }}> {data.statusname} </Text>
-                <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data.statuscreatedat)}</Text>
+                <Text style={{ fontWeight: 'bold' }}> {data?.status} </Text>
+                <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data ? data.statuscreatedat : '' )}</Text>
             </View>
           </View>
         </View>
 
         <View style={{flexDirection: 'row'}}>
           {
-            data.isVisibleConfirm ? (
+            userID === data?.userreceiveid ? (
               <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                 Xác nhận
               </Button>
@@ -124,14 +150,14 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <Text style={{ fontWeight: 'bold' }}>Mã đơn hàng</Text>
-              <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>{data.orderid}</Text>
+              <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>{data?.orderid}</Text>
             </View>
           </View>
 
           <View style={{borderBottomWidth: 1, marginTop: 4, borderBottomColor: 'grey'}}/>
 
           <ScrollView>
-            <StepIndicatorOrder orderID={data.orderid}/>
+            {data && <StepIndicatorOrder orderID={data?.orderid}/>}
           </ScrollView>
         </View>
         <UploadModal 
@@ -150,13 +176,13 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-      <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>
+      {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
       <ShowImageModal visible={visible} setVisible={setVisible}>
         {
           isShowQR ? (
-            <QRCodeGenerator data={data.orderid.toString()}/>
+            <QRCodeGenerator data={ data ? data.orderid.toString() : ''}/>
           ) : (
-            <Image source={{ uri: image ? image.uri : data.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
+            <Image source={{ uri: image ? image.uri : data?.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
           )
         }
       </ShowImageModal>

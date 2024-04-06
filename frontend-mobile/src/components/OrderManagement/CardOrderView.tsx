@@ -53,19 +53,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
       >
         <ViewDetailOrder 
           setIsModalVisible={setIsModalVisible} 
-          data={{
-            title: title,
-            location: location,
-            givetype: givetype,
-            statusname: statusname,
-            image: image,
-            status: status,
-            createdat: createdat,
-            orderid: orderid,
-            statuscreatedat: statuscreatedat,
-            isVisibleConfirm: isVisibleConfirm,
-            imgconfirmreceive: imgconfirmreceive
-          }} 
+          orderid={orderid} 
         />
       </Modal>
     </View>
