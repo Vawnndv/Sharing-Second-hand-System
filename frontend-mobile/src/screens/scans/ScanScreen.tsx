@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Button, ImageBackground } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { ContainerComponent, SectionComponent } from '../../components'
 import { Ionicons } from '@expo/vector-icons';
+import { appInfo } from '../../constants/appInfos';
 
 export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -30,11 +31,11 @@ export default function ScanScreen({navigation} : any) {
   }
 
   return (
-    <ContainerComponent>
+    <View style={{flex: 1, paddingTop: 36}}>
       <View style={styles.container}>
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
+          style={{...StyleSheet.absoluteFillObject, flex: 1}}
         />
         {scanned && <Button title={'Chạm để quét lại lần nữa'} onPress={() => setScanned(false)} />}
         {/* <View style={styles.marker}/> */}
@@ -53,7 +54,7 @@ export default function ScanScreen({navigation} : any) {
           </ImageBackground>
         </View>
       </View>
-    </ContainerComponent>
+    </View>
   );
 }
 

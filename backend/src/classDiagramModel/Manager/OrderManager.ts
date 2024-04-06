@@ -527,4 +527,38 @@ export class OrderManager {
     }
   }
 
+  public static async getOrderDetails(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.usergiveid,
+          o.userreceiveid,
+          o.title,
+          ad.address,
+          grt.give_receivetype as givetype,
+          o.status,
+          i.Path AS Image,
+          th.Time AS StatusCreatedAt,
+          o.imgconfirmreceive
+        FROM orders AS o
+        JOIN Address ad ON ad.AddressID = o.LocationGive
+        JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
+        JOIN Image i ON o.ItemID = i.ItemID
+        JOIN Trace t ON o.OrderID = t.OrderID
+        JOIN Trace_History th ON t.TraceID = th.TraceID
+        WHERE o.orderid = $1
+        
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
 }
