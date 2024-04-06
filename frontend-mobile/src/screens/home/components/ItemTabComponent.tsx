@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import UserPostScreen from '../UserPostScreen';
-import WarehouseScreen from '../WarehouseScreen';
+import UserPostComponent from './UserPostComponent';
+import WarehouseComponent from './WarehouseComponent';
 
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
@@ -10,7 +10,7 @@ const ItemTabComponent = () => {
     <SubTabs.Navigator style={styles.tabs}>
       <SubTabs.Screen
         name="Bài đăng"
-        component={UserPostScreen}
+        component={UserPostComponent}
         options={{
           tabBarLabel: 'Bài đăng',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
@@ -20,7 +20,7 @@ const ItemTabComponent = () => {
       />
       <SubTabs.Screen
         name="Lưu kho"
-        component={WarehouseScreen}
+        component={WarehouseComponent}
         options={{
           tabBarLabel: 'Lưu kho',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này

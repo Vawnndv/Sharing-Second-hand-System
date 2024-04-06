@@ -7,11 +7,12 @@ import RowComponent from './RowComponent'
 import SpaceComponent from './SpaceComponent'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 
+
 const HeaderComponent = () => {
   const navigation: any = useNavigation();
 
   return (
-    <RowComponent justify='flex-end'>
+    <RowComponent justify='flex-end' styles={{flex: 1}}>
       <TouchableOpacity onPress={() => navigation.openDrawer()}>
         <Ionicons name="notifications-outline" size={26} color={'black'} />
       </TouchableOpacity>

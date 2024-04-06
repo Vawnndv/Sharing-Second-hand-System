@@ -73,4 +73,14 @@ export const globalStyles = StyleSheet.create({
     marginVertical: 6,
     marginBottom: 16,
   },
+
+  bottomCard: {
+    marginHorizontal: -12,
+    marginBottom: -12, 
+    marginTop: 8,
+    padding: 12, 
+    backgroundColor: appColors.white5, 
+    borderBottomLeftRadius: 12, 
+    borderBottomRightRadius: 12, 
+  }
 });

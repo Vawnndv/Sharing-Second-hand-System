@@ -1,8 +1,12 @@
 export const appColors = {
+  black: '#000000',
   primary: '#321357',
   primary2: '#451979',
   white: '#FFFFFF',
   white2: '#FCFCFC',
+  white3: '#FAFAFA',
+  white4: '#FEFEFE',
+  white5: '#f0f0f0',
   text: '#120D26',
   gray: '#807A7A',
   gray2: '#DADADA',
