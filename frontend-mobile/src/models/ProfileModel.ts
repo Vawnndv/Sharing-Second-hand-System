@@ -3,5 +3,7 @@ export interface ProfileModel {
   avatar: string;
   email: string;
   address: string;
+  firstname: string;
+  lastname: string;
   updateAt: string;
 }

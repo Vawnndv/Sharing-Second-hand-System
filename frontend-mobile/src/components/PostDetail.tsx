@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity  } from 'react-native';
+import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator  } from 'react-native';
 import { StringLiteral } from 'typescript';
 import { AntDesign, SimpleLineIcons  } from '@expo/vector-icons';
 
 import moment from 'moment';
+import { appInfo } from '../constants/appInfos';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../redux/reducers/authReducers';
+import userAPI from '../apis/userApi';
+import { ProfileModel } from '../models/ProfileModel';
+import AvatarComponent from './AvatarComponent';
 
 
 
@@ -22,24 +29,10 @@ interface Post {
   timeend?: Date; // DATE có thể null
 }
 
-interface User {
-  UserID: number;
-  Username: string;
-  Password: string;
-  FirstName?: string; // Optional vì có thể là NULL
-  LastName?: string; // Optional vì có thể là NULL
-  PhoneNumber?: string; // Optional vì có thể là NULL
-  Email: string;
-  Avatar?: string; // Optional vì có thể là NULL
-  DateOfBirth?: Date; // Optional vì có thể là NULL
-  RoleID: number;
-  createdAt: Date;
-}
 
 interface Item {
   itemID: number;
   itemName: string;
-  itemPhotos: string[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
   itemCategory: string;
   itemQuantity: number;
   // itemDescription: string;
@@ -47,274 +40,297 @@ interface Item {
 }
 
 
+interface ItemImage {
+  imgid: string;
+  itemid: number;
+  path: string;
+}
+
 interface PostDetailProps {
-  post: Post;
-  user: User;
-  item: Item;
-  postReceivers: PostReceiver[];
+  postID: number;
 }
 
 interface PostReceiver {
-  postid: number;
   receiverid: number;
+  postid: number;
+  avatar: string;
+  username: string;
+  firstname: string;
+  lastname: string;
   comment: string;
   time: Date;
-  createdat: Date;
-  receivetype: string;
+  give_receivetype: string;
 }
 
-const sampleUserOwner: User = {
-  UserID: 1, // Trong thực tế, giá trị này thường được tự động sinh ra bởi cơ sở dữ liệu
-  Username: "john_doe",
-  Password: "securePassword123", // Lưu ý: Mật khẩu này nên được mã hóa
-  FirstName: "John",
-  LastName: "Doe",
-  PhoneNumber: "123-456-7890",
-  Email: "johndoe@example.com",
-  Avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Labrador_Retriever_portrait.jpg/1200px-Labrador_Retriever_portrait.jpg",
-  DateOfBirth: new Date("1990-01-01"),
-  RoleID: 1, // Giả sử rằng RoleID này đã tồn tại và hợp lệ
-  createdAt: new Date(), // Đặt ngày tạo là ngày hiện tại
-};
 
 
-// const samplePost: Post = {
-//   PostID: 1, // Giả sử giá trị này đã tự động sinh ra bởi cơ sở dữ liệu
-//   Title: "Bán đồ cũ",
-//   Location: "Hà Nội, Việt Nam",
-//   Description: "UA Tech is our original go-to training gear: Under Armour men's Tech polos are loose, light, and keep you cool. Basically, they're built to be everything you need.",
-//   Owner: 1, // Giả sử UserID của người đăng là 1
-//   Time: new Date("2024-03-27T08:00:00Z"), // Thời gian đăng bài
-//   ItemID: 1, // Giả sử món hàng có ID là 1
-//   TimeStart: new Date("2024-03-28"), // Thời gian bắt đầu hiển thị sản phẩm
-//   TimeEnd: new Date("2024-04-10"), // Thời gian kết thúc hiển thị sản phẩm
-//   createdAt: new Date(), // Thời gian tạo bài đăng
-// };
-
-const sampleItem: Item = {
-  itemID: 1, // Giả sử giá trị này đã tự động sinh ra bởi cơ sở dữ liệu
-  itemName: "Áo thun nam",
-  itemPhotos: [
-    "https://m.media-amazon.com/images/I/617iMeLtb+L._AC_SX679_.jpg",
-    "https://m.media-amazon.com/images/I/518Y3wD8pSL._AC_SX569_.jpg",
-    "https://m.media-amazon.com/images/I/71gYxM-z0DL._AC_SX569_.jpg",
-  ],
-  itemCategory: "Quần áo",
-  itemQuantity: 10,
-  // itemDescription: "Áo thun nam phong cách, chất liệu cotton thoáng mát, phù hợp với mọi lứa tuổi.",
-  // Các thuộc tính khác nếu cần
-};
-
-
-const sampleUsers: User[] = [
-  {
-    UserID: 2,
-    Username: "Van",
-    Password: "securePassword123",
-    FirstName: "John",
-    LastName: "Doe",
-    PhoneNumber: "123-456-7890",
-    Email: "johndoe@example.com",
-    Avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3tNB5rc_qoyctOaIfedxwg0_psN3pSHJQwQ&usqp=CAU",
-    DateOfBirth: new Date("1990-01-01"),
-    RoleID: 1,
-    createdAt: new Date(),
-  },
-
-  {
-    UserID: 3,
-    Username: "Tan",
-    Password: "securePassword123",
-    FirstName: "John",
-    LastName: "Doe",
-    PhoneNumber: "123-456-7890",
-    Email: "johndoe@example.com",
-    Avatar: "https://i.guim.co.uk/img/media/260fa2f0810f1d7e825da17aa07eb31923c4eba8/0_726_4000_2400/master/4000.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=be82fc09a5341967681a67fd73b08fc4",
-    DateOfBirth: new Date("1990-01-01"),
-    RoleID: 1,
-    createdAt: new Date(),
-  },
-
-
-  {
-    UserID: 4,
-    Username: "Cuong",
-    Password: "securePassword123",
-    FirstName: "John",
-    LastName: "Doe",
-    PhoneNumber: "123-456-7890",
-    Email: "johndoe@example.com",
-    Avatar: "https://i.guim.co.uk/img/media/260fa2f0810f1d7e825da17aa07eb31923c4eba8/0_726_4000_2400/master/4000.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=be82fc09a5341967681a67fd73b08fc4",
-    DateOfBirth: new Date("1990-01-01"),
-    RoleID: 1,
-    createdAt: new Date(),
-  },
-
-  {
-    UserID: 5,
-    Username: "Hung",
-    Password: "securePassword123",
-    FirstName: "John",
-    LastName: "Doe",
-    PhoneNumber: "123-456-7890",
-    Email: "johndoe@example.com",
-    Avatar: "https://i.guim.co.uk/img/media/260fa2f0810f1d7e825da17aa07eb31923c4eba8/0_726_4000_2400/master/4000.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=be82fc09a5341967681a67fd73b08fc4",
-    DateOfBirth: new Date("1990-01-01"),
-    RoleID: 1,
-    createdAt: new Date(),
-  },
-];
-
-// const postReceivers: PostReceiver[] = [
-//   {
-//     PostID: 1,
-//     ReceiverID: 2,
-//     Comment: "Great post!",
-//     Time: new Date("2024-03-26T08:00:00Z"),
-//     createdAt: new Date("2024-03-26T08:30:00Z"),
-//     receiverType: 'Xin đồ qua kho'
-//   },
-//   {
-//     PostID: 1,
-//     ReceiverID: 3,
-//     Comment: "Interesting post!",
-//     Time: new Date("2024-03-27T10:15:00Z"),
-//     createdAt: new Date("2024-03-27T10:45:00Z"),
-//     receiverType: 'Xin đồ trực tiếp'
-//   },
-// ];
-
-
-
-const PostDetail: React.FC<PostDetailProps> = ({post, user, item, postReceivers}) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   // const  Avatar = sampleUserOwner.Avatar;
-  // console.log(post);
-  const isUserPost = post.owner == user.UserID;
-  // const isItemMatch = post.ItemID === item.itemID;
+  const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
+  const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
+  const [profile, setProfile] = useState<ProfileModel>();
+  const [itemImages, setItemImages] = useState<ItemImage[]>([]);
+  const [itemDetails, setItemDetails] = useState<Item | any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+
+  const [isUserPost, setIsUserPost] = useState(false);
+  const [itemID, setItemID] = useState();
   const [modalVisible, setModalVisible] = useState(false);
-  // if (!isUserPost || !isItemMatch) {
-  //   return null;
-  // }
-  return(
-    <ScrollView>
-      <View style={styles.screenContainer}>
-        <View style={styles.container}>
-          {modalVisible && (
-          <View style={styles.overlayContainer} />
-          )}
-          <View style={styles.postContainer}>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                setModalVisible(!modalVisible);
-              }}
-            >
-              <View style={styles.modalContainer}>
-                <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeModalButton}>
-                  <Text >X</Text>
-                </TouchableOpacity>
-                <ScrollView>
-                  <Text style={styles.title}>Chọn người bạn muốn cho </Text>
-                  {postReceivers.map((postReceiver, index) => {
-                    // Tìm user từ sampleUsers có UserID trùng với ReceiverID của postReceiver
-                    const user = sampleUsers.find(user => user.UserID === postReceiver.receiverid);
-                    // Nếu không tìm thấy user hoặc postID không trùng khớp, không hiển thị
-                    if (!user || post.postid !== postReceiver.postid) {
-                      return null;
-                    }
-                    return (
-                      <View style={styles.receiverModalContainer} key={index}>
-                        <View style={styles.userInfo}>
-                          <Image source={{ uri: user.Avatar }} style={styles.avatar} />
-                          <View style={styles.receiverInfo}>
-                            <Text style={styles.username}>{user.Username}</Text>
-                            <Text style={styles.receiverType}>{postReceiver.receivetype}</Text>
-                          </View>
-                          {isUserPost && (
-                            <Button style={styles.button} onPress={() => {}} mode="contained">Give</Button>
-                          )}
-                        </View>
-                      </View>
-                    );
-                  })}
-                </ScrollView>
-              </View>
-            </Modal>
+  const auth = useSelector(authSelector);
 
-            <View style={styles.userContainer}>
-              {/* Hiển thị avatar của user */}
-              <Image source={{ uri: user.Avatar }} style={styles.avatar} />
-              
-              <View style={styles.username_timeContaner}>
-              {/* Hiển thị tên của user */}
-                <Text style={styles.username}>{user.Username}</Text>
+  useEffect(() => {
+    const fetchPostDetails = async () => {
+      try {
+        console.log(postID);
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        // const res = await postsApi.HandleAuthentication(
+        //   `/${postID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
+        }
+        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setItemID(res.data.postDetail.itemid);
+        setIsUserPost(res.data.postDetail.owner == auth.id);
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-                {/* Hiển thị ngày đăng */}
-                <View style={styles.timeContainer}>
-                  <SimpleLineIcons name="clock" size={20} color="black" />
-                  <Text style={{marginLeft: 5}}>{moment(post.time).format('DD-MM-YYYY')}</Text>
-                </View>
-              </View>
+    const fetchPostReceivers = async () => {
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${post.postid}`)
+        if (!res) {
+          throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
+        }
+        setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-              {isUserPost && (
-                <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Give</Button>
-              )}
-              {/* Nút chỉ hiển thị khi isUserPost là false */}
-              {!isUserPost && (
-                <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Receive</Button>
-              )}
-              </View>
-            {/* Hiển thị tiêu đề bài đăng */}
-            <Text style={styles.title}>{post.title}</Text>
+    // const fetchItemDetails = async () => {
+    //   try {
+    //     if(!itemID){
+    //       return;
+    //     }
+    //     else{
+    //       setIsLoading(true);
+    //       const res = await axios.get(`${appInfo.BASE_URL}/items/${itemID}`)
+    //       // const res = await itemsAPI.HandleAuthentication(
+    //       //   `/${itemID}`,
+    //       // );
+    //       if (!res) {
+    //         throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
+    //       }
+    //       setItemDetails(res.data.item); // Cập nhật state với dữ liệu nhận được từ API
+    //       // setItemID(data.id);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching item details:', error);
+    //   } finally {
+    //     setIsLoading(false);
+    //   }
+    // };
+  
+    const fetchItemImages = async () => {
+      try {
+        if(!itemID){
+          return;
+        }
+        else{
+          setIsLoading(true);
+          const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemID}`)
+          // const res = await itemsAPI.HandleAuthentication(
+          //   `/${itemID}`,
+          // );
+          if (!res) {
+            throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
+          }
+          setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+          // setItemID(data.id);
+        }
+      } catch (error) {
+        console.error('Error fetching item details:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-            {/* Hiển thị mô tả bài đăng */}
-            <Text style={styles.description}>{post.description}</Text>
+    const fetchProfile = async () => {
+      try {
+        setIsLoading(true);
+        const res = await userAPI.HandleUser(`/profile?userId=${post.owner}`);
+        res && res.data && setProfile(res.data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {item.itemPhotos.map((photo, index) => (
-                <Image key={index} source={{ uri: photo }} style={styles.itemPhoto} />
-              ))}
-            </ScrollView>
-          </View>
-          <View style={styles.like_receiver_CountContainer}>
-            <AntDesign name="inbox" size={24} color="black" />
-            <Text style={styles.receiverCount}>Receivers: {postReceivers.length}</Text>
-            <AntDesign name="hearto" size={24} color="black" />
-            <Text style={styles.loverCount}>Loves: 10</Text>
+    if (postID) {
+      fetchPostDetails();
+      fetchItemImages();
+      fetchPostReceivers();
+    }
+    if (auth) {
+      fetchProfile();   
+    };
 
-          </View>
-          <ScrollView>
-            {postReceivers.map((postReceiver, index) => {
-              // Tìm user từ sampleUsers có UserID trùng với ReceiverID của postReceiver
-              const user = sampleUsers.find(user => user.UserID === postReceiver.receiverid);
-              // Nếu không tìm thấy user hoặc postID không trùng khớp, không hiển thị
-              if (!user || post.postid !== postReceiver.postid) {
-                return null;
-              }
-              return (
-                <View style={styles.receiverContainer}>
-                  <View style={styles.userInfo}>
-                    <Image source={{ uri: user.Avatar }} style={styles.avatar} />
-                    <View style={styles.receiverInfo}>
-                      <Text style={styles.username}>{user.Username}</Text>
-                      <Text style={styles.receiverType}>{postReceiver.receivetype}</Text>
-                    </View>
-                    {isUserPost && (
-                      <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Give</Button>
-                    )}
-                  </View>
-                  <Text style={styles.comment}>{postReceiver.comment}</Text>
-              </View>
-              );
-            })}
-        </ScrollView>
-        </View>
+    // fetchItemDetails();
+}, [])
+
+
+  // Nếu postDetails vẫn là null ở đây, bạn có thể hiển thị thông báo lỗi hoặc trạng thái trống
+  if (!post || !postReceivers || !itemImages || !profile) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>No data found</Text>
       </View>
-    </ScrollView>
-  )
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if(post && postReceivers && itemImages && profile){
+    return(
+      <ScrollView>
+        <View style={styles.screenContainer}>
+          <View style={styles.container}>
+            {modalVisible && (
+            <View style={styles.overlayContainer} />
+            )}
+            <View style={styles.postContainer}>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  setModalVisible(!modalVisible);
+                }}
+              >
+                <View style={styles.modalContainer}>
+                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeModalButton}>
+                    <Text >X</Text>
+                  </TouchableOpacity>
+                  <ScrollView>
+                    <Text style={styles.title}>Chọn người bạn muốn cho </Text>
+                    {postReceivers.map((postReceiver, index) => {
+                      return (
+                        <View style={styles.receiverModalContainer} key={index}>
+                          <View style={styles.userInfo}>
+                            <AvatarComponent 
+                              avatar={postReceiver?.avatar}
+                              username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                              styles={styles.avatar}
+                            />                          
+                            <View style={styles.receiverInfo}>
+                              <Text style={styles.username}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                              <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
+                            </View>
+                            {isUserPost && (
+                              <Button style={styles.button} onPress={() => {}} mode="contained">Give</Button>
+                            )}
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </ScrollView>
+                </View>
+              </Modal>
+
+              <View style={styles.userContainer}>
+                {/* Hiển thị avatar của user */}
+                <AvatarComponent 
+                  avatar={profile?.avatar}
+                  username={profile?.username ? profile?.username : profile?.email ? profile?.email : ' '}
+                  styles={styles.avatar}
+                />
+                <View style={styles.username_timeContaner}>
+                {/* Hiển thị tên của user */}
+                  <Text style={styles.username}>{profile?.firstname ? profile.lastname ? profile.firstname + ' ' + profile.lastname : profile.username : profile.username}</Text>
+
+                  {/* Hiển thị ngày đăng */}
+                  <View style={styles.timeContainer}>
+                    <SimpleLineIcons name="clock" size={20} color="black" />
+                    <Text style={{marginLeft: 5}}>{moment(post.time).format('DD-MM-YYYY')}</Text>
+                  </View>
+                </View>
+
+                {isUserPost && (
+                  <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Give</Button>
+                )}
+                {/* Nút chỉ hiển thị khi isUserPost là false */}
+                {!isUserPost && (
+                  <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Receive</Button>
+                )}
+                </View>
+              {/* Hiển thị tiêu đề bài đăng */}
+              <Text style={styles.title}>{post.title}</Text>
+
+              {/* Hiển thị mô tả bài đăng */}
+              <Text style={styles.description}>{post.description}</Text>
+
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {itemImages?.map((itemImage, index) => (
+                  <Image key={index} source={{ uri: itemImage.path }} style={styles.itemPhoto} />
+                ))}
+              </ScrollView>
+            </View>
+            <View style={styles.like_receiver_CountContainer}>
+              <AntDesign name="inbox" size={24} color="black" />
+              <Text style={styles.receiverCount}>Receivers: {postReceivers.length}</Text>
+              <AntDesign name="hearto" size={24} color="black" />
+              <Text style={styles.loverCount}>Loves: 10</Text>
+
+            </View>
+            <ScrollView>
+              {postReceivers.map((postReceiver, index) => {
+                if(postReceiver.receiverid == auth.id || auth.id == post.owner){
+                return (
+                  <View style={styles.receiverContainer}>
+                    <View style={styles.userInfo}>
+                      <AvatarComponent 
+                        avatar={postReceiver?.avatar}
+                        username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                        styles={styles.avatar}
+                      />  
+                      <View style={styles.receiverInfo}>
+                        <Text style={styles.username}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                        <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
+                      </View>
+                      {isUserPost && (
+                        <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Give</Button>
+                      )}
+                    </View>
+                    <Text style={styles.comment}>{postReceiver.comment}</Text>
+                </View>
+                );
+              }})}
+          </ScrollView>
+          </View>
+        </View>
+      </ScrollView>
+    )
+  }
 }
+
+export default PostDetail;
 
 const styles = StyleSheet.create({
 
@@ -372,9 +388,10 @@ const styles = StyleSheet.create({
   receiverContainer: {
     flexDirection: 'column', // Sắp xếp các phần tử theo chiều ngang
     // alignItems: 'center', // Căn chỉnh các phần tử theo chiều dọc
-    marginBottom: 10,
+    margin: 10,
     padding: 10,
     backgroundColor: 'rgb(240, 240, 240)',
+    borderRadius: 6,
   },
 
   itemPhoto: {
@@ -450,7 +467,6 @@ const styles = StyleSheet.create({
   },
 
   receiverType: {
-    marginLeft: 5,
     marginTop: 5,
     fontWeight: 'bold',
     color: 'green' // Màu chữ sẽ là màu xanh
@@ -468,4 +484,3 @@ const styles = StyleSheet.create({
 
 })
 
-export default PostDetail;

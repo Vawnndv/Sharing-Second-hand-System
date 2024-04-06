@@ -109,6 +109,8 @@ export class Account {
     }
   }
 
+
+
   public static async updateAccount(userid: number, username: string, password: string, phonenumber: string, avatar: string): Promise<any> {
     const client = await pool.connect();
     const query = `
