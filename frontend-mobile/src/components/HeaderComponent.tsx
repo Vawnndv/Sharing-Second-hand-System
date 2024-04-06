@@ -13,20 +13,20 @@ const HeaderComponent = () => {
 
   return (
     <RowComponent justify='flex-end' styles={{flex: 1}}>
-      <TouchableOpacity onPress={() => navigation.openDrawer()}>
-        <Ionicons name="notifications-outline" size={26} color={'black'} />
+      <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
+        <Ionicons name="notifications-outline" size={26} color={appColors.black} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
       <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')}>
-        <Ionicons name="search-outline" size={26} color={'black'} />
+        <Ionicons name="search-outline" size={26} color={appColors.black} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
       <TouchableOpacity onPress={() => navigation.openDrawer()}>
-        <Ionicons name="location-outline" size={26} color={'black'} />
+        <Ionicons name="location-outline" size={26} color={appColors.black} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
       <TouchableOpacity onPress={() => navigation.openDrawer()}>
-        <Ionicons name="menu-outline" size={30} color={'black'} />
+        <Ionicons name="menu-outline" size={30} color={appColors.black} />
       </TouchableOpacity>
     </RowComponent>
   )

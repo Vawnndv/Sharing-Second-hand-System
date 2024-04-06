@@ -55,7 +55,7 @@ const ContainerComponent = (props: Props) => {
                 <TextComponent 
                   text={title} 
                   font={fontFamilies.medium} 
-                  size={16} 
+                  size={20} 
                   flex={1} 
                 />
             )}
@@ -64,7 +64,7 @@ const ContainerComponent = (props: Props) => {
             )}
           </RowComponent>
         ) : (
-          <RowComponent styles={{flex: 1}}>
+          <RowComponent>
 
           </RowComponent>
         )}

@@ -15,7 +15,7 @@ const RowComponent = (props: Props) => {
   const localStyle = [
     globalStyles.row,
     {
-      justifyContent: justify ?? 'center',
+      justifyContent: justify ?? 'flex-start',
     },
     styles,
   ];

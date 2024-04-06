@@ -54,24 +54,24 @@ const UserPostComponent = () => {
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen')}
         >
-          <RowComponent justify='flex-start'>
+          <RowComponent>
             <AvatarComponent
               username={item.name} 
               size={50}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
-              <RowComponent justify='flex-start'>
+              <RowComponent>
                 <TextComponent text='julia' size={18} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
-                <RowComponent justify='flex-start'>
+                <RowComponent>
                   <Clock size={14} color={appColors.black} />
                   <SpaceComponent width={4} />
                   <TextComponent text={item.time} font={fontFamilies.light} />
                 </RowComponent>
               </RowComponent>
               <SpaceComponent height={4} />
-              <RowComponent justify='flex-start'>
+              <RowComponent>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
                 <SpaceComponent width={4} />
                 <TextComponent text={item.address} />

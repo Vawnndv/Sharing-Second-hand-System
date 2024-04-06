@@ -116,7 +116,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
 
   return (
     <>
-      <ContainerComponent back title={'Edit Profile'}>
+      <ContainerComponent back title={'Edit Profile'} isScroll>
         <SectionComponent styles={[globalStyles.center]}>
           <AvatarComponent
             avatar={image ? image.uri : profile.avatar }

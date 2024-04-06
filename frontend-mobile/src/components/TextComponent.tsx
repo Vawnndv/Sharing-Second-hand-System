@@ -12,10 +12,14 @@ interface Props {
   font?: string;
   styles?: StyleProp<TextStyle>;
   title?: boolean;
+  isConcat?: boolean;
+  text2?: string;
+  styles2?: StyleProp<TextStyle>;
+  font2?: string;
 };
 
 const TextComponent = (props: Props) => {
-  const {text, color, size, flex, font, styles, title} = props;
+  const {text, color, size, flex, font, styles, title, text2, isConcat, styles2, font2} = props;
 
   const fontSizeDefault = Platform.OS === 'ios' ? 16 : 14;
 
@@ -41,7 +45,31 @@ const TextComponent = (props: Props) => {
       ]}
     >
       {text}
-    </Text>
+      {isConcat && (
+        <Text 
+          style={[
+            globalStyles.text,
+            {
+              color: color ?? appColors.text,
+              flex: flex ?? 0,
+              fontSize: size 
+                ? size 
+                : title 
+                ? 24 
+                : fontSizeDefault,
+              fontFamily: font2
+                ? font2
+                : title
+                ? fontFamilies.medium
+                : fontFamilies.regular,
+            },
+            styles2,
+          ]}
+        >
+          {text2}
+        </Text>
+      )}
+      </Text>
   )
 }
 
