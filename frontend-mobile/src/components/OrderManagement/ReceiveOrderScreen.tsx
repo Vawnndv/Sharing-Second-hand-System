@@ -18,6 +18,7 @@ interface Item {
   createdat: string;
   orderid: string;
   statuscreatedat: string;
+  imgconfirmreceive:string;
 }
 
 export default function ReceiveOrderScreen() {
@@ -78,6 +79,7 @@ export default function ReceiveOrderScreen() {
                       orderid={item.orderid}
                       statuscreatedat={item.statuscreatedat}
                       isVisibleConfirm={true}
+                      imgconfirmreceive={item.imgconfirmreceive}
                   />
               ))
           ) : (

@@ -14,10 +14,11 @@ interface Props {
   onGalleryPress: () => void;
   onRemovePress: () => void;
   isLoading: boolean;
+  title: string;
 }
 
 const UploadModal = (props: Props) => {
-  const { modalVisible, onBackPress, onCameraPress, onGalleryPress, onRemovePress, isLoading } = props;
+  const { modalVisible, onBackPress, onCameraPress, onGalleryPress, onRemovePress, isLoading, title } = props;
 
   return (
     <Modal
@@ -35,7 +36,7 @@ const UploadModal = (props: Props) => {
         {!isLoading && (
           <View style={[localStyles.modalView, { backgroundColor: appColors.white }]}>
             <StyledText big style={{ marginBottom: 10, fontFamily: fontFamilies.bold }}>
-              Profile Photo
+              {title}
             </StyledText>
             <View style={localStyles.decisionRow}>
               <TouchableOpacity

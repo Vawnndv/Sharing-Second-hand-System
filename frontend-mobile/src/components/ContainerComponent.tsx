@@ -31,7 +31,7 @@ const ContainerComponent = (props: Props) => {
           // paddingTop: 30,
         }}
       >
-        {(title || back) && (
+        {(title || back || right) ? (
           <RowComponent
             styles={{
               paddingHorizontal: 16,
@@ -51,21 +51,21 @@ const ContainerComponent = (props: Props) => {
                 <AntDesign name="arrowleft" size={24} color={appColors.text} />
               </TouchableOpacity>
             )}
-            {title ? (
+            {title && (
                 <TextComponent 
                   text={title} 
                   font={fontFamilies.medium} 
                   size={16} 
                   flex={1} 
                 />
-            ) : (
-              <RowComponent styles={{flex: 1}}>
-
-              </RowComponent>
             )}
             {right && (
               <HeaderComponent />
             )}
+          </RowComponent>
+        ) : (
+          <RowComponent styles={{flex: 1}}>
+
           </RowComponent>
         )}
         {returnContainer}

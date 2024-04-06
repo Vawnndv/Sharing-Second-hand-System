@@ -21,6 +21,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
         firstname: user.firstname ?? '',
         lastname: user.lastname ?? '',
         avatar: user.avatar ?? '',
+        phonenumber: user.phonenumber ?? '',
         username: user.username ?? '',
         email: user.email ?? '',
       },
@@ -69,4 +70,33 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
     res.status(401);
     throw new Error('User not found!!!');
   }
+});
+
+
+
+export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
+  const { email, username, phonenumber, avatar } = req.body;
+
+  const user = await Account.findUserByEmail(email);
+  
+  if (user) {      
+    const updateUser = await Account.updateAccountProfile(user.userid, username, phonenumber, avatar);
+
+    if (updateUser) {
+      res.status(200).json({
+        message: 'Profile changed successfully!!!',
+        data: {
+          username: updateUser.username,
+          phonenumber: updateUser.phonenumber,
+          avatar: updateUser.avatar,
+        },
+      });
+    } else {
+      res.status(400);
+      throw new Error('Update error!!!');
+    }
+  } else {
+    res.status(401);
+    throw new Error('User not found!!!');
+  } 
 });

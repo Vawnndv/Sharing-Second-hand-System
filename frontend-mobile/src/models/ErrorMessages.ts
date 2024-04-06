@@ -8,4 +8,5 @@ export interface ErrorMessages {
   confirmNewPassword?: string;
   phone?: string;
   address?: string;
+  phonenumber?: string;
 }

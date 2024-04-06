@@ -50,3 +50,15 @@ export const getTrackingStatus = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const uploadImageConfirmOrder = async (req: Request, res: Response) => {
+  const { orderid, imgconfirmreceive } = req.body;
+  
+  try {
+    await OrderManager.uploadImageConfirmOrder(orderid, imgconfirmreceive);
+    res.status(200).json({ message: 'Update image success' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

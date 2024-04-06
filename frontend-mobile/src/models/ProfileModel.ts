@@ -6,4 +6,5 @@ export interface ProfileModel {
   firstname: string;
   lastname: string;
   updateAt: string;
+  phonenumber: string;
 }

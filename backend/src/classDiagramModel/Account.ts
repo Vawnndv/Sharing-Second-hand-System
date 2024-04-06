@@ -109,17 +109,15 @@ export class Account {
     }
   }
 
-
-
-  public static async updateAccount(userid: number, username: string, password: string, phonenumber: string, avatar: string): Promise<any> {
+  public static async updateAccountProfile(userid: number, username: string, phonenumber: string, avatar: string): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
-      SET username = $1, password = $2, phonenumber = $3, avatar = $4
-      WHERE userid = $5
+      SET username = $2, phonenumber = $3, avatar = $4
+      WHERE userid = $1
       RETURNING *;
     `;
-    const values: any = [username,  password, phonenumber, avatar, userid];
+    const values: any = [userid, username, phonenumber, avatar];
     try {
       const result = await client.query(query, values);
   

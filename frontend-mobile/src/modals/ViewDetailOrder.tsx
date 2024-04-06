@@ -1,12 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Platform, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Button } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
 import StepIndicatorOrder from '../components/OrderManagement/StepIndicatorOrder';
 import { formatDateTime } from '../utils/FormatDateTime';
+import UploadModal from './UploadModal';
+import { PickImage, TakePhoto, getCameraPermission, getGallaryPermission } from '../ImgPickerAndUpload';
+import ConfimReceiveModal from './ConfimReceiveModal';
+import ShowImageModal from './ShowImageModal';
+import QRCodeGenerator from '../components/GenerateQRCode';
 
 interface Data {
   title: string;
@@ -19,8 +24,51 @@ interface Data {
   orderid: string;
   statuscreatedat: string;
   isVisibleConfirm: boolean;
+  imgconfirmreceive: string;
 }
 export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModalVisible: (isVisible: boolean) => void, data: Data }) {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
+  const [image, setImage] = useState<any>(null);
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
+  const [hasCameraPermission, setHasCameraPermission] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [isShowQR, setIsShowQR] = useState(false)
+
+  const removeImage = async () => {
+    try {
+      setModalVisible(false);
+    } catch ({ message}: any) {
+      alert(message);
+      setModalVisible(false);
+    }
+  };
+
+  const getPermission = async () => {
+    await getCameraPermission(setHasCameraPermission);
+    await getGallaryPermission(setHasGalleryPermission);
+  }
+
+  useEffect(()  => {
+    image && setModalConfirmVisible(true)
+  }, [image])
+
+  const handleConfirm = async () => {
+    setImage(null)
+    getPermission() 
+    setModalVisible(true)
+  };
+
+  const handleShowImage = () => {
+    setVisible(true)
+    setIsShowQR(false)
+  }
+
+  const handleShowQR = () => {
+    setVisible(true)
+    setIsShowQR(true)
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -52,13 +100,21 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
           </View>
         </View>
 
-        {
-          data.isVisibleConfirm ? (
-            <Button mode="contained" onPress={() => console.log('Xác nhận')} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-              Xác nhận
-            </Button>
-          ) : (<View style={{ marginVertical: 10 }}></View>)
-        }
+        <View style={{flexDirection: 'row'}}>
+          {
+            data.isVisibleConfirm ? (
+              <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                Xác nhận
+              </Button>
+
+            ) : (<></>)
+          }
+          <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
+          </IconButton>
+
+          <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
+          </IconButton>
+        </View>
 
         <View style={styles.process}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 3 }}>
@@ -78,6 +134,15 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
             <StepIndicatorOrder orderID={data.orderid}/>
           </ScrollView>
         </View>
+        <UploadModal 
+          modalVisible={modalVisible}
+          onBackPress={() => { setModalVisible(false); }}
+          onCameraPress={() => TakePhoto(hasCameraPermission,setImage,() => setModalVisible(false))} 
+          onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
+          onRemovePress={() => removeImage()}
+          isLoading={false}
+          title='Confirm photo'     
+        />
 
       </View>
       {/* <Text style={styles.body}>Modal</Text> */}
@@ -85,6 +150,16 @@ export default function ViewDetailOrder({ setIsModalVisible, data }: { setIsModa
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+      <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>
+      <ShowImageModal visible={visible} setVisible={setVisible}>
+        {
+          isShowQR ? (
+            <QRCodeGenerator data={data.orderid.toString()}/>
+          ) : (
+            <Image source={{ uri: image ? image.uri : data.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
+          )
+        }
+      </ShowImageModal>
     </View>
   );
 }

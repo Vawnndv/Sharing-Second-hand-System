@@ -10,10 +10,11 @@ import userAPI from '../../apis/userApi'
 import { ProfileModel } from '../../models/ProfileModel'
 import { Avatar } from 'react-native-paper'
 
-const ProfileScreen = ({navigation}: any) => {
+const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
-  
+  const [profileId, setProfileId] = useState('');
+
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
@@ -24,11 +25,30 @@ const ProfileScreen = ({navigation}: any) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (route.params) {
+      const {id} = route.params;
+      setProfileId(id);
+
+      if (route.params.isUpdated) {
+        getProfile();
+      }
+    } else {
+      setProfileId(auth.id);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    if (profileId) {
+      getProfile();
+    }
+  }, [profileId]);
+
   const getProfile = async () => {
     setIsLoading(true);
 
     try {
-      const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
+      const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
       res && res.data && setProfile(res.data);
       setIsLoading(false);
     } catch (error) {
@@ -41,6 +61,7 @@ const ProfileScreen = ({navigation}: any) => {
     <ContainerComponent isScroll title='Profile' back right>
       {isLoading ? (
         <ActivityIndicator />
+        // <LoadingComponent isLoading={isLoading} values={1} />
       ) : profile ? (
         <>
           <SectionComponent styles={[globalStyles.center]}>
@@ -48,7 +69,8 @@ const ProfileScreen = ({navigation}: any) => {
               <AvatarComponent 
                 avatar={profile.avatar}
                 username={profile.username ? profile.username : profile.email}
-                size={120}
+                size={150}
+                isBorder
               />
             </RowComponent>
             <SpaceComponent height={16} />

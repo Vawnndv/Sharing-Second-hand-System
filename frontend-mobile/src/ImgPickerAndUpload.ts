@@ -1,9 +1,7 @@
 
-import axios from "axios";
-import * as ImagePicker from "expo-image-picker"
-import { Platform } from "react-native";
-import { appInfo } from "./constants/appInfos";import AWS from 'aws-sdk';
 import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from "expo-image-picker";
+import { appInfo } from "./constants/appInfos";
 
 export const getGallaryPermission = async (setGalleryPermission: any) => {
     const result = await ImagePicker.requestMediaLibraryPermissionsAsync()
@@ -26,7 +24,7 @@ export const getCameraPermission = async (setCameraPermission: any) => {
     
 }
 
-export const PickImage = async (permission: boolean, multiple: boolean, setImage: any) => {
+export const PickImage = async (permission: boolean, multiple: boolean, setImage: any, setModalVisible: (value: boolean) => void) => {
     if(permission === true){
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -46,7 +44,8 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
                 name: new Date().getTime(),
                 type: result.assets[0].mimeType,
             }
-            setImage(finalResult)
+            setImage(finalResult);
+            setModalVisible(false);
             // setImage(result.assets[0])
         }
     
@@ -56,7 +55,7 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
     
 }
 
-export const TakePhoto = async (permission: boolean, setImage: any) => {
+export const TakePhoto = async (permission: boolean, setImage: any, setModalVisible: (value: boolean) => void) => {
     if(permission){
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
@@ -73,6 +72,7 @@ export const TakePhoto = async (permission: boolean, setImage: any) => {
             }
             console.log(finalResult)
             setImage(finalResult)
+            setModalVisible(false);
             // setImage(result.assets[0])
         }
         
@@ -169,7 +169,9 @@ export const UploadImageToAws3 = async (file: any) => {
         // Xử lý phản hồi từ server nếu cần
         const data = await serverResponse.json();
         console.log('Server response:', data);
+        return data;
     } catch (error) {
         console.error('Error uploading file:', error);
+        return null;
     }
 }
