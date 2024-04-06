@@ -92,3 +92,16 @@ export const VerifyOrderQR = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+export const updateStatusOfOrder = asyncHandle(async (req, res) => {
+  const { orderID, statusID } = req.body;
+  
+  try {
+    const result = await OrderManager.updateStatusOfOrder(orderID, statusID);
+    if (result)
+      res.status(200).json({ message: 'Update success' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});

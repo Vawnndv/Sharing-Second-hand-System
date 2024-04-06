@@ -472,7 +472,7 @@ export class OrderManager {
       WHERE 
           t.OrderID = $1
       ORDER BY 
-          th.Time DESC
+          th.Time ASC
       `;
     const values : any = [orderID];
     
@@ -580,6 +580,53 @@ export class OrderManager {
       return row
     } finally {
       client.release()
+    }
+  }
+
+  public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
+    const client = await pool.connect();
+    try {
+        const query = `
+        -- Khai báo biến và gán giá trị cho nó
+        DO $$
+        DECLARE
+            NewStatusName VARCHAR(255);
+            NewStraceID INTEGER;
+        
+        BEGIN
+            SELECT StatusName INTO NewStatusName
+            FROM Trace_Status
+            WHERE StatusID = '${statusID}';
+        
+            SELECT TraceID INTO NewStraceID
+            FROM Trace
+            WHERE OrderID = '${orderID}';
+        
+            UPDATE Trace
+            SET CurrentStatus = NewStatusName
+            WHERE OrderID = '${orderID}';
+        
+            INSERT INTO Trace_History (StatusName, Time, TraceID, StatusID)
+            VALUES (
+                NewStatusName,
+                CURRENT_TIMESTAMP,
+                NewStraceID,
+                '${statusID}'
+            );
+      
+            UPDATE Orders
+            SET Status = NewStatusName
+            WHERE OrderID = '${orderID}';
+        END $$;
+        `;
+
+        const result: QueryResult = await client.query(query);
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
+    } finally {
+        client.release();
     }
   }
 
