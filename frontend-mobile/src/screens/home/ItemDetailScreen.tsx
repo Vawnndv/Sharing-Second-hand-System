@@ -1,12 +1,16 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { ContainerComponent, SectionComponent } from '../../components'
+import PostDetail from '../../components/PostDetail';
+
 
 const ItemDetailScreen = () => {
+  const postID = 5;
+
   return (
     <ContainerComponent isScroll title='Notification Screen' right back>
       <SectionComponent>
-        <Text>ScanScreen</Text>
+        <PostDetail postID={postID}/>
       </SectionComponent>
     </ContainerComponent>
   )
