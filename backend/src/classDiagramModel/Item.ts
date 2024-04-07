@@ -9,7 +9,7 @@ export class Item {
 
   private quantity: number | undefined;
 
-  private itemtypeid: number | undefined;
+  public itemtypeid: any;
     
   public constructor(itemID: number, name: string, quantity: number, itemtypeid: number) {
     this.itemID = itemID;
@@ -26,6 +26,10 @@ export class Item {
     } finally {
       return null;
     }
+  }
+
+  public getItemID(): number {
+    return -1
   }
 
 

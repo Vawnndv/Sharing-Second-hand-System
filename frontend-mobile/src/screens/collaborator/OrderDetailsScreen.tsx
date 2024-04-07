@@ -14,6 +14,8 @@ import * as ImagePicker from "expo-image-picker"
 import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
 
 export default function OrderDetailsScreen({navigation, route}: any) {
+
+    const auth = useSelector(authSelector)
     
     const {orderID, status} = route.params
 
@@ -24,13 +26,36 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const [hasCameraPermission, setHasCameraPermission] = useState(false)
 
     const [image, setImage] = useState<any>(null)
-    console.log(image)
 
     const handleConfirm = async () => {
         setIsLoading(true);
-        // await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`);
-        await UploadImageToAws3(image)
+        
+        const url = await UploadImageToAws3(image);
+        // const urlConfirm = response.url
+        await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
+            url: url
+        });
         setIsLoading(false);
+        alert('Xác nhận đơn hàng thành công!')
+        navigation.goBack();
+    }
+
+    const receiveOrder = async () => {
+        const collabID = status === 'Chờ cộng tác viên lấy hàng' ? auth.id : null
+        const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
+        console.log(collabID, statusOrder)
+        await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`,{
+            status: statusOrder
+        });
+        const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
+            collaboratorReceiveID: collabID
+        });
+        console.log(collabID)
+        if(response.data.statusPin === false){
+            alert('Đơn hàng đã được người khác chọn!')
+        }else{
+            alert('Chọn đơn hàng thành công')
+        }
         navigation.goBack();
     }
 
@@ -39,6 +64,13 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             setIsLoading(true)
             const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.data.orders)
+            console.log(response.data.orders[0].imgConfirm)
+            if(response.data.orders[0].imgConfirm !== null){
+                console.log(true)
+                setImage({
+                    uri: response.data.orders[0].imgConfirm
+                })
+            }
             setIsLoading(false)
         }
 
@@ -55,7 +87,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         getPermission()
         
     }, [])
-
+    console.log(image)
     // const testOrder =  {departure: "Departure Order 3", description: "Description 3", giver: {address: null, avatar: null, dateOfBirth: null, email: "staff@example.com", firstName: "Staff", lastName: "User", password: "staff123", phoneNumber: "456789123", roleID: 19, userID: 30, username: "staff"}, item: {itemtypeid: 6, name: "Laptop", quantity: 10}, location: "Phạm Thế Hiển, Quận 8, Thành phố Hồ Chí Minh", orderCode: "ASD135", orderID: 5, qrCode: "QR789", receiver: {address: "Kho 2, 227 Nguyễn Văn Cừ, Quận 5, Thành phố Hồ Chí Minh", avatar: "https://upload.wikimedia.org/wikipedia/commons/5/59/The_look_of_John_Wick_from_the_movie.jpg", dateOfBirth: "2002-12-01T17:00:00.000Z", email: "collaborator1@gmail.com", firstName: "John", lastName: "Wick", password: "collaborator1", phoneNumber: "123123123", roleID: 1, userID: 31, username: "collaborator1"}, status: "Pending", time: "2024-03-25T08:03:16.426Z", title: "Order 3"}
     return(
         <ContainerComponent back>
@@ -76,8 +108,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <IconEvil name="location" size={25}/>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người cho</Text>
-                                                    <Text>{order.receiver.firstName} {order.receiver.lastName} - {order.receiver.phoneNumber}</Text>
-                                                    <Text>{order.location}</Text>
+                                                    <Text>{order.order.giver.firstName} {order.order.giver.lastName} - {order.order.giver.phoneNumber}</Text>
+                                                    <Text>{order.order.addressGive.address}</Text>
                                                 </View>
                                             </View>
 
@@ -85,9 +117,15 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <IconEvil name="location" color={'red'} size={25}/>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người lấy hàng</Text>
-                                                    <Text>{order.giver.firstName} - {order.giver.lastName} - {order.giver.phoneNumber}</Text>
-                                                    <Text>{order.receiver.address}</Text>
-                                                </View>
+                                                    {
+                                                        (status === 'Hàng đang được đến lấy' || status === 'Hàng đã nhập kho')  &&(
+                                                            <><Text>{order.order.receiver.firstName} {order.order.receiver.lastName} - {order.order.receiver.phoneNumber}</Text>
+                                                            <Text>{order.order.addressReceive.address}</Text></>
+                                                        )
+                                                        
+                                                    }
+                                                    
+                                                </View> 
                                             </View>
                                         </View>
 
@@ -106,7 +144,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 />
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Lấy hàng trong ngày</Text>
-                                                    <Text>Hết hạn vào ngày {moment(order.post.timeend).format("DD-MM-YYYY")}</Text>
+                                                    <Text>Hết hạn vào ngày {moment(order.order.post.timeend).format("DD-MM-YYYY")}</Text>
                                                 </View>
                                             </View>
 
@@ -132,14 +170,14 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 />
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Hàng hóa</Text>
-                                                    <Text>Số lượng {order.item.quantity} - {order.item.name}</Text>
+                                                    <Text>Số lượng {order.order.item.quantity} - {order.order.item.name}</Text>
                                                 </View>
                                             </View>
 
                                             <Image
                                                 style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
                                                 source={{
-                                                    uri: "https://quangminh.vn/image/cache/catalog/product/may-cat-co-nhat-ban-husqvarna-226r-2766-700x700-product_popup.jpg"
+                                                    uri: order.image
                                                 }}
                                             />
                                         </View>
@@ -147,34 +185,35 @@ export default function OrderDetailsScreen({navigation, route}: any) {
 
                                         <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
-                                        <View style={styles.content}>
-                                            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
-                                            
+                                        {
+                                            status === 'Hàng đang được đến lấy' &&
+                                            <View style={styles.content}>
+                                                <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
+                                                
+                                                <TouchableOpacity style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}
+                                                    onPress={() => TakePhoto(hasCameraPermission, setImage)}>
+                                                    <Image
+                                                        style={{width: 60, height: 60, marginRight: 10}}
+                                                        source={{
+                                                            uri: "https://cdn-icons-png.flaticon.com/128/3004/3004613.png"
+                                                        }}
+                                                    />
+                                                    <View>
+                                                        <Text style={{fontSize: 16, fontWeight: 'bold'}}>Thêm ảnh đã nhận hàng</Text>
+                                                    </View>
+                                                </TouchableOpacity>
+                                                
 
-                                            <TouchableOpacity style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}
-                                                onPress={() => PickImage(hasCameraPermission,false, setImage)}>
-                                                <Image
-                                                    style={{width: 60, height: 60, marginRight: 10}}
-                                                    source={{
-                                                        uri: "https://cdn-icons-png.flaticon.com/128/3004/3004613.png"
-                                                    }}
-                                                />
-                                                <View>
-                                                    <Text style={{fontSize: 16, fontWeight: 'bold'}}>Thêm ảnh đã nhận hàng</Text>
-                                                </View>
-                                            </TouchableOpacity>
-
-                                            {
-                                                image !== null && <Image
-                                                    style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
-                                                    source={{
-                                                        uri: image.uri
-                                                    }}
-                                                />
-                                            }
-                                            
-                                            {
-                                                status === 'Pending' &&
+                                                {
+                                                    image !== null && <Image
+                                                        style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
+                                                        source={{
+                                                            uri: image.uri
+                                                        }}
+                                                    />
+                                                }
+                                                
+                                                
                                                 <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
                                                         paddingVertical: 15, paddingHorizontal: 20, borderRadius: 30,
                                                         display: 'flex', flexDirection: 'row', justifyContent: 'center',
@@ -184,9 +223,46 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                         Xác nhận nhận hàng
                                                     </Text>
                                                 </TouchableOpacity>
-                                            }
+                                                
+                                                
+                                            </View> 
+                                        }
+
+                                        {
+                                            status === 'Chờ cộng tác viên lấy hàng' &&
+                                            <View style={styles.content}>
+                                                <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Giao đơn hàng</Text>
                                             
-                                        </View>
+                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
+                                                        paddingVertical: 15, paddingHorizontal: 20, borderRadius: 30,
+                                                        display: 'flex', flexDirection: 'row', justifyContent: 'center',
+                                                        alignItems: 'center'}}
+                                                        onPress={() => receiveOrder()}>
+                                                    <Text style={{color: 'white', fontSize: 18, fontWeight: 'bold'}}>
+                                                        Nhận đơn hàng này
+                                                    </Text>
+                                                </TouchableOpacity>
+                                                
+                                                
+                                            </View>
+                                        }
+
+{
+                                            status === 'Hàng đã nhập kho' &&
+                                            <View style={styles.content}>
+                                                <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
+                                                
+                                                {
+                                                    image !== null && <Image
+                                                        style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
+                                                        source={{
+                                                            uri: image.uri
+                                                        }}
+                                                    />
+                                                }
+                                            </View> 
+                                        }
+                                        
                                     </View>
                                 )
                             })

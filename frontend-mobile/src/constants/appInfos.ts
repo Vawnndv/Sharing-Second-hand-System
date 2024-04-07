@@ -6,7 +6,8 @@ export const appInfo = {
     HEIGHT: Dimensions.get('window').height,
   },
 
-  // BASE_URL: 'http://192.168.1.14:3000', // This is URL of TAANS
+
+  // BASE_URL: 'http://192.168.1.2:3000', // This is URL of TAANS
 
   // BASE_URL: 'http://192.168.1.5:3000', // This is URL of CUONG
 

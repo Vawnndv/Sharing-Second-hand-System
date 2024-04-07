@@ -12,8 +12,11 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { ContainerComponent, HeaderComponent } from "../../components";
 import { LoadingModal } from "../../modals";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function OrdersScreen({navigation}: any) {
+
+    const [refresh, setRefresh] = useState(false)
 
     const auth = useSelector(authSelector)
     
@@ -23,21 +26,46 @@ export default function OrdersScreen({navigation}: any) {
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
 
-    const [tab, setTab] = useState('Pending')
+    const [tab, setTab] = useState('Chờ cộng tác viên lấy hàng')
     const [orders, setOrders] = useState([])
+    const [ordersGiving, setOrdersGiving] = useState([])
 
     const [filterValue, setFilterValue] = useState({
-        distance: 5,
-        time: 14,
-        category: "Tất cả"
+        distance: 15,
+        time: 30,
+        category: "Tất cả",
+        sort: 'Mới nhất'
     })
-    console.log(filterValue)
 
+    // dùng để load lại dữ liệu những order mà người dùng pick
+    const [changeOrdersGiving, setChangeOrdersGiving] = useState(false)
+
+    // load dữ liệu những order đang lấy
     useEffect(() => {
         const fetchAPI = async () => {
             try{
                 setIsLoading(true)
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}`)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=Hàng đang được đến lấy&distance=Tất cả&time=Tất cả&category=Tất cả&sort=Mới nhất`)
+                setOrdersGiving(response.data.orders)
+                setIsLoading(false)
+            }catch(error){
+                console.log(error)
+            }
+        }
+
+        fetchAPI()
+    },[changeOrdersGiving, refresh, tab])
+
+    // thực hiện trả về order[] khi filterValue thay đổi
+    
+
+    // load dữ liệu những order có thể chọn
+    useEffect(() => {
+        const fetchAPI = async () => {
+            try{
+                setIsLoading(true)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}&distance=${filterValue.distance}
+                    &time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}`)
                 setOrders(response.data.orders)
                 setIsLoading(false)
             }catch(error){
@@ -46,7 +74,7 @@ export default function OrdersScreen({navigation}: any) {
         }
 
         fetchAPI()
-    },[tab])
+    },[tab, filterValue, changeOrdersGiving, refresh])
 
     const getDate = () => {
         const day = new Date()
@@ -54,6 +82,16 @@ export default function OrdersScreen({navigation}: any) {
         const month = day.getMonth() > 9 ? day.getMonth() : '0'+day.getMonth()
         return date + '/' + month + '/' + day.getFullYear()
     }
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          // Thực hiện các hành động cần thiết khi màn hình được focus
+          console.log('Home Screen Reloaded:');
+          setRefresh(prevRefresh => !prevRefresh);
+          console.log(refresh)
+        });
+        return unsubscribe;
+      }, [navigation]);
 
     return(
         <ContainerComponent>
@@ -63,15 +101,15 @@ export default function OrdersScreen({navigation}: any) {
                     <View style={styles.wrapper}>
                         <View style={styles.header}>
                             <TouchableOpacity
-                                onPress={()=>{setTab('Pending')}}>
-                                <Text style={[styles.defaultText, tab === 'Pending' ? styles.tabSelected : styles.defaultTab]}>
+                                onPress={()=>{setTab('Chờ cộng tác viên lấy hàng')}}>
+                                <Text style={[styles.defaultText, tab === 'Chờ cộng tác viên lấy hàng' ? styles.tabSelected : styles.defaultTab]}>
                                     Chờ lấy
                                 </Text>
                             </TouchableOpacity>
                             
                             <TouchableOpacity
-                                onPress={()=>{setTab('Completed')}}>
-                                <Text style={[styles.defaultText, tab === 'Completed' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
+                                onPress={()=>{setTab('Hàng đã nhập kho')}}>
+                                <Text style={[styles.defaultText, tab === 'Hàng đã nhập kho' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
                                     Đã lấy
                                 </Text>
                             </TouchableOpacity>
@@ -99,21 +137,55 @@ export default function OrdersScreen({navigation}: any) {
 
                     <ScrollView style={{width: '90%', marginTop: 10}}
                         horizontal={false}>
+
+                        {
+                            ordersGiving.map((order: any, index) => {
+                                return (
+                                    <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
+                                        orderID: order.orderID,
+                                        status: order.status,
+                                    })} key={index}>
+                                        <OrderComponent
+                                            avatar={order.giver.avatar}
+                                            name={`${order.giver.firstName} ${order.giver.lastName}`}
+                                            timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
+                                            timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
+                                            departure={order.addressGive.address}
+                                            destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
+                                            quantity={order.item.quantity}
+                                            itemName={order.item.name}
+                                            status={order.status}
+                                            changeOrdersGiving={changeOrdersGiving}
+                                            setChangeOrdersGiving={setChangeOrdersGiving}
+                                            orderID={order.orderID}
+                                            collboratorReceiveID={auth.id}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
+
                         {
                             orders.map((order: any, index) => {
                                 return (
                                     <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
                                         orderID: order.orderID,
-                                        status: order.status
+                                        status: order.status,
                                     })} key={index}>
                                         <OrderComponent
-                                            avatar={order.receiver.avatar}
-                                            name={`${order.receiver.firstName} ${order.receiver.lastName}`}
-                                            timeStart={moment(order.time).format("DD-MM-YYYY")}
-                                            departure={order.location}
-                                            destination={order.receiver.address}
+                                            avatar={order.giver.avatar}
+                                            name={`${order.giver.firstName} ${order.giver.lastName}`}
+                                            timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
+                                            timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
+                                            departure={order.addressGive.address}
+                                            destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
                                             quantity={order.item.quantity}
                                             itemName={order.item.name}
+                                            status={order.status}
+                                            changeOrdersGiving={changeOrdersGiving}
+                                            setChangeOrdersGiving={setChangeOrdersGiving}
+                                            orderID={order.orderID}
+                                            collboratorReceiveID={auth.id}
                                         />
                                     </TouchableOpacity>
                                 )

@@ -141,7 +141,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                     <View style={styles.groupItem}>
                         <TouchableOpacity style={[styles.item, indexCategory === 0 && styles.selectItem]}
                             onPress={() => {setIndexCategory(0)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Khác</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Tất cả</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 1 && styles.selectItem]}
                             onPress={() => {setIndexCategory(1)}}>

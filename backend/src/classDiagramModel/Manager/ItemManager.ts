@@ -34,7 +34,6 @@ export class ItemManager {
       }
       const row = result.rows[0];
       const itemTest = new Item(row.itemid, row.name, row.quantity, row.itemtypeid);
-      console.log(itemTest);
       return new Item(row.itemid, row.name, row.quantity, row.itemtypeid);
 
     } finally {
