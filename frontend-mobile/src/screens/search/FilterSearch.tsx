@@ -2,9 +2,9 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FilterModal from '../../modals/FilterModal';
 import React, { useState } from 'react';
+import { Chip } from 'react-native-paper';
 
-
-export default function FilterSearch() {
+export default function FilterSearch({filterValue, setFilterValue, isPosts, setIsPosts}: any) {
   const [visible, setVisible] = useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
@@ -16,8 +16,32 @@ export default function FilterSearch() {
       >
         <Ionicons name="options" size={26} color={'#552466'}/>
       </TouchableOpacity>
+
+      <View style={styles.chip}> 
+        <Chip
+          selected={isPosts}
+          showSelectedCheck={isPosts}
+          onPress={() => setIsPosts(!isPosts)}
+          mode="outlined"
+          selectedColor= "#552466"
+          style={{borderRadius: 30, backgroundColor: 'transparent', borderColor: isPosts ? '#552466' : '#fff'}}> 
+          Bài đăng 
+        </Chip> 
+      </View>
+
+      <View style={styles.chip}> 
+        <Chip
+          selected={!isPosts}
+          showSelectedCheck={!isPosts}
+          onPress={() => setIsPosts(!isPosts)}
+          mode="outlined"
+          selectedColor= "#552466"
+          style={{borderRadius: 30, backgroundColor: 'transparent', borderColor: !isPosts ? '#552466' : '#fff'}}> 
+          Lưu kho
+        </Chip> 
+      </View> 
       
-      <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}/>
+      <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal}  filterValue={filterValue} setFilterValue={setFilterValue}/>
     </View>
   );
 }
@@ -25,9 +49,13 @@ export default function FilterSearch() {
 const styles = StyleSheet.create({
   filter: {
     height: 40,
-    // backgroundColor: '#f1f1f1',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingHorizontal: 20
-  }
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
+    margin: 10
+  },
+  chip: { 
+    // flex: 1
+  }, 
 });
