@@ -2,13 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Button, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
 import userAPI from '../../apis/userApi'
 import { ProfileModel } from '../../models/ProfileModel'
 import { Avatar } from 'react-native-paper'
+import { Fontisto } from '@expo/vector-icons'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -61,7 +62,7 @@ const ProfileScreen = ({navigation, route}: any) => {
     <ContainerComponent isScroll title='Profile' back right>
       {isLoading ? (
         <ActivityIndicator />
-        // <LoadingComponent isLoading={isLoading} values={1} />
+        // <LoadingComponent isLoading={isLoading} value={1} />
       ) : profile ? (
         <>
           <SectionComponent styles={[globalStyles.center]}>
@@ -108,8 +109,12 @@ const ProfileScreen = ({navigation, route}: any) => {
               </View>
             </RowComponent>
           </SectionComponent>
+          <SpaceComponent height={21} />
+          {/* <SectionComponent>
+            
+          </SectionComponent> */}
           <SpaceComponent height={20} />
-          <RowComponent>
+          <RowComponent justify='center'>
             <SectionComponent>
               <ButtonComponent
                 styles={{

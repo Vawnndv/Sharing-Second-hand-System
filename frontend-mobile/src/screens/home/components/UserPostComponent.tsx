@@ -1,6 +1,6 @@
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { Clock, Heart, Message } from 'iconsax-react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FlatList, Image, StyleSheet, View } from 'react-native'
 import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../../components'
 import CardComponent from '../../../components/CardComponent'
@@ -8,6 +8,11 @@ import { appColors } from '../../../constants/appColors'
 import { fontFamilies } from '../../../constants/fontFamilies'
 import { globalStyles } from '../../../styles/globalStyles'
 import { useNavigation } from '@react-navigation/native'
+import userAPI from '../../../apis/userApi'
+import postsAPI from '../../../apis/postApi'
+import LoadingComponent from '../../../components/LoadingComponent'
+import moment from 'moment';
+import 'moment/locale/vi';
 
 const itemList: any = [
   {
@@ -33,58 +38,91 @@ const itemList: any = [
   },
 ]
 
+interface Posts {
+  avatar: string;
+  username: string;
+  firstname: string; 
+  lastname: string; 
+  description: string; 
+  updatedat: string; 
+  createdat: string;
+  postid: string;
+  location: string;
+  path: string;
+};
 
 const UserPostComponent = () => {
+  moment.locale();
   const navigation: any = useNavigation();
-
+  const [posts, setPosts] = useState<any>([]);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    getAllPosts();
+  }, [])
+
+  const getAllPosts = async () => {
+    setIsLoading(true);
+    try {
+      const res: any = await postsAPI.HandlePost('/user-post/all');
+      setPosts(res.allPosts);
+      console.log(posts)
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  } 
 
   const handleItemPress = ({index} : any) => {
     console.log(123);
     setSelectedItemIndex(index);
   };
 
-  return (
+  return posts ? (
     <FlatList
-      data={itemList}
+      data={posts}
       renderItem={({item, index}) => (
         <CardComponent 
-          key={`event${index}`}
+          key={`posts${index}`}
           color={appColors.white4}
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen')}
         >
           <RowComponent>
             <AvatarComponent
-              username={item.name} 
+              username={item.username} 
               size={50}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text='julia' size={18} font={fontFamilies.medium} />
+                <TextComponent text={item.username} size={18} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />
                   <SpaceComponent width={4} />
-                  <TextComponent text={item.time} font={fontFamilies.light} />
+                  <TextComponent text={`${moment(item.createdat).fromNow()}`} font={fontFamilies.light} />
                 </RowComponent>
               </RowComponent>
               <SpaceComponent height={4} />
               <RowComponent>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
                 <SpaceComponent width={4} />
-                <TextComponent text={item.address} />
+                <TextComponent text={item.location} />
               </RowComponent>
             </View>
           </RowComponent>
           <SpaceComponent height={8} />
           <TextComponent text={item.description} />
           <SpaceComponent height={8} />
-          <Image
-            style={{width: '100%', height: 160, resizeMode: 'cover'}}
-            source={{ uri: item.image }}
-          />
+          {item.path && 
+            <Image
+              style={{width: '100%', height: 160, resizeMode: 'cover'}}
+              source={{ uri: item.path }}
+            />  
+          }
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
@@ -102,6 +140,8 @@ const UserPostComponent = () => {
         </CardComponent>
       )}
     />
+  ) : (
+    <LoadingComponent isLoading={isLoading} values={posts.length} message='Không có bài đăng nào!' />
   )
 }
 

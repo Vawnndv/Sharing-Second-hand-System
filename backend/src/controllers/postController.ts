@@ -1,6 +1,25 @@
 import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
 
+export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
+  const allPosts = await PostManager.getAllPostsFromUserPost();
+  console.log(allPosts);
+  if (allPosts) {
+    res.status(200).json({ message: 'Get all posts successfully', allPosts });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
+
+export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
+  const allPosts = await PostManager.getAllPostFromWarehouse();
+  console.log(allPosts);
+  if (allPosts) {
+    res.status(200).json({ message: 'Get all posts successfully', allPosts });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
 
 export const getPostDetails = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);

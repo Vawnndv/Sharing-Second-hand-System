@@ -12,6 +12,113 @@ export class PostManager {
     return [];
   }
 
+  public static async getAllPostsFromUserPost(): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const postsQuery = `
+        SELECT 
+          u.avatar, 
+          u.username, 
+          u.firstname, 
+          u.lastname, 
+          p.description, 
+          p.updatedat, 
+          p.createdat,
+          p.postid,
+          p.location,
+          MIN(i.path) AS path
+        FROM 
+          "User" u
+        RIGHT JOIN 
+          "posts" p
+        ON 
+          u.userId = p.owner
+        LEFT JOIN 
+          "image" i
+        ON 
+          p.itemid = i.itemid
+        WHERE 
+          u.userId NOT IN (SELECT userId FROM workAt)
+        GROUP BY 
+          u.userId, 
+          u.avatar, 
+          u.username, 
+          u.firstname, 
+          u.lastname, 
+          p.description, 
+          p.updatedat, 
+          p.createdat,
+          p.itemid,
+          p.postid;  
+      `;
+
+      const result: QueryResult = await client.query(postsQuery);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows;
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
+  public static async getAllPostFromWarehouse(): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const postsQuery = `
+        SELECT 
+          p.description, 
+          p.updatedat, 
+          p.createdat,
+          p.itemid,
+          p.postid,
+          w.warehousename,
+          w.avatar,
+          w.address,
+          MIN(i.path) AS path
+        FROM 
+          posts p
+        JOIN 
+          workAt wa
+        ON 
+          p.owner = wa.userid
+        JOIN 
+          warehouse w
+        ON 
+          wa.warehouseid = w.warehouseid
+          LEFT JOIN 
+          image i
+        ON 
+          p.itemid = i.itemid
+        GROUP BY
+          p.description, 
+          p.updatedat, 
+          p.createdat,
+          p.itemid,
+          p.postid,
+          w.warehousename,
+          w.address,
+          w.avatar;   
+      `;
+
+      const result: QueryResult = await client.query(postsQuery);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows;
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
   public static async viewDetailsPost(postID: number): Promise<any> {
     const client = await pool.connect();
     try {
