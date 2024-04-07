@@ -45,7 +45,8 @@ export default function FilterComponent({hideModal, setFilterValue}: any) {
         setFilterValue({
             distance: distance[indexDistance],
             time: time[indexTime],
-            category: category[indexCategory]
+            category: category[indexCategory],
+            sort: checked === 'first' ? 'Mới nhất' : 'Gần nhất'
         })
     }
     return (
@@ -131,7 +132,7 @@ export default function FilterComponent({hideModal, setFilterValue}: any) {
                     <View style={styles.groupItem}>
                         <TouchableOpacity style={[styles.item, indexCategory === 0 && styles.selectItem]}
                             onPress={() => {setIndexCategory(0)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Khác</Text>
+                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Tất cả</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, indexCategory === 1 && styles.selectItem]}
                             onPress={() => {setIndexCategory(1)}}>

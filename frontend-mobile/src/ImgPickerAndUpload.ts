@@ -168,8 +168,9 @@ export const UploadImageToAws3 = async (file: any) => {
 
         // Xử lý phản hồi từ server nếu cần
         const data = await serverResponse.json();
-        console.log('Server response:', data);
+        return data.url;
     } catch (error) {
         console.error('Error uploading file:', error);
+        return ''
     }
 }

@@ -4,6 +4,7 @@ import { Trace } from './Trace';
 import pool from '../config/DatabaseConfig';
 import { User } from './User';
 import { Post } from './Post';
+import { Address } from './Address';
 
 export class Order {
   private orderID: number | undefined;
@@ -38,9 +39,17 @@ export class Order {
 
   private post: Post | null;
 
+  private addressGive: Address | null;
+
+  private addressReceive: Address | null;
+
+  private timeStart: string | undefined;
+
+  private timeEnd: string | undefined;
+
   public constructor(orderID: number, title: string, receiver: User | undefined, giver: User | undefined,
     orderCode: string, qrCode: string, status: string, location: string, description: string,
-    time: string, item: Item | null, departure: string, post: Post | null) {
+    time: string, item: Item | null, departure: string, post: Post | null, addressGive: Address | null, addressReceive: Address | null) {
     this.orderID = orderID;
     this.title = title;
     this.receiver = receiver;
@@ -54,6 +63,8 @@ export class Order {
     this.item = item;
     this.departure = departure;
     this.post = post
+    this.addressGive = addressGive;
+    this.addressReceive = addressReceive;
     // this.item = item;
     // this.trace = trace;
     // this.currentStatus = currentStatus;
@@ -73,5 +84,10 @@ export class Order {
 
   public setReceiver(receiver: User): void{
     this.receiver = receiver
+  }
+
+  public setTime(timeStart: string, timeEnd: string){
+    this.timeStart = timeStart;
+    this.timeEnd = timeEnd;
   }
 }
