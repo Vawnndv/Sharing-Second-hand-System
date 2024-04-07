@@ -13,6 +13,95 @@ import { Post } from '../Post';
 import { Address } from '../Address';
 
 
+interface FilterOrder {
+  title: string;
+  location: string;
+  status: string;
+  createdat: Date;
+  image: string;
+  orderid: number;
+  statusname: string;
+  statuscreatedat: Date;
+  givetype: string;
+  longitudegive: string;
+  latitudegive: string;
+  longitudereceive: string;
+  latitudereceive: string;
+  nametype: string;
+  row_num: string;
+}
+
+function filterOrders(distance: string, time: string, category: string, sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
+  // Chuyển các tham số string sang số
+  const distanceFloat: number = parseFloat(distance);
+  const timeInt: number = parseInt(time);
+  
+  // Lấy thời gian hiện tại
+  const currentTime: Date = new Date();
+
+  // Hàm tính khoảng cách giữa 2 điểm trên bản đồ dựa vào tọa độ
+  function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+      const R: number = 6371; // Bán kính Trái Đất trong km
+      const dLat: number = (lat2 - lat1) * Math.PI / 180; // Đổi độ sang radian
+      const dLon: number = (lon2 - lon1) * Math.PI / 180;
+      const a: number = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c: number = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d: number = R * c; // Khoảng cách giữa 2 điểm
+      return d;
+  }
+
+  // Hàm so sánh thời gian
+  function isTimeBefore(itemTime: Date, limitTime: number): boolean {
+      return itemTime.getTime() >= (currentTime.getTime() - (limitTime * 24 * 60 * 60 * 1000));
+  }
+
+  // Lọc dữ liệu
+  const filteredData: FilterOrder[] = data.filter(item => {
+      // Lọc theo khoảng cách
+      let isValidDistance: boolean = false;
+      if (IsGiver) {
+          const distanceToReceiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudereceive), parseFloat(item.longitudereceive));
+          isValidDistance = distanceToReceiver <= distanceFloat;
+      } else {
+          const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudegive), parseFloat(item.longitudegive));
+          isValidDistance = distanceToGiver <= distanceFloat;
+      }
+
+      // Lọc theo thời gian
+      const isValidTime: boolean = isTimeBefore(item.createdat, timeInt);
+
+      // Lọc theo danh mục
+      let isValidCategory: boolean = item.nametype === category;
+      if (category === "Tất cả") {
+        isValidCategory = true
+      }
+
+      // Kết hợp tất cả các điều kiện
+      return isValidDistance && isValidTime && isValidCategory;
+  });
+
+  // Sắp xếp dữ liệu nếu cần
+  if (sort === "Mới nhất") {
+      filteredData.sort((a, b) => b.statuscreatedat.getTime() - a.statuscreatedat.getTime());
+  } else if (sort === "Gần nhất") {
+      filteredData.sort((a, b) => {
+          let distanceA, distanceB;
+          if (IsGiver) {
+              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudereceive), parseFloat(a.longitudereceive));
+              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudereceive), parseFloat(b.longitudereceive));
+          } else {
+              distanceA = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(a.latitudegive), parseFloat(a.longitudegive));
+              distanceB = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(b.latitudegive), parseFloat(b.longitudegive));
+          }
+          return distanceA - distanceB;
+      });
+  }
+
+  return filteredData;
+}
+
 export class OrderManager {
   public constructor() {
 
@@ -431,7 +520,112 @@ export class OrderManager {
   //   return new Order('');
   // }
 
-  public static async getOrderList (userID: string): Promise<any> {
+  public static async getOrderList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+
+    const client = await pool.connect();
+    // let query = `
+    //   SELECT *
+    //   FROM (
+    //       SELECT *,
+    //             ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
+    //       FROM (
+    //           SELECT 
+    //               o.Title, 
+    //               o.Location, 
+    //               o.Status,
+    //               o.CreatedAt,
+    //               i.Path AS Image, 
+    //               o.OrderID,
+    //               ts.StatusName,
+    //               th.Time AS StatusCreatedAt,
+    //               o.GiveType
+    //           FROM 
+    //               Orders o
+    //           JOIN 
+    //               Image i ON o.ItemID = i.ItemID
+    //           JOIN 
+    //               Trace t ON o.OrderID = t.OrderID
+    //           JOIN 
+    //               Trace_History th ON t.TraceID = th.TraceID
+    //           JOIN 
+    //               Trace_Status ts ON th.StatusID = ts.StatusID
+    //           WHERE 
+    //             {placeholder}
+    //           ORDER BY
+    //               th.Time DESC
+    //       ) AS oo
+    //   ) AS ranked_orders
+    //   WHERE row_num = 1;
+    //   `;
+    let query = `
+      SELECT *
+      FROM (
+          SELECT *,
+                ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
+          FROM (
+              SELECT 
+                  o.Title, 
+                  o.Location, 
+                  o.Status,
+                  o.CreatedAt,
+                  i.Path AS Image, 
+                  o.OrderID,
+                  ts.StatusName,
+                  th.Time AS StatusCreatedAt,
+                  o.GiveType,
+            adg.Longitude AS LongitudeGive,
+            adg.Latitude AS LatitudeGive,
+            adr.Longitude AS LongitudeReceive,
+            adr.Latitude AS LatitudeReceive,
+            itt.NameType,
+            o.imgconfirmreceive
+              FROM 
+                  Orders o
+              JOIN 
+                  Image i ON o.ItemID = i.ItemID
+              JOIN 
+                  Trace t ON o.OrderID = t.OrderID
+              JOIN 
+                  Trace_History th ON t.TraceID = th.TraceID
+              JOIN 
+                  Trace_Status ts ON th.StatusID = ts.StatusID
+              JOIN 
+                  Address adg ON adg.AddressID = o.LocationGive
+              JOIN 
+                  Address adr ON adr.AddressID = o.LocationReceive
+              JOIN 
+                  Posts po ON po.PostID = o.PostID
+              JOIN 
+                  Item it ON it.ItemID = po.ItemID
+              JOIN 
+                  Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+              WHERE 
+                {placeholder}
+              ORDER BY
+                  th.Time DESC
+          ) AS oo
+      ) AS ranked_orders
+      WHERE row_num = 1;
+    `
+    const values : any = [userID];
+    
+    try {
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1)`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)`), values);
+      const mergedResults = {
+        orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
+        orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
+      };
+      console.log('Get orders list success:', mergedResults);
+      return mergedResults
+    } catch (error) {
+      console.error('Error get orders:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -449,7 +643,13 @@ export class OrderManager {
                   o.OrderID,
                   ts.StatusName,
                   th.Time AS StatusCreatedAt,
-                  o.GiveType
+                  o.GiveType,
+            adg.Longitude AS LongitudeGive,
+            adg.Latitude AS LatitudeGive,
+            adr.Longitude AS LongitudeReceive,
+            adr.Latitude AS LatitudeReceive,
+            itt.NameType,
+            o.imgconfirmreceive
               FROM 
                   Orders o
               JOIN 
@@ -460,6 +660,16 @@ export class OrderManager {
                   Trace_History th ON t.TraceID = th.TraceID
               JOIN 
                   Trace_Status ts ON th.StatusID = ts.StatusID
+              JOIN 
+                  Address adg ON adg.AddressID = o.LocationGive
+              JOIN 
+                  Address adr ON adr.AddressID = o.LocationReceive
+              JOIN 
+                  Posts po ON po.PostID = o.PostID
+              JOIN 
+                  Item it ON it.ItemID = po.ItemID
+              JOIN 
+                  Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
               WHERE 
                 {placeholder}
               ORDER BY
@@ -471,65 +681,11 @@ export class OrderManager {
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1)`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND ts.StatusName = 'Hoàn tất'`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)  AND ts.StatusName = 'Hoàn tất'`), values);
       const mergedResults = {
-        orderGive: resultGive.rows,
-        orderReceive: resultReceive.rows
-    };
-      console.log('Get orders list success:', mergedResults);
-      return mergedResults
-    } catch (error) {
-      console.error('Error get orders:', error);
-    } finally {
-      client.release(); // Release client sau khi sử dụng
-    }
-  };
-
-  public static async getOrderFinishList (userID: string): Promise<any> {
-
-    const client = await pool.connect();
-    let query = `
-      SELECT *
-      FROM (
-          SELECT *,
-                ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-          FROM (
-              SELECT 
-                  o.Title, 
-                  o.Location, 
-                  o.Status,
-                  o.CreatedAt,
-                  i.Path AS Image, 
-                  o.OrderID,
-                  ts.StatusName,
-                  th.Time AS StatusCreatedAt
-              FROM 
-                  Orders o
-              JOIN 
-                  Image i ON o.ItemID = i.ItemID
-              JOIN 
-                  Trace t ON o.OrderID = t.OrderID
-              JOIN 
-                  Trace_History th ON t.TraceID = th.TraceID
-              JOIN 
-                  Trace_Status ts ON th.StatusID = ts.StatusID
-              WHERE 
-                  {placeholder} AND ts.StatusName = 'Hoàn tất'
-              ORDER BY
-                  th.Time DESC
-          ) AS oo
-      ) AS ranked_orders
-      WHERE row_num = 1;
-      `;
-    const values : any = [userID];
-    
-    try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1)`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)`), values);
-      const mergedResults = {
-        orderGive: resultGive.rows,
-        orderReceive: resultReceive.rows
+        orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
+        orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
     };
       console.log('Get orders finish list success:', mergedResults);
       return mergedResults
@@ -556,7 +712,7 @@ export class OrderManager {
       WHERE 
           t.OrderID = $1
       ORDER BY 
-          th.Time DESC
+          th.Time ASC
       `;
     const values : any = [orderID];
     
@@ -620,6 +776,128 @@ export class OrderManager {
       return false
     }finally{
       client.release()
+    }
+  }
+
+  public static async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
+    const client = await pool.connect()
+    console.log('QUERY', orderid, imgconfirmreceive)
+    try{
+      const query = `
+        UPDATE "orders"
+        SET imgconfirmreceive = $1
+        WHERE orderid = $2
+      `
+      const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
+      return true;
+    }catch(error){
+      console.log(error)
+      return false
+    }finally{
+      client.release()
+    }
+  }
+
+  public static async getOrderDetails(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.usergiveid,
+          o.userreceiveid,
+          o.title,
+          ad.address,
+          grt.give_receivetype as givetype,
+          o.status,
+          i.Path AS Image,
+          th.Time AS StatusCreatedAt,
+          o.imgconfirmreceive
+        FROM orders AS o
+        JOIN Address ad ON ad.AddressID = o.LocationGive
+        JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
+        JOIN Image i ON o.ItemID = i.ItemID
+        JOIN Trace t ON o.OrderID = t.OrderID
+        JOIN Trace_History th ON t.TraceID = th.TraceID
+        WHERE o.orderid = $1
+        
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
+  public static async VerifyOrderQR(orderID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT 
+          o.orderid,
+          o.userreceiveid,
+          o.usergiveid,
+          o.postid
+        FROM orders AS o
+        WHERE o.orderid = $1
+      `, [orderID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      const row = result.rows[0];
+      return row
+    } finally {
+      client.release()
+    }
+  }
+
+  public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
+    const client = await pool.connect();
+    try {
+        const query = `
+        -- Khai báo biến và gán giá trị cho nó
+        DO $$
+        DECLARE
+            NewStatusName VARCHAR(255);
+            NewStraceID INTEGER;
+        
+        BEGIN
+            SELECT StatusName INTO NewStatusName
+            FROM Trace_Status
+            WHERE StatusID = '${statusID}';
+        
+            SELECT TraceID INTO NewStraceID
+            FROM Trace
+            WHERE OrderID = '${orderID}';
+        
+            UPDATE Trace
+            SET CurrentStatus = NewStatusName
+            WHERE OrderID = '${orderID}';
+        
+            INSERT INTO Trace_History (StatusName, Time, TraceID, StatusID)
+            VALUES (
+                NewStatusName,
+                CURRENT_TIMESTAMP,
+                NewStraceID,
+                '${statusID}'
+            );
+      
+            UPDATE Orders
+            SET Status = NewStatusName
+            WHERE OrderID = '${orderID}';
+        END $$;
+        `;
+
+        const result: QueryResult = await client.query(query);
+        return true;
+    } catch (error) {
+        console.log(error);
+        return false;
+    } finally {
+        client.release();
     }
   }
 

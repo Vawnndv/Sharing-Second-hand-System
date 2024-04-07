@@ -1,7 +1,17 @@
 import {
+  useFonts,
+  Roboto_100Thin,
+  Roboto_100Thin_Italic,
+  Roboto_300Light,
+  Roboto_300Light_Italic,
   Roboto_400Regular,
+  Roboto_400Regular_Italic,
   Roboto_500Medium,
-  Roboto_700Bold
+  Roboto_500Medium_Italic,
+  Roboto_700Bold,
+  Roboto_700Bold_Italic,
+  Roboto_900Black,
+  Roboto_900Black_Italic,
 } from '@expo-google-fonts/roboto';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -27,9 +37,18 @@ export default function App() {
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync({
           ...Entypo.font,
+          Roboto_100Thin,
+          Roboto_100Thin_Italic,
+          Roboto_300Light,
+          Roboto_300Light_Italic,
           Roboto_400Regular,
+          Roboto_400Regular_Italic,
           Roboto_500Medium,
+          Roboto_500Medium_Italic,
           Roboto_700Bold,
+          Roboto_700Bold_Italic,
+          Roboto_900Black,
+          Roboto_900Black_Italic,
         });
 
         // Artificially delay for two seconds to simulate a slow loading

@@ -101,7 +101,7 @@ export default function StepIndicatorOrder ({orderID}: any) {
       const responseData: Item[] = res.data;
       setData(responseData);
       setLabels(responseData.map(item => item.statusname));
-      setCurrentPosition(labels.length + 1)
+      setCurrentPosition(responseData.map(item => item.statusname).length)
 
       console.log('RES', res.data)
       console.log('data', data);

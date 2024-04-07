@@ -2,7 +2,7 @@ import { View, Image, StyleSheet, Text, Touchable, TouchableOpacity, ScrollView 
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { RadioButton } from 'react-native-paper';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 
 const distance = [
@@ -32,13 +32,22 @@ const category = [
     "Thể thao",
     "Khác"
 ]
-export default function FilterComponent({hideModal, setFilterValue}: any) {
+export default function FilterComponent({hideModal, filterValue, setFilterValue}: any) {
 
     const [indexDistance, setIndexDistance] = useState(2)
     const [indexTime, setIndexTime] = useState(3)
     const [indexCategory, setIndexCategory] = useState(0)
 
     const [checked, setChecked] = useState('first');
+
+    useEffect(() => {
+        // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
+        const { distance: filterDistance, time: filterTime, category: filterCategory, sort: filterSort } = filterValue;
+        setIndexDistance(distance.indexOf(filterDistance));
+        setIndexTime(time.indexOf(filterTime));
+        setIndexCategory(category.indexOf(filterCategory));
+        setChecked(filterSort === 'Mới nhất' ? 'first' : 'second');
+    }, [filterValue]);
 
     const handleApply = () => {
         hideModal();
@@ -124,7 +133,7 @@ export default function FilterComponent({hideModal, setFilterValue}: any) {
             </View>
 
             <View style={styles.group}>
-                <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Doanh mục</Text>
+                <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Danh mục</Text>
                 
                 <ScrollView
                     horizontal

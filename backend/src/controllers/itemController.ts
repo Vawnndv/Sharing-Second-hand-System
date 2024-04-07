@@ -9,7 +9,27 @@ export const getItemDetails = asyncHandle(async (req, res) => {
     console.log(itemDetails);
     if (itemDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
-      res.status(200).json(itemDetails);
+      res.status(200).json({ message: 'Item founded', item: itemDetails });
+    } else {
+      // Nếu không tìm thấy chi tiết bài đăng, trả về một thông báo lỗi
+      res.status(404).json({ message: 'Không tìm thấy món đồ.' });
+    }
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Lỗi khi lấy món đồ:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+
+export const getItemImages = asyncHandle(async (req, res) => {
+  const itemID: number = parseInt(req.params.itemID);
+  try {
+    const itemImages = await ItemManager.viewItemImages(itemID);
+    console.log(itemImages);
+    if (itemImages) {
+      // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
+      res.status(200).json({ message: 'Item images founded', itemImages: itemImages });
     } else {
       // Nếu không tìm thấy chi tiết bài đăng, trả về một thông báo lỗi
       res.status(404).json({ message: 'Không tìm thấy món đồ.' });
@@ -43,10 +63,11 @@ export const postNewItem = asyncHandle(async (req, res) => {
   const { name, quantity, itemtypeID } = req.body;
   
   try {
-    const newItem = ItemManager.createItem(name, quantity, itemtypeID);
+    const newItem = await ItemManager.createItem(name, quantity, itemtypeID);
     res.status(201).json({ message: 'Item created successfully', item: newItem });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+

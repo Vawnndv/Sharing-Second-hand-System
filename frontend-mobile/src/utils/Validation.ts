@@ -95,6 +95,16 @@ export class Validator {
           message = '';
         }
         break;
+      
+      case 'phonenumber':
+        if (!values.phonenumber) {
+          message ='Phone number is required!!!';
+        } else if (values.phonenumber.length < 12 && values.phonenumber.length > 10) {
+          message = 'Phone number must must include 11 or 12 number !!!'
+        } else {
+          message = '';
+        }
+        break;
     }
     updatedErrorMessage[key] = message;
     return updatedErrorMessage; // Sử dụng bản sao mới của errorMessage

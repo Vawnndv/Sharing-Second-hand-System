@@ -1,6 +1,25 @@
 import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
 
+export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
+  const allPosts = await PostManager.getAllPostsFromUserPost();
+  console.log(allPosts);
+  if (allPosts) {
+    res.status(200).json({ message: 'Get all posts successfully', allPosts });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
+
+export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
+  const allPosts = await PostManager.getAllPostFromWarehouse();
+  console.log(allPosts);
+  if (allPosts) {
+    res.status(200).json({ message: 'Get all posts successfully', allPosts });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
 
 export const getPostDetails = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);
@@ -10,7 +29,7 @@ export const getPostDetails = asyncHandle(async (req, res) => {
     console.log(postDetails);
     if (postDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
-      res.status(200).json(postDetails);
+      res.status(200).json({ message: 'Get post successfully', postDetail: postDetails });
     } else {
       // Nếu không tìm thấy chi tiết bài đăng, trả về một thông báo lỗi
       res.status(404).json({ message: 'Không tìm thấy chi tiết bài đăng.' });
@@ -29,13 +48,7 @@ export const getPostReceivers = asyncHandle(async (req, res) => {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postReceivers = await PostManager.viewPostReceivers(postID);
     console.log(postReceivers);
-    if (postReceivers) {
-      // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
-      res.status(200).json(postReceivers);
-    } else {
-      // Nếu không tìm thấy chi tiết bài đăng, trả về một thông báo lỗi
-      res.status(404).json({ message: 'Không tìm thấy chi tiết bài đăng.' });
-    }
+    res.status(200).json({ message: 'Get post receiver successfully', postReceivers: postReceivers });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Lỗi khi lấy chi tiết bài đăng:', error);
@@ -49,26 +62,41 @@ export const createPost = asyncHandle(async (req, res) => {
   const description = req.body.description;
   const owner = req.body.owner;
   const time = req.body.time;
-  const itemid = req.body.owner;
+  const itemid = req.body.itemid;
   const timestart = req.body.timestart;
   const timeend = req.body.timeend;
 
- 
+  console.log(req.body.title);
+
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend);
-    console.log(postCreated);
-    if (postCreated != null) {
-      // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
-      res.status(200).json(postCreated);
-    } else {
-      // Nếu không tìm thấy chi tiết bài đăng, trả về một thông báo lỗi
-      res.status(404).json({ message: 'Bài viết up không thành công vui lòng thử lại.' });
-    }
+    res.status(200).json({ message: 'Create post successfully', postCreated: postCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Lỗi khi gửi bài viết:', error);
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+export const searchPost = asyncHandle(async (req, res) => {
+  const keyword : any = req.query.keyword;
+  const limit : any = req.query.limit;
+  const iswarehousepost : any = req.query.iswarehousepost;
+  const page : any = req.query.page;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
+  
+  try {
+    const postList = await PostManager.searchPost(keyword, limit, iswarehousepost, page, distance, time, category, sort, latitude, longitude);
+    res.status(200).json({ message: 'Get post list success', data: postList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });

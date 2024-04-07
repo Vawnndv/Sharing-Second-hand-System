@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import StepOne from './PostItemFormStepOne';
 import StepTwo from './PostItemFormStepTwo';
 import { Button } from 'react-native-paper';
@@ -6,6 +6,11 @@ import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'rea
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import itemsAPI from '../../apis/itemApi'
+import postAPI from '../../apis/postApi';
+import { appInfo } from '../../constants/appInfos';
+import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 
 
@@ -35,6 +40,8 @@ const MultiStepForm = () => {
   const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: '', itemQuantity: '', itemDescription: '' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: ''  /* khởi tạo các trường khác */ });
 
+  const auth = useSelector(authSelector);
+
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -47,37 +54,6 @@ const MultiStepForm = () => {
     }
   };
 
-
-  const createItem = async (name: string, quantity: number, itemtypeID: number) => {
-    try {
-      const res = await itemsAPI.HandleAuthentication(
-        '/',
-        {name, quantity, itemtypeID},
-        'post'
-      );
-      console.log(res.data);
-      Alert.alert('Success', 'Item created successfully');
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-
-const createPost = async (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date) => {
-  try {
-    const res = await itemsAPI.HandleAuthentication(
-      '/createPost',
-      {title, location, description, owner, time, itemid, timestart, timeend},
-      'post'
-    );
-    console.log(res.data);
-    Alert.alert('Success', 'Post created successfully');
-
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 
   const handleSubmit = async () => {
@@ -106,46 +82,55 @@ const createPost = async (title: string, location: string, description: string, 
     }
 
     if (!formDataStepTwo.postAddress.trim()) {
-      alert('Số điện thoại là bắt buộc.');
+      alert('Địa chỉ là bắt buộc.');
       return;
     }
+    let itemID = 0;
 
     try {
-      // Tạo item đầu tiên
-      const newItemRes = await createItem(
-        formDataStepOne.itemName,
-        parseInt(formDataStepOne.itemQuantity),
-        parseInt(formDataStepOne.itemCategory),
-      );
+      const name = formDataStepOne.itemName;
+      const quantity = parseInt(formDataStepOne.itemQuantity);
+      const itemtypeID = parseInt(formDataStepOne.itemCategory)
+      const res = await axios.post(`${appInfo.BASE_URL}/items`, {
+        name,
+        quantity,
+        itemtypeID,
+      });
+      itemID = res.data.item.itemid;
+      console.log(res.data.item.itemid);
+      // Alert.alert('Success', 'Item created successfully');
+      } catch (error) {
+        console.log(error);
+      }
 
-      if (newItemRes != null &&  'data' in newItemRes) {
-        const newItemID = (newItemRes as any)?.data?.itemid;
-        // Đảm bảo rằng itemID được trả về từ API là chính xác
-
-        const values : any = [formDataStepTwo.postTitle, formDataStepTwo.postAddress, formDataStepTwo.postDescription, 1, new Date(),  newItemID, new Date(formDataStepTwo.postStartDate), new Date(formDataStepTwo.postEndDate)];
-        const newPostRes = await createPost(
-          formDataStepTwo.postTitle,
-          formDataStepTwo.postAddress,
-          formDataStepTwo.postDescription,
-          1, // Thay thế số người dùng bằng user ID thực tế nếu có
-          new Date(),
-          newItemID,
-          new Date(formDataStepTwo.postStartDate),
-          new Date(formDataStepTwo.postEndDate)
-        );
-        console.log(newPostRes);
-        if (newPostRes != null) {
-          // Thực hiện các hành động khác sau khi tạo thành công
-          Alert.alert('Success', 'Item and Post created successfully');
-        }
-        } else {
-          // Xử lý khi tạo item thất bại
-          Alert.alert('Error', 'Failed to create item');
-        }
+      try {
+        const title = formDataStepTwo.postTitle;
+        const location = formDataStepTwo.postAddress;
+        const description = formDataStepTwo.postDescription;
+        const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+        const time = new Date();
+        const itemid = itemID;
+        const timestart = new Date(formDataStepTwo.postStartDate);
+        const timeend = new Date(formDataStepTwo.postEndDate);
+        
+        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+        const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+          title,
+          location,
+          description,
+          owner,
+          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+          itemid,
+          timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+          timeend: new Date(timeend).toISOString(), // Và timeend
+        });       
+        console.log(response.data.postCreated);
+        Alert.alert('Success', 'Item and Post created successfully');
       } catch (error) {
         console.error('Error creating item and post:', error);
         Alert.alert('Error', 'Failed to create item and post. Please try again later.');
-      }      
+      }
+
   };
 
 

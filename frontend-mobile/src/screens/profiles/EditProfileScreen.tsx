@@ -4,14 +4,16 @@ import * as ImagePicker from 'expo-image-picker';
 import { User } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import authenticationAPI from '../../apis/authApi';
-import { ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent } from '../../components';
+import { AvatarComponent, ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent } from '../../components';
 import AvatarUpload from '../../components/AvatarUpload';
 import { appColors } from '../../constants/appColors';
-import { UploadModal } from '../../modals';
+import { LoadingModal, UploadModal } from '../../modals';
 import { ErrorMessages } from '../../models/ErrorMessages';
 import { Validator } from '../../utils/Validation';
 import { ProfileModel } from '../../models/ProfileModel';
 import { PickImage, TakePhoto, UploadImageToAws3, getCameraPermission, getGallaryPermission } from '../../ImgPickerAndUpload';
+import { globalStyles } from '../../styles/globalStyles';
+import userAPI from '../../apis/userApi';
 
 const initValue = {
   email: '',
@@ -29,8 +31,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
   const {profile}: {profile:ProfileModel} = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
-  const [savingChanges, setSavingChanges] = useState(false);
-  const [values, setValues] = useState(initValue);
+  const [values, setValues] = useState({email: profile.email, username : profile.username, phonenumber : profile.phonenumber});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
   const [errorRegister, setErrorRegister] = useState('');
@@ -41,7 +42,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
   useEffect(() => {
     if (
       errorMessage.username ||
-      errorMessage.phone || errorMessage.address  || !values.username || !values.phone || !values.address 
+      errorMessage.phonenumber || !values.username || !values.phonenumber
     ) {
       setIsDisable(true);
     } else {
@@ -73,57 +74,39 @@ const EditProfileScreen = ({navigation, route}: any) => {
   };
   
   const handleRegister = async () => {
-    await UploadImageToAws3(image);
-  };
-
-  const uploadImage = async (mode: string) => {
+    const {url} = await UploadImageToAws3(image);
+    console.log(url);
+    setErrorMessage(initValue);
+    setIsLoading(true);
     try {
-      let result: any = {};
-      if (mode === 'gallery') {
-        await ImagePicker.requestCameraPermissionsAsync();
-        result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ImagePicker.MediaTypeOptions.Images,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 1,
-        });
+      const res = await userAPI.HandleUser('/change-profile', 
+        {
+          email: values.email, 
+          username: values.username,
+          phonenumber: values.phonenumber,
+          avatar: url ?? null,
+        }
+        , 'post');
+      setIsLoading(false);
+      navigation.navigate('ProfileScreen', {
+        isUpdated: true,
+      })
+      setIsDisable(true);
+      setErrorRegister('');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setErrorRegister(error.message);
       } else {
-        await ImagePicker.requestCameraPermissionsAsync();
-        result = await ImagePicker.launchCameraAsync({
-          cameraType: ImagePicker.CameraType.front,
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 1,
-        });
+        setErrorRegister("Network Error");
       }
-
-      if (!result.canceled) {
-        console.log(result.assets[0].uri, 'link')
-        console.log(result.assets[0], 'imageurl')
-        await saveImage(result.assets[0]);
-      }
-    } catch (error: any) {
-      alert("Error uploading image: " + error.message);
-      setModalVisible(false);
+      setIsLoading(false);
+      setIsDisable(false);
     }
   };
 
-  const saveChanges = async () => {
-    try {
-      setSavingChanges(true);
-
-      setSavingChanges(false);
-    
-      navigation.navigate("Profile");
-    } catch ({message}: any) {
-      alert(message);
-      setSavingChanges(false);
-    }
-  }
 
   const removeImage = async () => {
     try {
-      saveImage('');
       setModalVisible(false);
     } catch ({ message}: any) {
       alert(message);
@@ -131,108 +114,75 @@ const EditProfileScreen = ({navigation, route}: any) => {
     }
   };
 
-  const saveImage = async (image: any) => {
-    try {
-      // update display image
-      setImage(image);
-
-      // make api call to save
-      sendToBackend();
-
-      setModalVisible(false);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const sendToBackend = async () => {
-    try {
-      const formData: any = new FormData();
-      // formData.append('file', {
-      //   uri: image,
-      //   type: 'image/png',
-      //   name: 'profile-image',
-      // });
-
-
-      formData.append('file', image)
-
-
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        TransformStream: () => {
-          return formData;
-        },
-      };
-
-      // await axios.post(`${appInfo.BASE_URL}`, formData, config);
-      alert("success");
-    } catch (error) {
-      throw error;
-    }
-  };
-
   return (
-    <ContainerComponent back title={'Edit Profile'}>
-      <SectionComponent>
-        <AvatarUpload onButtonPress={() => setModalVisible(true)} uri={image ? image.uri : 'https://gamek.mediacdn.vn/133514250583805952/2022/5/18/photo-1-16528608926331302726659.jpg'} 
-          aviOnly={false} />
-        <UploadModal 
-          modalVisible={modalVisible}
-          onBackPress={() => { setModalVisible(false); }}
-          onCameraPress={() => TakePhoto(hasCameraPermission,setImage)} 
-          onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage)}
-          onRemovePress={() => removeImage()}
-          isLoading={false}    
-        />
-        <SpaceComponent height={21} />
-        <InputComponent
-          value={values.email}
-          editable={false}
-          placeholder="Email"
-          onChange={val => handleChangeValue('', val)}
-          affix={<Fontisto name="email" size={22} color={appColors.gray} />}
-        />
-        <InputComponent
-          value={values.username}
-          placeholder="Họ và tên"
-          onChange={val => handleChangeValue('username', val)}
-          allowClear
-          affix={<User size={22} color={appColors.gray} />}
-          onEnd={() => formValidator('username')}
-          error={errorMessage['username']}
-        />
-        <InputComponent
-          value={values.phone}
-          placeholder="Số điện thoại"
-          onChange={val => handleChangeValue('phone', val)}
-          allowClear
-          affix={<SimpleLineIcons name="phone" size={22} color={appColors.gray} />}
-          onEnd={() => formValidator('phone')}
-          error={errorMessage['phone']}
-        />     
-        <InputComponent
-          value={values.address}
-          placeholder="Địa chỉ"
-          onChange={val => handleChangeValue('address', val)}
-          allowClear
-          affix={<SimpleLineIcons name="location-pin" size={22} color={appColors.gray} />}
-          onEnd={() => formValidator('address')}
-          error={errorMessage['address']}
-        />
-      </SectionComponent>
-      <SpaceComponent height={16} />
-        <SectionComponent>
-          <ButtonComponent
-            onPress={handleRegister}
-            text="SAVE"
-            type="primary"
-            disable={false}           
+    <>
+      <ContainerComponent back title={'Edit Profile'} isScroll>
+        <SectionComponent styles={[globalStyles.center]}>
+          <AvatarComponent
+            avatar={image ? image.uri : profile.avatar }
+            username={profile.username ? profile.username : profile.email} 
+            onButtonPress={() => setModalVisible(true)} 
+            size={150}
+            isEdit 
+            isBorder
           />
+          <UploadModal 
+            modalVisible={modalVisible}
+            onBackPress={() => { setModalVisible(false); }}
+            onCameraPress={() => TakePhoto(hasCameraPermission,setImage,() => setModalVisible(false))} 
+            onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
+            onRemovePress={() => removeImage()}
+            isLoading={false}
+            title='Profile photo'    
+          />
+          <SpaceComponent height={21} />
+          <InputComponent
+            value={values.email}
+            editable={false}
+            placeholder="Email"
+            onChange={val => handleChangeValue('', val)}
+            affix={<Fontisto name="email" size={22} color={appColors.gray} />}
+          />
+          <InputComponent
+            value={values.username}
+            placeholder="Họ và tên"
+            onChange={val => handleChangeValue('username', val)}
+            allowClear
+            affix={<User size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('username')}
+            error={errorMessage['username']}
+          />
+          <InputComponent
+            value={values.phonenumber}
+            placeholder="Số điện thoại"
+            onChange={val => handleChangeValue('phonenumber', val)}
+            allowClear
+            affix={<SimpleLineIcons name="phone" size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('phonenumber')}
+            error={errorMessage['phonenumber']}
+          />     
+          {/* <InputComponent
+            value={values.address}
+            placeholder="Địa chỉ"
+            onChange={val => handleChangeValue('address', val)}
+            allowClear
+            affix={<SimpleLineIcons name="location-pin" size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('address')}
+            error={errorMessage['address']}
+          /> */}
         </SectionComponent>
-    </ContainerComponent>
+        <SpaceComponent height={16} />
+          <SectionComponent>
+            <ButtonComponent
+              onPress={handleRegister}
+              text="SAVE"
+              type="primary"
+              disable={isDisable}           
+            />
+          </SectionComponent>
+      </ContainerComponent>
+      <LoadingModal visible={isLoading} />
+    </>
   )
 }
 

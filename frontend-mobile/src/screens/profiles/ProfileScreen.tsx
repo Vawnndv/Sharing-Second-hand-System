@@ -2,18 +2,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
 import { ActivityIndicator, Button, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
 import { appColors } from '../../constants/appColors'
 import userAPI from '../../apis/userApi'
 import { ProfileModel } from '../../models/ProfileModel'
 import { Avatar } from 'react-native-paper'
+import { Fontisto } from '@expo/vector-icons'
 
-const ProfileScreen = ({navigation}: any) => {
+const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
-  
+  const [profileId, setProfileId] = useState('');
+
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
@@ -24,11 +26,30 @@ const ProfileScreen = ({navigation}: any) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (route.params) {
+      const {id} = route.params;
+      setProfileId(id);
+
+      if (route.params.isUpdated) {
+        getProfile();
+      }
+    } else {
+      setProfileId(auth.id);
+    }
+  }, [route.params]);
+
+  useEffect(() => {
+    if (profileId) {
+      getProfile();
+    }
+  }, [profileId]);
+
   const getProfile = async () => {
     setIsLoading(true);
 
     try {
-      const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
+      const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
       res && res.data && setProfile(res.data);
       setIsLoading(false);
     } catch (error) {
@@ -41,6 +62,7 @@ const ProfileScreen = ({navigation}: any) => {
     <ContainerComponent isScroll title='Profile' back right>
       {isLoading ? (
         <ActivityIndicator />
+        // <LoadingComponent isLoading={isLoading} value={1} />
       ) : profile ? (
         <>
           <SectionComponent styles={[globalStyles.center]}>
@@ -48,7 +70,8 @@ const ProfileScreen = ({navigation}: any) => {
               <AvatarComponent 
                 avatar={profile.avatar}
                 username={profile.username ? profile.username : profile.email}
-                size={120}
+                size={150}
+                isBorder
               />
             </RowComponent>
             <SpaceComponent height={16} />
@@ -86,8 +109,12 @@ const ProfileScreen = ({navigation}: any) => {
               </View>
             </RowComponent>
           </SectionComponent>
+          <SpaceComponent height={21} />
+          {/* <SectionComponent>
+            
+          </SectionComponent> */}
           <SpaceComponent height={20} />
-          <RowComponent>
+          <RowComponent justify='center'>
             <SectionComponent>
               <ButtonComponent
                 styles={{

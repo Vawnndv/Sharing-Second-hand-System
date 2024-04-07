@@ -1,13 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { ContainerComponent, HeaderComponent, SectionComponent } from '../../components'
+import { ContainerComponent, HeaderComponent, SectionComponent, TextComponent } from '../../components'
+import ItemTabComponent from './components/ItemTabComponent'
 
 const NotificationScreen = () => {
   return (
-    <ContainerComponent isScroll title='Notification Screen' right back>
-      <SectionComponent>
-        <Text>ScanScreen</Text>
-      </SectionComponent>
+    <ContainerComponent right back title='Thông báo'>
+      <ItemTabComponent />
     </ContainerComponent>
   )
 }
