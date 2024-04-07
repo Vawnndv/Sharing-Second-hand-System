@@ -1,91 +1,114 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { Avatar } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator  } from 'react-native';
+import { Clock, Heart, Message } from 'iconsax-react-native'
+import { SimpleLineIcons } from '@expo/vector-icons'
+import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../components';
+import CardComponent from '../../components/CardComponent';
+import { appColors } from '../../constants/appColors';
+import { fontFamilies } from '../../constants/fontFamilies';
+import { globalStyles } from '../../styles/globalStyles';
+import { useNavigation } from '@react-navigation/native';
+import { formatDateTime } from '../../utils/FormatDateTime';
 
 interface DataItem {
-  id: string;
-  imageUri: string;
+  userid: string;
+  firstname: string;
+  lastname: string;
+  avatar: string;
+  postid: string;
   title: string;
-  authorAvatarUri: string;
-  authorName: string;
-  distance: string;
-  addedRecently: boolean;
+  description: string;
+  createdat: string;
+  address: string;
+  longitude: string;
+  latitude: string;
+  path: string;
 }
 
 interface Props {
   data: DataItem[];
+  isLoading: boolean;
+  handleEndReached: () => void;
 }
 
-const CardSearchResult: React.FC<Props> = ({ data }) => {
-  return (
-    <ScrollView>
-      {data.map(item => (
-        <View key={item.id} style={styles.container}>
-          <TouchableOpacity style={styles.card}>
-            <Image style={styles.cardImage} source={{ uri: item.imageUri }} />
+const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) => {
+  const navigation: any = useNavigation();
 
-            <View style={styles.infomation}>
-              <Text style={styles.title}>{item.title}</Text>
-              <View style={{ flexDirection: 'row', gap: 5 }}>
-                <Avatar.Image size={24} source={{ uri: item.authorAvatarUri }} />
-                <Text>{item.authorName}</Text>
-              </View>
-              <View style={{ flexDirection: 'row', gap: 5 }}>
-                <Icon name="map-pin" size={20} color="#552466" />
-                <Text>{item.distance}</Text>
-                {item.addedRecently && <Text style={{ color: 'red', fontStyle: 'italic' }}> Vừa thêm vào </Text>}
-              </View>
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+
+  const handleItemPress = ({index} : any) => {
+    console.log(123);
+    setSelectedItemIndex(index);
+  };
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={({item, index}) => (
+        <CardComponent 
+          key={index}
+          color={appColors.white4}
+          isShadow
+          onPress={() => navigation.navigate('ItemDetailScreen')}
+        >
+          <RowComponent>
+            <AvatarComponent
+              username={item.firstname ? item.firstname : 'A'} 
+              avatar={item.avatar}
+              size={50}
+            />
+            <SpaceComponent width={12} />
+            <View style={[globalStyles.col]}>
+              <RowComponent>
+                <TextComponent text={item.firstname} size={18} font={fontFamilies.medium} />
+                <SpaceComponent width={5} />
+                <TextComponent text={item.lastname} size={18} font={fontFamilies.medium} />
+                <SpaceComponent width={10} />
+                <RowComponent>
+                  <Clock size={14} color={appColors.black} />
+                  <SpaceComponent width={4} />
+                  <TextComponent text={formatDateTime(item.createdat)} font={fontFamilies.light} />
+                </RowComponent>
+              </RowComponent>
+              <SpaceComponent height={4} />
+              <RowComponent>
+                <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
+                <SpaceComponent width={4} />
+                <TextComponent text={item.address} />
+              </RowComponent>
             </View>
-          </TouchableOpacity>
-        </View>
-      ))}
-    </ScrollView>
+          </RowComponent>
+          <SpaceComponent height={8} />
+          <TextComponent text={item.description} />
+          <SpaceComponent height={8} />
+          <Image
+            style={{width: '100%', height: 160, resizeMode: 'cover'}}
+            source={{ uri: item.path }}
+          />
+          <RowComponent justify='flex-end' 
+            styles={globalStyles.bottomCard}>
+            <RowComponent>
+              <Message size={18} color={appColors.black}/>
+              <SpaceComponent width={4} />
+              <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
+            </RowComponent>
+            <SpaceComponent width={16} />
+            <RowComponent onPress={() => handleItemPress(index)}>
+              <Heart size={18} color={appColors.black} variant={selectedItemIndex === index ? 'Bold' : 'Outline' }/>
+              <SpaceComponent width={4} />
+              <TextComponent size={14} text='10 Loves' font={fontFamilies.medium} /> 
+            </RowComponent>
+          </RowComponent>
+        </CardComponent>
+      )}
+      keyExtractor={(item, index) => index.toString()}
+      onEndReached={handleEndReached} // Khi người dùng kéo xuống cuối cùng
+      onEndReachedThreshold={0.1} // Kích hoạt khi còn 10% phía dưới còn lại của danh sách
+      ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" /> : null} // Hiển thị indicator khi đang tải dữ liệu
+    />
   )
 }
 
 export default CardSearchResult;
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 100
-  },
-  cardText: {
-    fontSize: 14
-  },
-  card: {
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    marginHorizontal: '2%',
-    width: '96%',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 4,
-    elevation: 5,
-    flexDirection: 'row',
-    borderRadius: 10
-  },
-  cardImage: {
-    width: '30%',
-    height: 100,
-    resizeMode: 'cover',
-    borderBottomLeftRadius: 10
-  },
-  infomation: {
-    paddingLeft: 10,
-    flexDirection: 'column',
-    gap: 4,
-    justifyContent: 'space-between',
-    paddingVertical: 10
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold'
-  }
-});
+const styles = StyleSheet.create({});

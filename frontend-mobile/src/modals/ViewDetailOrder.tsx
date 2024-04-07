@@ -128,7 +128,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
 
         <View style={{flexDirection: 'row'}}>
           {
-            userID === data?.userreceiveid ? (
+            userID == data?.userreceiveid ? (
               <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                 Xác nhận
               </Button>

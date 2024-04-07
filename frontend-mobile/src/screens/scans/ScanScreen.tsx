@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button, ImageBackground, Modal } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, Camera } from "expo-camera/next";
 import { ContainerComponent, SectionComponent } from '../../components'
 import { Ionicons } from '@expo/vector-icons';
 import { appInfo } from '../../constants/appInfos';
@@ -19,12 +19,12 @@ export default function ScanScreen({navigation} : any) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+    const getCameraPermissions = async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === "granted");
     };
 
-    getBarCodeScannerPermissions();
+    getCameraPermissions();
   }, []);
 
   const verifyQRCode= async ({data} : any) => {
@@ -62,11 +62,14 @@ export default function ScanScreen({navigation} : any) {
   }
 
   return (
-    <View style={{flex: 1, paddingTop: 36}}>
+    <ContainerComponent>
       <View style={styles.container}>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={{...StyleSheet.absoluteFillObject, flex: 1}}
+        <CameraView
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ["qr", "pdf417"],
+          }}
+          style={StyleSheet.absoluteFillObject}
         />
         {scanned && <Button title={'Chạm để quét lại lần nữa'} onPress={() => setScanned(false)} />}
         {/* <View style={styles.marker}/> */}
@@ -94,7 +97,7 @@ export default function ScanScreen({navigation} : any) {
         {orderID && <ViewDetailOrder setIsModalVisible={setIsModalVisible} orderid={orderID}/>}
       </Modal>
       <LoadingModal visible={isLoading} />
-    </View>
+    </ContainerComponent>
   );
 }
 

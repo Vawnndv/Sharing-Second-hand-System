@@ -79,3 +79,24 @@ export const createPost = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+export const searchPost = asyncHandle(async (req, res) => {
+  const keyword : any = req.query.keyword;
+  const limit : any = req.query.limit;
+  const iswarehousepost : any = req.query.iswarehousepost;
+  const page : any = req.query.page;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
+  
+  try {
+    const postList = await PostManager.searchPost(keyword, limit, iswarehousepost, page, distance, time, category, sort, latitude, longitude);
+    res.status(200).json({ message: 'Get post list success', data: postList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});

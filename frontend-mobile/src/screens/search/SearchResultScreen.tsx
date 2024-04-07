@@ -1,114 +1,151 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Image } from 'react-native'
+import React, {useState, useEffect} from 'react'
 import { ContainerComponent } from '../../components'
 import CardSearchResult from './CardSearchResult'
 import FilterSearch from './FilterSearch'
+import postsAPI from '../../apis/postApi'
+import axios, { AxiosResponse } from 'axios';
+import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
 
-const data = [
-  {
-    "id": "1",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 1",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "John Doe",
-    "distance": "2.5km",
-    "addedRecently": true
-  },
-  {
-    "id": "2",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 2",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Jane Smith",
-    "distance": "1.8km",
-    "addedRecently": false
-  },
-  {
-    "id": "3",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 3",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Alice Johnson",
-    "distance": "3.2km",
-    "addedRecently": true
-  },
-  {
-    "id": "4",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 4",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Bob Brown",
-    "distance": "2.1km",
-    "addedRecently": false
-  },
-  {
-    "id": "5",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 5",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Emma Wilson",
-    "distance": "4.5km",
-    "addedRecently": true
-  },
-  {
-    "id": "6",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 6",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "David Taylor",
-    "distance": "2.9km",
-    "addedRecently": false
-  },
-  {
-    "id": "7",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 7",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Olivia Brown",
-    "distance": "3.8km",
-    "addedRecently": true
-  },
-  {
-    "id": "8",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 8",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Michael Johnson",
-    "distance": "1.3km",
-    "addedRecently": false
-  },
-  {
-    "id": "9",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 9",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Sophia Lee",
-    "distance": "5.0km",
-    "addedRecently": true
-  },
-  {
-    "id": "10",
-    "imageUri": "https://source.unsplash.com/random",
-    "title": "Product 10",
-    "authorAvatarUri": "https://source.unsplash.com/random",
-    "authorName": "Matthew Wilson",
-    "distance": "2.7km",
-    "addedRecently": false
-  }
-]
+// const data = [
+//   {
+//     "userid": "3",
+//     "firstname": "John",
+//     "lastname": "Mass",
+//     "avatar": "https://source.unsplash.com/random",
+//     "postid": "40",
+//     "title": "Cho Cái Bàn Đẹp Nè",
+//     "description": "UA Tech is our original go-to training gear: Under Armour men Tech polos are loose, light, and keep you cool. Basically, they are built to be everything you need",
+//     "createdat": "2024-03-25 22:14:09.238764",
+//     "address": "Đh Khoa Học Tự Nhiên",
+//     "longitude": "106.68249312376167",
+//     "latitude": "10.763025311133902",
+//     "path": "https://m.media-amazon.com/images/I/617iMeLtb+L._AC_SX679_.jpg"
+//   }
+// ]
 
+const LIMIT = 3;
+
+interface MyData {
+  userid: string;
+  firstname: string;
+  lastname: string;
+  avatar: string;
+  postid: string;
+  title: string;
+  description: string;
+  createdat: string;
+  address: string;
+  longitude: string;
+  latitude: string;
+  path: string;
+}
 
 const SearchResultScreen = ({ route } : any) => {
   const { searchQuery } = route.params;
+  const [isPosts, setIsPosts] = useState(true);
+  const [data, setData] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [shouldFetchData, setShouldFetchData] = useState(false);
+  const [filterValue, setFilterValue] = useState({
+    distance: 5,
+    time: 14,
+    category: "Tất cả",
+    sort: "Mới nhất"
+  })
+
+  // useEffect(() => {
+  //   console.log('FILTER',filterValue)
+  //   setPage(0);
+  //   console.log("PPPPP", page)
+  //   setIsEmpty(false);
+  //   console.log("isEmpty", isEmpty)
+  //   setData([])
+  //   console.log('DAAA',data)
+  //   fetchData();  // Fetch dữ liệu lần đầu tiên
+  // }, [filterValue, isPosts]);
+
+  useEffect(() => {
+    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    setPage(0);
+    setIsEmpty(false);
+    setData([]);
+  }, [filterValue, isPosts]);
+
+  useEffect(() => {
+    if (shouldFetchData) {
+      console.log('Fetching data...');
+      fetchData(); // Fetch dữ liệu chỉ khi shouldFetchData là true
+      setShouldFetchData(false); // Đặt lại shouldFetchData về false sau khi đã fetch dữ liệu
+    }
+  }, [shouldFetchData]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      let location = await GetCurrentLocation();
+      if (!location) {
+        console.log("Failed to get location.");
+        return;
+      }
+      console.log('searchQuery', searchQuery.toLowerCase())
+
+      const response: AxiosResponse<MyData[]> = await postsAPI.HandleAuthentication(
+        `/search?keyword=${ searchQuery ? searchQuery.toLowerCase() : ''}&iswarehousepost=${!isPosts}&page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`,
+        'get'
+      );
+      const newData: MyData[] = response.data;
+      console.log('DATA', newData)
+      console.log('isPosts', isPosts)
+      console.log('page', page)
+      console.log('LIMIT', LIMIT)
+
+      if (newData.length <= 0 && data.length <= 0)
+        setIsEmpty(true)
+      if (newData.length > 0)
+        setPage(page + 1); // Tăng số trang lên
+
+      setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEndReached = () => {
+    if (!isLoading && !isEmpty) {
+      fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
+    }
+  };
 
   return (
     <ContainerComponent back>
-      <FilterSearch/>
-      <CardSearchResult data={data}/>
+      <FilterSearch filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts}/>
+      {
+        isEmpty ? (
+          <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Image
+                source={require('../../../assets/images/shopping.png')}
+                style={styles.image} 
+                resizeMode="contain"
+            />
+          </View>
+        ) : (
+          <CardSearchResult data={data} handleEndReached={handleEndReached} isLoading={isLoading}/>
+        )
+      }
     </ContainerComponent>
   )
 }
 
 export default SearchResultScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 80,
+  }
+})
