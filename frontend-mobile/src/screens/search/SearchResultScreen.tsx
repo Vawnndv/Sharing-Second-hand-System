@@ -56,17 +56,6 @@ const SearchResultScreen = ({ route } : any) => {
     sort: "Mới nhất"
   })
 
-  // useEffect(() => {
-  //   console.log('FILTER',filterValue)
-  //   setPage(0);
-  //   console.log("PPPPP", page)
-  //   setIsEmpty(false);
-  //   console.log("isEmpty", isEmpty)
-  //   setData([])
-  //   console.log('DAAA',data)
-  //   fetchData();  // Fetch dữ liệu lần đầu tiên
-  // }, [filterValue, isPosts]);
-
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
     setPage(0);
@@ -76,7 +65,6 @@ const SearchResultScreen = ({ route } : any) => {
 
   useEffect(() => {
     if (shouldFetchData) {
-      console.log('Fetching data...');
       fetchData(); // Fetch dữ liệu chỉ khi shouldFetchData là true
       setShouldFetchData(false); // Đặt lại shouldFetchData về false sau khi đã fetch dữ liệu
     }
@@ -90,17 +78,12 @@ const SearchResultScreen = ({ route } : any) => {
         console.log("Failed to get location.");
         return;
       }
-      console.log('searchQuery', searchQuery.toLowerCase())
 
-      const response: AxiosResponse<MyData[]> = await postsAPI.HandleAuthentication(
+      const response: AxiosResponse<MyData[]> = await postsAPI.HandlePost(
         `/search?keyword=${ searchQuery ? searchQuery.toLowerCase() : ''}&iswarehousepost=${!isPosts}&page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`,
         'get'
       );
       const newData: MyData[] = response.data;
-      console.log('DATA', newData)
-      console.log('isPosts', isPosts)
-      console.log('page', page)
-      console.log('LIMIT', LIMIT)
 
       if (newData.length <= 0 && data.length <= 0)
         setIsEmpty(true)

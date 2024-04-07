@@ -88,7 +88,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
         console.log(postID);
         setIsLoading(true);
         const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
-        // const res = await postsApi.HandleAuthentication(
+        // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
