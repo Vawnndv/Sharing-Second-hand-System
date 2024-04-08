@@ -1,10 +1,11 @@
 import express from 'express';
-import { getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost } from '../controllers/postController';
+import { getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, countLikeOfPost } from '../controllers/postController';
 
 const router = express.Router();
 
 router.get('/posts/user-post/all', getAllPostFromUserPost);
 router.get('/posts/warehouse/all', getAllPostFromWarehouse);
+router.post('/posts/count-like-post', countLikeOfPost);
 
 router.get('/posts/search', searchPost);
 router.get('/posts/:postID', getPostDetails);

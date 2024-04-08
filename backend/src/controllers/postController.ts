@@ -3,7 +3,7 @@ import asyncHandle from 'express-async-handler';
 
 export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
   const allPosts = await PostManager.getAllPostsFromUserPost();
-  console.log(allPosts);
+  // console.log(allPosts);
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
@@ -13,11 +13,22 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
 
 export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
   const allPosts = await PostManager.getAllPostFromWarehouse();
-  console.log(allPosts);
+  // console.log(allPosts);
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
     res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
+
+export const countLikeOfPost = asyncHandle(async (req, res) => {
+  const postId = req.body.postId;
+  const countLikes = await PostManager.countLikeOfPost(postId);
+  // console.log(allPosts);
+  if (countLikes) {
+    res.status(200).json({ message: 'Count post like', likeNumber: countLikes });
+  } else {
+    res.status(200).json({ message: 'Count post like', likeNumber: 0 });
   }
 });
 

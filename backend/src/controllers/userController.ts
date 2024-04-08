@@ -100,3 +100,50 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
     throw new Error('User not found!!!');
   } 
 });
+
+
+export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    const likePosts = await Account.findUserLikePostsById(userId);
+    console.log(likePosts, 'BE');
+    res.status(200).json({
+      message: 'Get user like posts successfully !!!',
+      data: likePosts,
+    });
+  } else {
+    res.sendStatus(401);
+    throw new Error('Missing uid');
+  }
+});
+
+export const setUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
+  const { userId, postId } = req.body;
+  console.log(req.body);
+  if (postId && postId) {
+    const likePosts = await Account.setUserLikePostsById(userId, postId);
+
+    res.status(200).json({
+      message: `Ins user id ${userId} like posts id ${postId} successfully !!!`,
+      data: likePosts,
+    });
+  } else {
+    res.sendStatus(401);
+    throw new Error('Missing uid');
+  }
+});
+
+export const deleteUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
+  const { userId, postId } = req.query;
+  if (typeof userId === 'string' && userId && typeof postId === 'string' && postId) {
+    const likePosts = await Account.deleteUserLikePostsById(userId, postId);
+
+    res.status(200).json({
+      message: `Delete user id ${userId} like posts id ${postId} successfully !!!`,
+      data: likePosts,
+    });
+  } else {
+    res.sendStatus(401);
+    throw new Error('Missing uid');
+  }
+});

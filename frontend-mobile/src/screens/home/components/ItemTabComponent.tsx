@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import UserPostComponent from './UserPostComponent';
@@ -7,25 +7,43 @@ import { RowComponent, SectionComponent, TextComponent } from '../../../componen
 import { appColors } from '../../../constants/appColors';
 import { fontFamilies } from '../../../constants/fontFamilies';
 import FilterOrder from '../../../components/OrderManagement/FilterOrder';
+import userAPI from '../../../apis/userApi';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../../redux/reducers/authReducers';
+import postsAPI from '../../../apis/postApi';
 
-
+interface Posts {
+  avatar: string;
+  username: string;
+  firstname: string; 
+  lastname: string; 
+  description: string; 
+  updatedat: string; 
+  createdat: string;
+  postid: string;
+  location: string;
+  path: string;
+};
 
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
-    const [focusedIndex, setFocusedIndex] = useState(0);
-    const [filterValue, setFilterValue] = useState({
-      distance: 5,
-      time: 14,
-      category: "Tất cả",
-      sort: "Mới nhất"
+  const [focusedIndex, setFocusedIndex] = useState(0);
+  const [filterValue, setFilterValue] = useState({
+    distance: 5,
+    time: 14,
+    category: "Tất cả",
+    sort: "Mới nhất"
   })
+
+  useEffect(() => {
+
+  }, [])
 
   return (
     <SubTabs.Navigator
       style={styles.tabs}
       tabBar={({ state, descriptors, navigation }) => (
         <View style={styles.tabBar}>
-          {/* FilterComponent nằm trong tabBar */}
           <RowComponent>
           {/* Render các tab */}
           {state.routes.map((route, index) => {
@@ -39,12 +57,12 @@ const ItemTabComponent = () => {
 
             return (
                 <SectionComponent 
+                  key={index}
                   styles={{
                     paddingBottom: 4,
                   }}
                 >
                   <Text
-                    key={index}
                     onPress={() => {
                       setFocusedIndex(index);
                       navigation.navigate(route.name);
@@ -61,6 +79,7 @@ const ItemTabComponent = () => {
             );
           })}
           </RowComponent>
+          {/* FilterComponent nằm trong tabBar */}
           <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
         </View>
       )}

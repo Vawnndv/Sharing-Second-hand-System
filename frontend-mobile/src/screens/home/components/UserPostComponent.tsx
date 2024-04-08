@@ -13,6 +13,8 @@ import postsAPI from '../../../apis/postApi'
 import LoadingComponent from '../../../components/LoadingComponent'
 import moment from 'moment';
 import 'moment/locale/vi';
+import { useSelector } from 'react-redux'
+import { authSelector } from '../../../redux/reducers/authReducers'
 
 const itemList: any = [
   {
@@ -51,15 +53,20 @@ interface Posts {
   path: string;
 };
 
+
 const UserPostComponent = () => {
   moment.locale();
+  const auth = useSelector(authSelector);
+
   const navigation: any = useNavigation();
   const [posts, setPosts] = useState<any>([]);
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [likeNumber, setLikeNumber] = useState<number[]>([]);;
   const [isLoading, setIsLoading] = useState(false);
+  const [likesPosts, setLikePosts] = useState<number[]>([]);
 
   useEffect(() => {
     getAllPosts();
+    getUserLikePosts();
   }, [])
 
   const getAllPosts = async () => {
@@ -67,7 +74,11 @@ const UserPostComponent = () => {
     try {
       const res: any = await postsAPI.HandlePost('/user-post/all');
       setPosts(res.allPosts);
-      console.log(posts)
+      const likes: number[] = Array.isArray(res.allPosts) && res.allPosts.length > 0 ? res.allPosts.map((item: any) => item.like_count) : [];
+      
+      setLikeNumber(likes);
+  
+      console.log(likes, '4567')
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -75,9 +86,54 @@ const UserPostComponent = () => {
     }
   } 
 
-  const handleItemPress = ({index} : any) => {
-    console.log(123);
-    setSelectedItemIndex(index);
+  const getUserLikePosts = async () => {
+    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+    // console.log(res, '123')
+    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
+
+    setLikePosts(postIds);
+  }
+
+  const setUserLikePosts = async (index: number) => {
+    const newLikePosts = [...likesPosts];
+    newLikePosts.push(posts[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] += 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: posts[index].postid}, 'post');
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const deleteUserLikePosts = async (index: number) => {
+    let newLikePosts = [...likesPosts];
+    newLikePosts = newLikePosts.filter(item => item !== posts[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] -= 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${posts[index].postid}`, null,'delete');
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleItemPress = (index: number) => {
+    if ( likesPosts.includes(posts[index].postid)) {
+      deleteUserLikePosts(index);
+    } else {
+      setUserLikePosts(index);
+    }
   };
 
   return posts ? (
@@ -85,7 +141,7 @@ const UserPostComponent = () => {
       data={posts}
       renderItem={({item, index}) => (
         <CardComponent 
-          key={`posts${index}`}
+          key={item.postid}
           color={appColors.white4}
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen')}
@@ -126,15 +182,15 @@ const UserPostComponent = () => {
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={18} color={appColors.black}/>
+              <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text='2 Receiver' font={fontFamilies.regular} /> 
             </RowComponent>
             <SpaceComponent width={16} />
-            <RowComponent onPress={() => handleItemPress(index)}>
-              <Heart size={18} color={appColors.black} variant={selectedItemIndex === index ? 'Bold' : 'Outline' }/>
+          <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
+              <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='10 Loves' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.regular} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>
