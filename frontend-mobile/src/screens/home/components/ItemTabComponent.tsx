@@ -29,8 +29,8 @@ const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [filterValue, setFilterValue] = useState({
-    distance: 5,
-    time: 14,
+    distance: -1,
+    time: -1,
     category: "Tất cả",
     sort: "Mới nhất"
   })
@@ -87,10 +87,12 @@ const ItemTabComponent = () => {
       <SubTabs.Screen
         name="Nguời Cho"
         component={UserPostComponent}
+        initialParams={{ filterValue }}
       />
       <SubTabs.Screen
         name="Lưu kho"
         component={WarehouseComponent}
+        initialParams={{ filterValue }}
       />
     </SubTabs.Navigator>
   );

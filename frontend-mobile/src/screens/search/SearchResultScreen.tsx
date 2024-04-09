@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { ContainerComponent } from '../../components'
-import CardSearchResult from './CardSearchResult'
+import CardItemResult from './CardItemResult'
 import FilterSearch from './FilterSearch'
 import postsAPI from '../../apis/postApi'
 import axios, { AxiosResponse } from 'axios';
 import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
+import { useSelector } from 'react-redux'
+import { authSelector } from '../../redux/reducers/authReducers'
+import userAPI from '../../apis/userApi'
 
 // const data = [
 //   {
@@ -26,13 +29,14 @@ import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
 
 const LIMIT = 3;
 
-interface MyData {
-  userid: string;
+export interface MyData {
+  userid?: string;
+  username?: string;
   firstname: string;
   lastname: string;
   avatar: string;
   postid: string;
-  title: string;
+  title?: string;
   description: string;
   createdat: string;
   address: string;
@@ -42,6 +46,8 @@ interface MyData {
 }
 
 const SearchResultScreen = ({ route } : any) => {
+  const auth = useSelector(authSelector);
+
   const { searchQuery } = route.params;
   const [isPosts, setIsPosts] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -49,6 +55,8 @@ const SearchResultScreen = ({ route } : any) => {
   const [page, setPage] = useState(0);
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
+  const [likesPosts, setLikePosts] = useState<number[]>([]);
+
   const [filterValue, setFilterValue] = useState({
     distance: 5,
     time: 14,
@@ -58,6 +66,7 @@ const SearchResultScreen = ({ route } : any) => {
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    getUserLikePosts();
     setPage(0);
     setIsEmpty(false);
     setData([]);
@@ -91,6 +100,7 @@ const SearchResultScreen = ({ route } : any) => {
         setPage(page + 1); // Tăng số trang lên
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -103,6 +113,13 @@ const SearchResultScreen = ({ route } : any) => {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }
   };
+
+  const getUserLikePosts = async () => {
+    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
+
+    setLikePosts(postIds);
+  }
 
   return (
     <ContainerComponent back>
@@ -117,7 +134,7 @@ const SearchResultScreen = ({ route } : any) => {
             />
           </View>
         ) : (
-          <CardSearchResult data={data} handleEndReached={handleEndReached} isLoading={isLoading}/>
+          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} setLikePosts={setLikePosts} />
         )
       }
     </ContainerComponent>
