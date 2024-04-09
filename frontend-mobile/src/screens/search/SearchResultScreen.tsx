@@ -56,6 +56,7 @@ const SearchResultScreen = ({ route } : any) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [likesPosts, setLikePosts] = useState<number[]>([]);
+  const [isEndOfData, setIsEndOfData] = useState(false);
 
   const [filterValue, setFilterValue] = useState({
     distance: 5,
@@ -94,8 +95,12 @@ const SearchResultScreen = ({ route } : any) => {
       );
       const newData: MyData[] = response.data;
 
-      if (newData.length <= 0 && data.length <= 0)
+      if (newData.length <= 0 && page === 0)
         setIsEmpty(true)
+
+      if (newData.length <= 0 && data.length > 0)
+        setIsEndOfData(true)
+
       if (newData.length > 0)
         setPage(page + 1); // Tăng số trang lên
 
@@ -109,7 +114,7 @@ const SearchResultScreen = ({ route } : any) => {
   };
 
   const handleEndReached = () => {
-    if (!isLoading && !isEmpty) {
+    if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }
   };

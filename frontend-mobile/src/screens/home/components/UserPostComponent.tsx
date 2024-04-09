@@ -72,6 +72,7 @@ const UserPostComponent = () => {
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [isEndOfData, setIsEndOfData] = useState(false);
 
   const LIMIT = 3;
 
@@ -104,8 +105,12 @@ const UserPostComponent = () => {
       console.log(res)
       const newData: MyData[] = res.allPosts;
 
-      if (newData.length <= 0 && data.length <= 0)
+      if (newData.length <= 0 && page === 0)
         setIsEmpty(true)
+
+      if (newData.length <= 0 && data.length > 0)
+        setIsEndOfData(true)
+
       if (newData.length > 0)
         setPage(page + 1); // Tăng số trang lên
 
@@ -119,7 +124,7 @@ const UserPostComponent = () => {
   };
 
   const handleEndReached = () => {
-    if (!isLoading && !isEmpty) {
+    if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }
   };
