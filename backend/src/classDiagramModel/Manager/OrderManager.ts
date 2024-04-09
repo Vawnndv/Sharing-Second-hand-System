@@ -565,7 +565,7 @@ export class OrderManager {
           FROM (
               SELECT 
                   o.Title, 
-                  o.Location, 
+                  adg.address AS Location, 
                   o.Status,
                   o.CreatedAt,
                   i.Path AS Image, 
@@ -636,7 +636,7 @@ export class OrderManager {
           FROM (
               SELECT 
                   o.Title, 
-                  o.Location, 
+                  adg.address AS Location,  
                   o.Status,
                   o.CreatedAt,
                   i.Path AS Image, 

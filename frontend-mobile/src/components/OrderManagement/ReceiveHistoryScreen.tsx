@@ -25,8 +25,8 @@ export default function ReceiveHistoryScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
   const [filterValue, setFilterValue] = useState({
-    distance: 5,
-    time: 14,
+    distance: 25,
+    time: 30,
     category: "Tất cả",
     sort: "Mới nhất"
 })
