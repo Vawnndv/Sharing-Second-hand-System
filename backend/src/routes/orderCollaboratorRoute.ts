@@ -8,6 +8,7 @@ import {
   getOrdersReceivingCollaborator,
   updatePinOrder,
   updateCompleteOrder,
+  showOrdersStatistic,
 } from '../controllers/orderCollaboratorController';
 
 const router = express.Router();
@@ -20,7 +21,7 @@ router.get('/orderDetailsCollab', getOrderDetailsCollaborator);
 
 router.get('/statisticOrderCollab', statisticOrderCollaborator); 
 
-// router.get('/statisticOrdersOnWeekCollab', getStatisticOrderOnWeek); 
+router.get('/showOrdersStatistic', showOrdersStatistic); 
 
 router.put('/updateCompleteOrder/:orderID', updateCompleteOrder);
 
