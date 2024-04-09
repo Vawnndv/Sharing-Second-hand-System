@@ -68,19 +68,19 @@ export const updateReceiveID = async (req: Request, res: Response) => {
   }
 };
   
-// export const getStatisticOrderOnWeek = async (req: Request, res: Response) => {
-//   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
-//   const type = typeof req.query.type === 'string' ? req.query.type : undefined;
-//   const time = typeof req.query.time === 'string' ? req.query.time : undefined;
-//   try {
-//     const ordersOnWeek = await OrderManager.showOrdersOnWeek(userID, type, time);
+export const showOrdersStatistic = async (req: Request, res: Response) => {
+  const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
+  const type = typeof req.query.type === 'string' ? req.query.type : undefined;
+  const time = typeof req.query.time === 'string' ? req.query.time : undefined;
+  try {
+    const orders = await OrderManager.showOrdersStatistic(userID, type, time);
       
-//     res.status(201).json({ message: 'Get orders successfully', ordersOnWeek: ordersOnWeek });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
+    res.status(201).json({ message: 'Get orders successfully', orders: orders });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 export const updateCompleteOrder = async (req: Request, res: Response) => {
   const orderID = req.params.orderID;

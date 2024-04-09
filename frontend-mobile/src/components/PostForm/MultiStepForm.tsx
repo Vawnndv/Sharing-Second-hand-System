@@ -11,6 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 
 
@@ -103,33 +104,50 @@ const MultiStepForm = () => {
         console.log(error);
       }
 
-      try {
-        const title = formDataStepTwo.postTitle;
-        const location = formDataStepTwo.postAddress;
-        const description = formDataStepTwo.postDescription;
-        const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
-        const time = new Date();
-        const itemid = itemID;
-        const timestart = new Date(formDataStepTwo.postStartDate);
-        const timeend = new Date(formDataStepTwo.postEndDate);
+    try {
+      const title = formDataStepTwo.postTitle;
+      const location = formDataStepTwo.postAddress;
+      const description = formDataStepTwo.postDescription;
+      const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+      const time = new Date();
+      const itemid = itemID;
+      const timestart = new Date(formDataStepTwo.postStartDate);
+      const timeend = new Date(formDataStepTwo.postEndDate);
+      
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+        title,
+        location,
+        description,
+        owner,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+        timeend: new Date(timeend).toISOString(), // Và timeend
+      });       
+      console.log(response.data.postCreated);
+      Alert.alert('Success', 'Item and Post created successfully');
+    } catch (error) {
+      console.error('Error creating item and post:', error);
+      Alert.alert('Error', 'Failed to create item and post. Please try again later.');
+    }
+
+    try {
+      formDataStepOne.itemPhotos.map(async (image) => {
+        const data = await UploadImageToAws3(image);
         
-        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
-          title,
-          location,
-          description,
-          owner,
-          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-          itemid,
-          timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
-          timeend: new Date(timeend).toISOString(), // Và timeend
-        });       
-        console.log(response.data.postCreated);
-        Alert.alert('Success', 'Item and Post created successfully');
-      } catch (error) {
-        console.error('Error creating item and post:', error);
-        Alert.alert('Error', 'Failed to create item and post. Please try again later.');
-      }
+        const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
+          path: data.url,
+          itemID: itemID
+        })
+
+        console.log(responseUploadImage)
+      })
+      
+    } catch (error) {
+      console.log(error)
+    }
+
 
   };
 

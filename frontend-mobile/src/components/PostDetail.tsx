@@ -15,7 +15,6 @@ import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 
 
 

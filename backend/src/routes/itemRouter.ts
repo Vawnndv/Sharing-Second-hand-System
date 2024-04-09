@@ -1,5 +1,5 @@
 import express from 'express';
-import {  getItemDetails, getAllItems, postNewItem, getItemImages, getAllItemTypes } from '../controllers/itemController';
+import {  getItemDetails, getAllItems, postNewItem, getItemImages, getAllItemTypes, postImageItem } from '../controllers/itemController';
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ router.get('/items', getAllItems);
 router.get('/items/:itemID', getItemDetails);
 router.get('/items/images/:itemID', getItemImages);
 router.get('/types', getAllItemTypes);
+router.post('/items/upload-image', postImageItem);
 
 
 export default router;
