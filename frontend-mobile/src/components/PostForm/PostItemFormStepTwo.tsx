@@ -31,6 +31,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+
   
   useEffect(() => {
     if (startDate) {
@@ -109,6 +110,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             is24Hour={true}
             display="default"
             minimumDate={new Date} // Đặt ngày tối thiểu có thể chọn cho DatePicker
+            maximumDate={moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
             onChange={onChangeStartDate}
           />
         )}
@@ -129,16 +131,23 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             is24Hour={true}
             display="default"
             minimumDate={minEndDate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
+            maximumDate={moment(startDate).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+
             onChange={onChangeEndDate}
           />
         )}
       <TextInput
         label="Số điện thoại"
         value={formData.postPhoneNumber}
-        onChangeText={(text) => setFormData({ ...formData, postPhoneNumber: text })}
+        onChangeText={(text) => {
+          // Chỉ cho phép cập nhật nếu text mới là số
+          const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
+          setFormData({ ...formData, postPhoneNumber: newText });
+        }}        
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        keyboardType="numeric" // Chỉ hiển thị bàn phím số
       />  
       <TextInput
         label="Địa chỉ"

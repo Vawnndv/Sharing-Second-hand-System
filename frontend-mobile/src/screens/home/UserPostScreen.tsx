@@ -4,7 +4,7 @@ import PostDetail from '../../components/PostDetail';
 
 
 const UserPostScreen = () => {
-  const [postID, setPostID] = useState(5);
+  const postID = 5;
 
   return (
     <View>

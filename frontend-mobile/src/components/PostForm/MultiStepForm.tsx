@@ -139,7 +139,7 @@ const MultiStepForm = () => {
       <View style={styles.screenContainer}>
         <ScrollView  style={styles.container}>
         <View style={styles.header}>
-            <Text style={styles.title}>GIVE AWAY YOUR ITEM</Text>
+            <Text style={styles.title}>CHIA SẺ KHO BÁU CỦA BẠN</Text>
             {currentStep > 1 && (
             <TouchableOpacity style={styles.backButton} onPress={() => setCurrentStep(currentStep - 1)}>
               <MaterialCommunityIcons name="keyboard-backspace" size={30} color="black" />
@@ -148,7 +148,7 @@ const MultiStepForm = () => {
         </View>
           {renderStep()}
           {currentStep === 2 && (
-            <Button style= {styles.button} mode="contained" onPress={handleSubmit}>Submit</Button> // Sửa lại để thực hiện submit thực tế
+            <Button style= {styles.button} mode="contained" onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
           )}
         </ScrollView>
       </View>
