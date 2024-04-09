@@ -4,7 +4,7 @@ import { getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, g
 const router = express.Router();
 
 router.get('/posts/user-post', getAllPostFromUserPost);
-router.get('/posts/warehouse/all', getAllPostFromWarehouse);
+router.get('/posts/warehouse', getAllPostFromWarehouse);
 
 router.get('/posts/search', searchPost);
 router.get('/posts/:postID', getPostDetails);

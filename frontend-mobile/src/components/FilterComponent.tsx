@@ -11,7 +11,8 @@ const distance = [
     5,
     10,
     15,
-    25
+    25,
+    -1,
 ]
 
 const time = [
@@ -20,6 +21,7 @@ const time = [
     7,
     14,
     30,
+    -1,
 ]
 
 const category = [
@@ -98,6 +100,10 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                             onPress={() => {setIndexDistance(5)}}>
                             <Text style={[{fontSize: 15}, indexDistance === 5 && styles.selectTextItem]}>25 km</Text>
                         </TouchableOpacity>
+                        <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
+                            onPress={() => {setIndexDistance(6)}}>
+                            <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> {`${'>'} 25 km`}</Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </View>
@@ -128,6 +134,10 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                         <TouchableOpacity style={[styles.item, indexTime === 4 && styles.selectItem]}
                             onPress={() => {setIndexTime(4)}}>
                             <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>1 tháng trước</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.item, indexTime === 5 && styles.selectItem]}
+                            onPress={() => {setIndexTime(5)}}>
+                            <Text style={[{fontSize: 15}, indexTime === 5 && styles.selectTextItem]}>{`${'> '} 1 tháng`}</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>

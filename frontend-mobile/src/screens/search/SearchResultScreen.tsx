@@ -1,14 +1,11 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, {useState, useEffect} from 'react'
+import { AxiosResponse } from 'axios'
+import React, { useEffect, useState } from 'react'
+import { Image, StyleSheet, View } from 'react-native'
+import postsAPI from '../../apis/postApi'
 import { ContainerComponent } from '../../components'
+import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
 import CardItemResult from './CardItemResult'
 import FilterSearch from './FilterSearch'
-import postsAPI from '../../apis/postApi'
-import axios, { AxiosResponse } from 'axios';
-import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
-import { useSelector } from 'react-redux'
-import { authSelector } from '../../redux/reducers/authReducers'
-import userAPI from '../../apis/userApi'
 
 // const data = [
 //   {
@@ -46,8 +43,6 @@ export interface MyData {
 }
 
 const SearchResultScreen = ({ route } : any) => {
-  const auth = useSelector(authSelector);
-
   const { searchQuery } = route.params;
   const [isPosts, setIsPosts] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -55,7 +50,6 @@ const SearchResultScreen = ({ route } : any) => {
   const [page, setPage] = useState(0);
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
-  const [likesPosts, setLikePosts] = useState<number[]>([]);
 
   const [filterValue, setFilterValue] = useState({
     distance: 5,
@@ -66,7 +60,6 @@ const SearchResultScreen = ({ route } : any) => {
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    getUserLikePosts();
     setPage(0);
     setIsEmpty(false);
     setData([]);
@@ -114,13 +107,6 @@ const SearchResultScreen = ({ route } : any) => {
     }
   };
 
-  const getUserLikePosts = async () => {
-    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
-    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
-
-    setLikePosts(postIds);
-  }
-
   return (
     <ContainerComponent back>
       <FilterSearch filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts}/>
@@ -134,7 +120,7 @@ const SearchResultScreen = ({ route } : any) => {
             />
           </View>
         ) : (
-          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} setLikePosts={setLikePosts} />
+          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
         )
       }
     </ContainerComponent>

@@ -1,23 +1,12 @@
-import { SimpleLineIcons } from '@expo/vector-icons'
-import { Clock, Heart, Message } from 'iconsax-react-native'
+import moment from 'moment'
+import 'moment/locale/vi'
 import React, { useEffect, useState } from 'react'
-import { FlatList, Image, StyleSheet, View } from 'react-native'
-import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../../components'
-import CardComponent from '../../../components/CardComponent'
-import { appColors } from '../../../constants/appColors'
-import { fontFamilies } from '../../../constants/fontFamilies'
-import { globalStyles } from '../../../styles/globalStyles'
-import { useNavigation, useRoute } from '@react-navigation/native'
-import userAPI from '../../../apis/userApi'
+import { Image, StyleSheet, View } from 'react-native'
 import postsAPI from '../../../apis/postApi'
-import LoadingComponent from '../../../components/LoadingComponent'
-import moment from 'moment';
-import 'moment/locale/vi';
-import { useSelector } from 'react-redux'
-import { authSelector } from '../../../redux/reducers/authReducers'
 import { GetCurrentLocation } from '../../../utils/GetCurrenLocation'
-import { MyData } from '../../search/SearchResultScreen'
 import CardItemResult from '../../search/CardItemResult'
+import { MyData } from '../../search/SearchResultScreen'
+import { filterValue } from './ItemTabComponent'
 
 const itemList: any = [
   {
@@ -56,28 +45,23 @@ interface Posts {
   path: string;
 };
 
+interface Props {
+  filterValue: filterValue;
 
-const UserPostComponent = () => {
+}
+const UserPostComponent: React.FC<Props> = ({filterValue}) => {
   moment.locale();
-  const auth = useSelector(authSelector);
 
-  const route = useRoute();
-  const params: any = route.params;
-  const filterValue = params.filterValue;
-
-  const navigation: any = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [likesPosts, setLikePosts] = useState<number[]>([]);
   const [page, setPage] = useState(0);
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
 
-  const LIMIT = 3;
+  const LIMIT = 5;
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    getUserLikePosts();
     setPage(0);
     setIsEmpty(false);
     setData([]);
@@ -101,7 +85,7 @@ const UserPostComponent = () => {
       }
       
       const res: any = await postsAPI.HandlePost(`/user-post?page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`);
-      console.log(res)
+
       const newData: MyData[] = res.allPosts;
 
       if (newData.length <= 0 && data.length <= 0)
@@ -124,23 +108,17 @@ const UserPostComponent = () => {
     }
   };
 
-  const getUserLikePosts = async () => {
-    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
-    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
-
-    setLikePosts(postIds);
-  }
 
   return isEmpty ? (
-    <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <View style={{display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Image
-          source={require('../../../../assets/images/shopping.png')}
-          style={styles.image} 
-          resizeMode="contain"
+        source={require('../../../../assets/images/shopping.png')}
+        style={styles.image} 
+        resizeMode="contain"
       />
     </View>
   ) : (
-    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} setLikePosts={setLikePosts} />
+    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
   )
 }
 
