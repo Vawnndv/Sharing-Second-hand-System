@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator  } from 'react-native';
+import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert  } from 'react-native';
 import { StringLiteral } from 'typescript';
 import { AntDesign, SimpleLineIcons  } from '@expo/vector-icons';
 
@@ -12,6 +12,10 @@ import { authSelector } from '../redux/reducers/authReducers';
 import userAPI from '../apis/userApi';
 import { ProfileModel } from '../models/ProfileModel';
 import AvatarComponent from './AvatarComponent';
+import { ReceiveForm } from './ReceiveForm/ReceiveForm';
+
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 
 
@@ -74,11 +78,78 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const [isLoading, setIsLoading] = useState(false);
 
 
-
   const [isUserPost, setIsUserPost] = useState(false);
   const [itemID, setItemID] = useState();
   const [modalVisible, setModalVisible] = useState(false);
   const auth = useSelector(authSelector);
+
+  const [modalReceiveFromVisible, setModalReceiveFromVisible] = useState(false);
+  const [modalGiveFromVisible, setModalGiveFromVisible] = useState(false);
+
+  const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
+  const [selectedGiveMethod, setSelectedGiveMethod] = useState(' ');
+
+
+  const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
+  const methodsGive = ["Đem đồ đến kho", "Chúng tôi sẽ đến lấy"];
+  const navigation = useNavigation();
+
+
+  
+  const handleMethodReceiveSelected = (method : string) => {
+    if(method != ' ' && post){
+      setSelectedReceiveMethod(method);
+      createPostReceiver(method);
+    }
+    setModalReceiveFromVisible(false);
+    // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
+  };
+
+
+  const handleMethodGiveSelected = (method : string) => {
+    if(method != ' ' && post){
+      setSelectedGiveMethod(method);
+      createPostReceiver(method);
+    }
+    setModalGiveFromVisible(false);
+    // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
+  };
+
+  const createPostReceiver = async (method: string) => {
+    try {
+
+      const foundReceiver = postReceivers.find(receiver => receiver.receiverid === auth.id);
+
+      if(foundReceiver){
+        Alert.alert('Thất bại', 'Bạn đã gửi yêu cầu nhận món hàng này rồi');
+        return;
+      }
+    
+
+      const postid = postID;
+      const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+      const comment = '';
+      const time = new Date();
+      let receivertypeid = 1;
+      if(method == "Nhận đồ qua kho"){
+        receivertypeid = 2;
+      }
+      
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
+        postid,
+        receiverid,
+        comment,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        receivertypeid,
+      });       
+      console.log(response.data.postCreated);
+      Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+    } catch (error) {
+      console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
+      Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+    }
+  }
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -148,106 +219,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
 
     };
 
-    // const fetchPostReceivers = async () => {
-    //   try {
-    //     setIsLoading(true);
-    //     const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
-    //     if (!res) {
-    //       throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
-    //     }
-    //     setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
-    //   } catch (error) {
-    //     console.error('Error fetching post receivers:', error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-
-    // const fetchItemDetails = async () => {
-    //   try {
-    //     if(!itemID){
-    //       return;
-    //     }
-    //     else{
-    //       setIsLoading(true);
-    //       const res = await axios.get(`${appInfo.BASE_URL}/items/${itemID}`)
-    //       // const res = await itemsAPI.HandleAuthentication(
-    //       //   `/${itemID}`,
-    //       // );
-    //       if (!res) {
-    //         throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
-    //       }
-    //       setItemDetails(res.data.item); // Cập nhật state với dữ liệu nhận được từ API
-    //       // setItemID(data.id);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching item details:', error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
-  
-
-
-    // const fetchProfile = async () => {
-    //   try {
-    //     setIsLoading(true);
-    //     const res = await userAPI.HandleUser(`/profile?userId=${post.owner}`);
-    //     res && res.data && setProfile(res.data);
-    //   } catch (error) {
-    //     console.log(error);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // };
     if (postID) {
       fetchAllData();
-      // fetchPostReceivers();
     }
-    // if (auth) {
-    //   fetchProfile();   
-    // };
 
-    // fetchItemDetails();
 }, [postID])
 
-
-// useEffect(() => {
-
-//   const fetchItemImages = async () => {
-//     try {
-//         setIsLoading(true);
-//         const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemID}`)
-//         // const res = await itemsAPI.HandleAuthentication(
-//         //   `/${itemID}`,
-//         // );
-//         if (!res) {
-//           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
-//         }
-//         setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
-//         // setItemID(data.id);
-      
-//     } catch (error) {
-//       console.error('Error fetching item details:', error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   if (itemID) {
-//     fetchItemImages();
-//   }
-// }, [itemID]); // Chỉ khi itemID thay đổi, fetchItemImages sẽ được chạy
-
-
-  // // Nếu postDetails vẫn là null ở đây, bạn có thể hiển thị thông báo lỗi hoặc trạng thái trống
-  // if (!post || !postReceivers || !itemImages || !profile) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <Text>No data found</Text>
-  //     </View>
-  //   );
-  // }
 
   if (isLoading) {
     return (
@@ -256,6 +233,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
       </View>
     );
   }
+
+  // if(selectedMethod != ' ' && postID){
+  //   return(
+  //     <ReceiveForm method={selectedMethod} postID={postID}/>
+  //   )
+  // }
 
   if(!isLoading){
     return(
@@ -323,11 +306,38 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                 </View>
 
                 {isUserPost && (
-                  <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Give</Button>
+                  <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Cho</Button>
+                  
                 )}
                 {/* Nút chỉ hiển thị khi isUserPost là false */}
                 {!isUserPost && (
-                  <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Receive</Button>
+                  <View style = {styles.button_modal_container}>
+                    <Button style={styles.button_receiver} onPress={() => setModalReceiveFromVisible(true)} mode="contained">Nhận</Button>
+                    {modalReceiveFromVisible && (
+                      <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalReceiveFromVisible}
+                      onRequestClose={() => setModalReceiveFromVisible(false)}
+                      >
+                      <View style={styles.centeredModalReceiveView}>
+                        <View style={styles.modalReceiveView}>
+                          <Text style={styles.title}>Chọn phương thức nhận đồ:</Text>
+                          <View style={styles.methodContainer}>
+                              {methodsReceive.map((method) => (
+                                <TouchableOpacity style={styles.methodStyle} key={method} onPress={() => handleMethodReceiveSelected(method)}>
+                                  <Text style={styles.modalText}>{method}</Text>
+                                </TouchableOpacity>
+                              ))}
+                          </View>
+                          <TouchableOpacity onPress={() => setModalReceiveFromVisible(false)}>
+                              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Đóng</Text>
+                            </TouchableOpacity>
+                        </View>
+                      </View>
+                    </Modal>
+                    )}
+                  </View>
                 )}
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
@@ -365,7 +375,35 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                         <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
                       </View>
                       {isUserPost && (
-                        <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Give</Button>
+                        // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
+                        <View style = {styles.button_modal_container}>
+                          <Button style={styles.button_receiver} onPress={() => setModalGiveFromVisible(true)} mode="contained">Cho</Button>
+                          {modalGiveFromVisible && postReceiver.give_receivetype == 'Cho nhận qua kho' && (
+                            <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={modalGiveFromVisible}
+                            onRequestClose={() => setModalGiveFromVisible(false)}
+                            >
+                            <View style={styles.centeredModalReceiveView}>
+                              <View style={styles.modalReceiveView}>
+                                <Text style={styles.title}>Chọn phương thức đêm đồ đến kho:</Text>
+                                <View style={styles.methodContainer}>
+                                    {methodsGive.map((method) => (
+                                      <TouchableOpacity style={styles.methodStyle} key={method} onPress={() => handleMethodGiveSelected(method)}>
+                                        <Text style={styles.modalText}>{method}</Text>
+                                      </TouchableOpacity>
+                                    ))}
+                                </View>
+                                <TouchableOpacity onPress={() => setModalGiveFromVisible(false)}>
+                                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Đóng</Text>
+                                  </TouchableOpacity>
+                              </View>
+                            </View>
+                          </Modal>
+                          )}
+                        </View>
+                        
                       )}
                     </View>
                     <Text style={styles.comment}>{postReceiver.comment}</Text>
@@ -406,9 +444,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: 'white'
   },
   avatar: {
     width: 45, // Giả sử kích thước bạn muốn
@@ -478,7 +517,7 @@ const styles = StyleSheet.create({
 
   button: {
     marginLeft: 'auto', // Đặt số lượng receiver ở bên phải
-    marginTop: 5
+    marginTop: 5,
   },
 
   receiverModalContainer: {
@@ -530,7 +569,65 @@ const styles = StyleSheet.create({
 
   username_timeContaner: {
     marginLeft: 10
-  }
+  },
 
+  centeredModalReceiveView: {
+    flex: 1,
+    justifyContent: 'flex-end', // Điều chỉnh modal xuất hiện ở cuối màn hình
+    alignItems: 'center',
+  },
+  modalReceiveView: {
+    width: '100%', // Chiếm toàn bộ chiều rộng màn hình
+    height: '30%',
+    backgroundColor: '#4B0082',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontWeight: 'bold', // Làm cho chữ đậm
+    fontSize: 16, // Làm cho chữ to hơn
+  },
+  // Thêm style cho tùy chọn được highlight
+
+  button_modal_container: {
+    flexDirection: 'row', // Đặt hướng của container
+    width: '75%',
+    justifyContent: 'flex-end'
+  },
+
+
+  button_receiver: {
+    // marginLeft: '10%',
+
+  },
+
+  methodContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    // backgroundColor: 'rgb(240, 240, 240)',
+    width: '100%',    
+    borderRadius: 10,
+
+  },
+
+  methodStyle: {
+    flexDirection: 'row',
+    padding: 10,
+    backgroundColor: 'white',
+  }
 })
 

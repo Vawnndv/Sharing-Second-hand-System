@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons từ thư viện
 import RNPickerSelect from 'react-native-picker-select';
+import axios from 'axios';
+import { appInfo } from '../../constants/appInfos';
 
 
 
@@ -14,6 +16,11 @@ interface FormData {
   itemQuantity: string;
   itemDescription: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
+}
+
+interface ItemTypes {
+  itemtypeid: number;
+  nametype: string;
 }
 
 
@@ -29,6 +36,35 @@ const itemCategories = ['1', '2', '3'];
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => {
 
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [itemTypes, setItemTypes] = useState<ItemTypes[]>([]);
+
+
+
+  useEffect(() => {
+    const fetchItemTypes = async () => {
+      let itemIDs = null;
+      let owner = null
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/types`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch item types'); // Xử lý lỗi nếu request không thành công
+        }
+        console.log(res.data.itemTypes);
+        setItemTypes(res.data.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching item types:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchItemTypes();
+}, [])
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -75,16 +111,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       return;
     }
 
-    if (!formData.itemCategory.trim()) {
+    if (!formData.itemCategory) {
       alert('Loại món đồ là bắt buộc.');
       return;
     }
 
     setStep(2);
 
-  
     // Tiếp tục xử lý submit form ở đây
   };
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
 
   return (
@@ -127,20 +170,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
-      {/* <TouchableOpacity onPress={toggleDropdown} style={styles.dropdownContainer}>
-        <TextInput
-            label="Loại món đồ"
-            style={styles.input}
-            underlineColor="gray"
-            activeUnderlineColor="blue"
-            editable={false} // Người dùng không thể nhập trực tiếp vào trường này
-          />
-        <MaterialIcons name={showDropdown ? 'arrow-drop-up' : 'arrow-drop-down'} size={24} color="black" />
-      </TouchableOpacity> */}
 
       <RNPickerSelect
         onValueChange={(value) => setFormData({ ...formData, itemCategory: value })}
-        items={itemCategories.map((category) => ({ label: category, value: category }))}
+        items={itemTypes.map((category) => ({ label: category.nametype, value: category.itemtypeid }))}
         value={formData.itemCategory}
         placeholder={{ label: 'Chọn loại món đồ' }}
         style={{
@@ -163,7 +196,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
       />  
-      <Button mode="contained" onPress={handleNext}>Next</Button>
+      <Button mode="contained" onPress={handleNext}>Tiếp theo</Button>
     </ScrollView>
   );
 };

@@ -94,9 +94,6 @@ export const createPost = asyncHandle(async (req, res) => {
   const timestart = req.body.timestart;
   const timeend = req.body.timeend;
 
-  console.log(req.body.title);
-
-
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend);
@@ -104,6 +101,24 @@ export const createPost = asyncHandle(async (req, res) => {
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Lỗi khi gửi bài viết:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+export const createPostReceiver = asyncHandle(async (req, res) => {
+  const postid = req.body.postid;
+  const receiverid = req.body.receiverid;
+  const comment = req.body.comment;
+  const time = req.body.time;
+  const receivertypeid = req.body.receivertypeid;
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const postReceiverCreated = await PostManager.createPostReceiver(postid, receiverid, comment, time, receivertypeid);
+    res.status(200).json({ message: 'Create post receiver successfully', postReceiverCreated: postReceiverCreated });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Lỗi khi thêm người nhận:', error);
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });

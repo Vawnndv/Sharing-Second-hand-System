@@ -59,6 +59,25 @@ export const getAllItems = asyncHandle(async (req, res) => {
   }
 });
 
+
+export const getAllItemTypes = asyncHandle(async (req, res) => {
+  try {
+    // Call the static method getAllItems to fetch all items from the database
+    const itemTypes = await ItemManager.viewAllItemTypes();
+    // If items are found, return them as a response
+    if (itemTypes) {
+      res.status(200).json({ message: 'Item types founded', itemTypes: itemTypes });
+    } else {
+      // If no items are found, return an empty array
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    // If there's an error, return a 500 error
+    console.error('Error retrieving item types:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export const postNewItem = asyncHandle(async (req, res) => {
   const { name, quantity, itemtypeID } = req.body;
   

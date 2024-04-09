@@ -294,11 +294,35 @@ export class PostManager {
       console.log('Posts inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
-      console.error('Error inserting product:', error);
+      console.error('Error inserting post:', error);
     } finally {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+
+  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number): Promise<void> {
+
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO POSTRECEIVER(postid, receiverid, comment, time, receivertypeid)
+        VALUES($1, $2, $3, $4, $5)
+        RETURNING *;
+      `;
+    const values : any = [postid, receiverid, comment, time, receivertypeid];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Post receicer inserted successfully:', result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error inserting post receiver:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+
 
 
   public viewPostsOfUser(userID: string): Post[] {

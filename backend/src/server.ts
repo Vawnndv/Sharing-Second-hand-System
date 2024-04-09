@@ -12,6 +12,7 @@ import routerPost from './routes/postRouter';
 import authRouter from './routes/authRouter';
 import orderRouter from './routes/orderRouter';
 import uploadImageToAwsRoute from './routes/uploadImageToAwsRoute';
+import warehouseRouter from '././routes/warehouseRouter';
 import cors from 'cors';
 import errorMiddleHandle from './middlewares/errorMiddleware';
 import userRouter from './routes/userRouter';
@@ -28,6 +29,7 @@ app.use(express.json());
 app.use(routerPost);
 app.use(routerItem);
 app.use(orderCollaboratorRoute);
+app.use(warehouseRouter);
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);

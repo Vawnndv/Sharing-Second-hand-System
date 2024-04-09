@@ -37,6 +37,8 @@ export default function OrdersScreen({navigation}: any) {
         sort: 'Mới nhất'
     })
 
+    // console.log(filterValue)
+
     // dùng để load lại dữ liệu những order mà người dùng pick
     const [changeOrdersGiving, setChangeOrdersGiving] = useState(false)
 
@@ -94,7 +96,7 @@ export default function OrdersScreen({navigation}: any) {
       }, [navigation]);
 
     return(
-        <ContainerComponent>
+        <ContainerComponent right>
             <View style={[styles.container, {marginTop: 10}]}>
                 <View style={styles.container}>
 
@@ -197,7 +199,7 @@ export default function OrdersScreen({navigation}: any) {
 
                 </View>
 
-                <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} setFilterValue={setFilterValue}/>
+                <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
                 <LoadingModal visible={isLoading}/>
             </View>
         </ContainerComponent>
