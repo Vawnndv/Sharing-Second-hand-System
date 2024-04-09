@@ -371,7 +371,7 @@ export class PostManager {
       ad.latitude,
       img.path,
       itt.nametype,
-    COUNT(lp.likeid) AS like_count
+      CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
       JOIN "User" us ON po.owner = us.UserID
       JOIN Address ad ON po.addressid = ad.addressid

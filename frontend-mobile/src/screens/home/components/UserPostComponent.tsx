@@ -66,7 +66,6 @@ const UserPostComponent = () => {
   const filterValue = params.filterValue;
 
   const navigation: any = useNavigation();
-  const [likeNumber, setLikeNumber] = useState<number[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [likesPosts, setLikePosts] = useState<number[]>([]);
   const [page, setPage] = useState(0);
@@ -112,10 +111,6 @@ const UserPostComponent = () => {
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
 
-      const newLikeNumber: number[] = Array.isArray(res.allPosts) && res.allPosts.length > 0 ? res.allPosts.map((item: any) => item.like_count) : [];
-      
-      setLikeNumber((prevData) => [...prevData, ...newLikeNumber]);
-  
     } catch (error) {
       console.log(error);
     } finally {
@@ -136,46 +131,6 @@ const UserPostComponent = () => {
     setLikePosts(postIds);
   }
 
-  const setUserLikePosts = async (index: number) => {
-    const newLikePosts = [...likesPosts];
-    newLikePosts.push(data[index].postid);
-    setLikePosts(newLikePosts);
-
-    const newLikeNumber = [...likeNumber];
-    newLikeNumber[index] += 1;
-    setLikeNumber(newLikeNumber);
-
-    try {
-      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: data[index].postid}, 'post');
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const deleteUserLikePosts = async (index: number) => {
-    let newLikePosts = [...likesPosts];
-    newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
-    setLikePosts(newLikePosts);
-
-    const newLikeNumber = [...likeNumber];
-    newLikeNumber[index] -= 1;
-    setLikeNumber(newLikeNumber);
-
-    try {
-      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleItemPress = (index: number) => {
-    if ( likesPosts.includes(data[index].postid)) {
-      deleteUserLikePosts(index);
-    } else {
-      setUserLikePosts(index);
-    }
-  };
-
   return isEmpty ? (
     <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Image
@@ -185,7 +140,7 @@ const UserPostComponent = () => {
       />
     </View>
   ) : (
-    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} likeNumber={likeNumber} handleItemPress={handleItemPress} />
+    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} setLikePosts={setLikePosts} />
   )
 }
 

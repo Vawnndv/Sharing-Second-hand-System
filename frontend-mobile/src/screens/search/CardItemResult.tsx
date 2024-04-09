@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator  } from 'react-native';
 import { Clock, Heart, Message } from 'iconsax-react-native'
 import { SimpleLineIcons } from '@expo/vector-icons'
@@ -11,6 +11,9 @@ import { useNavigation } from '@react-navigation/native';
 import { formatDateTime } from '../../utils/FormatDateTime';
 import moment from 'moment';
 import 'moment/locale/vi';
+import userAPI from '../../apis/userApi';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 interface DataItem {
   userid: string;
@@ -33,17 +36,71 @@ interface Props {
   isLoading: boolean;
   handleEndReached: () => void;
   likesPosts: number[];
-  likeNumber: number[];
-  handleItemPress: (index: number) => void;
-
+  setLikePosts: (val: number[]) => void;
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, likesPosts, likeNumber, handleItemPress }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, likesPosts, setLikePosts }) => {
   moment.locale();
 
+  const auth = useSelector(authSelector);
   const navigation: any = useNavigation();
 
+  const [likeNumber, setLikeNumber] = useState<number[]>([]);
+
+  useEffect(() => {
+    const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => item.like_count) : [];
+      
+    setLikeNumber(newLikeNumber);
+
+  }, [data])
   
+  const getUserLikePosts = async () => {
+    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
+
+    setLikePosts(postIds);
+  }
+
+  const setUserLikePosts = async (index: number) => {
+    const newLikePosts = [...likesPosts];
+    newLikePosts.push(data[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] += 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: data[index].postid}, 'post');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const deleteUserLikePosts = async (index: number) => {
+    let newLikePosts = [...likesPosts];
+    newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] -= 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleItemPress = (index: number) => {
+    if ( likesPosts.includes(data[index].postid)) {
+      deleteUserLikePosts(index);
+    } else {
+      setUserLikePosts(index);
+    }
+  };
+
   return (
     <FlatList
       data={data}
@@ -99,7 +156,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, li
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
               <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.regular} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.medium} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>

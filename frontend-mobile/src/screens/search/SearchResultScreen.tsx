@@ -55,7 +55,6 @@ const SearchResultScreen = ({ route } : any) => {
   const [page, setPage] = useState(0);
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
-  const [likeNumber, setLikeNumber] = useState<number[]>([]);
   const [likesPosts, setLikePosts] = useState<number[]>([]);
 
   const [filterValue, setFilterValue] = useState({
@@ -67,6 +66,7 @@ const SearchResultScreen = ({ route } : any) => {
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    getUserLikePosts();
     setPage(0);
     setIsEmpty(false);
     setData([]);
@@ -101,10 +101,6 @@ const SearchResultScreen = ({ route } : any) => {
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
 
-      const likes: number[] =  newData.length > 0 ? newData.map((item: any) => item.like_count) : [];
-      
-      setLikeNumber(likes);
-  
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -125,46 +121,6 @@ const SearchResultScreen = ({ route } : any) => {
     setLikePosts(postIds);
   }
 
-  const setUserLikePosts = async (index: number) => {
-    const newLikePosts = [...likesPosts];
-    newLikePosts.push(data[index].postid);
-    setLikePosts(newLikePosts);
-
-    const newLikeNumber = [...likeNumber];
-    newLikeNumber[index] += 1;
-    setLikeNumber(newLikeNumber);
-
-    try {
-      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: data[index].postid}, 'post');
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const deleteUserLikePosts = async (index: number) => {
-    let newLikePosts = [...likesPosts];
-    newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
-    setLikePosts(newLikePosts);
-
-    const newLikeNumber = [...likeNumber];
-    newLikeNumber[index] -= 1;
-    setLikeNumber(newLikeNumber);
-
-    try {
-      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const handleItemPress = (index: number) => {
-    if ( likesPosts.includes(data[index].postid)) {
-      deleteUserLikePosts(index);
-    } else {
-      setUserLikePosts(index);
-    }
-  };
-
   return (
     <ContainerComponent back>
       <FilterSearch filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts}/>
@@ -178,7 +134,7 @@ const SearchResultScreen = ({ route } : any) => {
             />
           </View>
         ) : (
-          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} likeNumber={likeNumber} handleItemPress={handleItemPress} />
+          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} setLikePosts={setLikePosts} />
         )
       }
     </ContainerComponent>
