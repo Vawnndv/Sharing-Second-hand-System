@@ -6,6 +6,6 @@ import { getAllWarehouses } from '../controllers/warehouseController';
 const router = express.Router();
 
 
-router.get('/warehouses', getAllWarehouses);
+router.get('/', getAllWarehouses);
 
 export default router;

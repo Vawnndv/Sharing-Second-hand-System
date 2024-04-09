@@ -26,10 +26,10 @@ const port = 3000;
 
 app.use(express.json());
 
-app.use(routerPost);
-app.use(routerItem);
+app.use('/posts', routerPost);
+app.use('/items', routerItem);
 app.use(orderCollaboratorRoute);
-app.use(warehouseRouter);
+app.use('/warehouse', warehouseRouter);
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);

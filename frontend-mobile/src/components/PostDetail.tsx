@@ -121,11 +121,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
       const foundReceiver = postReceivers.find(receiver => receiver.receiverid === auth.id);
 
       if(foundReceiver){
+        // setSelectedReceiveMethod(' ');
         Alert.alert('Thất bại', 'Bạn đã gửi yêu cầu nhận món hàng này rồi');
         return;
       }
-    
-
       const postid = postID;
       const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
       const comment = '';
@@ -234,11 +233,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
     );
   }
 
-  // if(selectedMethod != ' ' && postID){
-  //   return(
-  //     <ReceiveForm method={selectedMethod} postID={postID}/>
-  //   )
-  // }
+  if(selectedReceiveMethod != ' ' && postID){
+    return(
+      <ReceiveForm method={selectedReceiveMethod} postID={postID}/>
+    )
+  }
 
   if(!isLoading){
     return(
@@ -481,6 +480,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgb(240, 240, 240)',
     borderRadius: 6,
+    flex: 1
   },
 
   itemPhoto: {
@@ -576,6 +576,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end', // Điều chỉnh modal xuất hiện ở cuối màn hình
     alignItems: 'center',
   },
+
   modalReceiveView: {
     width: '100%', // Chiếm toàn bộ chiều rộng màn hình
     height: '30%',
@@ -604,13 +605,13 @@ const styles = StyleSheet.create({
 
   button_modal_container: {
     flexDirection: 'row', // Đặt hướng của container
-    width: '75%',
-    justifyContent: 'flex-end'
+    justifyContent: 'flex-end',
   },
 
 
   button_receiver: {
     // marginLeft: '10%',
+    
 
   },
 
@@ -626,8 +627,10 @@ const styles = StyleSheet.create({
 
   methodStyle: {
     flexDirection: 'row',
-    padding: 10,
     backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 10
+
   }
 })
 

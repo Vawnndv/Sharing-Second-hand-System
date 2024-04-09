@@ -901,4 +901,57 @@ export class OrderManager {
     }
   }
 
+
+  
+  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string): Promise<void> {
+
+    const client = await pool.connect();
+    const query = `
+      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      RETURNING *;
+      `;
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Order inserted successfully:', result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error inserting order:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async createTrace (currentstatus: string, orderid: number): Promise<void> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO TRACE(currentstatus, orderid)
+        VALUES($1, $2)
+        RETURNING *;
+      `;
+    const values : any = [currentstatus, orderid];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Trace inserted successfully:', result.rows[0]);
+      const statusid_postItem = '1';
+      const statusid_waitForApporve = '2';
+
+
+      const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
+      console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
+      const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
+      console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error inserting trace:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
 }
+
