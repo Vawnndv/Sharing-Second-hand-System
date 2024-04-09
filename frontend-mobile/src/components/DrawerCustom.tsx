@@ -1,6 +1,6 @@
 import { AntDesign, Feather, Ionicons, MaterialCommunityIcons, SimpleLineIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Home, User } from 'iconsax-react-native';
+import { Home, Logout, User } from 'iconsax-react-native';
 import React from 'react';
 import { Button, FlatList, Image, Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,12 +10,13 @@ import AvatarComponent from './AvatarComponent';
 import RowComponent from './RowComponent';
 import SpaceComponent from './SpaceComponent';
 import TextComponent from './TextComponent';
+import ButtonComponent from './ButtonComponent';
 
 const DrawerCustom = ({navigation}: any) => {
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
 
-  const size = 24
+  const size = 24;
   const color = appColors.gray;
   const profileMenu = [
     {
@@ -68,6 +69,11 @@ const DrawerCustom = ({navigation}: any) => {
       key: 'Help',
       title: 'Trợ giúp',
       icon: <Feather name="help-circle" size={size} color={color} />,
+    },
+    {
+      key: 'Logout',
+      title: 'Đăng xuất',
+      icon: <AntDesign name="logout" size={size} color={color} />,
     },
   ];
 
@@ -126,7 +132,7 @@ const DrawerCustom = ({navigation}: any) => {
         data={profileMenu}
         style={{
           flex: 1,
-          marginVertical: 16,
+          // marginVertical: 16,
         }}
         renderItem={({item, index}) => (
           <RowComponent
@@ -141,13 +147,6 @@ const DrawerCustom = ({navigation}: any) => {
           </RowComponent>
         )}
       />
-      <RowComponent>
-          <Button
-            title="Logout"
-            color={appColors.primary}
-            onPress={() => handleNavigation('SignOut')}
-          />
-      </RowComponent>
     </View>
   )
 }
@@ -172,7 +171,7 @@ const localStyles = StyleSheet.create({
   },
 
   listItem: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     justifyContent: 'flex-start',
   },
 

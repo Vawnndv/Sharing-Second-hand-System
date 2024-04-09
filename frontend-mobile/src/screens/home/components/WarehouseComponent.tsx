@@ -12,6 +12,9 @@ import { useNavigation } from '@react-navigation/native'
 import LoadingComponent from '../../../components/LoadingComponent'
 import moment from 'moment'
 import 'moment/locale/vi';
+import userAPI from '../../../apis/userApi'
+import { useSelector } from 'react-redux'
+import { authSelector } from '../../../redux/reducers/authReducers'
 
 const itemList: any = [
   {
@@ -39,13 +42,18 @@ const itemList: any = [
 
 
 const WarehouseComponent = () => {
+  moment.locale();
+  const auth = useSelector(authSelector);
+
   const navigation: any = useNavigation();
   const [posts, setPosts] = useState<any>([]);
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [likeNumber, setLikeNumber] = useState<number[]>([]);;
   const [isLoading, setIsLoading] = useState(false);
+  const [likesPosts, setLikePosts] = useState<number[]>([]);
 
   useEffect(() => {
     getAllPosts();
+    getUserLikePosts();
   }, [])
 
   const getAllPosts = async () => {
@@ -53,22 +61,72 @@ const WarehouseComponent = () => {
     try {
       const res: any = await postsAPI.HandlePost('/warehouse/all');
       setPosts(res.allPosts);
-      console.log(posts)
+      const likes: number[] = Array.isArray(res.allPosts) && res.allPosts.length > 0 ? res.allPosts.map((item: any) => item.like_count) : [];
+      
+      setLikeNumber(likes);  
       setIsLoading(false);
     } catch (error) {
       console.log(error);
       setIsLoading(false);
     }
   } 
-  
+
+  const getUserLikePosts = async () => {
+    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
+
+    setLikePosts(postIds);
+  }
+
+  const setUserLikePosts = async (index: number) => {
+    const newLikePosts = [...likesPosts];
+    newLikePosts.push(posts[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] += 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: posts[index].postid}, 'post');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const deleteUserLikePosts = async (index: number) => {
+    let newLikePosts = [...likesPosts];
+    newLikePosts = newLikePosts.filter(item => item !== posts[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] -= 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${posts[index].postid}`, null,'delete');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleItemPress = (index: number) => {
+    if ( likesPosts.includes(posts[index].postid)) {
+      deleteUserLikePosts(index);
+    } else {
+      setUserLikePosts(index);
+    }
+  };
+
   return posts ? (
     <FlatList
       data={posts}
       renderItem={({item, index}) => (
         <CardComponent 
-          key={`posts${index}`}
-          isShadow
+          key={item.postid}
           color={appColors.white4}
+          isShadow
+          onPress={() => navigation.navigate('ItemDetailScreen')}
         >
           <RowComponent>
             <AvatarComponent
@@ -78,7 +136,7 @@ const WarehouseComponent = () => {
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text={item.warehousename} size={18} font={fontFamilies.medium}/>
+                <TextComponent text={item.username} size={18} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />
@@ -103,17 +161,18 @@ const WarehouseComponent = () => {
               source={{ uri: item.path }}
             />  
           }
-          <RowComponent justify='flex-end' styles={{padding: 12, backgroundColor: appColors.white5, margin: -12, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, marginTop: 8}}>
+          <RowComponent justify='flex-end' 
+            styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={18} color={appColors.black}/>
+              <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text='2 Receiver' font={fontFamilies.regular} /> 
             </RowComponent>
             <SpaceComponent width={16} />
-            <RowComponent>
-              <Heart size={18} color={appColors.black}/>
+          <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
+              <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='10 Loves' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.regular} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>

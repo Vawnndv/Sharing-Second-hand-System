@@ -10,7 +10,10 @@ router.get('/posts/search', searchPost);
 router.get('/posts/:postID', getPostDetails);
 router.get('/posts/postreceivers/:postID', getPostReceivers);
 router.post('/posts/createPost', createPost);
+
 router.post('/posts/createPostReceiver', createPostReceiver);
+
+// router.get('/posts/', getFilterPostList);
 
 
 export default router;

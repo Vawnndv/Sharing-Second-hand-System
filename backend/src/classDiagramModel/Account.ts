@@ -149,5 +149,60 @@ export class Account {
     } finally {
       client.release();
     }
-  }; 
+  };
+
+  public static async findUserLikePostsById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT * FROM "like_post" WHERE userid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows;
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async setUserLikePostsById(userId: string, postid: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('INSERT INTO "like_post" (userid, postid) VALUES ($1, $2)', [userId, postid]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows[0];
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async deleteUserLikePostsById(userId: string, postid: string): Promise<any> {
+    console.log(postid)
+    const client = await pool.connect();
+    try {
+      const result = await client.query('DELETE FROM "like_post" WHERE userid = $1 AND postid = $2', [userId, postid]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows[0];
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
 }
+
