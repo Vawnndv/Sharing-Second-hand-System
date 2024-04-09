@@ -71,7 +71,7 @@ const DrawerCustom = ({navigation}: any) => {
       icon: <Feather name="help-circle" size={size} color={color} />,
     },
     {
-      key: 'Logout',
+      key: 'SignOut',
       title: 'Đăng xuất',
       icon: <AntDesign name="logout" size={size} color={color} />,
     },

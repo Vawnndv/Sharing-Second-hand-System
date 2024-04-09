@@ -9,13 +9,15 @@ import { fontFamilies } from '../../constants/fontFamilies';
 import { globalStyles } from '../../styles/globalStyles';
 import { useNavigation } from '@react-navigation/native';
 import { formatDateTime } from '../../utils/FormatDateTime';
+import moment from 'moment';
+import 'moment/locale/vi';
 
 interface DataItem {
   userid: string;
   firstname: string;
   lastname: string;
   avatar: string;
-  postid: string;
+  postid: number;
   title: string;
   description: string;
   createdat: string;
@@ -23,24 +25,25 @@ interface DataItem {
   longitude: string;
   latitude: string;
   path: string;
+  like_count: number;
 }
 
 interface Props {
   data: DataItem[];
   isLoading: boolean;
   handleEndReached: () => void;
+  likesPosts: number[];
+  likeNumber: number[];
+  handleItemPress: (index: number) => void;
+
 }
 
-const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, likesPosts, likeNumber, handleItemPress }) => {
+  moment.locale();
+
   const navigation: any = useNavigation();
 
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-
-  const handleItemPress = ({index} : any) => {
-    console.log(123);
-    setSelectedItemIndex(index);
-  };
-
+  
   return (
     <FlatList
       data={data}
@@ -60,14 +63,12 @@ const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text={item.firstname} size={18} font={fontFamilies.medium} />
-                <SpaceComponent width={5} />
-                <TextComponent text={item.lastname} size={18} font={fontFamilies.medium} />
+                <TextComponent text={item.firstname + ' ' + item.lastname} size={18} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />
                   <SpaceComponent width={4} />
-                  <TextComponent text={formatDateTime(item.createdat)} font={fontFamilies.light} />
+                  <TextComponent text={`${moment(item.createdat).fromNow()}`} font={fontFamilies.light} />
                 </RowComponent>
               </RowComponent>
               <SpaceComponent height={4} />
@@ -81,10 +82,12 @@ const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }
           <SpaceComponent height={8} />
           <TextComponent text={item.description} />
           <SpaceComponent height={8} />
-          <Image
-            style={{width: '100%', height: 160, resizeMode: 'cover'}}
-            source={{ uri: item.path }}
-          />
+          {item.path && 
+            <Image
+              style={{width: '100%', height: 160, resizeMode: 'cover'}}
+              source={{ uri: item.path }}
+            />  
+          }
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
@@ -93,10 +96,10 @@ const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }
               <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
             </RowComponent>
             <SpaceComponent width={16} />
-            <RowComponent onPress={() => handleItemPress(index)}>
-              <Heart size={18} color={appColors.black} variant={selectedItemIndex === index ? 'Bold' : 'Outline' }/>
+            <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
+              <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='10 Loves' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.regular} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>
@@ -109,6 +112,6 @@ const CardSearchResult: React.FC<Props> = ({ data, handleEndReached, isLoading }
   )
 }
 
-export default CardSearchResult;
+export default CardItemResult;
 
 const styles = StyleSheet.create({});

@@ -2,7 +2,16 @@ import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
 
 export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
-  const allPosts = await PostManager.getAllPostsFromUserPost();
+  const limit : any = req.query.limit;
+  const page : any = req.query.page;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
+
+  const allPosts = await PostManager.getAllPostsFromUserPost(limit, page, distance, time, category, sort, latitude, longitude);
 
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });

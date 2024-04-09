@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { ContainerComponent } from '../../components'
-import CardSearchResult from './CardSearchResult'
+import CardItemResult from './CardItemResult'
 import FilterSearch from './FilterSearch'
 import postsAPI from '../../apis/postApi'
 import axios, { AxiosResponse } from 'axios';
 import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
+import { useSelector } from 'react-redux'
+import { authSelector } from '../../redux/reducers/authReducers'
+import userAPI from '../../apis/userApi'
 
 // const data = [
 //   {
@@ -26,13 +29,14 @@ import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
 
 const LIMIT = 3;
 
-interface MyData {
-  userid: string;
+export interface MyData {
+  userid?: string;
+  username?: string;
   firstname: string;
   lastname: string;
   avatar: string;
   postid: string;
-  title: string;
+  title?: string;
   description: string;
   createdat: string;
   address: string;
@@ -42,6 +46,8 @@ interface MyData {
 }
 
 const SearchResultScreen = ({ route } : any) => {
+  const auth = useSelector(authSelector);
+
   const { searchQuery } = route.params;
   const [isPosts, setIsPosts] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -49,6 +55,9 @@ const SearchResultScreen = ({ route } : any) => {
   const [page, setPage] = useState(0);
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
+  const [likeNumber, setLikeNumber] = useState<number[]>([]);
+  const [likesPosts, setLikePosts] = useState<number[]>([]);
+
   const [filterValue, setFilterValue] = useState({
     distance: 5,
     time: 14,
@@ -91,6 +100,11 @@ const SearchResultScreen = ({ route } : any) => {
         setPage(page + 1); // Tăng số trang lên
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+
+      const likes: number[] =  newData.length > 0 ? newData.map((item: any) => item.like_count) : [];
+      
+      setLikeNumber(likes);
+  
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -101,6 +115,53 @@ const SearchResultScreen = ({ route } : any) => {
   const handleEndReached = () => {
     if (!isLoading && !isEmpty) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
+    }
+  };
+
+  const getUserLikePosts = async () => {
+    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
+
+    setLikePosts(postIds);
+  }
+
+  const setUserLikePosts = async (index: number) => {
+    const newLikePosts = [...likesPosts];
+    newLikePosts.push(data[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] += 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: data[index].postid}, 'post');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const deleteUserLikePosts = async (index: number) => {
+    let newLikePosts = [...likesPosts];
+    newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
+    setLikePosts(newLikePosts);
+
+    const newLikeNumber = [...likeNumber];
+    newLikeNumber[index] -= 1;
+    setLikeNumber(newLikeNumber);
+
+    try {
+      const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleItemPress = (index: number) => {
+    if ( likesPosts.includes(data[index].postid)) {
+      deleteUserLikePosts(index);
+    } else {
+      setUserLikePosts(index);
     }
   };
 
@@ -117,7 +178,7 @@ const SearchResultScreen = ({ route } : any) => {
             />
           </View>
         ) : (
-          <CardSearchResult data={data} handleEndReached={handleEndReached} isLoading={isLoading}/>
+          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} likesPosts={likesPosts} likeNumber={likeNumber} handleItemPress={handleItemPress} />
         )
       }
     </ContainerComponent>
