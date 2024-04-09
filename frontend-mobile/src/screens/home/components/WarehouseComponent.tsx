@@ -63,9 +63,7 @@ const WarehouseComponent = () => {
       setPosts(res.allPosts);
       const likes: number[] = Array.isArray(res.allPosts) && res.allPosts.length > 0 ? res.allPosts.map((item: any) => item.like_count) : [];
       
-      setLikeNumber(likes);
-  
-      console.log(likes, '4567')
+      setLikeNumber(likes);  
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -75,7 +73,6 @@ const WarehouseComponent = () => {
 
   const getUserLikePosts = async () => {
     const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
-    // console.log(res, '123')
     const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
 
     setLikePosts(postIds);
@@ -92,7 +89,6 @@ const WarehouseComponent = () => {
 
     try {
       const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: posts[index].postid}, 'post');
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -109,7 +105,6 @@ const WarehouseComponent = () => {
 
     try {
       const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${posts[index].postid}`, null,'delete');
-      console.log(res);
     } catch (error) {
       console.log(error);
     }

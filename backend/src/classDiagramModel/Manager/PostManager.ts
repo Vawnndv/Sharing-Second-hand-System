@@ -102,13 +102,17 @@ export class PostManager {
         p.updatedat, 
         p.createdat,
         p.postid,
-        p.location,
+        a.address,
         MIN(i.path) AS path,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM 
         "User" u
       RIGHT JOIN 
         "posts" p ON u.userId = p.owner
+      JOIN 
+        "address" a
+      ON
+        a.addressid = p.addressid
       LEFT JOIN 
         "image" i ON p.itemid = i.itemid
       LEFT JOIN 
@@ -121,11 +125,13 @@ export class PostManager {
         u.username, 
         u.firstname, 
         u.lastname, 
+        a.address,
         p.description, 
         p.updatedat, 
         p.createdat,
-        p.itemid,
-        p.postid;
+        p.postid
+      ORDER BY
+        p.createdat DESC;
       `;
 
       const result: QueryResult = await client.query(postsQuery);
@@ -134,29 +140,6 @@ export class PostManager {
         return null;
       }
       return result.rows;
-    } catch (error) {
-      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
-      throw error; // Ném lỗi để controller có thể xử lý
-    } finally {
-      client.release(); // Release client sau khi sử dụng
-    }
-  }
-
-  public static async countLikeOfPost(postId: number): Promise<any> {
-    const client = await pool.connect();
-    try {
-      const postsQuery = `
-        COUNT(lp.likeid) AS like_count
-        FROM "like_post"
-        WHERE postid = $1;
-      `;
-
-      const result: QueryResult = await client.query(postsQuery, [postId]);
-
-      if (result.rows.length === 0) {
-        return null;
-      }
-      return result.rows.length;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -177,7 +160,7 @@ export class PostManager {
           p.postid,
           w.warehousename,
           w.avatar,
-          w.address,
+          a.address,
           MIN(i.path) AS path,
           CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
         FROM 
@@ -190,6 +173,10 @@ export class PostManager {
           "warehouse" w
         ON 
           wa.warehouseid = w.warehouseid
+        JOIN 
+          "address" a
+        ON
+          a.addressid = p.addressid
         LEFT JOIN 
           "image" i
         ON 
@@ -205,8 +192,10 @@ export class PostManager {
           p.itemid,
           p.postid,
           w.warehousename,
-          w.address,
-          w.avatar;   
+          a.address,
+          w.avatar
+        ORDER BY
+          p.createdat DESC;  
       `;
 
       const result: QueryResult = await client.query(postsQuery);

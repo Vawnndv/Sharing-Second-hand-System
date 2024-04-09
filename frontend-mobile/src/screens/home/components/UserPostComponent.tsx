@@ -78,7 +78,6 @@ const UserPostComponent = () => {
       
       setLikeNumber(likes);
   
-      console.log(likes, '4567')
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -88,7 +87,6 @@ const UserPostComponent = () => {
 
   const getUserLikePosts = async () => {
     const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
-    // console.log(res, '123')
     const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
 
     setLikePosts(postIds);
@@ -105,7 +103,6 @@ const UserPostComponent = () => {
 
     try {
       const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: posts[index].postid}, 'post');
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -122,7 +119,6 @@ const UserPostComponent = () => {
 
     try {
       const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${posts[index].postid}`, null,'delete');
-      console.log(res);
     } catch (error) {
       console.log(error);
     }
@@ -166,7 +162,7 @@ const UserPostComponent = () => {
               <RowComponent>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
                 <SpaceComponent width={4} />
-                <TextComponent text={item.location} />
+                <TextComponent text={item.address} />
               </RowComponent>
             </View>
           </RowComponent>
