@@ -30,10 +30,10 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const handleConfirm = async () => {
         setIsLoading(true);
         
-        const url = await UploadImageToAws3(image);
+        const data = await UploadImageToAws3(image);
         // const urlConfirm = response.url
         await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
-            url: url
+            url: data.url
         });
         setIsLoading(false);
         alert('Xác nhận đơn hàng thành công!')
@@ -191,7 +191,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
                                                 
                                                 <TouchableOpacity style={[styles.infoUser, {alignItems:'center', justifyContent: 'space-evenly'}]}
-                                                    onPress={() => TakePhoto(hasCameraPermission, setImage)}>
+                                                    onPress={() => TakePhoto(hasCameraPermission, setImage, null)}>
                                                     <Image
                                                         style={{width: 60, height: 60, marginRight: 10}}
                                                         source={{

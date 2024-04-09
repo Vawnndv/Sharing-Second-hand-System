@@ -55,7 +55,7 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
     
 }
 
-export const TakePhoto = async (permission: boolean, setImage: any, setModalVisible: (value: boolean) => void) => {
+export const TakePhoto = async (permission: boolean, setImage: any, setModalVisible: ((value: boolean) => void) | any)  => {
     if(permission){
         const result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
