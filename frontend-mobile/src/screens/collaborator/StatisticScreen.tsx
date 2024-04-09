@@ -80,8 +80,7 @@ export default function StatisticScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPIOrders = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}
-                &type=${tab}&distance=Tất cả&time=${value}&category=Tất cả&sort=Mới nhất`)
+                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
                 setOrders(response.data.orders)
             }catch(error){
                 console.log(error)
@@ -113,8 +112,7 @@ export default function StatisticScreen({navigation}: any) {
             setIsLoading(true)
             try{
                 
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}
-                &type=${tab}&distance=Tất cả&time=${value}&category=Tất cả&sort=Mới nhất`)
+                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
                 setOrders(response.data.orders)
                 
             }catch(error){

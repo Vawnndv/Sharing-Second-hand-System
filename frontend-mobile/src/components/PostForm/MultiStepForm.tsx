@@ -11,6 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 
 
@@ -21,6 +22,10 @@ interface FormDataStepOne {
   itemCategory: string;
   itemQuantity: string;
   itemDescription: string;
+  methodGive: string;
+  methodsBringItemToWarehouse?: string;
+  warehouseAddress?: string;
+  warehouseAddressID?: number;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -37,7 +42,7 @@ interface FormDataStepTwo {
 
 const MultiStepForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: '', itemQuantity: '', itemDescription: '' });
+  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: '', itemQuantity: '', itemDescription: '', methodGive: '' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: ''  /* khởi tạo các trường khác */ });
 
   const auth = useSelector(authSelector);
@@ -86,6 +91,10 @@ const MultiStepForm = () => {
       return;
     }
     let itemID = 0;
+    let postID = 0;
+    let address = '';
+    let addressid = 0;
+    let orderID = 0;
 
     try {
       const name = formDataStepOne.itemName;
@@ -103,33 +112,114 @@ const MultiStepForm = () => {
         console.log(error);
       }
 
-      try {
-        const title = formDataStepTwo.postTitle;
-        const location = formDataStepTwo.postAddress;
-        const description = formDataStepTwo.postDescription;
-        const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
-        const time = new Date();
-        const itemid = itemID;
-        const timestart = new Date(formDataStepTwo.postStartDate);
-        const timeend = new Date(formDataStepTwo.postEndDate);
+    try {
+      const title = formDataStepTwo.postTitle;
+      const location = formDataStepTwo.postAddress;
+      const description = formDataStepTwo.postDescription;
+      const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+      const time = new Date();
+      const itemid = itemID;
+      const timestart = new Date(formDataStepTwo.postStartDate);
+      const timeend = new Date(formDataStepTwo.postEndDate);
+      
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+        title,
+        location,
+        description,
+        owner,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+        timeend: new Date(timeend).toISOString(), // Và timeend
+      });       
+      console.log(response.data.postCreated);
+      postID = response.data.postCreated.postid;
+      address = response.data.postCreated.address;
+      addressid = response.data.postCreated.addressid;
+    } catch (error) {
+      console.error('Error creating item and post:', error);
+      Alert.alert('Error', 'Failed to create item and post. Please try again later.');
+    }
+
+    try {
+      const title = formDataStepTwo.postTitle;
+      const location = ' ';
+      const description = ' ';
+      const departure = address;
+      const time = new Date();
+      const itemid = itemID;
+      const status = 'Chờ xét duyệt';
+      const qrcode = ' ';
+      const ordercode = ' ';
+      const usergiveid = auth.id;
+      const postid = postID;
+      const imgconfirm = ' ';
+      const locationgive = addressid;
+      const givetypeid = 1;
+      const imgconfirmreceive = ' ';
+      const givetype = 'Cho nhận trực tiếp';
+      // let givetype = 'Cho nhận trực tiếp';
+      // if(formDataStepOne.methodsBringItemToWarehouse )
+
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+        title,
+        location,
+        description,
+        departure,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        status,
+        qrcode,
+        ordercode,
+        usergiveid,
+        postid,
+        imgconfirm,
+        locationgive,
+        givetypeid,
+        imgconfirmreceive,
+        givetype
+
+      });       
+      console.log(response.data.orderCreated);
+      orderID = response.data.orderCreated.orderid;
+      // Alert.alert('Success', 'Item, Post, Order created successfully');
+    } catch (error) {
+      console.error('Error creating order:', error);
+      Alert.alert('Error', 'Failed to create Item, Post, Order. Please try again later.');
+    }
+
+    try {
+      const currentstatus = 'Chờ xét duyệt';
+      const orderid = orderID;
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+        currentstatus,
+        orderid,
+      });
+      console.log(response.data.traceCreated)
+      Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+    } catch (error) {
+      console.error('Error creating Trace:', error);
+      Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
+    }
+    try{
+      formDataStepOne.itemPhotos.map(async (image) => {
+        const data = await UploadImageToAws3(image);
         
-        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
-          title,
-          location,
-          description,
-          owner,
-          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-          itemid,
-          timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
-          timeend: new Date(timeend).toISOString(), // Và timeend
-        });       
-        console.log(response.data.postCreated);
-        Alert.alert('Success', 'Item and Post created successfully');
-      } catch (error) {
-        console.error('Error creating item and post:', error);
-        Alert.alert('Error', 'Failed to create item and post. Please try again later.');
-      }
+        const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
+          path: data.url,
+          itemID: itemID
+        })
+
+        console.log(responseUploadImage)
+      })
+      
+    } catch (error) {
+      console.log(error)
+    }
+
 
   };
 

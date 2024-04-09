@@ -3,12 +3,15 @@ import DropdownContentComponent from './DropdownContentComponent';
 import React, { useEffect, useState } from 'react';
 import orderAPI from '../../apis/orderApi';
 import FilterOrder from './FilterOrder';
-
-const userID = 29;
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 export default function HistoryScreen() {
   const [orderGive, setOrderGive] = useState([]);
   const [orderReceive, setOrderReceive] = useState([]);
+
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(function() {
     getOrderList()

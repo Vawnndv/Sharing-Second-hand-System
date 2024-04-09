@@ -4,6 +4,8 @@ import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { RadioButton } from 'react-native-paper';
 import { useState, useEffect } from "react";
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
+import { useSelector } from "react-redux";
+import { authSelector } from "../redux/reducers/authReducers";
 
 const distance = [
     1,
@@ -61,6 +63,9 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             sort: checked === 'first' ? 'Mới nhất' : 'Gần nhất'
         })
     }
+
+    const auth = useSelector(authSelector);
+
     return (
         <View style={styles.container}>
            

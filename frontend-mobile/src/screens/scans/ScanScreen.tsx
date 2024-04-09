@@ -7,8 +7,9 @@ import { appInfo } from '../../constants/appInfos';
 import orderAPI from '../../apis/orderApi';
 import ViewDetailOrder from '../../modals/ViewDetailOrder';
 import { LoadingModal } from '../../modals';
-
-const userID = 29
+import { IconButton } from 'react-native-paper';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -17,6 +18,10 @@ export default function ScanScreen({navigation} : any) {
   const [postID, setPostID] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -70,6 +75,7 @@ export default function ScanScreen({navigation} : any) {
             barcodeTypes: ["qr", "pdf417"],
           }}
           style={StyleSheet.absoluteFillObject}
+          facing= {isFrontCamera ? 'front' : 'back'}
         />
         {scanned && <Button title={'Chạm để quét lại lần nữa'} onPress={() => setScanned(false)} />}
         {/* <View style={styles.marker}/> */}
@@ -87,6 +93,12 @@ export default function ScanScreen({navigation} : any) {
           >
           </ImageBackground>
         </View>
+
+        <View style={{paddingBottom: 20, paddingHorizontal: 20}}>
+          <IconButton style={{marginVertical: 10}} iconColor="#fff" size={40} icon="autorenew" mode="outlined" onPress={() => {setIsFrontCamera(!isFrontCamera)}}>
+          </IconButton>
+        </View>
+
       </View>
       <Modal
         visible={isModalVisible}

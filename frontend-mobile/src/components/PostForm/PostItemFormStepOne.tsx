@@ -11,16 +11,26 @@ import { appInfo } from '../../constants/appInfos';
 
 interface FormData {
   itemName: string;
-  itemPhotos: string[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
+  itemPhotos: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
   itemCategory: string;
   itemQuantity: string;
   itemDescription: string;
+  methodGive: string;
+  methodsBringItemToWarehouse?: string;
+  warehouseAddress?: string;
+  warehouseAddressID?: number;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
 interface ItemTypes {
   itemtypeid: number;
   nametype: string;
+}
+
+interface Warehouse {
+  warehouseid: number;
+  address: string;
+  warehousename: string;
 }
 
 
@@ -30,7 +40,6 @@ interface StepOneProps {
   setFormData: (formData: FormData) => void;
 }
 
-const itemCategories = ['1', '2', '3'];
 
 
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => {
@@ -40,15 +49,43 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const [itemTypes, setItemTypes] = useState<ItemTypes[]>([]);
 
+  const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
+
+  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Chúng tôi sẽ đến lấy"];
+
+  const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
+
+  const [isWarehouseGive, setIsWareHouseGive] = useState(false);
+
+  const [isBringItemToWarehouse, setIsBringItemToWareHouse] = useState(false);
 
 
   useEffect(() => {
+    if(formData?.methodGive == 'Gửi món đồ đến kho'){
+      setIsWareHouseGive(true);
+    }
+    else{
+      setIsWareHouseGive(false);
+    }
+  }, [formData.methodGive])
+
+  useEffect(() => {
+    if(formData.methodsBringItemToWarehouse == 'Tự đem đến kho'){
+      setIsBringItemToWareHouse(true);
+    }
+    else{
+      setIsBringItemToWareHouse(false);
+    }
+  }, [formData.methodsBringItemToWarehouse])
+
+
+  console.log(formData.itemPhotos)
+
+  useEffect(() => {
     const fetchItemTypes = async () => {
-      let itemIDs = null;
-      let owner = null
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/types`)
+        const res = await axios.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
@@ -59,6 +96,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         setItemTypes(res.data.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching item types:', error);
+      } finally {
+        setIsLoading(false);
+      }
+
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
+        }
+        console.log(res.data.wareHouses);
+        setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching warehouses:', error);
       } finally {
         setIsLoading(false);
       }
@@ -84,8 +138,20 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     });
 
     if (!pickerResult.canceled) {
-      const imageUris = pickerResult.assets.map((asset) => asset.uri);
-      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageUris] }); // Cập nhật đường dẫn của các ảnh vào formData
+      const imageData = pickerResult.assets.map((asset) => {
+        return {
+          uri: asset.uri,
+          name: new Date().getTime(),
+          type: asset.mimeType
+        }
+      });
+      // const finalResult = {
+      //   ri: result.assets[0].uri,
+      //   name: new Date().getTime(),
+      //   type: result.assets[0].mimeType,
+      // }
+      // setImage(finalResult);
+      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
     }
   };
 
@@ -93,6 +159,19 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     const updatedPhotos = [...formData.itemPhotos];
     updatedPhotos.splice(index, 1);
     setFormData({ ...formData, itemPhotos: updatedPhotos });
+  };
+
+  const handleWarehouseChange = (warehouseId: number) => {
+    // Tìm warehousename dựa vào warehouseid
+    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseId);
+    if (selectedWarehouse) {
+      // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
+      setFormData({
+        ...formData,
+        warehouseAddress: selectedWarehouse.warehousename + ', ' + selectedWarehouse.address,
+        warehouseAddressID: selectedWarehouse.warehouseid
+      });
+    }
   };
 
   const handleNext = () => {
@@ -113,6 +192,11 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
     if (!formData.itemCategory) {
       alert('Loại món đồ là bắt buộc.');
+      return;
+    }
+
+    if (!formData.methodGive) {
+      alert('Vui lòng chọn phương thức cho');
       return;
     }
 
@@ -144,31 +228,36 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <TextInput
           label="Ảnh của món đồ"
           style={styles.input}
-          underlineColor="gray"
-          activeUnderlineColor="blue"
+          underlineColor="transparent" // Màu của gạch chân khi không focus
           editable={false} // Người dùng không thể nhập trực tiếp vào trường này
         />
-      <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
-        Chọn Ảnh
-      </Button>
-      {/* Hiển thị ảnh đã chọn */}
+        {/* Hiển thị ảnh đã chọn */}
       <ScrollView horizontal>
-          {formData.itemPhotos.map((uri, index) => (
+          {formData.itemPhotos.map((image: any, index) => (
             <View key={index} style={styles.imageContainer}>
-                <Image source={{ uri }} style={styles.image} />
+                <Image source={{ uri: image.uri }} style={styles.image} />
                 <TouchableOpacity onPress={() => removeImage(index)} style={styles.closeButton}>
                   <MaterialIcons name="close" size={24} color="white" />
                 </TouchableOpacity>
               </View>
             ))}
       </ScrollView>
+      <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
+        Chọn Ảnh
+      </Button>
       <TextInput
         label="Số lượng"
         value={formData.itemQuantity}
-        onChangeText={(text) => setFormData({ ...formData, itemQuantity: text })}
+        onChangeText={(text) => {
+          // Chỉ cho phép cập nhật nếu text mới là số
+          const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
+          setFormData({ ...formData, itemQuantity: newText });
+        }}   
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        keyboardType="numeric" // Chỉ hiển thị bàn phím số
+
       />
 
       <RNPickerSelect
@@ -181,21 +270,70 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           inputAndroid: styles.inputDropDown,
           placeholder: {
             color: 'black', // Màu của chữ label
+            fontSize: 14
+
           },
               }}
         useNativeAndroidPickerStyle={false}
         Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
       />
-      <TextInput
-        label="Mô tả về món đồ"
-        value={formData.itemDescription}
-        onChangeText={(text) => setFormData({ ...formData, itemDescription: text })}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-      />  
+
+      <RNPickerSelect
+        onValueChange={(value) => setFormData({ ...formData, methodGive: value })}
+        items={methodsGive.map((method) => ({ label: method, value: method }))}
+        value={formData.methodGive}
+        placeholder={{ label: 'Chọn phương thức cho' }}
+        style={{
+          inputIOS: styles.inputDropDown,
+          inputAndroid: styles.inputDropDown,
+          placeholder: {
+            color: 'black', // Màu của chữ label
+            fontSize: 14
+
+          },
+              }}
+        useNativeAndroidPickerStyle={false}
+        Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
+      />
+
+      {isWarehouseGive && (
+        <RNPickerSelect
+          onValueChange={(value) => setFormData({ ...formData, methodsBringItemToWarehouse: value })}
+          items={methodsBringItemToWarehouse.map((methodBringItemToWarehouse) => ({ label: methodBringItemToWarehouse, value: methodBringItemToWarehouse }))}
+          value={formData.methodsBringItemToWarehouse}
+          placeholder={{ label: 'Chọn phương thức đem đến kho'}}
+          style={{
+            inputIOS: styles.inputDropDown,
+            inputAndroid: styles.inputDropDown,
+            placeholder: {
+              color: 'black', // Màu của chữ label
+              fontSize: 14
+
+            },
+          }}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
+        />
+      )}
+
+      {isBringItemToWarehouse && (
+        <RNPickerSelect
+          onValueChange={(value) => handleWarehouseChange(value)}
+          items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehouseid }))}
+          value={formData.warehouseAddress}
+          placeholder={{ label: 'Chọn kho'}}
+          style={{
+            inputIOS: styles.inputDropDown,
+            inputAndroid: styles.inputDropDown,
+            placeholder: {
+              color: 'black', // Màu của chữ label
+              fontSize: 14
+            },
+          }}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
+        />
+      )}
       <Button mode="contained" onPress={handleNext}>Tiếp theo</Button>
     </ScrollView>
   );

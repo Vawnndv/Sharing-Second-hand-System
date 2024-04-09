@@ -3,12 +3,15 @@ import DropdownContentComponent from './DropdownContentComponent';
 import FilterOrder from './FilterOrder';
 import orderAPI from '../../apis/orderApi';
 import React, { useEffect, useState } from 'react';
-
-const userID = 29;
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 export default function TrackingScreen() {
   const [orderGive, setOrderGive] = useState([]);
   const [orderReceive, setOrderReceive] = useState([]);
+
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(function(){
     getOrderList()
