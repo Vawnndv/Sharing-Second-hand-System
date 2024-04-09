@@ -55,6 +55,18 @@ export const statisticOrderCollaborator = async (req: Request, res: Response) =>
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const updateReceiveID = async (req: Request, res: Response) => {
+  const { postID, receiveID } = req.body;
+  try {
+    const response = await OrderManager.updateReceiveID(postID, receiveID);
+      
+    res.status(201).json({ message: 'Get orders successfully', status: response });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
   
 // export const getStatisticOrderOnWeek = async (req: Request, res: Response) => {
 //   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;

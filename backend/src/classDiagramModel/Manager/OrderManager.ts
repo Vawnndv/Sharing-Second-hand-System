@@ -122,7 +122,7 @@ export class OrderManager {
       let values: any = [userID,type]
       let queryTime =``
       if(time !== 'Tất cả'){
-        queryTime = `AND p.timestart >= NOW() - INTERVAL '${time} days'`
+        queryTime = `AND p.timeend >= NOW() - INTERVAL '${time} days'`
       }
       let categoryQuery = ``;
       if(category !== "Tất cả" ){
@@ -899,6 +899,26 @@ export class OrderManager {
     } finally {
         client.release();
     }
+  }
+
+  public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined): Promise<boolean> {
+    const client = await pool.connect();
+
+    const query =`
+        UPDATE "orders"
+        SET userreceiveid = ${receiveID}
+        WHERE orderid = ${postID}
+    `
+
+    try {
+      const result: QueryResult = await client.query(query);
+      console.log(result.rows);
+      return true
+    } catch (error) {
+      console.log(error) 
+      return false
+    }
+    
   }
 
 }
