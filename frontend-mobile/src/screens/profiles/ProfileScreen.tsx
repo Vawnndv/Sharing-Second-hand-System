@@ -58,8 +58,13 @@ const ProfileScreen = ({navigation, route}: any) => {
     };
   } ;
 
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    dispatch(removeAuth({}));
+  }
+
   return (
-    <ContainerComponent isScroll title='Profile' back right>
+    <ContainerComponent isScroll title='Profile' back={auth.roleID === 1} right={auth.roleID === 1}>
       {isLoading ? (
         <ActivityIndicator />
         // <LoadingComponent isLoading={isLoading} value={1} />
@@ -131,6 +136,23 @@ const ProfileScreen = ({navigation, route}: any) => {
                 textColor={appColors.primary}
                 type="primary"
               />
+
+              {
+                auth.roleID !== 1 &&
+                <ButtonComponent
+                  styles={{
+                    borderWidth: 1,
+                    borderColor: appColors.white,
+                    backgroundColor: appColors.gray,
+                  }}
+                  text="Log out"
+                  onPress={() =>
+                    handleLogout()
+                  }
+                  textColor={appColors.white}
+                  type="primary"
+                />
+              }
             </SectionComponent>
           </RowComponent>
         </>

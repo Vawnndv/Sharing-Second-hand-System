@@ -19,7 +19,7 @@ const time = [
     3,
     7,
     14,
-    20,
+    30,
 ]
 
 const category = [
@@ -43,6 +43,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
     useEffect(() => {
         // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
         const { distance: filterDistance, time: filterTime, category: filterCategory, sort: filterSort } = filterValue;
+        console.log(filterValue)
         setIndexDistance(distance.indexOf(filterDistance));
         setIndexTime(time.indexOf(filterTime));
         setIndexCategory(category.indexOf(filterCategory));
