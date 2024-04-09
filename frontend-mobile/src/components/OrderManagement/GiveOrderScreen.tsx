@@ -5,8 +5,8 @@ import React, { useEffect, useState } from 'react';
 import CardOrderView from './CardOrderView';
 import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
 import { LoadingModal } from '../../modals';
-
-const userID = 29;
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 interface Item {
   title: string;
@@ -30,7 +30,8 @@ export default function GiveOrderScreen() {
     category: "Tất cả",
     sort: "Mới nhất"
 })
-console.log(filterValue)
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(function(){
     getOrderList()
