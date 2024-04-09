@@ -58,7 +58,6 @@ export class ItemManager {
     }
   } 
 
-
   public static async viewAllItemTypes(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
@@ -76,7 +75,6 @@ export class ItemManager {
     }
   } 
 
-
   public static async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
 
     const client = await pool.connect();
@@ -93,6 +91,30 @@ export class ItemManager {
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting product:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async uploadImageItem (path: string, itemID: string): Promise<boolean> {
+
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO "image" (path, itemid)
+        VALUES ('${path}',${itemID});
+      `;
+    // const values : any = [name, quantity, itemtypeID];
+    
+    try {
+      const result: QueryResult = await client.query(query);
+
+      
+      console.log('Product inserted successfully:', result.rows[0]);
+      return true;
+      
+    } catch (error) {
+      console.error('Error inserting product:', error);
+      return false
     } finally {
       client.release(); // Release client sau khi sử dụng
     }

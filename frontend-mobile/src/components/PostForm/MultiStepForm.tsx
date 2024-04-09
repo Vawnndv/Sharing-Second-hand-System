@@ -11,6 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 
 
@@ -137,7 +138,7 @@ const MultiStepForm = () => {
       address = response.data.postCreated.address;
       addressid = response.data.postCreated.addressid;
     } catch (error) {
-      console.error('Error creating post:', error);
+      console.error('Error creating item and post:', error);
       Alert.alert('Error', 'Failed to create item and post. Please try again later.');
     }
 
@@ -203,6 +204,22 @@ const MultiStepForm = () => {
       console.error('Error creating Trace:', error);
       Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
     }
+    try{
+      formDataStepOne.itemPhotos.map(async (image) => {
+        const data = await UploadImageToAws3(image);
+        
+        const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
+          path: data.url,
+          itemID: itemID
+        })
+
+        console.log(responseUploadImage)
+      })
+      
+    } catch (error) {
+      console.log(error)
+    }
+
 
   };
 

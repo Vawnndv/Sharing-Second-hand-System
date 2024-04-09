@@ -90,3 +90,15 @@ export const postNewItem = asyncHandle(async (req, res) => {
   }
 });
 
+export const postImageItem = asyncHandle(async (req, res) => {
+  const { path, itemID } = req.body;
+  
+  try {
+    const response = await ItemManager.uploadImageItem(path, itemID);
+    res.status(201).json({ message: 'Item created successfully', status:  response });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+

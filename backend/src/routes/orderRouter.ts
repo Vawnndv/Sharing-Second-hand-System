@@ -1,5 +1,6 @@
 import express from 'express';
 import { createTrace, createOrder, getOrderList, getTrackingStatus, getOrderFinishList, uploadImageConfirmOrder, getOrderDetails, VerifyOrderQR, updateStatusOfOrder } from '../controllers/orderController';
+import { updateReceiveID } from '../controllers/orderCollaboratorController';
 
 const router = express.Router();
 
@@ -13,5 +14,6 @@ router.get('/:orderID', getOrderDetails);
 router.post('/createOrder', createOrder);
 router.post('/createTrace', createTrace);
 
+router.put('/update-receiveid', updateReceiveID);
 
 export default router;

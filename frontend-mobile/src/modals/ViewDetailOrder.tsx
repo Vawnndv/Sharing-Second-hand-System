@@ -14,6 +14,10 @@ import ShowImageModal from './ShowImageModal';
 import QRCodeGenerator from '../components/GenerateQRCode';
 import orderAPI from '../apis/orderApi';
 import LoadingModal from './LoadingModal';
+import CardComponent from '../components/CardComponent';
+import { useNavigation } from '@react-navigation/native';
+import { appColors } from '../constants/appColors';
+import { appInfo } from '../constants/appInfos';
 
 interface Data {
   title: string;
@@ -40,6 +44,8 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
   const [isShowQR, setIsShowQR] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Data>();
+
+  const navigation: any = useNavigation();
 
   useEffect(function(){
     getOrderDetails()
@@ -105,7 +111,13 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       </View>
 
       <View style={styles.body}>
-        <View style={styles.info}>
+        <CardComponent
+          // key={index}
+          color={appColors.white4}
+          isShadow
+          onPress={() => navigation.navigate('ItemDetailScreen')}
+          styles={styles.info}
+        >
           <Image
             source={{ uri: data?.image }} 
             style={styles.image} 
@@ -124,7 +136,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
                 <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data ? data.statuscreatedat : '' )}</Text>
             </View>
           </View>
-        </View>
+        </CardComponent>
 
         <View style={{flexDirection: 'row'}}>
           {
@@ -209,10 +221,10 @@ const styles = StyleSheet.create({
     gap: 5
   },
   info: {
-    borderRadius: 5,
-    borderColor: 'grey',
-    borderWidth: 1,
-    display: 'flex',
+    // borderRadius: 5,
+    // borderColor: 'grey',
+    // borderWidth: 1,
+    // display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -230,7 +242,7 @@ const styles = StyleSheet.create({
     margin: 5
   },
   process: {
-    height: 500,
+    height: appInfo.sizes.HEIGHT * 0.59,
     borderRadius: 5,
     borderColor: 'grey',
     borderWidth: 1,

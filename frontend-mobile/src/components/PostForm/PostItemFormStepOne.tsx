@@ -11,7 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 
 interface FormData {
   itemName: string;
-  itemPhotos: string[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
+  itemPhotos: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
   itemCategory: string;
   itemQuantity: string;
   itemDescription: string;
@@ -79,6 +79,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   }, [formData.methodsBringItemToWarehouse])
 
 
+  console.log(formData.itemPhotos)
 
   useEffect(() => {
     const fetchItemTypes = async () => {
@@ -137,8 +138,20 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     });
 
     if (!pickerResult.canceled) {
-      const imageUris = pickerResult.assets.map((asset) => asset.uri);
-      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageUris] }); // Cập nhật đường dẫn của các ảnh vào formData
+      const imageData = pickerResult.assets.map((asset) => {
+        return {
+          uri: asset.uri,
+          name: new Date().getTime(),
+          type: asset.mimeType
+        }
+      });
+      // const finalResult = {
+      //   ri: result.assets[0].uri,
+      //   name: new Date().getTime(),
+      //   type: result.assets[0].mimeType,
+      // }
+      // setImage(finalResult);
+      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
     }
   };
 
@@ -215,24 +228,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <TextInput
           label="Ảnh của món đồ"
           style={styles.input}
-          underlineColor="gray"
-          activeUnderlineColor="blue"
+          underlineColor="transparent" // Màu của gạch chân khi không focus
           editable={false} // Người dùng không thể nhập trực tiếp vào trường này
         />
-      <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
-        Chọn Ảnh
-      </Button>
-      {/* Hiển thị ảnh đã chọn */}
+        {/* Hiển thị ảnh đã chọn */}
       <ScrollView horizontal>
-          {formData.itemPhotos.map((uri, index) => (
+          {formData.itemPhotos.map((image: any, index) => (
             <View key={index} style={styles.imageContainer}>
-                <Image source={{ uri }} style={styles.image} />
+                <Image source={{ uri: image.uri }} style={styles.image} />
                 <TouchableOpacity onPress={() => removeImage(index)} style={styles.closeButton}>
                   <MaterialIcons name="close" size={24} color="white" />
                 </TouchableOpacity>
               </View>
             ))}
       </ScrollView>
+      <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
+        Chọn Ảnh
+      </Button>
       <TextInput
         label="Số lượng"
         value={formData.itemQuantity}

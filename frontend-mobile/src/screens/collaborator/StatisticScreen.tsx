@@ -20,6 +20,19 @@ import DropdownComponent from "../../components/DropdownComponent"
 
 const screenWidth = Dimensions.get('window').width;
 
+
+const timeValue = [
+    1,3,7,14,30,90
+]
+const timeString = [
+    '1 day',
+    '3 day',
+    '1 week',
+    '2 week',
+    '1 month',
+    '3 month'
+]
+
 export default function StatisticScreen({navigation}: any) {
 
     const auth = useSelector(authSelector)
@@ -30,7 +43,7 @@ export default function StatisticScreen({navigation}: any) {
     const [isLoading, setIsLoading] = useState(true)
     const [tab, setTab] = useState('Chờ cộng tác viên lấy hàng')
 
-    const [value, setValue] = useState<any>('14')
+    const [value, setValue] = useState<any>(14)
 
     const data = [
         { name: 'Hàng đã lấy', amount: orderData[0], color: '#FF6347', legendFontColor: '#7F7F7F', legendFontSize: 14 },
@@ -67,8 +80,7 @@ export default function StatisticScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPIOrders = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}
-                &type=${tab}&distance=Tất cả&time=${value}&category=Tất cả&sort=Mới nhất`)
+                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
                 setOrders(response.data.orders)
             }catch(error){
                 console.log(error)
@@ -77,7 +89,7 @@ export default function StatisticScreen({navigation}: any) {
 
         const fetchAPIData = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=${auth.id}&time=1 week`)
+                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=${auth.id}&time=${timeString[timeValue.indexOf(value)]}`)
                 // console.log(response.data.orders)
                 setOrderData(response.data.statisticOrder)
             }catch(error){
@@ -100,8 +112,7 @@ export default function StatisticScreen({navigation}: any) {
             setIsLoading(true)
             try{
                 
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}
-                &type=${tab}&distance=Tất cả&time=${value}&category=Tất cả&sort=Mới nhất`)
+                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
                 setOrders(response.data.orders)
                 
             }catch(error){
@@ -114,15 +125,16 @@ export default function StatisticScreen({navigation}: any) {
         
     }, [tab])
 
+    console.log(orders)
     
 
     const dataDropdown = [
-        { label: '1 ngày', value: '1' },
-        { label: '3 ngày', value: '3' },
-        { label: '1 tuần', value: '7' },
-        { label: '2 tuần', value: '14' },
-        { label: '1 tháng', value: '30' },
-        { label: '3 tháng', value: '90' },
+        { label: '1 ngày', value: 1 },
+        { label: '3 ngày', value: 3 },
+        { label: '1 tuần', value: 7 },
+        { label: '2 tuần', value: 14 },
+        { label: '1 tháng', value: 30 },
+        { label: '3 tháng', value: 90 },
     ]
 
     const [changeOrdersGiving, setChangeOrdersGiving] = useState(false)

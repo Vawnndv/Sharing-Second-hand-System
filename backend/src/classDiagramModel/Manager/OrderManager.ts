@@ -122,7 +122,8 @@ export class OrderManager {
       let values: any = [userID,type]
       let queryTime =``
       if(time !== 'Tất cả'){
-        queryTime = `AND p.timestart >= NOW() - INTERVAL '${time} days'`
+        queryTime = `AND p.timeend >= NOW()
+                      AND p.timeend <= NOW() + INTERVAL '${time} days'`
       }
       let categoryQuery = ``;
       if(category !== "Tất cả" ){
@@ -148,7 +149,6 @@ export class OrderManager {
               )
             ) 
             AND o.status = $2
-            AND CURRENT_DATE BETWEEN p.timestart AND p.timeend
             `+queryTime+`
             `+categoryQuery+`
             ORDER BY o.createdat DESC
@@ -352,67 +352,91 @@ export class OrderManager {
     }
   }
 
-  // public static async showOrdersOnWeek(userID: string | undefined, type: string | undefined, time: string | undefined): Promise<Order[]> {
-  //   // code here
-  //   const client = await pool.connect();
+  public static async showOrdersStatistic(userID: string | undefined, type: string | undefined, time: string | undefined): Promise<Order[]> {
+    // code here
+    const client = await pool.connect();
 
-  //   try {
-  //     const ordersQuery = `
-  //         SELECT o.* FROM "orders" o
-  //         WHERE o.orderid IN (
-  //           SELECT ic.orderid FROM "inputcard" ic
-  //           WHERE ic.warehouseid = (
-  //             SELECT w.warehouseid FROM "workat" w
-  //             WHERE $1 = w.userid
-  //           )
-  //         )
-  //         AND EXISTS (
-  //           SELECT 1
-  //           FROM "posts" p
-  //           WHERE p.postid = o.postid
-  //           AND CURRENT_DATE BETWEEN p.timestart AND p.timeend
-  //           AND p.timeend >= NOW() - INTERVAL '${time}'
-  //         )
-  //         AND o.status = '${type}'`;
+    try {
+      const ordersQuery = `
+          SELECT o.*, p.timestart, p.timeend
+          FROM "orders" o
+          JOIN "posts" p ON o.postid = p.postid
+          WHERE o.orderid IN (
+            SELECT ic.orderid FROM "inputcard" ic
+            WHERE ic.warehouseid = (
+              SELECT w.warehouseid FROM "workat" w
+              WHERE $1 = w.userid
+            )
+          )
+          AND o.status = '${type}'
+          AND p.timeend >= NOW() - INTERVAL '${time}'`;
 
-  //     const values: any = [userID]
-  
-  //     const ordersResult: QueryResult = await client.query(ordersQuery, values);
+        const addressQuery = `
+        SELECT * FROM "address"
+        WHERE addressid = $1
+      `
       
-  //     const ordersRow = ordersResult.rows;
+      const values: any = [userID]
   
-  //     const orders = await Promise.all(ordersRow.map(async (row: any) => {
-  //       const giver: User | undefined = await UserManager.getUser(row.usergiveid);
-  //       const receive: User | undefined = await UserManager.getUser(row.userreceiveid);
-  //       const item: Item | null = await ItemManager.viewDetailsItem(row.itemid);
-  //       return new Order(
-  //         row.orderid,
-  //         row.title,
-  //         receive,
-  //         giver,
-  //         row.ordercode,
-  //         row.qrcode,
-  //         row.status,
-  //         row.location,
-  //         row.description,
-  //         row.time,
-  //         item,
-  //         row.departure,
-  //         null,
-  //         null,
-  //         null
-  //       );
-  //     }));
+      const ordersResult: QueryResult = await client.query(ordersQuery, values);
+      
+      const ordersRow = ordersResult.rows;
 
-  //     // console.log(orders)
-  //     return orders;
-  //   }catch (error) {
-  //     console.log('error:', error);
-  //     return [];
-  //   } finally {
-  //     client.release();
-  //   }
-  // }
+      let result: any = []
+  
+      console.log(ordersRow);
+      if(ordersRow.length > 0) {
+        let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
+        const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
+    
+        console.log(addressReceive)
+        
+        const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
+          const giver: User | undefined = await UserManager.getUser(row.usergiveid);
+          const receive: User | undefined = await UserManager.getUser(row.collaboratorreceiveid);
+          const item: Item | null = await ItemManager.viewDetailsItem(row.itemid);
+  
+          let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
+          const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
+          
+          const orderObj = new Order(
+            row.orderid,
+            row.title,
+            receive,
+            giver,
+            row.ordercode,
+            row.qrcode,
+            row.status,
+            row.location,
+            row.description,
+            row.time,
+            item,
+            row.departure,
+            null,
+            addressGive,
+            addressReceive
+          )
+
+          orderObj.setTime(row.timestart, row.timeend);
+          result.push(
+            orderObj
+          )
+            
+    
+          
+        }));
+  
+      }
+
+      // console.log(orders)
+      return result;
+    }catch (error) {
+      console.log('error:', error);
+      return [];
+    } finally {
+      client.release();
+    }
+  }
 
   public static async showOrderDetails(orderID: string | undefined): Promise<any | null> {
     // code here
@@ -565,7 +589,7 @@ export class OrderManager {
           FROM (
               SELECT 
                   o.Title, 
-                  o.Location, 
+                  adg.address AS Location, 
                   o.Status,
                   o.CreatedAt,
                   i.Path AS Image, 
@@ -636,7 +660,7 @@ export class OrderManager {
           FROM (
               SELECT 
                   o.Title, 
-                  o.Location, 
+                  adg.address AS Location,  
                   o.Status,
                   o.CreatedAt,
                   i.Path AS Image, 
@@ -953,5 +977,24 @@ export class OrderManager {
     }
   };
 
-}
+  public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined): Promise<boolean> {
+    const client = await pool.connect();
 
+    const query =`
+        UPDATE "orders"
+        SET userreceiveid = ${receiveID}
+        WHERE orderid = ${postID}
+    `
+
+    try {
+      const result: QueryResult = await client.query(query);
+      console.log(result.rows);
+      return true
+    } catch (error) {
+      console.log(error) 
+      return false
+    }
+    
+  };
+
+}

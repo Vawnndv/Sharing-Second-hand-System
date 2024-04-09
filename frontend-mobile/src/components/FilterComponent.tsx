@@ -4,6 +4,8 @@ import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { RadioButton } from 'react-native-paper';
 import { useState, useEffect } from "react";
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
+import { useSelector } from "react-redux";
+import { authSelector } from "../redux/reducers/authReducers";
 
 const distance = [
     1,
@@ -59,6 +61,9 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             sort: checked === 'first' ? 'Mới nhất' : 'Gần nhất'
         })
     }
+
+    const auth = useSelector(authSelector);
+
     return (
         <View style={styles.container}>
            
@@ -102,36 +107,71 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                 </ScrollView>
             </View>
 
-            <View style={styles.group}>
-                <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Thời gian</Text>
-                
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}>
-                    <View style={styles.groupItem}>
-                        <TouchableOpacity style={[styles.item, indexTime === 0 && styles.selectItem]}
-                            onPress={() => {setIndexTime(0)}}>
-                            <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>1 ngày trước</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexTime === 1 && styles.selectItem]}
-                            onPress={() => {setIndexTime(1)}}>
-                            <Text style={[{fontSize: 15}, indexTime === 1 && styles.selectTextItem]}>3 ngày trước</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexTime === 2 && styles.selectItem]}
-                            onPress={() => {setIndexTime(2)}}>
-                            <Text style={[{fontSize: 15}, indexTime === 2 && styles.selectTextItem]}>1 tuần trước</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexTime === 3 && styles.selectItem]}
-                            onPress={() => {setIndexTime(3)}}>
-                            <Text style={[{fontSize: 15}, indexTime === 3 && styles.selectTextItem]}>2 tuần trước</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexTime === 4 && styles.selectItem]}
-                            onPress={() => {setIndexTime(4)}}>
-                            <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>1 tháng trước</Text>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </View>
+            {
+                auth.roleID === 1 ?
+                <View style={styles.group}>
+                    <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Thời gian</Text>
+                    
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}>
+                        <View style={styles.groupItem}>
+                            <TouchableOpacity style={[styles.item, indexTime === 0 && styles.selectItem]}
+                                onPress={() => {setIndexTime(0)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>1 ngày trước</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 1 && styles.selectItem]}
+                                onPress={() => {setIndexTime(1)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 1 && styles.selectTextItem]}>3 ngày trước</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 2 && styles.selectItem]}
+                                onPress={() => {setIndexTime(2)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 2 && styles.selectTextItem]}>1 tuần trước</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 3 && styles.selectItem]}
+                                onPress={() => {setIndexTime(3)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 3 && styles.selectTextItem]}>2 tuần trước</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 4 && styles.selectItem]}
+                                onPress={() => {setIndexTime(4)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>1 tháng trước</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                </View> :
+                <View style={styles.group}>
+                    <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Đến hạn sau</Text>
+                    
+                    <ScrollView
+                        horizontal
+                        showsHorizontalScrollIndicator={false}>
+                        <View style={styles.groupItem}>
+                            <TouchableOpacity style={[styles.item, indexTime === 0 && styles.selectItem]}
+                                onPress={() => {setIndexTime(0)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>1 ngày</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 1 && styles.selectItem]}
+                                onPress={() => {setIndexTime(1)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 1 && styles.selectTextItem]}>3 ngày</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 2 && styles.selectItem]}
+                                onPress={() => {setIndexTime(2)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 2 && styles.selectTextItem]}>1 tuần</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 3 && styles.selectItem]}
+                                onPress={() => {setIndexTime(3)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 3 && styles.selectTextItem]}>2 tuần</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 4 && styles.selectItem]}
+                                onPress={() => {setIndexTime(4)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>1 tháng</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </ScrollView>
+                </View>
+            }
+
+            
 
             <View style={styles.group}>
                 <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Danh mục</Text>

@@ -89,7 +89,7 @@ export class PostManager {
     return [];
   }
 
-  public static async getAllPostsFromUserPost(): Promise<any> {
+  public static async getAllPostsFromUserPost( limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -103,6 +103,7 @@ export class PostManager {
         p.createdat,
         p.postid,
         a.address,
+        itt.nametype,
         MIN(i.path) AS path,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM 
@@ -110,9 +111,11 @@ export class PostManager {
       RIGHT JOIN 
         "posts" p ON u.userId = p.owner
       JOIN 
-        "address" a
-      ON
-        a.addressid = p.addressid
+        "address" a ON a.addressid = p.addressid
+      JOIN 
+        item it ON it.itemid = p.itemid
+      JOIN item_type 
+        itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN 
         "image" i ON p.itemid = i.itemid
       LEFT JOIN 
@@ -129,17 +132,27 @@ export class PostManager {
         p.description, 
         p.updatedat, 
         p.createdat,
-        p.postid
+        p.postid,
+        itt.nametype
       ORDER BY
-        p.createdat DESC;
+        p.createdat DESC
+      LIMIT ${limit}
+      OFFSET ${limit} * ${page};
       `;
+      let list: any[] = [];
+      if (category === 'Tất cả' && sort === 'Mới nhất' && distance === '-1' && time === '-1') {
+        console.log('hello')
+        const result: QueryResult = await client.query(postsQuery);
+        list = result.rows;
+        console.log(list)
+      } else {
+        return filterSearch(distance, time, category, sort, latitude, longitude, list) 
+      }
 
-      const result: QueryResult = await client.query(postsQuery);
-
-      if (result.rows.length === 0) {
+      if (list.length === 0) {
         return null;
       }
-      return result.rows;
+      return list;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -147,7 +160,7 @@ export class PostManager {
       client.release(); // Release client sau khi sử dụng
     }
   }
-  
+
   public static async getAllPostFromWarehouse(): Promise<any> {
     const client = await pool.connect();
     try {
@@ -362,28 +375,44 @@ export class PostManager {
   public static async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
     const client = await pool.connect();
     let query = `
-      SELECT DISTINCT
-          us.userid,
-          us.firstname,
-          us.lastname,
-          us.avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype
+    SELECT 
+      us.userid,
+      us.firstname,
+      us.lastname,
+      us.avatar,
+      po.postid,
+      po.title,
+      po.description,
+      po.createdat,
+      ad.address,
+      ad.longitude,
+      ad.latitude,
+      img.path,
+      itt.nametype,
+      CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
       JOIN "User" us ON po.owner = us.UserID
       JOIN Address ad ON po.addressid = ad.addressid
       JOIN item it ON it.itemid = po.itemid
       JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+      LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN Image img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = ${iswarehousepost}
       AND (po.title LIKE '%$${keyword}%' OR po.description LIKE '%${keyword}%')
+      GROUP BY
+        us.userid,
+        us.firstname,
+        us.lastname,
+        us.avatar,
+        po.postid,
+        po.title,
+        po.description,
+        po.createdat,
+        ad.address,
+        ad.longitude,
+        ad.latitude,
+        img.path,
+        itt.nametype
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
