@@ -588,7 +588,7 @@ export class OrderManager {
                 ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
           FROM (
               SELECT 
-                  o.Title, 
+                  po.Title, 
                   adg.address AS Location, 
                   o.Status,
                   o.CreatedAt,
@@ -659,7 +659,7 @@ export class OrderManager {
                 ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
           FROM (
               SELECT 
-                  o.Title, 
+                  po.Title, 
                   adg.address AS Location,  
                   o.Status,
                   o.CreatedAt,
