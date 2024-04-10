@@ -156,11 +156,21 @@ const MultiStepForm = () => {
       const postid = postID;
       const imgconfirm = ' ';
       const locationgive = addressid;
-      const givetypeid = 1;
+      let locationreceive = null;
+      let givetypeid = 1;
       const imgconfirmreceive = ' ';
-      const givetype = 'Cho nhận trực tiếp';
+      let givetype = 'Cho nhận trực tiếp';
       // let givetype = 'Cho nhận trực tiếp';
       // if(formDataStepOne.methodsBringItemToWarehouse )
+      if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
+        givetype = 'Cho kho';
+        givetypeid = 3;
+        if(formDataStepOne.methodsBringItemToWarehouse == "Chúng tôi sẽ đến lấy"){
+          locationreceive = formDataStepOne.warehouseAddressID;
+          givetype = 'Cho kho (kho đến lấy)';
+          givetypeid = 4;
+        }
+      }
 
       // console.log({title, location, description, owner, time, itemid, timestart, timeend})
       const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
@@ -177,6 +187,7 @@ const MultiStepForm = () => {
         postid,
         imgconfirm,
         locationgive,
+        locationreceive,
         givetypeid,
         imgconfirmreceive,
         givetype

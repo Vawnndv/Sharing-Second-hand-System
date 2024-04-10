@@ -142,10 +142,12 @@ export const createPostReceiver = asyncHandle(async (req, res) => {
   const comment = req.body.comment;
   const time = req.body.time;
   const receivertypeid = req.body.receivertypeid;
+  const warehouseid = req.body.warehouseid;
+
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postReceiverCreated = await PostManager.createPostReceiver(postid, receiverid, comment, time, receivertypeid);
+    const postReceiverCreated = await PostManager.createPostReceiver(postid, receiverid, comment, time, receivertypeid, warehouseid);
     res.status(200).json({ message: 'Create post receiver successfully', postReceiverCreated: postReceiverCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi

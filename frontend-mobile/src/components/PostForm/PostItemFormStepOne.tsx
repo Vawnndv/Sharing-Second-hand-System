@@ -291,7 +291,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
             fontSize: 14
 
           },
-              }}
+        }}
         useNativeAndroidPickerStyle={false}
         Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
       />

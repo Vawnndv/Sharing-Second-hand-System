@@ -55,6 +55,7 @@ interface PostDetailProps {
 
 interface PostReceiver {
   receiverid: number;
+  receivertypeid: number;
   postid: number;
   avatar: string;
   username: string;
@@ -63,6 +64,7 @@ interface PostReceiver {
   comment: string;
   time: Date;
   give_receivetype: string;
+  warehouseid?: number;
 }
 
 
@@ -82,72 +84,41 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const [modalVisible, setModalVisible] = useState(false);
   const auth = useSelector(authSelector);
 
-  const [modalReceiveFromVisible, setModalReceiveFromVisible] = useState(false);
-  const [modalGiveFromVisible, setModalGiveFromVisible] = useState(false);
+  const [receivemethod, setReceiveMethod] = useState('');
+  const [receivetypeid, setReceiveTypeID] = useState<number>();
+  const [warehouseid, setWareHouseID] = useState<number>()
 
-  const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
-  const [selectedGiveMethod, setSelectedGiveMethod] = useState(' ');
+  const [selectedReceiver, setSelectedReceiver] = useState<number>();
 
 
-  const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
-  const methodsGive = ["Đem đồ đến kho", "Chúng tôi sẽ đến lấy"];
-  const navigation = useNavigation();
-
+  const [goToReceiveForm, setGoToReceiveForm] = useState(false);
+  const [goToGiveForm, setGoToGiveForm] = useState(false)
 
   
-  const handleMethodReceiveSelected = (method : string) => {
-    if(method != ' ' && post){
-      setSelectedReceiveMethod(method);
-      createPostReceiver(method);
+
+  const handleReceiveForm = () => {
+    const isReceived = postReceivers.find(postReceiver => postReceiver.receiverid == auth.id);
+
+
+    if(!isReceived){
+      setGoToReceiveForm(true);
     }
-    setModalReceiveFromVisible(false);
-    // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
+    else{
+      setGoToReceiveForm(false);
+      Alert.alert('Thất bại', 'Bạn đã yêu cầu nhận món đồ này rồi!');
+      return;
+    }
+  };
+
+  const handleGiveForm = (receiveid: number, receivemethod: string, receivetypeid: number, warehouseid: number) => {
+    setSelectedReceiver(receiveid);
+    setReceiveMethod(receivemethod);
+    setReceiveTypeID(receivetypeid);
+    setWareHouseID(warehouseid);
+    setGoToGiveForm(true);
   };
 
 
-  const handleMethodGiveSelected = (method : string) => {
-    if(method != ' ' && post){
-      setSelectedGiveMethod(method);
-      createPostReceiver(method);
-    }
-    setModalGiveFromVisible(false);
-    // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
-  };
-
-  const createPostReceiver = async (method: string) => {
-    try {
-
-      const foundReceiver = postReceivers.find(receiver => receiver.receiverid === auth.id);
-
-      if(foundReceiver){
-        // setSelectedReceiveMethod(' ');
-        Alert.alert('Thất bại', 'Bạn đã gửi yêu cầu nhận món hàng này rồi');
-        return;
-      }
-      const postid = postID;
-      const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
-      const comment = '';
-      const time = new Date();
-      let receivertypeid = 1;
-      if(method == "Nhận đồ qua kho"){
-        receivertypeid = 2;
-      }
-      
-      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
-        postid,
-        receiverid,
-        comment,
-        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-        receivertypeid,
-      });       
-      console.log(response.data.postCreated);
-      Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
-    } catch (error) {
-      console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
-      Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
-    }
-  }
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -232,9 +203,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
     );
   }
 
-  if(selectedReceiveMethod != ' ' && postID){
+  if(goToReceiveForm  && postID && !isUserPost){
     return(
-      <ReceiveForm method={selectedReceiveMethod} postID={postID}/>
+      <ReceiveForm postID={postID}/>
+    )
+  }
+
+  if(goToGiveForm && postID  && isUserPost){
+    return(
+      <ReceiveForm  postID={postID} receiveid={selectedReceiver} receivetype={receivemethod} receivetypeid={receivetypeid} warehouseid={warehouseid}/>
     )
   }
 
@@ -275,7 +252,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                               <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
                             </View>
                             {isUserPost && (
-                              <Button style={styles.button} onPress={() => {}} mode="contained">Give</Button>
+                              <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )} mode="contained">Cho</Button>
                             )}
                           </View>
                         </View>
@@ -289,12 +266,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                 {/* Hiển thị avatar của user */}
                 <AvatarComponent 
                   avatar={profile?.avatar}
-                  username={profile?.username ? profile?.username : profile?.email ? profile?.email : ' '}
+                  username={profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}
                   styles={styles.avatar}
                 />
                 <View style={styles.username_timeContaner}>
                 {/* Hiển thị tên của user */}
-                  <Text style={styles.username}>{profile?.firstname ? profile.lastname ? profile.firstname + ' ' + profile.lastname : profile?.username ? profile?.username : ' ' : profile?.username ? profile?.username : ' '}</Text>
+                  <Text style={styles.username}>{profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}</Text>
 
                   {/* Hiển thị ngày đăng */}
                   <View style={styles.timeContainer}>
@@ -305,37 +282,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
 
                 {isUserPost && (
                   <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Cho</Button>
-                  
                 )}
                 {/* Nút chỉ hiển thị khi isUserPost là false */}
                 {!isUserPost && (
-                  <View style = {styles.button_modal_container}>
-                    <Button style={styles.button_receiver} onPress={() => setModalReceiveFromVisible(true)} mode="contained">Nhận</Button>
-                    {modalReceiveFromVisible && (
-                      <Modal
-                      animationType="slide"
-                      transparent={true}
-                      visible={modalReceiveFromVisible}
-                      onRequestClose={() => setModalReceiveFromVisible(false)}
-                      >
-                      <View style={styles.centeredModalReceiveView}>
-                        <View style={styles.modalReceiveView}>
-                          <Text style={styles.title}>Chọn phương thức nhận đồ:</Text>
-                          <View style={styles.methodContainer}>
-                              {methodsReceive.map((method) => (
-                                <TouchableOpacity style={styles.methodStyle} key={method} onPress={() => handleMethodReceiveSelected(method)}>
-                                  <Text style={styles.modalText}>{method}</Text>
-                                </TouchableOpacity>
-                              ))}
-                          </View>
-                          <TouchableOpacity onPress={() => setModalReceiveFromVisible(false)}>
-                              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Đóng</Text>
-                            </TouchableOpacity>
-                        </View>
-                      </View>
-                    </Modal>
-                    )}
-                  </View>
+                  <Button style={styles.button} onPress={handleReceiveForm} mode="contained">Nhận</Button>
                 )}
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
@@ -352,9 +302,9 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
             </View>
             <View style={styles.like_receiver_CountContainer}>
               <AntDesign name="inbox" size={24} color="black" />
-              <Text style={styles.receiverCount}>Receivers: {postReceivers.length}</Text>
+              <Text style={styles.receiverCount}>Người nhận: {postReceivers.length}</Text>
               <AntDesign name="hearto" size={24} color="black" />
-              <Text style={styles.loverCount}>Loves: 10</Text>
+              <Text style={styles.loverCount}>Thích: 10</Text>
 
             </View>
             <ScrollView>
@@ -364,44 +314,19 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                   <View style={styles.receiverContainer}>
                     <View style={styles.userInfo}>
                       <AvatarComponent 
-                        avatar={postReceiver?.avatar}
-                        username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                        avatar={postReceiver.avatar}
+                        username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
                         styles={styles.avatar}
                       />  
                       <View style={styles.receiverInfo}>
-                        <Text style={styles.username}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                        <Text style={styles.username}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
                         <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
                       </View>
                       {isUserPost && (
                         // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
-                        <View style = {styles.button_modal_container}>
-                          <Button style={styles.button_receiver} onPress={() => setModalGiveFromVisible(true)} mode="contained">Cho</Button>
-                          {modalGiveFromVisible && postReceiver.give_receivetype == 'Cho nhận qua kho' && (
-                            <Modal
-                            animationType="slide"
-                            transparent={true}
-                            visible={modalGiveFromVisible}
-                            onRequestClose={() => setModalGiveFromVisible(false)}
-                            >
-                            <View style={styles.centeredModalReceiveView}>
-                              <View style={styles.modalReceiveView}>
-                                <Text style={styles.title}>Chọn phương thức đêm đồ đến kho:</Text>
-                                <View style={styles.methodContainer}>
-                                    {methodsGive.map((method) => (
-                                      <TouchableOpacity style={styles.methodStyle} key={method} onPress={() => handleMethodGiveSelected(method)}>
-                                        <Text style={styles.modalText}>{method}</Text>
-                                      </TouchableOpacity>
-                                    ))}
-                                </View>
-                                <TouchableOpacity onPress={() => setModalGiveFromVisible(false)}>
-                                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 14}}>Đóng</Text>
-                                  </TouchableOpacity>
-                              </View>
-                            </View>
-                          </Modal>
-                          )}
+                        <View>
+                          <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )} mode="contained">Cho</Button>
                         </View>
-                        
                       )}
                     </View>
                     <Text style={styles.comment}>{postReceiver.comment}</Text>
@@ -455,7 +380,8 @@ const styles = StyleSheet.create({
 
   userInfo: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
 
   },
   username: {
@@ -479,7 +405,8 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: 'rgb(240, 240, 240)',
     borderRadius: 6,
-    flex: 1
+    flex: 1,
+    justifyContent: 'space-between',
   },
 
   itemPhoto: {
@@ -537,7 +464,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     maxHeight: '80%',
-    marginTop: '50%',
+    // marginTop: '50%',
   },
 
 

@@ -59,7 +59,6 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
 
   }, [data])
   
-  
   const getUserLikePosts = async () => {
     const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
     const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
@@ -115,7 +114,9 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
           key={index}
           color={appColors.white4}
           isShadow
-          onPress={() => navigation.navigate('ItemDetailScreen')}
+          onPress={() => navigation.navigate('ItemDetailScreen', {
+            postId : item.postid,
+          })}
         >
           <RowComponent>
             <AvatarComponent
@@ -154,15 +155,15 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={18} color={appColors.black}/>
+              <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text='0 Người xin' font={fontFamilies.medium} /> 
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
               <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>
@@ -170,7 +171,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
       keyExtractor={(item, index) => index.toString()}
       onEndReached={handleEndReached} // Khi người dùng kéo xuống cuối cùng
       onEndReachedThreshold={0.1} // Kích hoạt khi còn 10% phía dưới còn lại của danh sách
-      ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" /> : null} // Hiển thị indicator khi đang tải dữ liệu
+      ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null} // Hiển thị indicator khi đang tải dữ liệu
     />
   )
 }

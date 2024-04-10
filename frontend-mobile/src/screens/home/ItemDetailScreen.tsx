@@ -4,14 +4,16 @@ import { ContainerComponent, SectionComponent } from '../../components'
 import PostDetail from '../../components/PostDetail';
 
 
-const ItemDetailScreen = () => {
-  const postID = 5;
+const ItemDetailScreen = ({navigation, route}: any) => {
+  console.log(route.params)
+  const postID = route.params.postId;
+  console.log(postID)
 
   return (
-    <ContainerComponent isScroll title='Notification Screen' right back>
-      <SectionComponent>
+    <ContainerComponent isScroll back>
+      {/* <SectionComponent> */}
         <PostDetail postID={postID}/>
-      </SectionComponent>
+      {/* </SectionComponent> */}
     </ContainerComponent>
   )
 }

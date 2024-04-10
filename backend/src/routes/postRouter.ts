@@ -6,11 +6,11 @@ const router = express.Router();
 router.get('/user-post', getAllPostFromUserPost);
 router.get('/warehouse', getAllPostFromWarehouse);
 
+router.get('/postowner/:postID', getPostOwnerInfo);
 router.get('/search', searchPost);
 router.get('/:postID', getPostDetails);
 router.get('/postreceivers/:postID', getPostReceivers);
 router.post('/createPost', createPost);
-router.get('/postowner/:postID', getPostOwnerInfo);
 
 router.post('/createPostReceiver', createPostReceiver);
 

@@ -822,6 +822,26 @@ export class OrderManager {
     }
   }
 
+  
+  public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string ) : Promise<boolean> {
+    const client = await pool.connect()
+    console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
+    try{
+      const query = `
+        UPDATE "orders"
+        SET userreceiveid = $1, givetypeid = $3, givetype = $4, status = 'Chờ người nhận lấy hàng'
+        WHERE orderid = $2
+      `
+      const result: QueryResult = await client.query(query, [userreceiveid, orderid, givetypeid, givetype])
+      return true;
+    }catch(error){
+      console.log(error)
+      return false;
+    }finally{
+      client.release()
+    }
+  }
+
   public static async getOrderDetails(orderID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
@@ -997,5 +1017,23 @@ export class OrderManager {
     }
     
   };
+
+
+
+  public static async getOrderByPostID(postID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`SELECT * FROM ORDERS WHERE postid = $1`, [postID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
 
 }

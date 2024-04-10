@@ -39,7 +39,12 @@ const storage = multer.diskStorage({
 
 
 
-const upload = multer({ storage: storage });  
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fieldSize: 1024 * 1024 * 5,
+  },
+});  
 
 const router = express.Router();
 router.post('/uploadImage', upload.single('file'), async (req: Request, res: Response) => {
