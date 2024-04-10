@@ -75,18 +75,19 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 
 
 export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
-  const { email, username, phonenumber, avatar } = req.body;
+  const { email, firstname, lastname, phonenumber, avatar } = req.body;
 
   const user = await Account.findUserByEmail(email);
   
   if (user) {      
-    const updateUser = await Account.updateAccountProfile(user.userid, username, phonenumber, avatar);
+    const updateUser = await Account.updateAccountProfile(user.userid, firstname, lastname, phonenumber, avatar);
 
     if (updateUser) {
       res.status(200).json({
         message: 'Profile changed successfully!!!',
         data: {
-          username: updateUser.username,
+          firstname: updateUser.firstname,
+          lastname: updateUser.lastname,
           phonenumber: updateUser.phonenumber,
           avatar: updateUser.avatar,
         },

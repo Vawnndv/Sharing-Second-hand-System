@@ -19,7 +19,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
-
+console.log(auth)
   useEffect(() => {
     if (auth) {
       getProfile();
@@ -28,8 +28,8 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (route.params) {
-      const {id} = route.params;
-      setProfileId(id);
+      // const {id} = route.params;
+      setProfileId(auth.id);
 
       if (route.params.isUpdated) {
         getProfile();
@@ -81,7 +81,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             </RowComponent>
             <SpaceComponent height={16} />
             <TextComponent
-              text={profile.username}
+              text={profile.firstname + ' ' + profile.lastname}
               title
               size={24}
             />

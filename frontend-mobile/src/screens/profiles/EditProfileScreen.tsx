@@ -4,7 +4,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { User } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import authenticationAPI from '../../apis/authApi';
-import { AvatarComponent, ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent } from '../../components';
+import { AvatarComponent, ButtonComponent, ContainerComponent, InputComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import AvatarUpload from '../../components/AvatarUpload';
 import { appColors } from '../../constants/appColors';
 import { LoadingModal, UploadModal } from '../../modals';
@@ -17,7 +17,8 @@ import userAPI from '../../apis/userApi';
 
 const initValue = {
   email: '',
-  username: '',
+  firstname: '',
+  lastname: '',
   phone: '',
   address: '',
   confirmPassword: '',
@@ -25,13 +26,12 @@ const initValue = {
 
 
 // for uploading image to backend ;
-const FormData = global.FormData;
 
 const EditProfileScreen = ({navigation, route}: any) => {
   const {profile}: {profile:ProfileModel} = route.params;
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
-  const [values, setValues] = useState({email: profile.email, username : profile.username, phonenumber : profile.phonenumber});
+  const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
   const [errorRegister, setErrorRegister] = useState('');
@@ -41,8 +41,8 @@ const EditProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (
-      errorMessage.username ||
-      errorMessage.phonenumber || !values.username || !values.phonenumber
+      errorMessage.firstname || errorMessage.lastname ||
+      errorMessage.phonenumber || !values.firstname || !values.lastname || !values.phonenumber
     ) {
       setIsDisable(true);
     } else {
@@ -73,16 +73,17 @@ const EditProfileScreen = ({navigation, route}: any) => {
     setErrorMessage(Validator.Validation(key, errorMessage, values));
   };
   
-  const handleRegister = async () => {
-    const {url} = await UploadImageToAws3(image);
-    console.log(url);
-    setErrorMessage(initValue);
+  const handleChangeProfile = async () => {
     setIsLoading(true);
+    console.log(values);
     try {
+      const {url} = image ? await UploadImageToAws3(image) : profile.avatar;
+      console.log (url)
       const res = await userAPI.HandleUser('/change-profile', 
         {
           email: values.email, 
-          username: values.username,
+          firstname: values.firstname,
+          lastname: values.lastname,
           phonenumber: values.phonenumber,
           avatar: url ?? null,
         }
@@ -93,6 +94,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
       })
       setIsDisable(true);
       setErrorRegister('');
+      setErrorMessage(initValue);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErrorRegister(error.message);
@@ -120,7 +122,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
         <SectionComponent styles={[globalStyles.center]}>
           <AvatarComponent
             avatar={image ? image.uri : profile.avatar }
-            username={profile.username ? profile.username : profile.email} 
+            username={profile.firstname ? profile.firstname : profile.email} 
             onButtonPress={() => setModalVisible(true)} 
             size={150}
             isEdit 
@@ -135,7 +137,9 @@ const EditProfileScreen = ({navigation, route}: any) => {
             isLoading={false}
             title='Profile photo'    
           />
-          <SpaceComponent height={21} />
+        </SectionComponent>
+        <SpaceComponent height={21} />
+        <SectionComponent>
           <InputComponent
             value={values.email}
             editable={false}
@@ -144,13 +148,22 @@ const EditProfileScreen = ({navigation, route}: any) => {
             affix={<Fontisto name="email" size={22} color={appColors.gray} />}
           />
           <InputComponent
-            value={values.username}
-            placeholder="Họ và tên"
-            onChange={val => handleChangeValue('username', val)}
+            value={values.firstname}
+            placeholder="Họ của bạn"
+            onChange={val => handleChangeValue('firstname', val)}
             allowClear
             affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('username')}
-            error={errorMessage['username']}
+            onEnd={() => formValidator('firstname')}
+            error={errorMessage['firstname']}
+          />
+          <InputComponent
+            value={values.lastname}
+            placeholder="Tên của bạn"
+            onChange={val => handleChangeValue('lastname', val)}
+            allowClear
+            affix={<User size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('lastname')}
+            error={errorMessage['lastname']}
           />
           <InputComponent
             value={values.phonenumber}
@@ -172,14 +185,21 @@ const EditProfileScreen = ({navigation, route}: any) => {
           /> */}
         </SectionComponent>
         <SpaceComponent height={16} />
-          <SectionComponent>
-            <ButtonComponent
-              onPress={handleRegister}
-              text="SAVE"
-              type="primary"
-              disable={isDisable}           
-            />
-          </SectionComponent>
+        {errorRegister ? (
+        <SectionComponent>
+          <TextComponent text={errorRegister} color={appColors.danger} />
+        </SectionComponent>
+      ) : (
+        <SpaceComponent height={16} />
+      )}
+        <SectionComponent>
+          <ButtonComponent
+            onPress={handleChangeProfile}
+            text="SAVE"
+            type="primary"
+            disable={isDisable}           
+          />
+        </SectionComponent>
       </ContainerComponent>
       <LoadingModal visible={isLoading} />
     </>

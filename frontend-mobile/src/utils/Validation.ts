@@ -36,6 +36,27 @@ export class Validator {
         }
         break;
   
+      case 'lastname':
+        if (!values.lastname) {
+          message = 'Lastname is required!!!';
+        } else if (!Validator.username(values.lastname)) {
+          message = 'Only contain letters!!!'
+        } 
+        else {
+          message = '';
+        }
+        break;
+      
+      case 'firstname':
+        if (!values.firstname) {
+          message = 'Username is required!!!';
+        } else if (!Validator.username(values.firstname)) {
+          message = 'Only contain letters!!!'
+        } 
+        else {
+          message = '';
+        }
+        break;
       case 'email':
         if (!values.email) {
           message = 'Email is required';
