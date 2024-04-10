@@ -1,11 +1,11 @@
 import express from 'express';
-import { getAllWarehouses } from '../controllers/warehouseController';
+import { getWarehouse, getAllWarehouses } from '../controllers/warehouseController';
 
 
 
 const router = express.Router();
 
-
-router.get('/warehouses', getAllWarehouses);
+router.get('/getWarehouse/:warehouseid', getWarehouse);
+router.get('/', getAllWarehouses);
 
 export default router;

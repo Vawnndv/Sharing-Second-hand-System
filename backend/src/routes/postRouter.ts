@@ -1,17 +1,18 @@
 import express from 'express';
-import { getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver } from '../controllers/postController';
+import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver } from '../controllers/postController';
 
 const router = express.Router();
 
-router.get('/posts/user-post', getAllPostFromUserPost);
-router.get('/posts/warehouse/all', getAllPostFromWarehouse);
+router.get('/user-post', getAllPostFromUserPost);
+router.get('/warehouse', getAllPostFromWarehouse);
 
-router.get('/posts/search', searchPost);
-router.get('/posts/:postID', getPostDetails);
-router.get('/posts/postreceivers/:postID', getPostReceivers);
-router.post('/posts/createPost', createPost);
+router.get('/postowner/:postID', getPostOwnerInfo);
+router.get('/search', searchPost);
+router.get('/:postID', getPostDetails);
+router.get('/postreceivers/:postID', getPostReceivers);
+router.post('/createPost', createPost);
 
-router.post('/posts/createPostReceiver', createPostReceiver);
+router.post('/createPostReceiver', createPostReceiver);
 
 // router.get('/posts/', getFilterPostList);
 

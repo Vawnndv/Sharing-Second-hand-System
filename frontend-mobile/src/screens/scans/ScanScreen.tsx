@@ -8,8 +8,8 @@ import orderAPI from '../../apis/orderApi';
 import ViewDetailOrder from '../../modals/ViewDetailOrder';
 import { LoadingModal } from '../../modals';
 import { IconButton } from 'react-native-paper';
-
-const userID = 29
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 
 export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -19,6 +19,9 @@ export default function ScanScreen({navigation} : any) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(() => {
     const getCameraPermissions = async () => {

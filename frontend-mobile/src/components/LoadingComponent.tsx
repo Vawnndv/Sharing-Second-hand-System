@@ -4,7 +4,7 @@ import TextComponent from './TextComponent';
 
 interface Props {
   isLoading: boolean;
-  values: number;
+  values?: number;
   message?: string;
 };
 
@@ -14,7 +14,8 @@ const LoadingComponent = (props :Props) => {
   return (
     <View
       style={{
-        // flex: 1,
+        display: 'flex',
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,

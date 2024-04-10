@@ -46,20 +46,22 @@ function filterSearch(distance: string, time: string, category: string, sort: st
 
   // Lọc dữ liệu
   const filteredData: FilterSearch[] = data.filter(item => {
-      // Lọc theo khoảng cách
-      let isValidDistance: boolean = false;
-      const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitude), parseFloat(item.longitude));
-      isValidDistance = distanceToGiver <= distanceFloat;
 
+      let isValidDistance: boolean = true;
+      // Lọc theo khoảng cách
+      if (distanceFloat !== -1) {
+        const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitude), parseFloat(item.longitude));
+        isValidDistance =  distanceToGiver <= distanceFloat;
+      }
       // Lọc theo thời gian
-      const isValidTime: boolean = isTimeBefore(item.createdat, timeInt);
+      const isValidTime: boolean = timeInt !== -1 ? isTimeBefore(item.createdat, timeInt) : true;
 
       // Lọc theo danh mục
       let isValidCategory: boolean = item.nametype === category;
       if (category === "Tất cả") {
         isValidCategory = true
       }
-
+      console.log(isValidDistance , isValidTime , isValidCategory, 'hello')
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory;
   });
@@ -89,21 +91,25 @@ export class PostManager {
     return [];
   }
 
-  public static async getAllPostsFromUserPost( limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
       SELECT 
+        u.userid,
         u.avatar, 
         u.username, 
         u.firstname, 
         u.lastname, 
         p.description, 
+        p.postid,
         p.updatedat, 
         p.createdat,
         p.postid,
         a.address,
         itt.nametype,
+        a.longitude,
+        a.latitude,
         MIN(i.path) AS path,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM 
@@ -123,36 +129,30 @@ export class PostManager {
       WHERE 
         u.userId NOT IN (SELECT userId FROM workAt)
       GROUP BY 
-        u.userId, 
+        u.userid,
         u.avatar, 
         u.username, 
         u.firstname, 
         u.lastname, 
-        a.address,
         p.description, 
+        p.postid,
         p.updatedat, 
         p.createdat,
         p.postid,
-        itt.nametype
+        a.address,
+        itt.nametype,
+        a.longitude,
+        a.latitude
       ORDER BY
         p.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
       `;
-      let list: any[] = [];
-      if (category === 'Tất cả' && sort === 'Mới nhất' && distance === '-1' && time === '-1') {
-        console.log('hello')
-        const result: QueryResult = await client.query(postsQuery);
-        list = result.rows;
-        console.log(list)
-      } else {
-        return filterSearch(distance, time, category, sort, latitude, longitude, list) 
-      }
-
-      if (list.length === 0) {
+      const result: QueryResult = await client.query(postsQuery);
+      if (result.rows.length === 0) {
         return null;
       }
-      return list;
+      return filterSearch(distance, time, category, sort, latitude, longitude, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -161,7 +161,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostFromWarehouse(): Promise<any> {
+  public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -174,6 +174,9 @@ export class PostManager {
           w.warehousename,
           w.avatar,
           a.address,
+          a.longitude,
+          a.latitude,
+          itt.nametype,
           MIN(i.path) AS path,
           CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
         FROM 
@@ -190,6 +193,10 @@ export class PostManager {
           "address" a
         ON
           a.addressid = p.addressid
+        JOIN 
+          item it ON it.itemid = p.itemid
+        JOIN item_type 
+          itt ON itt.itemtypeid = it.itemtypeid
         LEFT JOIN 
           "image" i
         ON 
@@ -206,17 +213,19 @@ export class PostManager {
           p.postid,
           w.warehousename,
           a.address,
-          w.avatar
+          w.avatar,
+          a.longitude,
+          a.latitude,
+          itt.nametype
         ORDER BY
           p.createdat DESC;  
       `;
 
       const result: QueryResult = await client.query(postsQuery);
-
       if (result.rows.length === 0) {
         return null;
       }
-      return result.rows;
+      return filterSearch(distance, time, category, sort, latitude, longitude, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -245,7 +254,7 @@ export class PostManager {
   public static async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT receiverid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
+      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
       if (result.rows.length === 0) {
         return [];
       }
@@ -301,15 +310,15 @@ export class PostManager {
   };
 
 
-  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number): Promise<void> {
+  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `
-        INSERT INTO POSTRECEIVER(postid, receiverid, comment, time, receivertypeid)
-        VALUES($1, $2, $3, $4, $5)
+        INSERT INTO POSTRECEIVER(postid, receiverid, comment, time, receivertypeid, warehouseid)
+        VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *;
       `;
-    const values : any = [postid, receiverid, comment, time, receivertypeid];
+    const values : any = [postid, receiverid, comment, time, receivertypeid, warehouseid];
     
     try {
       const result: QueryResult = await client.query(query, values);
@@ -321,6 +330,24 @@ export class PostManager {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+
+  public static async viewPostOwnerInfo(postID: number): Promise<Post | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`SELECT owner, itemid, postid, POSTS.addressid, title, firstname, lastname, phonenumber, timestart, timeend, ADDRESS.address FROM POSTS JOIN "User" ON userid = owner JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE postid = $1`, [postID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
 
 
 

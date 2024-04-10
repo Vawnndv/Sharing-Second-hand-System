@@ -588,7 +588,7 @@ export class OrderManager {
                 ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
           FROM (
               SELECT 
-                  o.Title, 
+                  po.Title, 
                   adg.address AS Location, 
                   o.Status,
                   o.CreatedAt,
@@ -659,7 +659,7 @@ export class OrderManager {
                 ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
           FROM (
               SELECT 
-                  o.Title, 
+                  po.Title, 
                   adg.address AS Location,  
                   o.Status,
                   o.CreatedAt,
@@ -822,6 +822,26 @@ export class OrderManager {
     }
   }
 
+  
+  public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string ) : Promise<boolean> {
+    const client = await pool.connect()
+    console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
+    try{
+      const query = `
+        UPDATE "orders"
+        SET userreceiveid = $1, givetypeid = $3, givetype = $4, status = 'Chờ người nhận lấy hàng'
+        WHERE orderid = $2
+      `
+      const result: QueryResult = await client.query(query, [userreceiveid, orderid, givetypeid, givetype])
+      return true;
+    }catch(error){
+      console.log(error)
+      return false;
+    }finally{
+      client.release()
+    }
+  }
+
   public static async getOrderDetails(orderID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
@@ -925,6 +945,58 @@ export class OrderManager {
     }
   }
 
+
+  
+  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string): Promise<void> {
+
+    const client = await pool.connect();
+    const query = `
+      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      RETURNING *;
+      `;
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Order inserted successfully:', result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error inserting order:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async createTrace (currentstatus: string, orderid: number): Promise<void> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO TRACE(currentstatus, orderid)
+        VALUES($1, $2)
+        RETURNING *;
+      `;
+    const values : any = [currentstatus, orderid];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Trace inserted successfully:', result.rows[0]);
+      const statusid_postItem = '1';
+      const statusid_waitForApporve = '2';
+
+
+      const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
+      console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
+      const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
+      console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error inserting trace:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
   public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined): Promise<boolean> {
     const client = await pool.connect();
 
@@ -943,6 +1015,24 @@ export class OrderManager {
       return false
     }
     
+  };
+
+
+
+  public static async getOrderByPostID(postID: number): Promise<Order | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`SELECT * FROM ORDERS WHERE postid = $1`, [postID]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
   }
 
 }
