@@ -46,13 +46,16 @@ interface FormData {
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
-// interface postOwnerInfo {
-//   address?: string;
-//   owmerName?: string;
-//   phonenumber?: string;
+interface postOwnerInfo {
+  address?: string;
+  firstname?: string;
+  lastname?: string;
+  timestart?: string;
+  timeend?: string;
+  phonenumber?: string;
 
 
-// }
+}
 
 interface Order {
   orderid: number;
@@ -67,7 +70,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
 
-  const [postOwnerInfo, setPostOwnerInfo] = useState();
+  const [postOwnerInfo, setPostOwnerInfo] = useState<postOwnerInfo>();
 
   const [formData, setFormData] = useState<FormData>();
 
@@ -375,7 +378,7 @@ const handleGive = async () =>{
 
     <TextInput
       label="Tên người cho"
-      value={formData?.owmerName}
+      value={postOwnerInfo?.firstname + ' ' + postOwnerInfo?.lastname}
       // onChangeText={(text) => setFormData({ ...formData, owmerName: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -384,7 +387,7 @@ const handleGive = async () =>{
     
     <TextInput
       label="Số điện thoại"
-      value={formData?.ownerPhone}
+      value={postOwnerInfo?.phonenumber}
       // onChangeText={(text) => setFormData({ ...formData, itemQuantity: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -393,7 +396,7 @@ const handleGive = async () =>{
 
     <TextInput
       label="Ngày nhận"
-      value={formData?.postDate}
+      value={moment(postOwnerInfo?.timestart).format('DD/MM/YYYY') + ' - ' + moment(postOwnerInfo?.timeend).format('DD/MM/YYYY')}
       // onChangeText={(text) => setFormData({ ...formData, postDate: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -455,7 +458,7 @@ const handleGive = async () =>{
     {isUserPost && (
       <TextInput
       label="Địa chỉ"
-      value={formData?.address}
+      value={postOwnerInfo?.address}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
