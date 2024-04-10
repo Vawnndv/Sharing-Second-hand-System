@@ -935,7 +935,8 @@ export class OrderManager {
       VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING *;
       `;
-    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive];
+      // TODO sửa lại locationgive and locationreceive
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, 3, 4, givetypeid, imgconfirmreceive];
     
     try {
       const result: QueryResult = await client.query(query, values);

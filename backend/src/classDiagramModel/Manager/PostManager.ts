@@ -292,11 +292,11 @@ export class PostManager {
 
     const client = await pool.connect();
     const query = `
-        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
       `;
-    const values : any = [title, location, description, owner, time, itemid, timestart, timeend];
+    const values : any = [title, location, description, owner, time, itemid, timestart, timeend, 3];
     
     try {
       const result: QueryResult = await client.query(query, values);
@@ -407,7 +407,7 @@ export class PostManager {
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN Image img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = ${iswarehousepost}
-      AND (po.title LIKE '%$${keyword}%' OR po.description LIKE '%${keyword}%')
+      AND (po.title LIKE '%${keyword}%' OR po.description LIKE '%${keyword}%')
       GROUP BY
         us.userid,
         us.firstname,
@@ -429,7 +429,12 @@ export class PostManager {
     
     try {
       const result: QueryResult = await client.query(query);
+      console.log(result.rows, 'TRUOWC')
+      console.log(filterSearch(distance, time, category, sort, latitude, longitude, result.rows) 
+      , 'SAU')
+
       return filterSearch(distance, time, category, sort, latitude, longitude, result.rows) 
+
     } catch (error) {
       console.error('Error: ', error);
     } finally {
