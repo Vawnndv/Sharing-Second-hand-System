@@ -46,6 +46,14 @@ interface FormData {
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
+// interface postOwnerInfo {
+//   address?: string;
+//   owmerName?: string;
+//   phonenumber?: string;
+
+
+// }
+
 interface Order {
   orderid: number;
   postid: number;
@@ -61,7 +69,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [postOwnerInfo, setPostOwnerInfo] = useState();
 
-  const [formData, setFormData] = useState<FormData | undefined>();
+  const [formData, setFormData] = useState<FormData>();
 
   const [isUserPost, setIsUserPost] = useState(false);
 
@@ -117,8 +125,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         if (!res) {
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
-        console.log(res.data.postOwnerInfos);
-        setPostOwnerInfo(res.data.postOwnerInfos); // Cập nhật state với dữ liệu nhận được từ API
+        setPostOwnerInfo(res.data.postOwnerInfos);
+        console.log(res.data.postOwnerInfos.address);
         setFormData({
           ...formData,
           address: res.data.postOwnerInfos.address,
@@ -132,6 +140,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
           postid: postID,
           itemid: res.data.postOwnerInfos.itemid,
         });
+        console.log(formData?.address);
         if(auth.id == res.data.postOwnerInfos.owner){
           setIsUserPost(true);
         }
@@ -142,7 +151,9 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
       }
       try {
         setIsLoading(true);
-        const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
+        const res = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
+
+        // const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
         setFormData({
           ...formData,
           addressReceiveID: res.data.addressid
@@ -274,6 +285,7 @@ const handleGive = async () =>{
       }
     }
 
+
     if(formData?.methodBringItemToWarehouse == 'Chúng tôi sẽ đến lấy'){
       try{
         givetypeid = 5;
@@ -289,6 +301,25 @@ const handleGive = async () =>{
         Alert.alert('Error', 'Cho món đồ thất bại.');
       }
     }
+
+    try{
+      const qrcode = ' ';
+      const usergiveid = formData?.ownerID;
+      const itemid = formData?.itemid;
+
+
+      const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+        qrcode,
+        warehouseid,
+        orderid,
+        usergiveid,
+        itemid
+      })
+      Alert.alert('Thành công', 'Tạo input card thành công');
+    } catch(error){
+      Alert.alert('Error', 'Tạo input card thất bại.');
+    }
+
 
   }
 

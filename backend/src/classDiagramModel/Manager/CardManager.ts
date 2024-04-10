@@ -28,7 +28,7 @@ export class CardManager {
     const client = await pool.connect();
     const query = `
       INSERT INTO inputcard (time, qrcode, warehouseid, usergiveid, orderid, itemid)
-      VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4, $5);
+      VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4, $5)
       RETURNING *;
       `;
     const values : any = [qrcode, warehouseid, usergiveid, orderid, itemid];
@@ -42,6 +42,7 @@ export class CardManager {
       return false;
     } finally {
       client.release(); // Release client sau khi sử dụng
+      
     }
   };
 }

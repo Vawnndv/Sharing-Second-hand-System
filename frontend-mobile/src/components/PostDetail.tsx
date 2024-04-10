@@ -178,7 +178,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
 
       try {
         setIsLoading(true);
-        const res = await userAPI.HandleUser(`/profile?userId=${owner}`);
+        const res = await userAPI.HandleUser(`/get-profile?userId=${owner}`);
         res && res.data && setProfile(res.data);
       } catch (error) {
         console.log(error);
