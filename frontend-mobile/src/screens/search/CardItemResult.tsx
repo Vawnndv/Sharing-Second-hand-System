@@ -29,30 +29,36 @@ interface DataItem {
   latitude: string;
   path: string;
   like_count: number;
+  warehousename: string;
 }
 
 interface Props {
   data: DataItem[];
   isLoading: boolean;
   handleEndReached: () => void;
-  likesPosts: number[];
-  setLikePosts: (val: number[]) => void;
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, likesPosts, setLikePosts }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
   const navigation: any = useNavigation();
 
   const [likeNumber, setLikeNumber] = useState<number[]>([]);
+  const [likesPosts, setLikePosts] = useState<number[]>([]);
+
+  // useEffect(() => {
+  //   getUserLikePosts();
+  // }, []);
 
   useEffect(() => {
+    getUserLikePosts();
     const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => item.like_count) : [];
       
     setLikeNumber(newLikeNumber);
 
   }, [data])
+  
   
   const getUserLikePosts = async () => {
     const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
@@ -120,7 +126,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, li
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text={item.firstname + ' ' + item.lastname} size={18} font={fontFamilies.medium} />
+                <TextComponent text={item.warehousename ? item.warehousename : item.firstname + ' ' + item.lastname} size={18} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />

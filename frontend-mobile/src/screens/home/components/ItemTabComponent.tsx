@@ -1,36 +1,26 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import UserPostComponent from './UserPostComponent';
-import WarehouseComponent from './WarehouseComponent';
-import { RowComponent, SectionComponent, TextComponent } from '../../../components';
+import { RowComponent, SectionComponent } from '../../../components';
+import FilterOrder from '../../../components/OrderManagement/FilterOrder';
 import { appColors } from '../../../constants/appColors';
 import { fontFamilies } from '../../../constants/fontFamilies';
-import FilterOrder from '../../../components/OrderManagement/FilterOrder';
-import userAPI from '../../../apis/userApi';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../../../redux/reducers/authReducers';
-import postsAPI from '../../../apis/postApi';
+import UserPostComponent from './UserPostComponent';
+import WarehouseComponent from './WarehouseComponent';
 
-interface Posts {
-  avatar: string;
-  username: string;
-  firstname: string; 
-  lastname: string; 
-  description: string; 
-  updatedat: string; 
-  createdat: string;
-  postid: string;
-  location: string;
-  path: string;
-};
+export interface filterValue {
+  distance: number;
+  time: number;
+  category: string;
+  sort: string;
+}
 
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
-  const [filterValue, setFilterValue] = useState({
-    distance: -1,
-    time: -1,
+  const [filterValue, setFilterValue] = useState<filterValue>({
+    distance: 5,
+    time: 14,
     category: "Tất cả",
     sort: "Mới nhất"
   })
@@ -44,6 +34,7 @@ const ItemTabComponent = () => {
       style={styles.tabs}
       tabBar={({ state, descriptors, navigation }) => (
         <View style={styles.tabBar}>
+          {/* FilterComponent nằm trong tabBar */}
           <RowComponent>
           {/* Render các tab */}
           {state.routes.map((route, index) => {
@@ -79,21 +70,21 @@ const ItemTabComponent = () => {
             );
           })}
           </RowComponent>
-          {/* FilterComponent nằm trong tabBar */}
           <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
         </View>
       )}
     >
       <SubTabs.Screen
         name="Nguời Cho"
-        component={UserPostComponent}
-        initialParams={{ filterValue }}
-      />
+      >
+        {(props) => <UserPostComponent  {...props} filterValue={filterValue} />}
+      </SubTabs.Screen>
       <SubTabs.Screen
         name="Lưu kho"
-        component={WarehouseComponent}
-        initialParams={{ filterValue }}
-      />
+      >
+        {(props) => <WarehouseComponent  {...props} filterValue={filterValue} />}
+        </SubTabs.Screen>
+
     </SubTabs.Navigator>
   );
 

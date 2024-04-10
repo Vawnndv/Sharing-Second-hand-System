@@ -11,8 +11,9 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
   const latitude : any = req.query.latitude;
   const longitude : any = req.query.longitude;
 
+  console.log(req.query);
   const allPosts = await PostManager.getAllPostsFromUserPost(limit, page, distance, time, category, sort, latitude, longitude);
-
+  console.log(allPosts);
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
@@ -21,7 +22,17 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
 });
 
 export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
-  const allPosts = await PostManager.getAllPostFromWarehouse();
+  const limit : any = req.query.limit;
+  const page : any = req.query.page;
+  const distance : any = req.query.distance;
+  const time : any = req.query.time;
+  const category : any = req.query.category;
+  const sort : any = req.query.sort;
+  const latitude : any = req.query.latitude;
+  const longitude : any = req.query.longitude;
+
+  console.log(req.query);
+  const allPosts = await PostManager.getAllPostFromWarehouse(limit, page, distance, time, category, sort, latitude, longitude);
 
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
