@@ -115,7 +115,9 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
           key={index}
           color={appColors.white4}
           isShadow
-          onPress={() => navigation.navigate('ItemDetailScreen')}
+          onPress={() => navigation.navigate('ItemDetailScreen', {
+            postId : item.postid,
+          })}
         >
           <RowComponent>
             <AvatarComponent
@@ -154,15 +156,15 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={18} color={appColors.black}/>
+              <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='2 Receiver' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text='0 Người xin' font={fontFamilies.medium} /> 
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
               <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text={`${likeNumber[index]} Loves`} font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>
           </RowComponent>
         </CardComponent>
