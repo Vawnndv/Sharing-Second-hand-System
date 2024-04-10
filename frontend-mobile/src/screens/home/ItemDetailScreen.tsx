@@ -5,7 +5,7 @@ import PostDetail from '../../components/PostDetail';
 
 
 const ItemDetailScreen = () => {
-  const postID = 5;
+  const postID = 53;
 
   return (
     <ContainerComponent isScroll title='Notification Screen' right back>

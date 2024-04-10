@@ -23,14 +23,15 @@ export class CardManager {
     return true;
   }
 
-  public static async createCardInput (qrcode: string, warehouseid: string, usergiveid: string, itemid: string): Promise<boolean> {
+  public static async createCardInput (qrcode: string, warehouseid: number, usergiveid: number, orderid: number, itemid: number): Promise<boolean> {
 
     const client = await pool.connect();
     const query = `
-      INSERT INTO inputcard (time, qrcode, warehouseid, usergiveid, itemid)
-      VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4);
+      INSERT INTO inputcard (time, qrcode, warehouseid, usergiveid, orderid, itemid)
+      VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4, $5);
+      RETURNING *;
       `;
-    const values : any = [qrcode, warehouseid, usergiveid, itemid];
+    const values : any = [qrcode, warehouseid, usergiveid, orderid, itemid];
     
     try {
       const result: QueryResult = await client.query(query, values);

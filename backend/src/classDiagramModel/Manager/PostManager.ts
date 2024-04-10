@@ -245,7 +245,7 @@ export class PostManager {
   public static async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT receiverid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
+      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
       if (result.rows.length === 0) {
         return [];
       }
@@ -301,15 +301,15 @@ export class PostManager {
   };
 
 
-  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number): Promise<void> {
+  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `
-        INSERT INTO POSTRECEIVER(postid, receiverid, comment, time, receivertypeid)
-        VALUES($1, $2, $3, $4, $5)
+        INSERT INTO POSTRECEIVER(postid, receiverid, comment, time, receivertypeid, warehouseid)
+        VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *;
       `;
-    const values : any = [postid, receiverid, comment, time, receivertypeid];
+    const values : any = [postid, receiverid, comment, time, receivertypeid, warehouseid];
     
     try {
       const result: QueryResult = await client.query(query, values);
@@ -326,7 +326,7 @@ export class PostManager {
   public static async viewPostOwnerInfo(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT itemid, postid, POSTS.addressid, title, firstname, lastname, phonenumber, timestart, timeend, ADDRESS.address FROM POSTS JOIN "User" ON userid = owner JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE postid = $1`, [postID]);
+      const result = await client.query(`SELECT owner, itemid, postid, POSTS.addressid, title, firstname, lastname, phonenumber, timestart, timeend, ADDRESS.address FROM POSTS JOIN "User" ON userid = owner JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE postid = $1`, [postID]);
       if (result.rows.length === 0) {
         return null;
       }

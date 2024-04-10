@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, ScrollView, StyleSheet, Alert } from 'react-native';
 import { appInfo } from '../../constants/appInfos';
 import { TextInput, Button } from 'react-native-paper';
 import RNPickerSelect from 'react-native-picker-select';
@@ -13,8 +13,11 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 
 interface Props {
-  method: string;
-  postID: number
+  postID: number;
+  receiveid?: number;
+  receivetype?: string;
+  receivetypeid?: number;
+  warehouseid?: number;
 }
 
 
@@ -27,8 +30,10 @@ interface Warehouse {
 
 interface FormData {
   warehouseInfo?: string;
+  warehouseID?: number;
   owmerName?: string;
   ownerPhone?: string;
+  ownerID?: number;
   postDate?: string;
   giveType?: string;
   address?: string;
@@ -37,12 +42,18 @@ interface FormData {
   postid? : number;
   addressGiveID? : number;
   addressReceiveID? : number;
+  methodBringItemToWarehouse?: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
+}
+
+interface Order {
+  orderid: number;
+  postid: number;
 }
 
 
 
-export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
+export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,10 +63,30 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
 
   const [formData, setFormData] = useState<FormData | undefined>();
 
+  const [isUserPost, setIsUserPost] = useState(false);
+
+  const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
+
+  const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
+
+  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Chúng tôi sẽ đến lấy"];
+
+  const [warehouse, setWarehouse] = useState<Warehouse>();
+
+
+  const [isShowAddress, setIsShowAddress] = useState(false);
+
+  const [order, setOrder] = useState<Order>();
+
+
+  const [isWarehouseGive, setIsWareHouseGive] = useState(false);
+
+  const [isBringItemToWarehouse, setIsBringItemToWareHouse] = useState(false);
 
   const auth = useSelector(authSelector);
 
 
+  console.log(warehouseid);
 
 
   useEffect(() => {
@@ -90,21 +121,25 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
         setPostOwnerInfo(res.data.postOwnerInfos); // Cập nhật state với dữ liệu nhận được từ API
         setFormData({
           ...formData,
+          address: res.data.postOwnerInfos.address,
           owmerName: res.data.postOwnerInfos.firstname + ' ' + res.data.postOwnerInfos.lastname,
           ownerPhone: res.data.postOwnerInfos.phonenumber,
+          ownerID: res.data.postOwnerInfos.owner,
           postDate: moment(res.data.postOwnerInfos.timestart).format('DD/MM/YYYY') + ' - ' + moment(res.data.postOwnerInfos.timeend).format('DD/MM/YYYY'),
-          giveType: method,
+          // giveType: method,
           postTitle: res.data.postOwnerInfos.title,
           addressGiveID: res.data.postOwnerInfos.addressid,
           postid: postID,
           itemid: res.data.postOwnerInfos.itemid,
         });
+        if(auth.id == res.data.postOwnerInfos.owner){
+          setIsUserPost(true);
+        }
       } catch (error) {
         console.error('Error fetching post owner info:', error);
       } finally {
         setIsLoading(false);
       }
-
       try {
         setIsLoading(true);
         const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
@@ -118,22 +153,178 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
         setIsLoading(false);
       }
 
+      try {
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
+        }
+        console.log(res.data.order);
+        setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching order:', error);
+      } finally {
+        setIsLoading(false);
+      }
+
+      if(warehouseid != 0 && warehouseid){
+        try {
+          setIsLoading(true);
+          const res = await axios.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
+          // const res = await postsAPI.HandlePost(
+          //   `/${postID}`,
+          // );
+          if (!res) {
+            throw new Error('Failed to fetch warehouse'); // Xử lý lỗi nếu request không thành công
+          }
+          console.log(res.data.wareHouse);
+          
+          setWarehouse(res.data.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
+          setFormData({
+            ...formData,
+            warehouseInfo: res.data.wareHouse.warehousename + ', ' + res.data.wareHouse.address,
+            warehouseID: res.data.wareHouse.warehouseid,
+          });
+        } catch (error) {
+          console.error('Error fetching order:', error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
     };
     fetchWarehouses();
 }, [])
 
-  const handleWarehouseChange = (warehouseId: number) => {
+
+const handleReceive = async () => {
+  try {
+    const postid = postID;
+    const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+    const comment = '';
+    const time = new Date();
+    let receivertypeid = 1;
+    let warehouseid = null;
+    if(selectedReceiveMethod == "Nhận đồ qua kho"){
+      receivertypeid = 2;
+      warehouseid = formData?.warehouseID;
+    }
+
+    if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
+      setIsShowAddress(true);
+    }
+    
+    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+    const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
+      postid,
+      receiverid,
+      comment,
+      warehouseid,
+      time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+      receivertypeid,
+    });       
+    console.log(response.data.postCreated);
+    Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+  } catch (error) {
+    console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
+    Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+  }
+
+}
+
+
+const handleGive = async () =>{
+  if(receivetype == 'Cho nhận trực tiếp'){
+    const orderid = order?.orderid;
+    const userreceiveid = receiveid;
+    const givetypeid = receivetypeid;
+    const givetype = receivetype;
+    
+    try{
+      const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
+        orderid,
+        userreceiveid,
+        givetypeid,
+        givetype
+      })
+      Alert.alert('Thành công', 'Cho món đồ thành công');
+    } catch(error){
+      Alert.alert('Error', 'Cho món đồ thất bại.');
+    }
+  }
+
+  if(receivetype == 'Cho nhận qua kho'){
+    const orderid = order?.orderid;
+    const userreceiveid = receiveid;
+    let givetypeid = receivetypeid;
+    let givetype = receivetype;
+    if(formData?.methodBringItemToWarehouse == 'Tự mang đồ đến kho'){
+      try{
+        const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
+          orderid,
+          userreceiveid,
+          givetypeid,
+          givetype
+        })
+        Alert.alert('Thành công', 'Cho món đồ thành công');
+      } catch(error){
+        Alert.alert('Error', 'Cho món đồ thất bại.');
+      }
+    }
+
+    if(formData?.methodBringItemToWarehouse == 'Chúng tôi sẽ đến lấy'){
+      try{
+        givetypeid = 5;
+        givetype = 'Cho nhận qua kho(kho đến lấy)';
+        const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
+          orderid,
+          userreceiveid,
+          givetypeid,
+          givetype
+        })
+        Alert.alert('Thành công', 'Cho món đồ thành công');
+      } catch(error){
+        Alert.alert('Error', 'Cho món đồ thất bại.');
+      }
+    }
+
+  }
+
+
+    
+  }
+
+
+  // const handleMethodReceiveSelected = (method : string) => {
+  //   if(method != ' ' && post){
+  //     setSelectedReceiveMethod(method);
+  //   }
+  //   // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
+  // };
+
+  const handleWarehouseChange = (warehouseInfo: string) => {
     // Tìm warehousename dựa vào warehouseid
-    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseId);
+    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehousename + ', ' + wareHouse.address === warehouseInfo);
     
     if (selectedWarehouse) {
       // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
       setFormData({
         ...formData,
         warehouseInfo: selectedWarehouse.warehousename + ', ' + selectedWarehouse.address,
+        warehouseID: selectedWarehouse.warehouseid,
       });
     }
   };
+
+
+  const handleBringItemToWareHouseChange = (methodBringItemToWarehouse: string) => {
+    setFormData({
+      ...formData,
+      methodBringItemToWarehouse: methodBringItemToWarehouse
+    });
+  }
 
   if (isLoading) {
     return (
@@ -141,13 +332,19 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
         <ActivityIndicator size="large" />
       </View>
     );
-}
+  }
   return (
     <ScrollView style = {styles.container}>
-    <Text style={styles.title}>Thông tin nhận đồ </Text>
+    {!isUserPost && (
+      <Text style={styles.title}>Thông tin nhận đồ </Text>
+    )}
+    {isUserPost && (
+      <Text style={styles.title}>Thông tin cho đồ </Text>
+    )}
+
     <TextInput
       label="Tên người cho"
-      value={formData?.owmerName ? formData.owmerName : ' ' }
+      value={formData?.owmerName}
       // onChangeText={(text) => setFormData({ ...formData, owmerName: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -156,7 +353,7 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
     
     <TextInput
       label="Số điện thoại"
-      value={formData?.ownerPhone ? formData.ownerPhone : ' '}
+      value={formData?.ownerPhone}
       // onChangeText={(text) => setFormData({ ...formData, itemQuantity: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -174,36 +371,121 @@ export const ReceiveForm: React.FC<Props> = ({ method, postID }) => {
       numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
     />  
 
-    <TextInput
-      label="Phương thức nhận"
-      value={formData?.giveType}
-      // onChangeText={(text) => setFormData({ ...formData, postDate: text })}
-      style={styles.input}
-      underlineColor="gray" // Màu của gạch chân khi không focus
-      activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-      multiline={true} // Cho phép nhập nhiều dòng văn bản
-      numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-    />  
-
-    <RNPickerSelect
-        onValueChange={(value) => handleWarehouseChange(value)}
-        items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehouseid }))}
-        value={formData?.warehouseInfo}
-        placeholder={{ label: 'Chọn kho', borderBottomColor: 'black', borderWidth: 1, color: '#4B0082', fontWeight: 'boldẻ'}}
+    {!isUserPost && (
+      <RNPickerSelect
+        onValueChange={(value) => setSelectedReceiveMethod(value)}
+        items={methodsReceive.map((method) => ({ label: method, value: method }))}
+        value={selectedReceiveMethod}
+        placeholder={{ label: 'Chọn phương thức nhận' }}
         style={{
           inputIOS: styles.inputDropDown,
           inputAndroid: styles.inputDropDown,
           placeholder: {
             color: 'black', // Màu của chữ label
+            fontSize: 14
           },
         }}
         useNativeAndroidPickerStyle={false}
         Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-    />
+      />
+    )}
+
+    {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && (
+      <RNPickerSelect
+          onValueChange={(value) => handleWarehouseChange(value)}
+          items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehousename + ', ' + wareHouse.address }))}
+          value={formData?.warehouseInfo}
+          placeholder={{ label: 'Chọn kho'}}
+          style={{
+            inputIOS: styles.inputDropDown,
+            inputAndroid: styles.inputDropDown,
+            placeholder: {
+              color: 'black', // Màu của chữ label
+            },
+          }}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
+      />
+    )}
+
+    {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && (
+      <TextInput
+        label="Địa chỉ đến lấy đồ"
+        value={formData?.address}
+        style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        multiline={true} // Cho phép nhập nhiều dòng văn bản
+        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+      /> 
+    )}
+
+    
+    {isUserPost && (
+      <TextInput
+      label="Địa chỉ"
+      value={formData?.address}
+      style={styles.input}
+      underlineColor="gray" // Màu của gạch chân khi không focus
+      activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      multiline={true} // Cho phép nhập nhiều dòng văn bản
+      numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+    /> 
+    )}
+
+    {isUserPost && (
+      <TextInput
+      label="Phương thức cho"
+      value={receivetype}
+      style={styles.input}
+      underlineColor="gray" // Màu của gạch chân khi không focus
+      activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      multiline={true} // Cho phép nhập nhiều dòng văn bản
+      numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+    /> 
+    )}
+
+
+    {isUserPost && receivetype == 'Cho nhận qua kho' && (
+        <TextInput
+        label="Thông tin kho"
+        value={formData?.warehouseInfo}
+        style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        multiline={true} // Cho phép nhập nhiều dòng văn bản
+        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+      /> 
+    )}
+
+    {isUserPost && receivetype == 'Cho nhận qua kho' && (
+      <RNPickerSelect
+          onValueChange={(value) => handleBringItemToWareHouseChange(value)}
+          items={methodsBringItemToWarehouse.map((methodBringItemToWarehouse) => ({ label: methodBringItemToWarehouse, value: methodBringItemToWarehouse}))}
+          value={formData?.methodBringItemToWarehouse}
+          placeholder={{ label: 'Chọn phương thức đem đồ đến kho'}}
+          style={{
+            inputIOS: styles.inputDropDown,
+            inputAndroid: styles.inputDropDown,
+            placeholder: {
+              color: 'black', // Màu của chữ label
+            },
+          }}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
+      />
+    )}
 
 
 
-    <Button mode="contained" >Xác nhận</Button>
+
+    {!isUserPost && (
+      <Button mode="contained" onPress={handleReceive}>Xác nhận</Button>
+    )}
+
+    {isUserPost && (
+      <Button mode="contained" onPress={handleGive}>Xác nhận</Button>
+    )}
   </ScrollView>
   );
 };
