@@ -7,6 +7,7 @@ import { GetCurrentLocation } from '../../../utils/GetCurrenLocation'
 import CardItemResult from '../../search/CardItemResult'
 import { MyData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
+import { useNavigation } from '@react-navigation/native'
 
 const itemList: any = [
   {
@@ -32,26 +33,15 @@ const itemList: any = [
   },
 ]
 
-interface Posts {
-  avatar: string;
-  username: string;
-  firstname: string; 
-  lastname: string; 
-  description: string; 
-  updatedat: string; 
-  createdat: string;
-  postid: string;
-  location: string;
-  path: string;
-};
-
 interface Props {
   filterValue: filterValue;
 
 }
 const UserPostComponent: React.FC<Props> = ({filterValue}) => {
   moment.locale();
+  const navigation = useNavigation();
 
+  const [refresh, setRefresh] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [shouldFetchData, setShouldFetchData] = useState(false);
@@ -62,12 +52,22 @@ const UserPostComponent: React.FC<Props> = ({filterValue}) => {
   const LIMIT = 5;
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Thực hiện các hành động cần thiết khi màn hình được focus
+      console.log('Home Screen Reloaded:');
+      setRefresh(prevRefresh => !prevRefresh);
+      console.log(refresh)
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
     setPage(0);
     setIsEmpty(false);
     setData([]);
 
-  }, [filterValue])
+  }, [filterValue, refresh])
 
   useEffect(() => {
     if (shouldFetchData) {
