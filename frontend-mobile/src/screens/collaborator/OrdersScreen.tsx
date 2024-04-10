@@ -32,7 +32,7 @@ export default function OrdersScreen({navigation}: any) {
 
     const [filterValue, setFilterValue] = useState({
         distance: 15,
-        time: 30,
+        time: 1,
         category: "Tất cả",
         sort: 'Mới nhất'
     })
@@ -78,12 +78,15 @@ export default function OrdersScreen({navigation}: any) {
         fetchAPI()
     },[tab, filterValue, changeOrdersGiving, refresh])
 
-    const getDate = () => {
-        const day = new Date()
+    const calculateDay = (dayAmount: number) => {
+        const currentDay = new Date()
+        let day = new Date(currentDay)
+        day.setDate(currentDay.getDate() + dayAmount)
         const date = day.getDate() > 9 ? day.getDate() : '0'+day.getDate()
-        const month = day.getMonth() > 9 ? day.getMonth() : '0'+day.getMonth()
+        const month = day.getMonth() > 9 ? (day.getMonth() + 1) : ('0'+(day.getMonth() + 1))
         return date + '/' + month + '/' + day.getFullYear()
     }
+
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
@@ -132,7 +135,7 @@ export default function OrdersScreen({navigation}: any) {
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
 
                     <View style={styles.wrapper}>
-                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày {getDate()} ( Hôm nay )</Text>
+                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày {calculateDay(filterValue.time)} ( Hôm nay )</Text>
                     </View>
                     {/* // seperate */}
                     <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>

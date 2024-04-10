@@ -16,13 +16,7 @@ const distance = [
     25
 ]
 
-const time = [
-    1,
-    3,
-    7,
-    14,
-    30,
-]
+let time: any = []
 
 const category = [
     "Tất cả",
@@ -41,6 +35,26 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
     const [indexCategory, setIndexCategory] = useState(0)
 
     const [checked, setChecked] = useState('first');
+
+    const auth = useSelector(authSelector)
+    if(auth.id === 1){
+        time = [  
+            1,
+            3,
+            7,
+            14,
+            30,
+        ]
+    }else{
+        time = [ 
+            0,
+            1,
+            3,
+            7,
+            14,
+            30,
+        ]
+    }
 
     useEffect(() => {
         // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
@@ -61,8 +75,6 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             sort: checked === 'first' ? 'Mới nhất' : 'Gần nhất'
         })
     }
-
-    const auth = useSelector(authSelector);
 
     return (
         <View style={styles.container}>
@@ -148,23 +160,27 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                         <View style={styles.groupItem}>
                             <TouchableOpacity style={[styles.item, indexTime === 0 && styles.selectItem]}
                                 onPress={() => {setIndexTime(0)}}>
-                                <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>1 ngày</Text>
+                                <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>Hôm nay</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.item, indexTime === 1 && styles.selectItem]}
                                 onPress={() => {setIndexTime(1)}}>
-                                <Text style={[{fontSize: 15}, indexTime === 1 && styles.selectTextItem]}>3 ngày</Text>
+                                <Text style={[{fontSize: 15}, indexTime === 1 && styles.selectTextItem]}>1 ngày</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.item, indexTime === 2 && styles.selectItem]}
                                 onPress={() => {setIndexTime(2)}}>
-                                <Text style={[{fontSize: 15}, indexTime === 2 && styles.selectTextItem]}>1 tuần</Text>
+                                <Text style={[{fontSize: 15}, indexTime === 2 && styles.selectTextItem]}>3 ngày</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.item, indexTime === 3 && styles.selectItem]}
                                 onPress={() => {setIndexTime(3)}}>
-                                <Text style={[{fontSize: 15}, indexTime === 3 && styles.selectTextItem]}>2 tuần</Text>
+                                <Text style={[{fontSize: 15}, indexTime === 3 && styles.selectTextItem]}>1 tuần</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.item, indexTime === 4 && styles.selectItem]}
                                 onPress={() => {setIndexTime(4)}}>
-                                <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>1 tháng</Text>
+                                <Text style={[{fontSize: 15}, indexTime === 4 && styles.selectTextItem]}>2 tuần</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 5 && styles.selectItem]}
+                                onPress={() => {setIndexTime(5)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 5 && styles.selectTextItem]}>1 tháng</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
