@@ -41,6 +41,11 @@ const DrawerCustom = ({navigation}: any) => {
       icon: <Ionicons name="notifications-outline" size={size} color={color} />,
     },
     {
+      key: 'Chat',
+      title: 'Tin nhắn',
+      icon: <Ionicons name="chatbubble-outline" size={size} color={color} />,
+    },
+    {
       key: 'MyHeart',
       title: 'Bài viết đã thích',
       icon: <Ionicons name="heart-outline" size={size} color={color} />,

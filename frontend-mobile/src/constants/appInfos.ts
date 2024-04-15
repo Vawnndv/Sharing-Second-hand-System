@@ -15,8 +15,9 @@ export const appInfo = {
 
 
   // BASE_URL: 'http://192.168.1.101:3000',  // This is URL of VWAN
+  BASE_URL: 'http://192.168.1.7:3000',  // This is URL of VWAN
   
-  BASE_URL: 'http://10.124.7.110:3000',
+  // BASE_URL: 'http://10.124.7.110:3000',
 
 }
 
