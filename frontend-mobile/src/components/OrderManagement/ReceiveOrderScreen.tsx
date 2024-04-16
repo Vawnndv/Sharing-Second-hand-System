@@ -33,8 +33,7 @@ export default function ReceiveOrderScreen() {
   console.log(filterValue)
 
   const auth = useSelector(authSelector);
-  const userID = 29;
-  // const userID = auth.id;
+  const userID = auth.id;
 
 
   useEffect(function(){
