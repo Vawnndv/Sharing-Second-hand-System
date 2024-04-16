@@ -9,6 +9,10 @@ import moment from 'moment';
 import userAPI from '../../apis/userApi';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import ContainerComponent from '../ContainerComponent';
+import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
+import PostDetail from '../PostDetail';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -66,6 +70,8 @@ interface Order {
 
 export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
 
+  const navigation: any = useNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -90,9 +96,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
   const [order, setOrder] = useState<Order>();
 
 
-  const [isWarehouseGive, setIsWareHouseGive] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
 
-  const [isBringItemToWarehouse, setIsBringItemToWareHouse] = useState(false);
 
   const auth = useSelector(authSelector);
 
@@ -241,9 +246,11 @@ const handleReceive = async () => {
     });       
     console.log(response.data.postCreated);
     Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+    setIsCompleted(true);
   } catch (error) {
     console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
     Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+    setIsCompleted(false);
   }
 
 }
@@ -264,8 +271,14 @@ const handleGive = async () =>{
         givetype
       })
       Alert.alert('Thành công', 'Cho món đồ thành công');
+      navigation.navigate('ItemDetailScreen', {
+        postID: postID,
+      })
+
     } catch(error){
       Alert.alert('Error', 'Cho món đồ thất bại.');
+      setIsCompleted(false);
+
     }
   }
 
@@ -283,8 +296,11 @@ const handleGive = async () =>{
           givetype
         })
         Alert.alert('Thành công', 'Cho món đồ thành công');
+
       } catch(error){
         Alert.alert('Error', 'Cho món đồ thất bại.');
+        setIsCompleted(false);
+
       }
     }
 
@@ -300,17 +316,19 @@ const handleGive = async () =>{
           givetype
         })
         Alert.alert('Thành công', 'Cho món đồ thành công');
+        navigation.navigate('ItemDetailScreen', {
+          postID: postID,
+        })
       } catch(error){
         Alert.alert('Error', 'Cho món đồ thất bại.');
+        setIsCompleted(false);
+
       }
     }
-
     try{
       const qrcode = ' ';
       const usergiveid = formData?.ownerID;
       const itemid = formData?.itemid;
-
-
       const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
         qrcode,
         warehouseid,
@@ -319,24 +337,19 @@ const handleGive = async () =>{
         itemid
       })
       Alert.alert('Thành công', 'Tạo input card thành công');
+      // setIsCompleted(true);
+      // navigation.navigate('Home', {screen: 'HomeScreen'})
+
+
     } catch(error){
       Alert.alert('Error', 'Tạo input card thất bại.');
+      // setIsCompleted(false);
     }
 
-
+    }
   }
 
 
-    
-  }
-
-
-  // const handleMethodReceiveSelected = (method : string) => {
-  //   if(method != ' ' && post){
-  //     setSelectedReceiveMethod(method);
-  //   }
-  //   // Tại đây bạn có thể chuyển người dùng đến form tiếp theo hoặc xử lý lựa chọn
-  // };
 
   const handleWarehouseChange = (warehouseInfo: string) => {
     // Tìm warehousename dựa vào warehouseid
@@ -367,6 +380,18 @@ const handleGive = async () =>{
       </View>
     );
   }
+
+  if (isCompleted) {
+    return(
+      <ContainerComponent isScroll back>
+        {/* <SectionComponent> */}
+          <PostDetail postID={postID}/>
+        {/* </SectionComponent> */}
+      </ContainerComponent>
+    )
+  }
+
+
   return (
     <ScrollView style = {styles.container}>
     {!isUserPost && (
@@ -383,6 +408,8 @@ const handleGive = async () =>{
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      editable={false} // Ngăn không cho người dùng nhập vào
+
     />
     
     <TextInput
@@ -392,6 +419,8 @@ const handleGive = async () =>{
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      editable={false} // Ngăn không cho người dùng nhập vào
+
     />
 
     <TextInput
@@ -403,6 +432,8 @@ const handleGive = async () =>{
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       multiline={true} // Cho phép nhập nhiều dòng văn bản
       numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+      editable={false} // Ngăn không cho người dùng nhập vào
+
     />  
 
     {!isUserPost && (
@@ -466,6 +497,8 @@ const handleGive = async () =>{
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        editable={false} // Ngăn không cho người dùng nhập vào
+
       /> 
     )}
 
@@ -479,6 +512,8 @@ const handleGive = async () =>{
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       multiline={true} // Cho phép nhập nhiều dòng văn bản
       numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+      editable={false} // Ngăn không cho người dùng nhập vào
+
     /> 
     )}
 
@@ -491,6 +526,7 @@ const handleGive = async () =>{
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       multiline={true} // Cho phép nhập nhiều dòng văn bản
       numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+      editable={false} // Ngăn không cho người dùng nhập vào
     /> 
     )}
 
@@ -504,6 +540,8 @@ const handleGive = async () =>{
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        editable={false} // Ngăn không cho người dùng nhập vào
+
       /> 
     )}
 

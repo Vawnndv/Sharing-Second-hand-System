@@ -12,7 +12,7 @@ const ItemDetailScreen = ({navigation, route}: any) => {
   console.log(postID)
 
   return (
-    <ContainerComponent isScroll back>
+    <ContainerComponent title='Bài đăng' isScroll back>
       {/* <SectionComponent> */}
         <PostDetail postID={postID}/>
       {/* </SectionComponent> */}

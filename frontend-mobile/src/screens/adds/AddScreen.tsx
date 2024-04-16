@@ -3,7 +3,7 @@ import React from 'react'
 import MultiStepForm from '../../components/PostForm/MultiStepForm';
 
 
-const AddScreen = () => {
+const AddScreen = ({navigation} : any) => {
   return (
     <View>
       <MultiStepForm></MultiStepForm>
