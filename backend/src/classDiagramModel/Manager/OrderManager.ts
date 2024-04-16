@@ -60,24 +60,26 @@ function filterOrders(distance: string, time: string, category: string, sort: st
   // Lọc dữ liệu
   const filteredData: FilterOrder[] = data.filter(item => {
       // Lọc theo khoảng cách
-      let isValidDistance: boolean = false;
-      if (IsGiver) {
-          const distanceToReceiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudereceive), parseFloat(item.longitudereceive));
-          isValidDistance = distanceToReceiver <= distanceFloat;
-      } else {
-          const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudegive), parseFloat(item.longitudegive));
-          isValidDistance = distanceToGiver <= distanceFloat;
+      let isValidDistance: boolean = true;
+      if (distanceFloat !== -1) {
+        if (IsGiver) {
+            const distanceToReceiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudereceive), parseFloat(item.longitudereceive));
+            isValidDistance = distanceToReceiver <= distanceFloat;
+        } else {
+            const distanceToGiver: number = calculateDistance(parseFloat(latitude), parseFloat(longitude), parseFloat(item.latitudegive), parseFloat(item.longitudegive));
+            isValidDistance = distanceToGiver <= distanceFloat;
+        }
       }
 
       // Lọc theo thời gian
-      const isValidTime: boolean = isTimeBefore(item.createdat, timeInt);
+      const isValidTime: boolean = timeInt !== -1 ? isTimeBefore(item.createdat, timeInt) : true;
 
       // Lọc theo danh mục
       let isValidCategory: boolean = item.nametype === category;
       if (category === "Tất cả") {
         isValidCategory = true
       }
-
+      console.log('KDJKLD', isValidDistance, isValidTime, isValidCategory)
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory;
   });

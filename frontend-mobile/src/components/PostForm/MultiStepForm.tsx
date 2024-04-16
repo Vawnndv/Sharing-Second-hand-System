@@ -12,6 +12,9 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+import ContainerComponent from '../ContainerComponent';
+import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
+import { useNavigation } from '@react-navigation/native';
 
 
 
@@ -41,9 +44,13 @@ interface FormDataStepTwo {
 }
 
 const MultiStepForm = () => {
+
+  const navigation: any = useNavigation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: '', itemQuantity: '', itemDescription: '', methodGive: '' });
+  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: ''  /* khởi tạo các trường khác */ });
+
+  const [isCompleted, setIsCompleted] = useState(false);
 
   const auth = useSelector(authSelector);
 
@@ -199,6 +206,7 @@ const MultiStepForm = () => {
     } catch (error) {
       console.error('Error creating order:', error);
       Alert.alert('Error', 'Failed to create Item, Post, Order. Please try again later.');
+      setIsCompleted(false);
     }
 
     try {
@@ -211,10 +219,18 @@ const MultiStepForm = () => {
       });
       console.log(response.data.traceCreated)
       Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+      setCurrentStep(1);
+      setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
+      setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
+      setIsCompleted(false);
+      navigation.navigate('Home', {screen: 'HomeScreen'})
+      // navigation.goBack();
     } catch (error) {
       console.error('Error creating Trace:', error);
       Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
+      setIsCompleted(false);
     }
+
     try{
       formDataStepOne.itemPhotos.map(async (image) => {
         const data = await UploadImageToAws3(image);
@@ -234,6 +250,15 @@ const MultiStepForm = () => {
 
   };
 
+
+  // if (isCompleted) {
+  //   return (
+  //     <ContainerComponent right>
+  //       {/* <StatisticScreen/> */}
+  //       <ItemTabComponent />
+  //     </ContainerComponent>
+  //   )
+  // }
 
   return (
     <ScrollView>

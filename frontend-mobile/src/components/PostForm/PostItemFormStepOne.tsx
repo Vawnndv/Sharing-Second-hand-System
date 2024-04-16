@@ -7,7 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 
 
 
@@ -54,7 +54,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
-  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Chúng tôi sẽ đến lấy"];
+  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
 
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
 
@@ -68,9 +68,22 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
 
   useEffect(() => {
-    if(isPickerOpen){
-      setLabelTypeItem(' ');
+    if(!isPickerOpen && itemTypes){
+      const newItemTypes = [...itemTypes];
+      newItemTypes.unshift({ nametype: 'Chọn loại món đồ', itemtypeid: -1 });
+      setItemTypes(newItemTypes);
     }
+    else if(isPickerOpen){
+        // Tạo một bản sao của mảng itemTypes
+      const newItemTypes = [...itemTypes];
+
+      // Loại bỏ phần tử đầu tiên của mảng bằng cách chỉ định vị trí và số lượng phần tử cần loại bỏ
+      newItemTypes.splice(0, 1);
+
+      // Cập nhật state với mảng mới
+      setItemTypes(newItemTypes);
+    }
+    console.log('aaaaaa hello')
   },[isPickerOpen])
 
 
@@ -259,19 +272,22 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
         Chọn Ảnh
       </Button>
+
       <TextInput
         label="Số lượng"
         value={formData.itemQuantity}
         onChangeText={(text) => {
-          // Chỉ cho phép cập nhật nếu text mới là số
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
-          setFormData({ ...formData, itemQuantity: newText });
+          if (parseInt(newText, 10) <= 50) { // Chỉ cho phép cập nhật nếu giá trị mới không lớn hơn 50
+            setFormData({ ...formData, itemQuantity: newText });
+          } else if (newText === '') { // Cho phép xoá hết nội dung
+            setFormData({ ...formData, itemQuantity: '' });
+          }
         }}   
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
-
       />
 
       <RNPickerSelect
@@ -283,10 +299,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         }
         items={itemTypes.map((category) => ({ label: category.nametype, value: category.itemtypeid }))}
         value={formData.itemCategory}
-        placeholder= {{ label: '' }}
+        placeholder= {{ label: 'Chọn loại món đồ', value: null }}
 
         onOpen={() => {
-          setIsPickerOpen(true)
+          setIsPickerOpen(true);
           console.log(isPickerOpen);
         }}
         onClose={() => {
@@ -317,7 +333,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         onValueChange={(value) => setFormData({ ...formData, methodGive: value })}
         items={methodsGive.map((method) => ({ label: method, value: method }))}
         value={formData.methodGive}
-        placeholder={{ label: 'Chọn phương thức cho' }}
+        placeholder={{ label: 'Chọn phương thức cho', value: null }}
         style={{
           inputIOS: {
             ...styles.inputDropDown,
@@ -341,7 +357,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           onValueChange={(value) => setFormData({ ...formData, methodsBringItemToWarehouse: value })}
           items={methodsBringItemToWarehouse.map((methodBringItemToWarehouse) => ({ label: methodBringItemToWarehouse, value: methodBringItemToWarehouse }))}
           value={formData.methodsBringItemToWarehouse}
-          placeholder={{ label: 'Chọn phương thức đem đến kho'}}
+          placeholder={{ label: 'Chọn phương thức đem đến kho', value: null}}
           style={{
             inputIOS: {
               ...styles.inputDropDown,
@@ -366,7 +382,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           onValueChange={(value) => handleWarehouseChange(value)}
           items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehousename + ', ' + wareHouse.address }))}
           value={formData.warehouseAddress}
-          placeholder={{ label: 'Chọn kho'}}
+          placeholder={{ label: 'Chọn kho', value: null}}
           style={{
             inputIOS: {
               ...styles.inputDropDown,

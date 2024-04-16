@@ -115,7 +115,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
           />
         )}
 
-        <TouchableOpacity onPress={showEndDatePicker}>
+      <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
           label="Ngày kết thúc"
           value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
