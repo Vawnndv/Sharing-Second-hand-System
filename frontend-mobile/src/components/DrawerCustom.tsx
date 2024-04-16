@@ -87,10 +87,18 @@ const DrawerCustom = ({navigation}: any) => {
     dispatch(removeAuth({}));
   }
 
+  const handleSettingAddress = () => {
+    navigation.navigate('MapSettingAddressScreen');
+  }
+
   const handleNavigation = (key: string) => {
     switch (key) {
       case 'SignOut':
         handleLogout();
+        break;
+
+      case 'Location':
+        handleSettingAddress();
         break;
 
       case 'MyProfile':

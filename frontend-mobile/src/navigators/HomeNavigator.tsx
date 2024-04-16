@@ -5,6 +5,7 @@ import OrderDetailsScreen from '../screens/collaborator/OrderDetailsScreen';
 import OrdersScreen from '../screens/collaborator/OrdersScreen';
 import StatisticScreen from '../screens/collaborator/StatisticScreen';
 import ItemDetailScreen from '../screens/home/ItemDetailScreen';
+import MapSelectWarehouse from '../screens/map/MapSelectWarehouse';
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -15,6 +16,7 @@ const HomeNavigator = () => {
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="ItemDetailScreen" component={ItemDetailScreen} />
+      <Stack.Screen name="MapSelectWarehouseScreen" component={MapSelectWarehouse} />
     </Stack.Navigator>
   )
 }
