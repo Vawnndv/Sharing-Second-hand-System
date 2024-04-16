@@ -85,7 +85,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
     return (
         <View style={styles.container}>
            
-            <View style={[{display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 10}]}><Text style={[styles.textDefault, {fontWeight: 'bold', fontSize: 18}]}>Filter</Text></View>
+            <View style={[{display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: 10}]}><Text style={[styles.textDefault, {fontWeight: 'bold', fontSize: 18}]}>Bộ lọc</Text></View>
 
             {/* // seperate */}
             <View style={{height: 2, width: '100%', backgroundColor: '#DFDFDF', marginTop: 10}}></View>
@@ -278,7 +278,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             <View style={styles.button}>
                 <TouchableOpacity style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
                     onPress={handleApply}>
-                    <Text style={{color: 'white'}}>Apply</Text>
+                    <Text style={{color: 'white'}}>Áp dụng</Text>
                 </TouchableOpacity>
             </View>
         </View>

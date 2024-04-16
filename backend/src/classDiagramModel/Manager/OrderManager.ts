@@ -167,7 +167,6 @@ export class OrderManager {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
-        console.log(addressReceive)
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
           const giver: User | undefined = await UserManager.getUser(row.usergiveid);
@@ -176,11 +175,10 @@ export class OrderManager {
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
-          console.log(addressGive)
-          console.log(addressGive.getDistance(addressReceive)/1000, parseInt(distance))
+
           if(distance !== 'Tất cả'){
             if(addressGive.getDistance(addressReceive)/1000 <= parseInt(distance)){
-              console.log(true)
+
               const orderObj = new Order(
                 row.orderid,
                 row.title,
@@ -233,7 +231,7 @@ export class OrderManager {
   
         if(sort === 'Gần nhất' && result.length > 0){
           for(let i:number = 0; i < result.length; i++ ){
-            console.log(result[i], result.length)
+
             let minAddress = new Address(result[i].addressGive.addressid,result[i].addressGive.address, result[i].addressGive.longitude, result[i].addressGive.latitude)
             let minDistance = minAddress.getDistance(addressReceive)
             let minIndex = i
@@ -304,7 +302,6 @@ export class OrderManager {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid,addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
-        console.log(addressReceive)
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
           const giver: User | undefined = await UserManager.getUser(row.usergiveid);
@@ -313,7 +310,6 @@ export class OrderManager {
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
-          console.log(addressGive)
   
           
           const orderObj = new Order(
@@ -389,7 +385,6 @@ export class OrderManager {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
-        console.log(addressReceive)
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
           const giver: User | undefined = await UserManager.getUser(row.usergiveid);
@@ -516,9 +511,12 @@ export class OrderManager {
       WHERE orderid = ${orderID}
     `
 
+    let status = (collaboratorReceiveID === null ? 'Chờ cộng tác viên lấy hàng' : 'Hàng đang được đến lấy')
+    console.log(status)
+
     let query = `
       UPDATE "orders"
-      SET collaboratorreceiveid = $2
+      SET collaboratorreceiveid = $2, status='${status}'
       WHERE orderid = $1
     `
 
@@ -526,6 +524,7 @@ export class OrderManager {
 
     try {
       const resultQueryOrder: QueryResult = await client.query(queryGetOrder)
+      console.log(resultQueryOrder.rows[0])
       if(resultQueryOrder.rows[0].collaboratorreceiveid !== null && resultQueryOrder.rows[0].collaboratorreceiveid != collaboratorReceiveID){
         return false
       }
@@ -1009,7 +1008,7 @@ export class OrderManager {
 
     try {
       const result: QueryResult = await client.query(query);
-      console.log(result.rows);
+
       return true
     } catch (error) {
       console.log(error) 

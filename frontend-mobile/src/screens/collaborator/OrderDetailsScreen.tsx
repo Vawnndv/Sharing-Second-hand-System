@@ -12,6 +12,8 @@ import { ContainerComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import * as ImagePicker from "expo-image-picker"
 import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
+import ConfirmComponent from "../../components/ConfirmComponent";
+import { Alert } from "react-native";
 
 export default function OrderDetailsScreen({navigation, route}: any) {
 
@@ -27,6 +29,9 @@ export default function OrderDetailsScreen({navigation, route}: any) {
 
     const [image, setImage] = useState<any>(null)
 
+    const [isVisibleModalConfirm, setIsVisibleModalConfirm] = useState(false)
+    const [confirm, setConfirm] = useState(false)
+
     const handleConfirm = async () => {
         setIsLoading(true);
         
@@ -36,11 +41,16 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             url: data.url
         });
         setIsLoading(false);
-        alert('Xác nhận đơn hàng thành công!')
+        Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
         navigation.goBack();
     }
 
     const receiveOrder = async () => {
+        setIsVisibleModalConfirm(true)
+    }
+
+    // khi mà người dùng xác nhận giao hàng thì thực hiện cập nhật dữ liệu
+    const updateReceiver = async () => {
         const collabID = status === 'Chờ cộng tác viên lấy hàng' ? auth.id : null
         const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
         console.log(collabID, statusOrder)
@@ -52,12 +62,18 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         });
         console.log(collabID)
         if(response.data.statusPin === false){
-            alert('Đơn hàng đã được người khác chọn!')
+            Alert.alert('Thông báo','Đơn hàng đã được người khác chọn!')
         }else{
-            alert('Chọn đơn hàng thành công')
+            Alert.alert('Thông báo','Chọn đơn hàng thành công!')
         }
         navigation.goBack();
     }
+
+    useEffect(() => {
+        if(confirm === true) {
+            updateReceiver()
+        }
+    }, [confirm])
 
     useEffect(() => {
         const fetchAPI = async () => {
@@ -277,6 +293,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 
                 
             </View>
+            
+            <ConfirmComponent visible={isVisibleModalConfirm} setVisible={setIsVisibleModalConfirm} title={'Bạn có thực sự muốn nhận đơn hàng này?'} setConfirm={setConfirm}/>
             <LoadingModal visible={isLoading}/>
         </ContainerComponent>
         
