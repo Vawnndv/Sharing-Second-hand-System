@@ -310,7 +310,6 @@ const handleGive = async () =>{
       try{
         givetypeid = 5;
         givetype = 'Cho nhận qua kho(kho đến lấy)';
-        const userreceiveid = receiveid;
         const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
           orderid,
           userreceiveid,
