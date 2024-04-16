@@ -46,8 +46,8 @@ export default function StatisticScreen({navigation}: any) {
     const [value, setValue] = useState<any>(14)
 
     const data = [
-        { name: 'Hàng đã lấy', amount: orderData[0], color: '#FF6347', legendFontColor: '#7F7F7F', legendFontSize: 14 },
-        { name: 'Hàng chưa lấy', amount: orderData[1], color: '#FFD700', legendFontColor: '#7F7F7F', legendFontSize: 14 },
+        { name: 'Hàng đã lấy', amount: orderData[1], color: '#FF6347', legendFontColor: '#7F7F7F', legendFontSize: 14 },
+        { name: 'Hàng chưa lấy', amount: orderData[0], color: '#FFD700', legendFontColor: '#7F7F7F', legendFontSize: 14 },
     ];
       
       const chartConfig = {

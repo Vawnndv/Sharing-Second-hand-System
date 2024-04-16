@@ -36,24 +36,24 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
     // Xây dựng và trả về JSX.Element tương ứng với thông tin của đơn hàng
 
 
-        const pinOrderhandle = async() => {
-            const collabID = status === 'Chờ cộng tác viên lấy hàng' ? collboratorReceiveID : null
-            const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
-            console.log(collabID, statusOrder)
-            await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`,{
-                status: statusOrder
-            });
-            const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
-                collaboratorReceiveID: collabID
-            });
-            console.log(response)
-            if(response.data.statusPin === false){
-                alert('Đơn hàng đã được người khác chọn!')
-            }else{
-                alert('Chọn đơn hàng thành công')
-            }
-            setChangeOrdersGiving(!changeOrdersGiving)
-        }
+        // const pinOrderhandle = async() => {
+        //     const collabID = status === 'Chờ cộng tác viên lấy hàng' ? collboratorReceiveID : null
+        //     const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
+        //     console.log(collabID, statusOrder)
+        //     await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`,{
+        //         status: statusOrder
+        //     });
+        //     const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
+        //         collaboratorReceiveID: collabID
+        //     });
+        //     console.log(response)
+        //     if(response.data.statusPin === false){
+        //         alert('Đơn hàng đã được người khác chọn!')
+        //     }else{
+        //         alert('Chọn đơn hàng thành công')
+        //     }
+        //     setChangeOrdersGiving(!changeOrdersGiving)
+        // }
 
         return (
         <View style={styles.order}>
@@ -85,8 +85,13 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
 
                             { status!=='Hàng đã nhập kho' &&
                                 <TouchableOpacity style= {{display: 'flex', flexDirection: 'row', alignItems: 'center'}}
-                                    onPress={()=>pinOrderhandle()}>
-                                    <IconEntypo name="pin" size={status==='Hàng đang được đến lấy' ? 25 : 20} color={status==='Hàng đang được đến lấy' ? 'green' : 'black'}/>
+                                    // onPress={()=>pinOrderhandle()}
+                                    >
+                                    {
+                                        status === 'Hàng đang được đến lấy' &&
+                                        <IconEntypo name="pin" size={20} color={'black'}/>
+                                    }
+                                    
                                 </TouchableOpacity>
                             }
                             
