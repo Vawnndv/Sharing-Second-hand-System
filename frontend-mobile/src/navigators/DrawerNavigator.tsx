@@ -8,6 +8,7 @@ import AccountScreen from '../screens/auth/AccountScreen';
 import HistoryScreen from '../screens/order/HistoryScreen';
 import ChatScreen from '../screens/chat/ChatScreen';
 import ChatRoom from '../screens/chat/ChatRoom';
+import MapSettingAddress from '../screens/map/MapSettingAddress';
 
 const DrawerNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -27,7 +28,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="MyProfile" component={AccountScreen} />
       <Drawer.Screen name="Chat" component={ChatScreen} />
       <Drawer.Screen name="ChatRoomScreen" component={ChatRoom} />
-
+      <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} />
     </Drawer.Navigator>
   )
 }
