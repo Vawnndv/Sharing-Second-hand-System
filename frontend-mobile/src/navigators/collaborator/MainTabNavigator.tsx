@@ -28,13 +28,13 @@ const MainTabNavigator = () => {
                 const variant = focused ? 'Bold' : 'Outline';
                 
                 switch (route.name) {
-                    case 'Home':
+                    case 'Trang chủ':
                         icon = <Home size={size} color={color} variant={variant} />
                         break;
-                    case 'Statistic':
+                    case 'Thống kê':
                         icon = <ChartSquare size={size} color={color} variant={variant} />
                         break;
-                    case 'Profile':
+                    case 'Thông tin':
                         icon = <User size={size} color={color} variant={variant} />
                         break;
                 }
@@ -46,9 +46,9 @@ const MainTabNavigator = () => {
             })}
         >
             
-                <Tab.Screen name="Home" component={HomeNavigator} />
-                <Tab.Screen name="Statistic" component={StatisticNavigator} />
-                <Tab.Screen name="Profile" component={ProfileNavigator} />
+                <Tab.Screen name="Trang chủ" component={HomeNavigator} />
+                <Tab.Screen name="Thống kê" component={StatisticNavigator} />
+                <Tab.Screen name="Thông tin" component={ProfileNavigator} />
             
             
         </Tab.Navigator>
