@@ -7,7 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
 
 
 

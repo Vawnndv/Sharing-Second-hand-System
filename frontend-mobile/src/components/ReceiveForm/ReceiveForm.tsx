@@ -51,6 +51,7 @@ interface FormData {
 }
 
 interface postOwnerInfo {
+  owner?: number;
   address?: string;
   firstname?: string;
   lastname?: string;
@@ -309,6 +310,7 @@ const handleGive = async () =>{
       try{
         givetypeid = 5;
         givetype = 'Cho nhận qua kho(kho đến lấy)';
+        const userreceiveid = receiveid;
         const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
           orderid,
           userreceiveid,
@@ -327,7 +329,7 @@ const handleGive = async () =>{
     }
     try{
       const qrcode = ' ';
-      const usergiveid = formData?.ownerID;
+      const usergiveid = postOwnerInfo?.owner;
       const itemid = formData?.itemid;
       const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
         qrcode,
@@ -336,6 +338,8 @@ const handleGive = async () =>{
         usergiveid,
         itemid
       })
+
+      console.log(response.data);
       Alert.alert('Thành công', 'Tạo input card thành công');
       // setIsCompleted(true);
       // navigation.navigate('Home', {screen: 'HomeScreen'})
@@ -381,15 +385,6 @@ const handleGive = async () =>{
     );
   }
 
-  if (isCompleted) {
-    return(
-      <ContainerComponent isScroll back>
-        {/* <SectionComponent> */}
-          <PostDetail postID={postID}/>
-        {/* </SectionComponent> */}
-      </ContainerComponent>
-    )
-  }
 
 
   return (
@@ -491,7 +486,7 @@ const handleGive = async () =>{
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && (
       <TextInput
         label="Địa chỉ đến lấy đồ"
-        value={formData?.address}
+        value={postOwnerInfo?.address}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
