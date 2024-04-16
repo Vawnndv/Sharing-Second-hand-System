@@ -7,6 +7,9 @@ import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 
+import { Picker } from '@react-native-picker/picker';
+
+
 
 
 interface FormData {
@@ -58,6 +61,17 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   const [isWarehouseGive, setIsWareHouseGive] = useState(false);
 
   const [isBringItemToWarehouse, setIsBringItemToWareHouse] = useState(false);
+
+  const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+  const [labelTypeItem, setLabelTypeItem] = useState('Chọn loại món đồ');
+
+
+  useEffect(() => {
+    if(isPickerOpen){
+      setLabelTypeItem(' ');
+    }
+  },[isPickerOpen])
 
 
   useEffect(() => {
@@ -161,9 +175,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     setFormData({ ...formData, itemPhotos: updatedPhotos });
   };
 
-  const handleWarehouseChange = (warehouseId: number) => {
+  const handleWarehouseChange = (warehouseAddress: string) => {
     // Tìm warehousename dựa vào warehouseid
-    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseId);
+    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehousename + ', ' + wareHouse.address === warehouseAddress);
     if (selectedWarehouse) {
       // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
       setFormData({
@@ -261,22 +275,43 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       />
 
       <RNPickerSelect
-        onValueChange={(value) => setFormData({ ...formData, itemCategory: value })}
+        onValueChange={(value) => {
+          if(value !== null){
+            setFormData({ ...formData, itemCategory: value })}
+            // setLabelTypeItem(' ');
+          }
+        }
         items={itemTypes.map((category) => ({ label: category.nametype, value: category.itemtypeid }))}
         value={formData.itemCategory}
-        placeholder={{ label: 'Chọn loại món đồ' }}
-        style={{
-          inputIOS: styles.inputDropDown,
-          inputAndroid: styles.inputDropDown,
-          placeholder: {
-            color: 'black', // Màu của chữ label
-            fontSize: 14
+        placeholder= {{ label: '' }}
 
+        onOpen={() => {
+          setIsPickerOpen(true)
+          console.log(isPickerOpen);
+        }}
+        onClose={() => {
+          setIsPickerOpen(false)
+        }}
+        style={{
+          inputIOS: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
           },
-              }}
+          inputAndroid: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+          },
+          placeholder: {
+            color: 'black', // Màu của chữ label khi chưa chọn
+            fontSize: 14,
+            // enabled: false
+          },
+        }}
         useNativeAndroidPickerStyle={false}
         Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
       />
+
+
 
       <RNPickerSelect
         onValueChange={(value) => setFormData({ ...formData, methodGive: value })}
@@ -284,12 +319,17 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         value={formData.methodGive}
         placeholder={{ label: 'Chọn phương thức cho' }}
         style={{
-          inputIOS: styles.inputDropDown,
-          inputAndroid: styles.inputDropDown,
+          inputIOS: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+          },
+          inputAndroid: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+          },
           placeholder: {
-            color: 'black', // Màu của chữ label
-            fontSize: 14
-
+            color: 'black', // Màu của chữ label khi chưa chọn
+            fontSize: 14,
           },
         }}
         useNativeAndroidPickerStyle={false}
@@ -303,12 +343,17 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           value={formData.methodsBringItemToWarehouse}
           placeholder={{ label: 'Chọn phương thức đem đến kho'}}
           style={{
-            inputIOS: styles.inputDropDown,
-            inputAndroid: styles.inputDropDown,
+            inputIOS: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
+            inputAndroid: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
             placeholder: {
-              color: 'black', // Màu của chữ label
-              fontSize: 14
-
+              color: 'black', // Màu của chữ label khi chưa chọn
+              fontSize: 14,
             },
           }}
           useNativeAndroidPickerStyle={false}
@@ -316,18 +361,24 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         />
       )}
 
-      {isBringItemToWarehouse && (
+      {isBringItemToWarehouse && isWarehouseGive && (
         <RNPickerSelect
           onValueChange={(value) => handleWarehouseChange(value)}
-          items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehouseid }))}
+          items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehousename + ', ' + wareHouse.address }))}
           value={formData.warehouseAddress}
           placeholder={{ label: 'Chọn kho'}}
           style={{
-            inputIOS: styles.inputDropDown,
-            inputAndroid: styles.inputDropDown,
+            inputIOS: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
+            inputAndroid: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
             placeholder: {
-              color: 'black', // Màu của chữ label
-              fontSize: 14
+              color: 'black', // Màu của chữ label khi chưa chọn
+              fontSize: 14,
             },
           }}
           useNativeAndroidPickerStyle={false}

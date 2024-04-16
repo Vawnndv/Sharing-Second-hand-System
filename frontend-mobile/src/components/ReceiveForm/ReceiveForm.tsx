@@ -412,11 +412,18 @@ const handleGive = async () =>{
         value={selectedReceiveMethod}
         placeholder={{ label: 'Chọn phương thức nhận' }}
         style={{
-          inputIOS: styles.inputDropDown,
-          inputAndroid: styles.inputDropDown,
+          inputIOS: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+          },
+          inputAndroid: {
+            ...styles.inputDropDown,
+            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+          },
           placeholder: {
-            color: 'black', // Màu của chữ label
-            fontSize: 14
+            color: 'black', // Màu của chữ label khi chưa chọn
+            fontSize: 14,
+            // enabled: false
           },
         }}
         useNativeAndroidPickerStyle={false}
@@ -431,10 +438,18 @@ const handleGive = async () =>{
           value={formData?.warehouseInfo}
           placeholder={{ label: 'Chọn kho'}}
           style={{
-            inputIOS: styles.inputDropDown,
-            inputAndroid: styles.inputDropDown,
+            inputIOS: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
+            inputAndroid: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
             placeholder: {
-              color: 'black', // Màu của chữ label
+              color: 'black', // Màu của chữ label khi chưa chọn
+              fontSize: 14,
+              // enabled: false
             },
           }}
           useNativeAndroidPickerStyle={false}
@@ -499,10 +514,18 @@ const handleGive = async () =>{
           value={formData?.methodBringItemToWarehouse}
           placeholder={{ label: 'Chọn phương thức đem đồ đến kho'}}
           style={{
-            inputIOS: styles.inputDropDown,
-            inputAndroid: styles.inputDropDown,
+            inputIOS: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
+            inputAndroid: {
+              ...styles.inputDropDown,
+              color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
+            },
             placeholder: {
-              color: 'black', // Màu của chữ label
+              color: 'black', // Màu của chữ label khi chưa chọn
+              fontSize: 14,
+              // enabled: false
             },
           }}
           useNativeAndroidPickerStyle={false}
