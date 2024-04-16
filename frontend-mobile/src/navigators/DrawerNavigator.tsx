@@ -6,8 +6,7 @@ import OrderScreen from '../screens/order/OrderScreen';
 import TabNavigator from './TabNavigator';
 import AccountScreen from '../screens/auth/AccountScreen';
 import HistoryScreen from '../screens/order/HistoryScreen';
-import ChatScreen from '../screens/chat/ChatScreen';
-import ChatRoom from '../screens/chat/ChatRoom';
+import ChatNavigator from './ChatNavigator';
 
 const DrawerNavigator = () => {
   const Drawer = createDrawerNavigator();
@@ -25,8 +24,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="History" component={HistoryScreen} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
       <Drawer.Screen name="MyProfile" component={AccountScreen} />
-      <Drawer.Screen name="Chat" component={ChatScreen} />
-      <Drawer.Screen name="ChatRoomScreen" component={ChatRoom} />
+      <Drawer.Screen name="Chat" component={ChatNavigator} />
 
     </Drawer.Navigator>
   )
