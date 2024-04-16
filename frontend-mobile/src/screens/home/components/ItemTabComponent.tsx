@@ -1,12 +1,13 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RowComponent, SectionComponent } from '../../../components';
 import FilterOrder from '../../../components/OrderManagement/FilterOrder';
 import { appColors } from '../../../constants/appColors';
 import { fontFamilies } from '../../../constants/fontFamilies';
 import UserPostComponent from './UserPostComponent';
 import WarehouseComponent from './WarehouseComponent';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 export interface filterValue {
   distance: number;
@@ -70,7 +71,15 @@ const ItemTabComponent = () => {
             );
           })}
           </RowComponent>
-          <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
+          <View style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+            <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
+            <TouchableOpacity
+              style={{paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.gray5, borderRadius: 15}}
+              onPress={() => navigation.navigate('MapSelectWarehouseScreen')}>
+              <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary}/>
+            </TouchableOpacity>
+          </View>
+          
         </View>
       )}
     >

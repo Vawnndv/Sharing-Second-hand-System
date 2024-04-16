@@ -72,7 +72,7 @@ export default function MapSelectWarehouse() {
       };
   
       // Move camera to the specified coordinate
-      mapViewRef.current?.animateCamera(camera, { duration: 500 });
+      mapViewRef.current?.animateCamera(camera, { duration: 1500 });
     };
 
 

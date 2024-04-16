@@ -39,7 +39,7 @@ const LocationComponent = ({name, address, handleClick}: any) => {
     )
 }
 
-export default function Map() {
+export default function MapSettingAddress() {
 
     const [inputSearch, setInputSearch] = useState('')
     const debouncedSearch = useDebounce(inputSearch, 500);
@@ -111,7 +111,7 @@ export default function Map() {
       };
   
       // Move camera to the specified coordinate
-      mapViewRef.current?.animateCamera(camera, { duration: 500 });
+      mapViewRef.current?.animateCamera(camera, { duration: 1500 });
     };
 
     const handleClickLocation = (lat: any, lon: any, display_name: any) => {
