@@ -14,3 +14,16 @@ export const getUserChatList = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const createNewChat = async (req: Request, res: Response) => {
+  const { firstuserid, seconduserid } = req.body;
+  
+  try {
+    const result = await ChatManager.createNewChat(firstuserid, seconduserid);
+    if (result)
+      res.status(200).json({ message: 'Create new chat success' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
