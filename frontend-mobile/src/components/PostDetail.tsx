@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert  } from 'react-native';
+import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, FlatList, TouchableWithoutFeedback  } from 'react-native';
 import { StringLiteral } from 'typescript';
 import { AntDesign, SimpleLineIcons  } from '@expo/vector-icons';
 
@@ -17,6 +17,8 @@ import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 import { useNavigation } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
+import ImageCropPicker from 'react-native-image-crop-picker';
+
 
 interface Post {
   postid: number; // Do SERIAL tự tăng nên giá trị này sẽ được tự động sinh ra và là duy nhất
@@ -68,6 +70,10 @@ interface PostReceiver {
   warehouseid?: number;
 }
 
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+
 const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
@@ -92,7 +98,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
 
 
   const [goToReceiveForm, setGoToReceiveForm] = useState(false);
-  const [goToGiveForm, setGoToGiveForm] = useState(false)
+  const [goToGiveForm, setGoToGiveForm] = useState(false);
+
+
+
+
 
   // Handle chat
   const [item, setItem] = useState<any>(undefined)
@@ -145,7 +155,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
         setItemID(res.data.postDetail.itemid);
         itemIDs = res.data.postDetail.itemid;
         owner = res.data.postDetail.owner;
-        console.log(res.data.postDetail.longitude +  ' ' + res.data.postDetail.latitude);
+        console.log(post?.title +  ' ' + res.data.postDetail.latitude);
         setIsUserPost(res.data.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
@@ -226,107 +236,150 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   if(!isLoading){
     return(
       <ScrollView>
+
         <View style={styles.screenContainer}>
+            {modalVisible && (
+            <View style={styles.overlayContainer} />
+            )}
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false} 
+            style={styles.imageContainer}
+            pagingEnabled={true}
+            >
+              {itemImages?.map((itemImage, index) => (
+                <Image
+                key={index}
+                source={{ uri: itemImage.path }}
+                style={styles.itemPhoto}
+                />
+              ))}
+          </ScrollView>
+
+          <View style={styles.like_receiver_CountContainer}>
+            <AntDesign name="inbox" size={24} color="black" />
+            <Text style={styles.receiverCount}>Người nhận: {postReceivers.length}</Text>
+            <AntDesign name="hearto" size={24} color="black" />
+            <Text style={styles.loverCount}>Thích: 10</Text>
+          </View>
+
           <View style={styles.container}>
             {modalVisible && (
             <View style={styles.overlayContainer} />
             )}
             <View style={styles.postContainer}>
               <Modal
-                animationType="slide"
+                onDismiss={() => {setModalVisible(false)}}
+                animationType="fade"
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
                   setModalVisible(!modalVisible);
-                }}
-              >
-                <View style={styles.modalContainer}>
-                  <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeModalButton}>
-                    <Text >X</Text>
-                  </TouchableOpacity>
-                  <ScrollView>
-                    <Text style={styles.title}>Chọn người bạn muốn cho </Text>
-                    {postReceivers.map((postReceiver, index) => {
-                      return (
-                        <View style={styles.receiverModalContainer} key={index}>
-                          <View style={styles.userInfo}>
-                            <AvatarComponent 
-                              avatar={postReceiver?.avatar}
-                              username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
-                              styles={styles.avatar}
-                            />                          
-                            <View style={styles.receiverInfo}>
-                              <Text style={styles.username}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
-                              <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
-                            </View>
-                            {isUserPost && (
-                              <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )} mode="contained">Cho</Button>
-                            )}
-                          </View>
-                        </View>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
+                }}>
+                <TouchableWithoutFeedback onPress={() => {setModalVisible(false)}}>
+                    <View style={styles.overlay}>
+                        <TouchableWithoutFeedback>
+                            <ScrollView style={styles.ModalScrollView}>
+                                <Text style={styles.title}>Chọn người bạn muốn cho</Text>
+                                {postReceivers.map((postReceiver: any, index: number) => (
+                                    <View style={styles.receiverModalContainer} key={index}>
+                                        <View style={styles.userInfo}>
+                                            <AvatarComponent
+                                                avatar={postReceiver?.avatar}
+                                                username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                                                styles={styles.avatar}
+                                            />
+                                            <View style={styles.receiverInfo}>
+                                                <Text style={styles.username_receiver}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                                                <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
+                                            </View>
+                                            {isUserPost && (
+                                                <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0)} mode="contained">Cho</Button>
+                                            )}
+                                        </View>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
               </Modal>
+
 
               <View style={styles.userContainer}>
                 {/* Hiển thị avatar của user */}
-                <AvatarComponent 
-                  avatar={profile?.avatar}
-                  username={profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}
-                  styles={styles.avatar}
-                />
-                <View style={styles.username_timeContaner}>
-                {/* Hiển thị tên của user */}
-                  <Text style={styles.username}>{profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}</Text>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                  <AvatarComponent 
+                    avatar={profile?.avatar}
+                    username={profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}
+                    styles={styles.avatar}
+                  />
+                  <View style={styles.username_timeContaner}>
+                  {/* Hiển thị tên của user */}
+                    <Text style={styles.username_owner}>{profile?.username   ? profile?.username + ' đang muốn cho đồ'  : profile?.firstname  + ' ' + profile?.lastname + ' đang muốn cho đồ' }</Text>
+                    <Text style={styles.title}>{post?.title}</Text>
 
-                  {/* Hiển thị ngày đăng */}
-                  <View style={styles.timeContainer}>
-                    <SimpleLineIcons name="clock" size={20} color="black" />
-                    <Text style={{marginLeft: 5}}>{moment(post?.time).format('DD-MM-YYYY')}</Text>
+                    {/* Hiển thị ngày đăng */}
+                    <View style={styles.timeContainer}>
+                      <SimpleLineIcons name="clock" size={16} color="grey" />
+                      <Text style={{marginLeft: 3, fontSize: 13, fontStyle: 'italic', color: 'gray'}}>{moment(post?.time).format('DD-MM-YYYY')}</Text>
+                    </View>
                   </View>
+
                 </View>
 
-                {isUserPost && (
-                  <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Cho</Button>
-                )}
-                {/* Nút chỉ hiển thị khi isUserPost là false */}
-                {!isUserPost && (
-                  <View style={{flexDirection: 'row', gap: 10}}>
-                    <IconButton icon="message" size={24} onPress={() => {
-                      if(auth.id != post.owner) {
-                      openChatRoomReceive({item: {
-                        avatar: profile?.avatar,
-                        userid: post.owner,
-                        username: profile?.username,
-                        firstname: profile?.firstname,
-                        lastname: profile?.lastname,
-                      }})}
-                    }}/>
-                   <Button style={styles.button} onPress={handleReceiveForm} mode="contained">Nhận</Button>
-                  </View>
-                )}
+
+                {/* <View style={{flexDirection: 'column', gap: 10}}> */}
+                  {isUserPost && (
+                    <Button style={styles.button} onPress={() => setModalVisible(true)} mode="contained">Cho</Button>
+                  )}
+                  {/* Nút chỉ hiển thị khi isUserPost là false */}
+                  {!isUserPost && (
+                    <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                      <Button style={styles.button} onPress={handleReceiveForm} mode="contained">Nhận</Button>
+                      <IconButton icon="message" size={24} onPress={() => {
+                        if(auth.id != post.owner) {
+                        openChatRoomReceive({item: {
+                          avatar: profile?.avatar,
+                          userid: post.owner,
+                          username: profile?.username,
+                          firstname: profile?.firstname,
+                          lastname: profile?.lastname,
+                        }})}
+                      }}/>
+                    </View>
+                  )}
+                {/* </View> */}
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
-              <Text style={styles.title}>{post?.title}</Text>
 
               {/* Hiển thị mô tả bài đăng */}
-              <Text style={styles.description}>{post?.description}</Text>
 
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {itemImages?.map((itemImage, index) => (
-                  <Image key={index} source={{ uri: itemImage.path }} style={styles.itemPhoto} />
-                ))}
-              </ScrollView>
-            </View>
-            <View style={styles.like_receiver_CountContainer}>
-              <AntDesign name="inbox" size={24} color="black" />
-              <Text style={styles.receiverCount}>Người nhận: {postReceivers.length}</Text>
-              <AntDesign name="hearto" size={24} color="black" />
-              <Text style={styles.loverCount}>Thích: 10</Text>
+              <View style = {styles.duration_descriptionContainer}>
+
+                <Text style={styles.description}>{post?.description}</Text>
+
+                <View style={styles.durationContainer}>
+                  <Text style={styles.title}>Thời gian cho đồ</Text>
+
+                  <Text style={styles.duration}>{'Từ ngày ' + moment(post?.timestart).format('DD-MM-YYYY') + ' đến ngày ' + moment(post?.timeend).format('DD-MM-YYYY')} </Text>
+                </View>
+
+                
+                <View style={styles.address_mapContainer}>
+                  <Text style={styles.title}>Địa điểm cho đồ</Text>
+
+                  <Text style={styles.address}>{post?.address}</Text>
+
+
+                  <Text style={styles.map}>{'Kinh độ: ' + post?.longitude + ', Vĩ độ: ' + post?.latitude}</Text>
+                </View>
+              </View>
+
 
             </View>
+
             <ScrollView>
               {postReceivers.map((postReceiver, index) => {
                 if(postReceiver.receiverid == auth.id || auth.id == post.owner){
@@ -354,14 +407,16 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                     }} key={index}>
                     <View style={styles.receiverContainer} key={index}>
                       <View style={styles.userInfo}>
-                        <AvatarComponent 
-                          avatar={postReceiver.avatar}
-                          username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
-                          styles={styles.avatar}
-                        />  
-                        <View style={styles.receiverInfo}>
-                          <Text style={styles.username}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
-                          <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
+                        <View style={{flexDirection: 'row'}}>
+                          <AvatarComponent 
+                            avatar={postReceiver.avatar}
+                            username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
+                            styles={styles.avatar}
+                          />  
+                          <View style={styles.receiverInfo}>
+                            <Text style={styles.username_receiver}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
+                            <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
+                          </View>
                         </View>
                         {isUserPost && (
                           // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
@@ -391,7 +446,7 @@ const styles = StyleSheet.create({
   screenContainer: {
     width: '100%',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   overlayContainer: {
@@ -400,24 +455,25 @@ const styles = StyleSheet.create({
     zIndex: 1, // Đảm bảo overlay được đặt trên mọi thành phần khác
   },
   container: {
-    marginTop: 20,
+    // marginTop: 20,
     backgroundColor: 'white',
-    width: '90%',
+    width: '100%',
   },
   userContainer: {
     flexDirection: 'row',
     padding: 10,
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 5,
-    color: 'white'
+    // marginBottom: 5,
+    // color: 'white'
   },
   avatar: {
-    width: 45, // Giả sử kích thước bạn muốn
-    height: 45, // Giả sử kích thước bạn muốn
+    width: 50, // Giả sử kích thước bạn muốn
+    height: 50, // Giả sử kích thước bạn muốn
     borderRadius: 50, // Để làm tròn hình ảnh
   },
 
@@ -427,13 +483,41 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
 
   },
-  username: {
-    fontWeight: 'bold',
+  username_owner: {
     alignItems: 'center', // Thêm thuộc tính này
+    color: 'grey',
+    fontWeight: 'bold',
+
   },
+
+  username_receiver: {
+    alignItems: 'center', // Thêm thuộc tính này
+    fontWeight: 'bold',
+  },
+
   description: {
-    marginBottom: 5,
+    fontSize: 16,
   },
+
+  duration: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    paddingTop: 5,
+    color: 'gray',
+
+
+  },
+
+  durationContainer:{
+    // padding: 15,
+    marginTop: 10,
+  },
+
+  duration_descriptionContainer:{
+    padding: 15,
+    // marginTop: ,
+  },
+
   postContainer: {
     padding: 10,
     backgroundColor: '#ffffff',
@@ -449,14 +533,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(240, 240, 240)',
     borderRadius: 6,
     flex: 1,
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
 
   itemPhoto: {
-    width: 100,
-    height: 100, // Điều chỉnh kích thước của ảnh theo ý muốn
-    margin: 5,
-    borderRadius: 10,
+    width: windowWidth,
+    height: windowHeight * 0.4,
   },
 
   comment: {
@@ -468,7 +550,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     padding: 15,
     flexDirection: 'row',
-    backgroundColor: 'rgb(240, 240, 240)',
+    // backgroundColor: 'rgb(240, 240, 240)',
     width: '100%',
     justifyContent: 'flex-end', // Đảm bảo các phần tử nằm ở cuối container
     marginBottom: 15,
@@ -532,12 +614,13 @@ const styles = StyleSheet.create({
 
   timeContainer: {
     flexDirection: 'row',
-    marginTop: 5,
 
   },
 
   username_timeContaner: {
-    marginLeft: 10
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    marginLeft: 7
   },
 
   centeredModalReceiveView: {
@@ -600,6 +683,51 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10
 
-  }
+  },
+
+  imageContainer: {
+
+  },
+
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Màu làm mờ và độ trong suốt
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+
+  ModalScrollView: {
+    // maxHeight: windowHeight * 0.5, // Điều chỉnh chiều cao tối đa của ScrollView tùy thuộc vào nhu cầu của bạn
+    height: '50%',
+    width: '100%',
+    backgroundColor: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'absolute',
+    padding: 10,
+    borderRadius: 10,
+    // justifyContent: 'center',
+  },
+
+  address_mapContainer: {
+    marginTop: 10
+  },
+
+  address: {
+
+    fontSize: 14,
+    fontStyle: 'italic',
+    paddingTop: 5,
+    color: 'gray',
+
+  },
+
+  map:{
+    fontSize: 14,
+    fontStyle: 'italic',
+    paddingTop: 5,
+    color: 'gray',
+  },
+
 })
 
