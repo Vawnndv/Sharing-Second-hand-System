@@ -165,10 +165,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     });
 
     if (!pickerResult.canceled) {
-      const imageData = pickerResult.assets.map((asset) => {
+      const imageData = pickerResult.assets.map((asset: any) => {
         return {
           uri: asset.uri,
-          name: new Date().getTime(),
+          name: new Date().getTime() + asset.fileName,
           type: asset.mimeType
         }
       });

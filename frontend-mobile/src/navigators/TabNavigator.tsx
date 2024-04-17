@@ -9,6 +9,7 @@ import HomeNavigator from './HomeNavigator';
 import MessagesNavigator from './MessagesNavigator';
 import ProfileNavigator from './ProfileNavigator';
 import ScanNavigator from './ScanNavigator';
+import ChatNavigator from './ChatNavigator';
 
 interface TabBarIconProps {
   focused: boolean;
@@ -80,7 +81,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={HomeNavigator} />
       <Tab.Screen name="Scan" component={ScanNavigator} />
       <Tab.Screen name="Add" component={AddNavigator} />
-      <Tab.Screen name="Message" component={MessagesNavigator} />
+      <Tab.Screen name="Message" component={ChatNavigator} />
       <Tab.Screen name="Profile" component={ProfileNavigator} />
     </Tab.Navigator>
   )

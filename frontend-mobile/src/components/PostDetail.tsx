@@ -15,9 +15,8 @@ import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
 import { useNavigation } from '@react-navigation/native';
-
-
-
+import { IconButton } from 'react-native-paper';
+import LastMessageComponent from './LastMessageComponent';
 
 interface Post {
   postid: number; // Do SERIAL tự tăng nên giá trị này sẽ được tự động sinh ra và là duy nhất
@@ -67,9 +66,8 @@ interface PostReceiver {
   warehouseid?: number;
 }
 
-
-
 const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
+  const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
@@ -94,7 +92,14 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const [goToReceiveForm, setGoToReceiveForm] = useState(false);
   const [goToGiveForm, setGoToGiveForm] = useState(false)
 
-  
+  // Handle chat
+  const [item, setItem] = useState<any>(undefined)
+
+  const openChatRoomReceive = ({item}: any)=> {
+    navigation.navigate('ChatRoomScreen', {
+      item: item,
+    });
+  }
 
   const handleReceiveForm = () => {
     const isReceived = postReceivers.find(postReceiver => postReceiver.receiverid == auth.id);
@@ -285,7 +290,19 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
                 )}
                 {/* Nút chỉ hiển thị khi isUserPost là false */}
                 {!isUserPost && (
-                  <Button style={styles.button} onPress={handleReceiveForm} mode="contained">Nhận</Button>
+                  <View style={{flexDirection: 'row', gap: 10}}>
+                    <IconButton icon="message" size={24} onPress={() => {
+                      if(auth.id != post.owner) {
+                      openChatRoomReceive({item: {
+                        avatar: profile?.avatar,
+                        userid: post.owner,
+                        username: profile?.username,
+                        firstname: profile?.firstname,
+                        lastname: profile?.lastname,
+                      }})}
+                    }}/>
+                   <Button style={styles.button} onPress={handleReceiveForm} mode="contained">Nhận</Button>
+                  </View>
                 )}
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
@@ -310,27 +327,50 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
             <ScrollView>
               {postReceivers.map((postReceiver, index) => {
                 if(postReceiver.receiverid == auth.id || auth.id == post.owner){
+                  
                 return (
-                  <View style={styles.receiverContainer}>
-                    <View style={styles.userInfo}>
-                      <AvatarComponent 
-                        avatar={postReceiver.avatar}
-                        username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
-                        styles={styles.avatar}
-                      />  
-                      <View style={styles.receiverInfo}>
-                        <Text style={styles.username}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
-                        <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
-                      </View>
-                      {isUserPost && (
-                        // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
-                        <View>
-                          <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )} mode="contained">Cho</Button>
+                  <TouchableOpacity onPress={() => {
+                    if(auth.id == post.owner) {
+                      openChatRoomReceive({item: {
+                        avatar: postReceiver?.avatar,
+                        userid: postReceiver.receiverid,
+                        username: postReceiver?.username,
+                        firstname: postReceiver?.firstname,
+                        lastname: postReceiver?.lastname,
+                      }})
+                    } else {
+                      openChatRoomReceive({item: {
+                        avatar: profile?.avatar,
+                        userid: post.owner,
+                        username: profile?.username,
+                        firstname: profile?.firstname,
+                        lastname: profile?.lastname,
+                      }}) 
+                    }
+
+                    }} key={index}>
+                    <View style={styles.receiverContainer} key={index}>
+                      <View style={styles.userInfo}>
+                        <AvatarComponent 
+                          avatar={postReceiver.avatar}
+                          username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
+                          styles={styles.avatar}
+                        />  
+                        <View style={styles.receiverInfo}>
+                          <Text style={styles.username}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
+                          <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
                         </View>
-                      )}
+                        {isUserPost && (
+                          // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
+                          <View>
+                            <Button style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )} mode="contained">Cho</Button>
+                          </View>
+                        )}
+                      </View>
+                      {/* <Text style={styles.comment}>{postReceiver.comment}</Text> */}
+                      <LastMessageComponent firstUserID={postReceiver.receiverid} secondUserID={post.owner}/>
                     </View>
-                    <Text style={styles.comment}>{postReceiver.comment}</Text>
-                </View>
+                  </TouchableOpacity>
                 );
               }})}
           </ScrollView>
