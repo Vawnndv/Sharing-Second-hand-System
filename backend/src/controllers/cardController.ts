@@ -3,6 +3,7 @@ import { CardManager } from '../classDiagramModel/Manager/CardManager';
 
 export const createInputCard = asyncHandle(async (req, res) => {
   const { qrcode, warehouseid, usergiveid, orderid, itemid } = req.body;
+
   
   try {
     const newInputCard = await CardManager.createCardInput(qrcode, warehouseid, usergiveid, orderid, itemid);

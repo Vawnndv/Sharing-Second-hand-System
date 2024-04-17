@@ -30,6 +30,8 @@ interface Post {
   createdat: Date; // TIMESTAMP NOT NULL, lưu thời gian tạo bản ghi
   timestart?: Date; // DATE có thể null
   timeend?: Date; // DATE có thể null
+  longitude?: string;
+  latitude?: string;
 }
 
 
@@ -138,6 +140,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
         setItemID(res.data.postDetail.itemid);
         itemIDs = res.data.postDetail.itemid;
         owner = res.data.postDetail.owner;
+        console.log(res.data.postDetail.longitude +  ' ' + res.data.postDetail.latitude);
         setIsUserPost(res.data.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
@@ -192,7 +195,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
       fetchAllData();
     }
 
-}, [postID])
+}, [])
 
 
   if (isLoading) {

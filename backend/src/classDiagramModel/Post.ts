@@ -22,6 +22,8 @@ export class Post {
   private receiverType: string | undefined;
 
 
+
+
   constructor(
     postID?: number,
     title?: string,
@@ -32,7 +34,8 @@ export class Post {
     location?: string,
     timestart?: Date,
     timeend?: Date,
-    receiverType?: string
+    receiverType?: string,
+
   ) {
     this.postID = postID;
     this.title = title;

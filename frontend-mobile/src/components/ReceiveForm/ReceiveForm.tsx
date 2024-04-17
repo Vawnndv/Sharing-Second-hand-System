@@ -58,6 +58,7 @@ interface postOwnerInfo {
   timestart?: string;
   timeend?: string;
   phonenumber?: string;
+  itemid?: number;
 
 
 }
@@ -87,7 +88,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
 
-  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Chúng tôi sẽ đến lấy"];
+  const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
 
   const [warehouse, setWarehouse] = useState<Warehouse>();
 
@@ -103,7 +104,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
   const auth = useSelector(authSelector);
 
 
-  console.log(warehouseid);
 
 
   useEffect(() => {
@@ -117,7 +117,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        console.log(res.data.wareHouses);
         setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching warehouses:', error);
@@ -135,7 +134,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
         setPostOwnerInfo(res.data.postOwnerInfos);
-        console.log(res.data.postOwnerInfos.address);
         setFormData({
           ...formData,
           address: res.data.postOwnerInfos.address,
@@ -149,7 +147,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
           postid: postID,
           itemid: res.data.postOwnerInfos.itemid,
         });
-        console.log(formData?.address);
         if(auth.id == res.data.postOwnerInfos.owner){
           setIsUserPost(true);
         }
@@ -182,7 +179,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         if (!res) {
           throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
         }
-        console.log(res.data.order);
         setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching order:', error);
@@ -200,7 +196,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
           if (!res) {
             throw new Error('Failed to fetch warehouse'); // Xử lý lỗi nếu request không thành công
           }
-          console.log(res.data.wareHouse);
           
           setWarehouse(res.data.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
           setFormData({
@@ -209,7 +204,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
             warehouseID: res.data.wareHouse.warehouseid,
           });
         } catch (error) {
-          console.error('Error fetching order:', error);
+          console.error('Error fetching warehouse:', error);
         } finally {
           setIsLoading(false);
         }
@@ -245,15 +240,15 @@ const handleReceive = async () => {
       time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
       receivertypeid,
     });       
-    console.log(response.data.postCreated);
     Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
-    setIsCompleted(true);
+    navigation.navigate('ItemDetailScreen', {
+      postID: postID,
+    })
+    
   } catch (error) {
     console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
     Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
-    setIsCompleted(false);
   }
-
 }
 
 
@@ -301,12 +296,12 @@ const handleGive = async () =>{
       } catch(error){
         Alert.alert('Error', 'Cho món đồ thất bại.');
         setIsCompleted(false);
-
       }
     }
+    
 
 
-    if(formData?.methodBringItemToWarehouse == 'Chúng tôi sẽ đến lấy'){
+    if(formData?.methodBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
       try{
         givetypeid = 5;
         givetype = 'Cho nhận qua kho(kho đến lấy)';
@@ -317,19 +312,20 @@ const handleGive = async () =>{
           givetype
         })
         Alert.alert('Thành công', 'Cho món đồ thành công');
-        navigation.navigate('ItemDetailScreen', {
-          postID: postID,
-        })
+
       } catch(error){
         Alert.alert('Error', 'Cho món đồ thất bại.');
         setIsCompleted(false);
 
       }
     }
+
     try{
       const qrcode = ' ';
       const usergiveid = postOwnerInfo?.owner;
-      const itemid = formData?.itemid;
+      const itemid = postOwnerInfo?.itemid;
+      const orderid = order?.orderid;
+
       const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
         qrcode,
         warehouseid,
@@ -338,8 +334,10 @@ const handleGive = async () =>{
         itemid
       })
 
-      console.log(response.data);
       Alert.alert('Thành công', 'Tạo input card thành công');
+      navigation.navigate('ItemDetailScreen', {
+        postID: postID,
+      })
       // setIsCompleted(true);
       // navigation.navigate('Home', {screen: 'HomeScreen'})
 
@@ -348,9 +346,12 @@ const handleGive = async () =>{
       Alert.alert('Error', 'Tạo input card thất bại.');
       // setIsCompleted(false);
     }
-
-    }
   }
+  }
+  
+
+
+
 
 
 
