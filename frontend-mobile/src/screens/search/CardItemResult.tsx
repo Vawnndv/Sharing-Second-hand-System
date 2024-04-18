@@ -34,9 +34,11 @@ interface Props {
   data: DataItem[];
   isLoading: boolean;
   handleEndReached: () => void;
+  setData?: (newData: any[]) => void;
+  isRefresh?: boolean;
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
@@ -81,6 +83,12 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
   }
 
   const deleteUserLikePosts = async (index: number) => {
+    if (isRefresh && setData) {
+      const newData = [...data];
+      newData.splice(index, 1); 
+      setData(newData);
+    }
+    
     let newLikePosts = [...likesPosts];
     newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
     setLikePosts(newLikePosts);
@@ -88,7 +96,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
     const newLikeNumber = [...likeNumber];
     newLikeNumber[index] -= 1;
     setLikeNumber(newLikeNumber);
-
+   
     try {
       const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
     } catch (error) {

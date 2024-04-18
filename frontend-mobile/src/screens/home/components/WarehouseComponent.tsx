@@ -8,29 +8,6 @@ import CardItemResult from '../../search/CardItemResult'
 import { MyData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
-const itemList: any = [
-  {
-    name: 'Kho số 1',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-  {
-    name: 'Kho số 2',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-  {
-    name: 'Kho số 3',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-]
 
 interface Props {
   filterValue: filterValue;
@@ -44,6 +21,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
+  const [isEndOfData, setIsEndOfData] = useState(false);
 
   const LIMIT = 5;
 
@@ -84,11 +62,14 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
       const res: any = await postsAPI.HandlePost(`/warehouse?page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`);
 
       const newData: MyData[] = res.allPosts;
-
-      if (newData.length <= 0 && data.length <= 0)
+      if (newData.length <= 0 && page === 0)
         setIsEmpty(true)
+
+    if (newData.length <= 0 && data.length > 0)
+        setIsEndOfData(true)
+
       if (newData.length > 0)
-        setPage(page + 1); // Tăng số trang lên
+      setPage(page + 1); // Tăng số trang lên
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
 
@@ -100,7 +81,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
   };
 
   const handleEndReached = () => {
-    if (!isLoading && !isEmpty) {
+    if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }
   };

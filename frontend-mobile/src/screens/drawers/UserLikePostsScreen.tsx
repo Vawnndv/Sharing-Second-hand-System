@@ -17,8 +17,9 @@ const UserLikePostsScreen = () => {
     const [isEmpty, setIsEmpty] = useState(false);
     const [page, setPage] = useState(0);
     const [shouldFetchData, setShouldFetchData] = useState(false);
+    const [isEndOfData, setIsEndOfData] = useState(false);
 
-    const LIMIT = 10;
+    const LIMIT = 3;
 
     
     useEffect(() => {
@@ -43,11 +44,15 @@ const UserLikePostsScreen = () => {
 
             const newData: any = res.allPosts;
             console.log(newData)
-            if (newData.length <= 0 && data.length <= 0)
+            if (newData.length <= 0 && page === 0)
                 setIsEmpty(true)
+    
+            if (newData.length <= 0 && data.length > 0 && newData === null)
+                setIsEndOfData(true)
+    
             if (newData.length > 0)
-                setPage(page + 1); // Tăng số trang lên
-
+            setPage(page + 1); // Tăng số trang lên
+    
             setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -57,8 +62,8 @@ const UserLikePostsScreen = () => {
     }
 
     const handleEndReached = () => {
-        if (!isLoading && !isEmpty) {
-        fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
+        if (!isLoading && !isEmpty && !isEndOfData) {
+            fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
         }
     };
 
@@ -73,7 +78,7 @@ const UserLikePostsScreen = () => {
                 />
                 </View>
             ) : (
-                <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
+                <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} setData={setData} isRefresh={true} />
             )}
         </ContainerComponent>
     )
@@ -84,7 +89,7 @@ export default UserLikePostsScreen
 
 const styles = StyleSheet.create({
     image: {
-      width: 100,
-      height: 80,
+        width: 100,
+        height: 80,
     }
-  })
+})

@@ -50,7 +50,6 @@ const SearchResultScreen = ({ route } : any) => {
   const [page, setPage] = useState(0);
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
-  const [likesPosts, setLikePosts] = useState<number[]>([]);
   const [isEndOfData, setIsEndOfData] = useState(false);
 
   const [filterValue, setFilterValue] = useState({
