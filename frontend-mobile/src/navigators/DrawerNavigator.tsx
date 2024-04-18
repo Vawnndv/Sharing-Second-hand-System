@@ -12,6 +12,7 @@ import ChatRoom from '../screens/chat/ChatRoom';
 import MapSettingAddress from '../screens/map/MapSettingAddress';
 
 import ChatNavigator from './ChatNavigator';
+import UserLikePostsScreen from '../screens/drawers/UserLikePostsScreen';
 
 
 const DrawerNavigator = () => {
@@ -32,8 +33,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="MyProfile" component={AccountScreen} />
       <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} />
       <Drawer.Screen name="Chat" component={ChatNavigator} />
-
-
+      <Drawer.Screen name="MyLike" component={UserLikePostsScreen} />
     </Drawer.Navigator>
   )
 }

@@ -17,8 +17,6 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 interface DataItem {
   userid: string;
-  firstname: string;
-  lastname: string;
   avatar: string;
   postid: number;
   title: string;
@@ -29,7 +27,7 @@ interface DataItem {
   latitude: string;
   path: string;
   like_count: number;
-  warehousename: string;
+  name: string;
 }
 
 interface Props {
@@ -120,14 +118,14 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
         >
           <RowComponent>
             <AvatarComponent
-              username={item.firstname ? item.firstname : 'A'} 
+              username={item.name} 
               avatar={item.avatar}
               size={50}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text={item.warehousename ? item.warehousename : item.firstname + ' ' + item.lastname} size={18} font={fontFamilies.medium} />
+                <TextComponent text={item.name} size={16} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />

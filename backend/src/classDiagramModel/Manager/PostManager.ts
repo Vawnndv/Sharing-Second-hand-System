@@ -99,8 +99,7 @@ export class PostManager {
         u.userid,
         u.avatar, 
         u.username, 
-        u.firstname, 
-        u.lastname, 
+        CONCAT(u.firstname, ' ', u.lastname) AS name,
         p.description, 
         p.postid,
         p.updatedat, 
@@ -171,7 +170,7 @@ export class PostManager {
           p.createdat,
           p.itemid,
           p.postid,
-          w.warehousename,
+          w.warehousename As name,
           w.avatar,
           a.address,
           a.longitude,
@@ -218,7 +217,9 @@ export class PostManager {
           a.latitude,
           itt.nametype
         ORDER BY
-          p.createdat DESC;  
+          p.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
       `;
 
       const result: QueryResult = await client.query(postsQuery);
@@ -226,6 +227,75 @@ export class PostManager {
         return null;
       }
       return filterSearch(distance, time, category, sort, latitude, longitude, result.rows); 
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
+  public static async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const postsQuery = `
+        SELECT  
+          p.description, 
+          p.postid,
+          p.itemid,
+          p.updatedat, 
+          p.createdat,
+          COALESCE(u.avatar, w.avatar) AS avatar,
+          COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename) AS name,
+          a.address,
+          a.longitude,
+          a.latitude,
+          itt.nametype,
+          MIN(i.path) AS path,
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        FROM 
+          "posts" p
+        LEFT JOIN 
+          "User" u ON u.userId = p.owner AND u.userId NOT IN (SELECT userId FROM workAt)
+        LEFT JOIN 
+          "workat" wa ON p.owner = wa.userid
+        LEFT JOIN 
+          "warehouse" w ON wa.warehouseid = w.warehouseid
+        JOIN 
+          "address" a ON a.addressid = p.addressid
+        JOIN 
+          item it ON it.itemid = p.itemid
+        JOIN 
+          item_type itt ON itt.itemtypeid = it.itemtypeid
+        LEFT JOIN 
+          "image" i ON p.itemid = i.itemid
+        LEFT JOIN 
+          "like_post" lp ON p.postid = lp.postid
+        WHERE 
+          (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) AND lp.userid = ${userId}
+        GROUP BY 
+          p.description, 
+          p.postid,
+          p.itemid,
+          p.updatedat, 
+          p.createdat,
+          COALESCE(u.avatar, w.avatar),
+          COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename),
+          a.address,
+          a.longitude,
+          a.latitude,
+          itt.nametype
+        ORDER BY
+          p.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
+      `;
+
+      const result: QueryResult = await client.query(postsQuery);
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -387,8 +457,7 @@ export class PostManager {
     let query = `
     SELECT 
       us.userid,
-      us.firstname,
-      us.lastname,
+      CONCAT(us.firstname, ' ', us.lastname) AS name,
       us.avatar,
       po.postid,
       po.title,

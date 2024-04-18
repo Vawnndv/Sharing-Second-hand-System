@@ -34,6 +34,8 @@ export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
   console.log(req.query);
   const allPosts = await PostManager.getAllPostFromWarehouse(limit, page, distance, time, category, sort, latitude, longitude);
 
+  // const postReceivers = await PostManager.viewPostReceivers(postID);
+
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
@@ -174,5 +176,23 @@ export const searchPost = asyncHandle(async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+export const getUserLikePosts = asyncHandle(async (req, res) => {
+  const userId: any = req.query.userId;
+  const limit : any = req.query.limit;
+  const page : any = req.query.page;
+
+  console.log(userId);
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const allPosts = await PostManager.getUserLikePosts(limit, page, userId);
+    console.log(allPosts);
+    res.status(200).json({ message: 'Lấy danh sách bài đăng yêu thích thành công', allPosts });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Lỗi khi lấy chi tiết bài đăng:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
