@@ -190,10 +190,10 @@ const ChatRoom = ({ route, navigation }: any) => {
                 placeholder='Nhắn tin'
                 style={{fontSize: hp(2.3), flex: 1, height: hp(5), paddingHorizontal: 20}}
               />
-              <TouchableOpacity onPress={handleSendImage} style={{marginRight: 10, padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
+              <TouchableOpacity onPress={() => {handleSendImage()}} style={{marginRight: 10, padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
                 <Feather name="image" size={hp(2.7)} color={'#737373'}></Feather>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleSendMessage} style={{padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
+              <TouchableOpacity onPress={() => {handleSendMessage()}} style={{padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
                 <Feather name="send" size={hp(2.7)} color={'#737373'}></Feather>
               </TouchableOpacity>
             </View>

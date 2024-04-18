@@ -14,11 +14,8 @@ import { ProfileModel } from '../models/ProfileModel';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
-import { useNavigation } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
-import ImageCropPicker from 'react-native-image-crop-picker';
-
 
 interface Post {
   postid: number; // Do SERIAL tự tăng nên giá trị này sẽ được tự động sinh ra và là duy nhất
@@ -54,6 +51,8 @@ interface ItemImage {
 
 interface PostDetailProps {
   postID: number;
+  navigation: any;
+  route: any;
 }
 
 interface PostReceiver {
@@ -74,8 +73,8 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
-  const navigation = useNavigation();
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>{
+  // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
@@ -99,10 +98,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
 
   const [goToReceiveForm, setGoToReceiveForm] = useState(false);
   const [goToGiveForm, setGoToGiveForm] = useState(false);
-
-
-
-
 
   // Handle chat
   const [item, setItem] = useState<any>(undefined)
