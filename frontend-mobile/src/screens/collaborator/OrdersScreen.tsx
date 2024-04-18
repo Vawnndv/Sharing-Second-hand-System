@@ -13,6 +13,9 @@ import { authSelector } from "../../redux/reducers/authReducers";
 import { ContainerComponent, HeaderComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import { useFocusEffect } from "@react-navigation/native";
+import ShowMapComponent from "../../components/ShowMapComponent";
+import { appColors } from "../../constants/appColors";
+import { fontFamilies } from "../../constants/fontFamilies";
 
 export default function OrdersScreen({navigation}: any) {
 
@@ -32,7 +35,7 @@ export default function OrdersScreen({navigation}: any) {
 
     const [filterValue, setFilterValue] = useState({
         distance: 15,
-        time: 1,
+        time: 0,
         category: "Tất cả",
         sort: 'Mới nhất'
     })
@@ -93,13 +96,13 @@ export default function OrdersScreen({navigation}: any) {
           // Thực hiện các hành động cần thiết khi màn hình được focus
           console.log('Home Screen Reloaded:');
           setRefresh(prevRefresh => !prevRefresh);
-          console.log(refresh)
         });
         return unsubscribe;
       }, [navigation]);
 
     return(
         <ContainerComponent right>
+            {/* <ShowMapComponent location={{latitude: 10.768879, longitude: 106.656034, address: 'Nhà thi đấu Phú Thọ'}} setLocation={''}/> */}
             <View style={[styles.container, {marginTop: 10}]}>
                 <View style={styles.container}>
 
@@ -126,19 +129,24 @@ export default function OrdersScreen({navigation}: any) {
                             showsHorizontalScrollIndicator={false}>
                             <TouchableOpacity style={styles.itemFilter}
                                 onPress={showModal}>
-                                <IconFeather name="filter" size={20}/>
+                                <IconFeather name="filter" size={20} color={appColors.primary2}/>
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
 
                     {/* // seperate */}
-                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+                    <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                     <View style={styles.wrapper}>
-                        <Text style={{marginTop: 10, fontSize: 18, color: '#622B9D', fontWeight: 'bold'}}>Ngày {calculateDay(filterValue.time)} ( Hôm nay )</Text>
+                        <Text style={{marginTop: 10, fontSize: 18, color: appColors.primary2, fontWeight: 'bold'}}>Ngày {calculateDay(filterValue.time)}  
+                            {   
+                                filterValue.time === 0 &&
+                                ' ( Hôm nay )'
+                            }
+                        </Text>
                     </View>
                     {/* // seperate */}
-                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+                    <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                     <ScrollView style={{width: '90%', marginTop: 10}}
                         horizontal={false}>
@@ -204,6 +212,7 @@ export default function OrdersScreen({navigation}: any) {
 
                 <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
                 <LoadingModal visible={isLoading}/>
+                
             </View>
         </ContainerComponent>
         
@@ -234,7 +243,7 @@ const styles = StyleSheet.create({
     itemFilter: {
         paddingVertical: 10,
         paddingHorizontal: 20,
-        backgroundColor: '#F7E2CD',
+        backgroundColor: appColors.gray5,
         borderRadius: 15,
         display: 'flex',
         flexDirection: 'row',
@@ -260,11 +269,11 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 25,
     },
     defaultTab: {
-        color: '#CCCCCC', 
+        color: appColors.gray5, 
         fontWeight: 'bold'
     },
     tabSelected: {
-        color: '#622B9D',
+        color: appColors.primary2,
         fontWeight: 'bold',
         textDecorationLine: 'underline'
     }

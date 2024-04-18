@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native"
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { appInfo } from "../../constants/appInfos";
+import { appColors } from "../../constants/appColors";
 
 interface OrderFunctionProbs {
     avatar: string,
@@ -56,7 +57,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
         // }
 
         return (
-        <View style={styles.order}>
+        <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#DAE2CF" : appColors.gray5}]}>
 
             <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 5, marginRight: 5}}>
                 <Text style={{color: '#54C362', fontStyle: 'italic'}}>{status}</Text>
@@ -138,7 +139,6 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
 
   const styles = StyleSheet.create({
     order: {
-        backgroundColor: '#ECDDAE',
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 5, 

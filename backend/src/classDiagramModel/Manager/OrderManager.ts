@@ -121,7 +121,14 @@ export class OrderManager {
     const client = await pool.connect();
 
     try {
-      let values: any = [userID,type]
+      let values: any = [userID]
+      let queryType =`AND o.status = '${type}'`
+      if(type === 'Hàng đã nhập kho'){
+        queryType = `
+          AND o.status != 'Hàng đang được đến lấy'
+          AND o.collaboratorreceiveid IS NOT NULL
+        `
+      }
       let queryTime =``
       if(time !== 'Tất cả'){
         queryTime = `AND p.timeend >= NOW()
@@ -150,7 +157,7 @@ export class OrderManager {
                 WHERE $1 = w.userid
               )
             ) 
-            AND o.status = $2
+            `+queryType+`
             `+queryTime+`
             `+categoryQuery+`
             ORDER BY o.createdat DESC
@@ -472,30 +479,31 @@ export class OrderManager {
 
     let addressGiveDB = await client.query(addressQuery, [ordersRow.locationgive]);
     const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
+
+    let order: Order = new Order(
+                            ordersRow.orderid,
+                            ordersRow.title,
+                            receive,
+                            giver,
+                            ordersRow.ordercode,
+                            ordersRow.qrcode,
+                            ordersRow.status,
+                            ordersRow.location,
+                            ordersRow.description,
+                            ordersRow.time,
+                            item,
+                            ordersRow.departure,
+                            post,
+                            addressGive,
+                            addressReceive
+                          )
+      order.setGiveTypeID(ordersRow.givetypeid)
       return [{
-        order: new Order(
-          ordersRow.orderid,
-          ordersRow.title,
-          receive,
-          giver,
-          ordersRow.ordercode,
-          ordersRow.qrcode,
-          ordersRow.status,
-          ordersRow.location,
-          ordersRow.description,
-          ordersRow.time,
-          item,
-          ordersRow.departure,
-          post,
-          addressGive,
-          addressReceive
-        ),
+        order: order,
         image: path.rows[0].path,
         imgConfirm: ordersRow.imgconfirm
       }];
-      
 
-      // console.log(orders)
     }catch (error) {
       console.log('error:', error);
       return null;
@@ -901,6 +909,7 @@ export class OrderManager {
 
   public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
     const client = await pool.connect();
+    console.log(orderID, statusID)
     try {
         const query = `
         -- Khai báo biến và gán giá trị cho nó
