@@ -8,6 +8,12 @@ import { EvilIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios'
 
 import { useDebounce } from '../../hooks/useDebounce';
+import { appInfo } from '../../constants/appInfos';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
+import { LoadingModal } from '../../modals';
+import { isLoading } from 'expo-font';
+import { useNavigation } from '@react-navigation/native';
 
 
 const GOOGLE_MAP_API_KEY = "AIzaSyAbk-Yxdn_arPK7y6BHG25BauJy4f-vppc"
@@ -47,6 +53,11 @@ export default function MapSettingAddress() {
     const [isFocusSearch, setIsFocusSearch] = useState(false)
 
     const [location, setLocation] = useState<any>(null);
+
+    const [isLoading, setIsLoading] = useState(false)
+
+    const auth = useSelector(authSelector);
+    const navitation = useNavigation()
 
     const handleSearch = () => {
         
@@ -141,16 +152,37 @@ export default function MapSettingAddress() {
       };
     
       const handleGetCenter = async () => {
-        const center =await getCenterCoordinates();
+        const center = await getCenterCoordinates();
         if (center) {
-          console.log('Center coordinates:', center);
+          
           // Sử dụng vị trí ở giữa bản đồ ở đây
+
+          if(inputSearch !== ''){
+            console.log('Center coordinates:', center);
+            try {
+                setIsLoading(true)
+                const response: any = await axios.post(`${appInfo.BASE_URL}/map/set_user_location`,{
+                    userID: auth.id,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    address: inputSearch
+                })
+                setIsLoading(true)
+                Alert.alert('Thông báo', 'Xác nhận vị trí thành công!')
+                navitation.goBack()
+            } catch (error) {
+                console.error(error)
+            }
+            
+          }else{
+            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
+          }
         }
       };
 
     
     return (
-        <ContainerComponent>
+        <ContainerComponent back title='Cài đặt vị trí của bạn'>
       
             <KeyboardAvoidingView style={styles.container}>
                 <MapView
@@ -158,7 +190,8 @@ export default function MapSettingAddress() {
                 style={styles.map}
                 provider={PROVIDER_DEFAULT}
                 initialRegion={initalPosition}
-                // showsUserLocation={true}
+                showsUserLocation={true}
+                showsMyLocationButton={false}
                 userLocationAnnotationTitle="Your Location">
                     {/* {
                         location !== null &&
@@ -240,7 +273,7 @@ export default function MapSettingAddress() {
                 
             </KeyboardAvoidingView>
             
-            
+            <LoadingModal visible={isLoading}/>
         </ContainerComponent>
         
     );

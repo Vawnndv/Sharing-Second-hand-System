@@ -47,6 +47,8 @@ export class Order {
 
   private timeEnd: string | undefined;
 
+  private giveTypeID: number | undefined
+
   public constructor(orderID: number, title: string, receiver: User | undefined, giver: User | undefined,
     orderCode: string, qrCode: string, status: string, location: string, description: string,
     time: string, item: Item | null, departure: string, post: Post | null, addressGive: Address | null, addressReceive: Address | null) {
@@ -89,5 +91,9 @@ export class Order {
   public setTime(timeStart: string, timeEnd: string){
     this.timeStart = timeStart;
     this.timeEnd = timeEnd;
+  }
+
+  public setGiveTypeID (giveTypeID: number){
+    this.giveTypeID = giveTypeID;
   }
 }

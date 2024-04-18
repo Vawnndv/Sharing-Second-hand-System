@@ -13,7 +13,7 @@ const HomeNavigator = () => {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="HomeScreen" component={OrdersScreen} />
       <Stack.Screen name="OrderDetailsScreen" component={OrderDetailsScreen} />
-      
+      <Stack.Screen name="MapSettingAddressScreen" component={MapSettingAddress} />
     </Stack.Navigator>
   )
 }

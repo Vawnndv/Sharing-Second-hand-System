@@ -35,7 +35,8 @@ export const getOrderDetailsCollaborator = async (req: Request, res: Response) =
   const orderID = typeof req.query.orderID === 'string' ? req.query.orderID : undefined;
   try {
     const orders = await OrderManager.showOrderDetails(orderID);
-      
+    console.log(orders[0]);
+    console.log(orders[0].addressGive);
     res.status(201).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
     console.error(error);
