@@ -16,6 +16,7 @@ import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
 import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Post {
   postid: number; // Do SERIAL tự tăng nên giá trị này sẽ được tự động sinh ra và là duy nhất
@@ -101,8 +102,18 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
   // Handle chat
   const [item, setItem] = useState<any>(undefined)
+  const [goToChat, setGoToChat] = useState(false);
+
+  // Check when chat screen go back to postdetail
+  useFocusEffect(
+    React.useCallback(() => {
+      setGoToChat(false);
+    }, [])
+  );
 
   const openChatRoomReceive = ({item}: any)=> {
+    setGoToChat(true)
+
     navigation.navigate('ChatRoomScreen', {
       item: item,
     });
@@ -228,7 +239,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     )
   }
 
-  if(!isLoading){
+  if(!goToChat && !isLoading){
     return(
       <ScrollView>
 
