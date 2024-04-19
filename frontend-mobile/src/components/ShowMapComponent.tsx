@@ -1,14 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity } from "react-native";
 import { View } from "react-native";
 import { Dimensions } from "react-native";
 import MapView, {Marker, PROVIDER_DEFAULT} from 'react-native-maps';
+import { fontFamilies } from "../constants/fontFamilies";
+import * as Location from 'expo-location';
+import haversine  from 'haversine'
+import { useEffect, useState } from "react";
 
 const { width, height } = Dimensions.get("window")
 
 export default function ShowMapComponent({location, setLocation} : any) {
 
+
+    const [distance, setDistance] = useState(0)
 
     const navigation: any = useNavigation();
 
@@ -18,11 +24,48 @@ export default function ShowMapComponent({location, setLocation} : any) {
         latitudeDelta: 0.02,
         longitudeDelta: 0.02 * width / height
     }
+
+    const getHowFarAway = async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert('Permission to access location was denied');
+            return 0;
+        }
+
+        let currentLocationResult: any = await Location.getCurrentPositionAsync({});
+    //   console.log(location)
+        const currentLocation = {
+            latitude: currentLocationResult.coords.latitude,
+            longitude: currentLocationResult.coords.longitude
+        }
+
+        const targetLocation = {
+            latitude: location.latitude,
+            longitude: location.longitude
+        }
+
+        return haversine(currentLocation, targetLocation, { unit: 'meter' });
+    }
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const distance = await getHowFarAway();
+            setDistance(Math.round(distance));
+            console.log(distance)
+        };
+
+        fetchData()
+    }, [])
     
-    console.log(width, height)
+    
+    // console.log(width, height)
     return (
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>
+                <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2}}>
+                    <Text style={{fontFamily: fontFamilies.medium, flex: 1}}>Khoảng cách ước tính: </Text>
+                    <Text style={{fontFamily: fontFamilies.medium}}>{distance}m</Text>
+                </View>
                 <MapView
                     style={{width: '100%', height: '100%', borderRadius: 10}}
                     showsUserLocation={true}
@@ -30,7 +73,7 @@ export default function ShowMapComponent({location, setLocation} : any) {
                     initialRegion={initalPosition}>
                         <Marker
                             title={location.address}
-                            coordinate={{latitude: initalPosition.latitude, longitude: initalPosition.longitude}}>
+                            coordinate={{latitude: location.latitude, longitude: location.longitude}}>
                             
                                 <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
                             
@@ -57,8 +100,8 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     wrapper: {
-        width: '95%',
-        height: '95%',
+        width: '100%',
+        height: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

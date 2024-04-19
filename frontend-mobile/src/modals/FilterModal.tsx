@@ -19,13 +19,13 @@ export default function FilterModal({visible, setVisible, hideModal, showModal, 
                         Alert.alert('Modal has been closed.');
                         setVisible(!visible);
                     }}>
-                        <TouchableWithoutFeedback onPress={hideModal}>
+                        <TouchableWithoutFeedback
+                            onPress={hideModal}>
                             <View style={styles.overlay}>
-                                <TouchableWithoutFeedback>
-                                    <FilterComponent hideModal={hideModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
-                                </TouchableWithoutFeedback>
+                                
                             </View>
                         </TouchableWithoutFeedback>
+                        <FilterComponent hideModal={hideModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
                 </Modal>
             </View>
             {/* <TouchableOpacity
