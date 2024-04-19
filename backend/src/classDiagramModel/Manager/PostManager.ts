@@ -292,9 +292,6 @@ export class PostManager {
       `;
 
       const result: QueryResult = await client.query(postsQuery);
-      if (result.rows.length === 0) {
-        return null;
-      }
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);

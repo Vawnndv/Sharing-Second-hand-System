@@ -47,7 +47,7 @@ const UserLikePostsScreen = () => {
             if (newData.length <= 0 && page === 0)
                 setIsEmpty(true)
     
-            if (newData.length <= 0 && data.length > 0 && newData === null)
+            if (newData.length <= 0 && data.length > 0)
                 setIsEndOfData(true)
     
             if (newData.length > 0)
