@@ -591,52 +591,59 @@ export class OrderManager {
     //   WHERE row_num = 1;
     //   `;
     let query = `
-      SELECT *
+      SELECT *,
+      CASE
+          WHEN UserReceiveID IS NULL THEN false
+          ELSE true
+      END AS isReciever
       FROM (
-          SELECT *,
-                ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-          FROM (
-              SELECT 
-                  po.Title, 
-                  adg.address AS Location, 
-                  o.Status,
-                  o.CreatedAt,
-                  i.Path AS Image, 
-                  o.OrderID,
-                  ts.StatusName,
-                  th.Time AS StatusCreatedAt,
-                  o.GiveType,
-            adg.Longitude AS LongitudeGive,
-            adg.Latitude AS LatitudeGive,
-            adr.Longitude AS LongitudeReceive,
-            adr.Latitude AS LatitudeReceive,
-            itt.NameType,
-            o.imgconfirmreceive
-              FROM 
-                  Orders o
-              JOIN 
-                  Image i ON o.ItemID = i.ItemID
-              JOIN 
-                  Trace t ON o.OrderID = t.OrderID
-              JOIN 
-                  Trace_History th ON t.TraceID = th.TraceID
-              JOIN 
-                  Trace_Status ts ON th.StatusID = ts.StatusID
-              JOIN 
-                  Address adg ON adg.AddressID = o.LocationGive
-              JOIN 
-                  Address adr ON adr.AddressID = o.LocationReceive
-              JOIN 
-                  Posts po ON po.PostID = o.PostID
-              JOIN 
-                  Item it ON it.ItemID = po.ItemID
-              JOIN 
-                  Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-              WHERE 
-                {placeholder}
-              ORDER BY
-                  th.Time DESC
-          ) AS oo
+      SELECT *,
+              ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
+      FROM (
+          SELECT 
+              po.Title, 
+              adg.address AS Location, 
+              o.Status,
+              o.CreatedAt,
+              i.Path AS Image, 
+              o.OrderID,
+              ts.StatusName,
+              th.Time AS StatusCreatedAt,
+              o.GiveType,
+              adg.Longitude AS LongitudeGive,
+              adg.Latitude AS LatitudeGive,
+              adr.Longitude AS LongitudeReceive,
+              adr.Latitude AS LatitudeReceive,
+              itt.NameType,
+              o.imgconfirmreceive,
+              o.UserReceiveID AS UserReceiveID
+          FROM 
+              Orders o
+          JOIN 
+              Image i ON o.ItemID = i.ItemID
+          JOIN 
+              Trace t ON o.OrderID = t.OrderID
+          JOIN 
+              Trace_History th ON t.TraceID = th.TraceID
+          JOIN 
+              Trace_Status ts ON th.StatusID = ts.StatusID
+          JOIN 
+              Address adg ON adg.AddressID = o.LocationGive
+          JOIN 
+              Address adr ON adr.AddressID = o.LocationReceive
+          JOIN 
+              Posts po ON po.PostID = o.PostID
+          JOIN 
+              Item it ON it.ItemID = po.ItemID
+          JOIN 
+              Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+          LEFT JOIN 
+              Postreceiver por ON po.PostID = por.PostID
+          WHERE 
+              {placeholder}
+          ORDER BY
+              th.Time DESC
+      ) AS oo
       ) AS ranked_orders
       WHERE row_num = 1;
     `
@@ -644,7 +651,7 @@ export class OrderManager {
     
     try {
       const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1)`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1 OR por.receiverid = $1)`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
@@ -855,24 +862,33 @@ export class OrderManager {
     const client = await pool.connect();
     try {
       const result = await client.query(`
+      SELECT *,
+      CASE
+          WHEN userreceiveid IS NULL THEN false
+          ELSE true
+      END AS isReciever
+      FROM (
         SELECT 
-          o.orderid,
-          o.usergiveid,
-          o.userreceiveid,
-          o.title,
-          ad.address,
-          grt.give_receivetype as givetype,
-          o.status,
-          i.Path AS Image,
-          th.Time AS StatusCreatedAt,
-          o.imgconfirmreceive
-        FROM orders AS o
-        JOIN Address ad ON ad.AddressID = o.LocationGive
-        JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
-        JOIN Image i ON o.ItemID = i.ItemID
-        JOIN Trace t ON o.OrderID = t.OrderID
-        JOIN Trace_History th ON t.TraceID = th.TraceID
-        WHERE o.orderid = $1
+              o.orderid,
+              o.usergiveid,
+              o.userreceiveid,
+              o.title,
+              ad.address,
+              grt.give_receivetype as givetype,
+              o.status,
+              i.Path AS Image,
+              th.Time AS StatusCreatedAt,
+              o.imgconfirmreceive,
+              por.PostID
+            FROM orders AS o
+            JOIN Address ad ON ad.AddressID = o.LocationGive
+            JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
+            JOIN Image i ON o.ItemID = i.ItemID
+            JOIN Trace t ON o.OrderID = t.OrderID
+            JOIN Trace_History th ON t.TraceID = th.TraceID
+            LEFT JOIN Postreceiver por ON por.PostID = o.PostID
+            WHERE o.orderid = $1
+        LIMIT 1)AS ranked_orders
         
       `, [orderID]);
       if (result.rows.length === 0) {

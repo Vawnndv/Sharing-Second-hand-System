@@ -1,6 +1,7 @@
 import { Post } from '../Post';
 import pool from '../../config/DatabaseConfig';
 import { QueryResult } from 'pg';
+import { fail } from 'assert';
 
 interface FilterSearch {
   userid: string;
@@ -508,4 +509,23 @@ export class PostManager {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+  public static async deletePostReceivers(postID: string, receiverID: string): Promise<boolean> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+      DELETE FROM postreceiver
+      WHERE postID = $1 AND receiverID = $2;`, [postID, receiverID]);
+
+      return true;
+      }
+      catch (error) {
+        console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+        return false;
+        throw error; // Ném lỗi để controller có thể xử lý
+      } finally {
+        client.release(); // Release client sau khi sử dụng
+      }
+    }
+
 }

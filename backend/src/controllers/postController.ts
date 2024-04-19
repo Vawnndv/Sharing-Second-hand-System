@@ -196,3 +196,20 @@ export const getUserLikePosts = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+
+export const deletePostReceivers = asyncHandle(async (req, res) => {
+  const postID: any = req.query.postID;
+  const receiverID: any = req.query.receiverID;
+  console.log(postID);
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const postReceivers = await PostManager.deletePostReceivers(postID, receiverID);
+    if (postReceivers)
+      res.status(200).json({ message: 'Delete receiver successfully' });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Error when delete postreceivers:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
