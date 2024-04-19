@@ -7,6 +7,7 @@ import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
 import { LoadingModal } from '../../modals';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Item {
   title: string;
@@ -33,9 +34,15 @@ export default function GiveOrderScreen() {
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
-  useEffect(function(){
-    getOrderList()
-  }, [filterValue]);
+  // useEffect(function(){
+  //   getOrderList()
+  // }, [filterValue]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getOrderList()
+    }, [filterValue])
+  );
 
   const getOrderList = async () => {
     try {

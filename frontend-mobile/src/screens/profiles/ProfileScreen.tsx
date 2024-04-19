@@ -19,7 +19,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
-console.log(auth)
+  
   useEffect(() => {
     if (auth) {
       getProfile();

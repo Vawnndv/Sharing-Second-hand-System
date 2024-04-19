@@ -83,8 +83,8 @@ export default function MapSelectWarehouse() {
     }
     
     return (
-        <ContainerComponent>
-      
+        <ContainerComponent back>
+
             <KeyboardAvoidingView style={styles.container}>
                 <MapView
                 ref={mapViewRef}
@@ -92,6 +92,7 @@ export default function MapSelectWarehouse() {
                 provider={PROVIDER_DEFAULT}
                 initialRegion={initalPosition}
                 showsUserLocation={true}
+                showsMyLocationButton={false}
                 userLocationAnnotationTitle="Your Location">
                     {
                         warehouses.map((item: any, index) => {

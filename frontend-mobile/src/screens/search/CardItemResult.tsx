@@ -17,8 +17,6 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 interface DataItem {
   userid: string;
-  firstname: string;
-  lastname: string;
   avatar: string;
   postid: number;
   title: string;
@@ -29,16 +27,18 @@ interface DataItem {
   latitude: string;
   path: string;
   like_count: number;
-  warehousename: string;
+  name: string;
 }
 
 interface Props {
   data: DataItem[];
   isLoading: boolean;
   handleEndReached: () => void;
+  setData?: (newData: any[]) => void;
+  isRefresh?: boolean;
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
@@ -83,6 +83,12 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
   }
 
   const deleteUserLikePosts = async (index: number) => {
+    if (isRefresh && setData) {
+      const newData = [...data];
+      newData.splice(index, 1); 
+      setData(newData);
+    }
+    
     let newLikePosts = [...likesPosts];
     newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
     setLikePosts(newLikePosts);
@@ -90,7 +96,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
     const newLikeNumber = [...likeNumber];
     newLikeNumber[index] -= 1;
     setLikeNumber(newLikeNumber);
-
+   
     try {
       const res: any = await userAPI.HandleUser(`/delete-like-post?userId=${auth.id}&postId=${data[index].postid}`, null,'delete');
     } catch (error) {
@@ -120,14 +126,14 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading }) 
         >
           <RowComponent>
             <AvatarComponent
-              username={item.firstname ? item.firstname : 'A'} 
+              username={item.name} 
               avatar={item.avatar}
               size={50}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
               <RowComponent>
-                <TextComponent text={item.warehousename ? item.warehousename : item.firstname + ' ' + item.lastname} size={18} font={fontFamilies.medium} />
+                <TextComponent text={item.name} size={16} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />

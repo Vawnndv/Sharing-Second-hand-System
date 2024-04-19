@@ -18,6 +18,7 @@ import errorMiddleHandle from './middlewares/errorMiddleware';
 import userRouter from './routes/userRouter';
 import cardRouter from './routes/cardRouter';
 import chatRouter from './routes/chatRouter';
+import mapRouter from './routes/mapRouter';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use('/order', orderRouter);
 app.use('/aws3', uploadImageToAwsRoute);
 app.use('/card', cardRouter);
 app.use('/chat', chatRouter);
+app.use('/map', mapRouter);
 
 app.use(errorMiddleHandle);
 

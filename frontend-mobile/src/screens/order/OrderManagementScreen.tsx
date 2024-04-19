@@ -11,7 +11,7 @@ function OrderManagementScreen() {
   return (
     <SubTabs.Navigator style={styles.tabs}>
       <SubTabs.Screen
-        name="Đồ cho"
+        name="OrderGive"
         component={GiveOrderScreen}
         options={{
           tabBarLabel: 'Đồ cho',
@@ -21,7 +21,7 @@ function OrderManagementScreen() {
         }}
       />
       <SubTabs.Screen
-        name="Đồ nhận"
+        name="OrderReceive"
         component={ReceiveOrderScreen}
         options={{
           tabBarLabel: 'Đồ nhận',

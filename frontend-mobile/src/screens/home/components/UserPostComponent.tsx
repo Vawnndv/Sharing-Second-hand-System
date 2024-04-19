@@ -9,30 +9,6 @@ import { MyData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
 
-const itemList: any = [
-  {
-    name: 'julia',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-  {
-    name: 'julia',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-  {
-    name: 'julia',
-    time: '1 hour',
-    address: 'Quận 5, thành phố Hồ Chí Minh',
-    description: 'Chiếc ghế này không chỉ là một sản phẩm nội thất đơn thuần mà còn là một trải nghiệm thoải mái và thú vị. Được chọn lựa với sự kỹ lưỡng ...',
-    image: 'https://erado.vn/img/i/ghe-an-boc-da-ma-b448-20381.jpg',
-  },
-]
-
 interface Props {
   filterValue: filterValue;
 

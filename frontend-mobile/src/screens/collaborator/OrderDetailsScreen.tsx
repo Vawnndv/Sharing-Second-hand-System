@@ -14,6 +14,8 @@ import * as ImagePicker from "expo-image-picker"
 import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
 import ConfirmComponent from "../../components/ConfirmComponent";
 import { Alert } from "react-native";
+import ShowMapComponent from "../../components/ShowMapComponent";
+import { appColors } from "../../constants/appColors";
 
 export default function OrderDetailsScreen({navigation, route}: any) {
 
@@ -21,7 +23,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     
     const {orderID, status} = route.params
 
-    const [orders, setOrders] = useState([])
+    const [orders, setOrders] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
     const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
@@ -40,6 +42,18 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
             url: data.url
         });
+
+        await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+            orderID: orderID,
+            statusID: 9
+        });
+
+        if(orders[0].order.giveTypeID === 5){
+            await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+                orderID: orderID,
+                statusID: 3
+            });
+        }
         setIsLoading(false);
         Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
         navigation.goBack();
@@ -54,8 +68,9 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         const collabID = status === 'Chờ cộng tác viên lấy hàng' ? auth.id : null
         const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
         console.log(collabID, statusOrder)
-        await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`,{
-            status: statusOrder
+        await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+            orderID: orderID,
+            statusID: 11
         });
         const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
             collaboratorReceiveID: collabID
@@ -103,22 +118,21 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         getPermission()
         
     }, [])
-    console.log(image)
-    // const testOrder =  {departure: "Departure Order 3", description: "Description 3", giver: {address: null, avatar: null, dateOfBirth: null, email: "staff@example.com", firstName: "Staff", lastName: "User", password: "staff123", phoneNumber: "456789123", roleID: 19, userID: 30, username: "staff"}, item: {itemtypeid: 6, name: "Laptop", quantity: 10}, location: "Phạm Thế Hiển, Quận 8, Thành phố Hồ Chí Minh", orderCode: "ASD135", orderID: 5, qrCode: "QR789", receiver: {address: "Kho 2, 227 Nguyễn Văn Cừ, Quận 5, Thành phố Hồ Chí Minh", avatar: "https://upload.wikimedia.org/wikipedia/commons/5/59/The_look_of_John_Wick_from_the_movie.jpg", dateOfBirth: "2002-12-01T17:00:00.000Z", email: "collaborator1@gmail.com", firstName: "John", lastName: "Wick", password: "collaborator1", phoneNumber: "123123123", roleID: 1, userID: 31, username: "collaborator1"}, status: "Pending", time: "2024-03-25T08:03:16.426Z", title: "Order 3"}
+    // console.log(image)
+    console.log(orders)
     return(
-        <ContainerComponent back>
+        <ContainerComponent back title="Chi tiết đơn hàng">
             <View style={styles.container}>
                 {/* // seperate */}
                 {/* <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View> */}
                 {
                     
-                    <ScrollView style={{width: '90%'}} showsVerticalScrollIndicator={false}>
+                    <ScrollView style={{width: '95%'}} showsVerticalScrollIndicator={false}>
                         {
                             orders.map((order: any, index) => {
                                 return (
                                     <View key={index}>
                                         <View style={styles.content}>
-                                            <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Chi tiết đơn hàng</Text>
 
                                             <View style={styles.infoUser}>
                                                 <IconEvil name="location" size={25}/>
@@ -144,9 +158,13 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View> 
                                             </View>
                                         </View>
+                                        <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
+                                                                        longitude: order.order.addressGive.longitude,
+                                                                        address: order.order.addressGive.address
+                                        }} setLocation={''}/>
 
                                         {/* // seperate */}
-                                        <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                                         <View style={styles.content}>
                                             <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Thông tin đơn hàng</Text>
@@ -199,7 +217,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                         </View>
                                         
 
-                                        <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                                         {
                                             status === 'Hàng đang được đến lấy' &&
@@ -230,7 +248,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 }
                                                 
                                                 
-                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
+                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: appColors.primary2,
                                                         paddingVertical: 15, paddingHorizontal: 20, borderRadius: 30,
                                                         display: 'flex', flexDirection: 'row', justifyContent: 'center',
                                                         alignItems: 'center'}}
@@ -249,7 +267,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                             <View style={styles.content}>
                                                 <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Giao đơn hàng</Text>
                                             
-                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: '#321357',
+                                                <TouchableOpacity style={{marginVertical: 10, marginHorizontal: 50, backgroundColor: appColors.primary2,
                                                         paddingVertical: 15, paddingHorizontal: 20, borderRadius: 30,
                                                         display: 'flex', flexDirection: 'row', justifyContent: 'center',
                                                         alignItems: 'center'}}

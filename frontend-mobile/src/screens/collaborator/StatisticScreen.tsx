@@ -17,6 +17,7 @@ import { authSelector } from "../../redux/reducers/authReducers";
 import { ContainerComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import DropdownComponent from "../../components/DropdownComponent"
+import { appColors } from "../../constants/appColors";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -140,17 +141,16 @@ export default function StatisticScreen({navigation}: any) {
     const [changeOrdersGiving, setChangeOrdersGiving] = useState(false)
 
     return(
-        <ContainerComponent back>
+        <ContainerComponent back title="Thống kê">
             
             <ScrollView horizontal={false} showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
                     <View style={{backgroundColor: 'white'}}>
-                        <Text style={{fontSize: 18, fontWeight: 'bold', marginLeft: 20}}>Thống kê</Text>
                         <DropdownComponent value={value} setValue={setValue} data={dataDropdown}/>
                         <LineChartExample/>
                     </View>
                     {/* // seperate */}
-                    <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View>
+                    <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                     <View style={styles.content}>
                         <View>
@@ -233,11 +233,11 @@ const styles = StyleSheet.create({
     defaultText: {
         fontSize: 15,
     },defaultTab: {
-        color: '#CCCCCC', 
+        color: appColors.gray5, 
         fontWeight: 'bold'
     },
     tabSelected: {
-        color: '#622B9D',
+        color: appColors.primary2,
         fontWeight: 'bold',
         textDecorationLine: 'underline'
     }
