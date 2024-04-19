@@ -18,6 +18,9 @@ import CardComponent from '../components/CardComponent';
 import { useNavigation } from '@react-navigation/native';
 import { appColors } from '../constants/appColors';
 import { appInfo } from '../constants/appInfos';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../redux/reducers/authReducers';
+import postsAPI from '../apis/postApi';
 
 interface Data {
   title: string;
@@ -30,9 +33,9 @@ interface Data {
   imgconfirmreceive: string;
   usergiveid: string,
   userreceiveid: string,
+  postid: string,
+  isreciever: boolean,
 }
-
-const userID = '29'
 
 export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsModalVisible: (isVisible: boolean) => void, orderid: string }) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -46,6 +49,9 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
   const [data, setData] = useState<Data>();
 
   const navigation: any = useNavigation();
+
+  const auth = useSelector(authSelector);
+  const userID = auth.id;
 
   useEffect(function(){
     getOrderDetails()
@@ -62,6 +68,23 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       
       setIsLoading(false);
       setData(res.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const deletePostReceiver = async () => {
+    try {
+      setIsLoading(true);
+      const res = await postsAPI.HandlePost(
+        `/deletepostreceivers?postID=${data?.postid}&receiverID=${auth.id}`,
+        '',
+        'delete'
+      );
+
+      setIsLoading(false);
+      setIsModalVisible(false)
+      navigation.navigate('OrderReceive', { reload: true })
     } catch (error) {
       console.log(error);
     }
@@ -89,6 +112,10 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
     setImage(null)
     getPermission() 
     setModalVisible(true)
+  };
+
+  const handleCancel = async () => {
+    deletePostReceiver()
   };
 
   const handleShowImage = () => {
@@ -140,12 +167,18 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
 
         <View style={{flexDirection: 'row'}}>
           {
-            userID == data?.userreceiveid ? (
-              <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-                Xác nhận
-              </Button>
+            // userID == data?.userreceiveid ? (
+              userID == data?.userreceiveid && data?.isreciever ? (
+                <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                  Xác nhận
+                </Button>
 
-            ) : (<></>)
+              ) : (
+                <Button mode="contained" onPress={handleCancel} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                  Hủy
+                </Button>
+              )
+            // ) : (<></>)
           }
           <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
           </IconButton>

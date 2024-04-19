@@ -14,14 +14,16 @@ import { ProfileModel } from '../models/ProfileModel';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
-import { useNavigation } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
+
 import { appColors } from '../constants/appColors';
 import { Ionicons } from '@expo/vector-icons';
 import { fontFamilies } from '../constants/fontFamilies';
 import ShowMapComponent from './ShowMapComponent';
 // import ImageCropPicker from 'react-native-image-crop-picker';
+
+import { useFocusEffect } from '@react-navigation/native';
 
 
 interface Post {
@@ -58,6 +60,8 @@ interface ItemImage {
 
 interface PostDetailProps {
   postID: number;
+  navigation: any;
+  route: any;
 }
 
 interface PostReceiver {
@@ -78,8 +82,8 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
-  const navigation = useNavigation();
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>{
+  // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
@@ -104,14 +108,20 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
   const [goToReceiveForm, setGoToReceiveForm] = useState(false);
   const [goToGiveForm, setGoToGiveForm] = useState(false);
 
-
-
-
-
   // Handle chat
   const [item, setItem] = useState<any>(undefined)
+  const [goToChat, setGoToChat] = useState(false);
+
+  // Check when chat screen go back to postdetail
+  useFocusEffect(
+    React.useCallback(() => {
+      setGoToChat(false);
+    }, [])
+  );
 
   const openChatRoomReceive = ({item}: any)=> {
+    setGoToChat(true)
+
     navigation.navigate('ChatRoomScreen', {
       item: item,
     });
@@ -237,12 +247,9 @@ const PostDetail: React.FC<PostDetailProps> = ( {postID} ) =>{
     )
   }
 
-  
-  console.log(post)
-  
-  
 
-  if(!isLoading){
+  if(!goToChat && !isLoading){
+
     return(
       <ScrollView>
 

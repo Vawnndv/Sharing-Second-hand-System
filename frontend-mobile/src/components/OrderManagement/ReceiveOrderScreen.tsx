@@ -7,6 +7,7 @@ import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
 import { LoadingModal } from '../../modals';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { useFocusEffect } from '@react-navigation/native';
 
 interface Item {
   title: string;
@@ -21,7 +22,7 @@ interface Item {
   imgconfirmreceive:string;
 }
 
-export default function ReceiveOrderScreen() {
+export default function ReceiveOrderScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
   const [filterValue, setFilterValue] = useState({
@@ -37,9 +38,19 @@ export default function ReceiveOrderScreen() {
   const userID = auth.id;
 
 
-  useEffect(function(){
-    getOrderList()
-  }, [filterValue]);
+   // Sử dụng useEffect để theo dõi tham số điều hướng
+   useEffect(() => {
+    if (route.params && route.params.reload) {
+        getOrderList();
+    }
+  }, [route.params]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getOrderList()
+      return () => {};
+    }, [filterValue])
+  );
 
   const getOrderList = async () => {
     try {
