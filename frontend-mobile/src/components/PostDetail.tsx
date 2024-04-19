@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, FlatList, TouchableWithoutFeedback  } from 'react-native';
+import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, TouchableWithoutFeedback  } from 'react-native';
 import { StringLiteral } from 'typescript';
 import { AntDesign, SimpleLineIcons  } from '@expo/vector-icons';
 
@@ -17,7 +17,8 @@ import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 import { useNavigation } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
-import ImageCropPicker from 'react-native-image-crop-picker';
+
+
 
 
 interface Post {
