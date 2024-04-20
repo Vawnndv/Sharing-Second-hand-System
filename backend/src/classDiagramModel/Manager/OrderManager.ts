@@ -136,14 +136,26 @@ export class OrderManager {
       }
       let categoryQuery = ``;
       if(category !== "Tất cả" ){
+
+        let listCategory = []
+        if(category !== ''){
+          listCategory = category.split(',')
+        }
+        let listCategoryQuery = `'${listCategory[0]}'`
+        
+        for(let i = 1; i < listCategory.length; i++){
+          listCategoryQuery += ` OR it.nametype = '${listCategory[i]}'`
+        }
+        console.log(listCategoryQuery)
+        
         categoryQuery = `AND EXISTS (
           SELECT it.nametype
           FROM "item_type" it
-          WHERE it.itemtypeid = (
+          WHERE it.itemtypeid IN (
             SELECT i.itemtypeid
             FROM "item" i
             WHERE o.itemid = i.itemid
-          ) AND it.nametype LIKE N'${category}'
+          ) AND it.nametype = ${listCategoryQuery}
         )` 
       }
       const ordersQuery = `
