@@ -22,7 +22,7 @@ interface Item {
   imgconfirmreceive:string;
 }
 
-export default function GiveOrderScreen() {
+export default function GiveOrderScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [filterValue, setFilterValue] = useState({
@@ -37,6 +37,11 @@ export default function GiveOrderScreen() {
   // useEffect(function(){
   //   getOrderList()
   // }, [filterValue]);
+  useEffect(() => {
+    if (route.params && route.params.reload) {
+      getOrderList();
+    }
+  }, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {

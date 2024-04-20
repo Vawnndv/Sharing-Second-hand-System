@@ -53,17 +53,19 @@ const SearchResultScreen = ({ route } : any) => {
   const [isEndOfData, setIsEndOfData] = useState(false);
 
   const [filterValue, setFilterValue] = useState({
-    distance: 5,
-    time: 14,
+    distance: -1,
+    time: -1,
     category: "Tất cả",
     sort: "Mới nhất"
   })
 
   useEffect(() => {
-    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
     setPage(0);
     setIsEmpty(false);
     setData([]);
+    setIsEndOfData(false);
+    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    console.log(data.length)
   }, [filterValue, isPosts]);
 
   useEffect(() => {
