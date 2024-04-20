@@ -206,21 +206,25 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
                     <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                       Xác nhận
                     </Button>
-
+                  ) : ( <></> )
+                ) : (
+                  userID == data?.usergiveid ? (
+                    data?.status == statusOrder.AWAITING_APPROVAL.statusname &&
+                    <Button mode="contained" onPress={handleCancelGive} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                      Hủy cho
+                    </Button>
                   ) : (
                     <Button mode="contained" onPress={handleCancel} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                       Hủy
                     </Button>
                   )
-                ) : (
-                  data?.status == statusOrder.AWAITING_APPROVAL.statusname &&
-                  <Button mode="contained" onPress={handleCancelGive} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-                    Hủy cho
-                  </Button>
                 )
               }
-              <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
-              </IconButton>
+              {
+                (image || data?.imgconfirmreceive && data?.imgconfirmreceive != ' ') && 
+                <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
+                </IconButton>
+              }
 
               <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
               </IconButton>

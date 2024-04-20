@@ -911,7 +911,7 @@ export class OrderManager {
           o.usergiveid,
           o.postid
         FROM orders AS o
-        WHERE o.orderid = $1
+        WHERE o.orderid = $1 AND o.givetypeid != 3 AND o.givetypeid != 4
       `, [orderID]);
       if (result.rows.length === 0) {
         return null;
