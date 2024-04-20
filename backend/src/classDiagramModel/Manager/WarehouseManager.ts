@@ -26,7 +26,10 @@ export class WarehouseManager {
   public static async viewAllWarehouse(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT * FROM warehouse`);
+      const result = await client.query(`
+        SELECT * FROM warehouse
+        INNER JOIN address ON address.addressid = warehouse.addressid
+      `);
       if (result.rows.length === 0) {
         return [];
       }

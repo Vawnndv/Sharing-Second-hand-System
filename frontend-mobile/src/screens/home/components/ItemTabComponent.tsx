@@ -8,6 +8,9 @@ import { fontFamilies } from '../../../constants/fontFamilies';
 import UserPostComponent from './UserPostComponent';
 import WarehouseComponent from './WarehouseComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import postsAPI from '../../../apis/postApi';
+import axios from 'axios';
+import { appInfo } from '../../../constants/appInfos';
 
 export interface filterValue {
   distance: number;
@@ -19,6 +22,8 @@ export interface filterValue {
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [warehouses, setWarehouses] = useState<any[]>([]);
+  const [warehousesID, setWarehousesID] = useState([])
   const [filterValue, setFilterValue] = useState<filterValue>({
     distance: 25,
     time: 14,
@@ -27,8 +32,29 @@ const ItemTabComponent = () => {
   })
 
   useEffect(() => {
-
+    const fetchDataWarehouses = async () => {
+      const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+      setWarehouses(response.data.wareHouses)
+      // console.log("WAREHOUSES",response.data.wareHouses)
+      let listWarehouseID: any = []
+      response.data.wareHouses.map((warehouse: any) => {
+        listWarehouseID.push(warehouse.warehouseid)
+      })
+      setWarehousesID(listWarehouseID)
+    }
+    fetchDataWarehouses()
   }, [])
+  console.log("warehousesID", warehousesID)
+  // console.log("setWarehousesID:", setWarehousesID);
+
+  // console.log("warehouses", warehouses)
+
+  const handleNavigateMapSelectWarehouses = (navigation: any) => {
+    navigation.navigate('MapSelectWarehouseScreen', {
+      warehouses: warehouses,
+      setWarehousesID: setWarehousesID
+    })
+  }
 
   return (
     <SubTabs.Navigator
@@ -83,7 +109,7 @@ const ItemTabComponent = () => {
         {state.index === 1 && (
           <TouchableOpacity
             style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.gray5, borderRadius: 15 }}
-            onPress={() => navigation.navigate('MapSelectWarehouseScreen')}
+            onPress={() => handleNavigateMapSelectWarehouses(navigation)}
           >
             <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary}/>
           </TouchableOpacity>
