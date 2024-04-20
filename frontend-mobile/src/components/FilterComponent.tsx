@@ -24,7 +24,6 @@ let time: any = []
 
 
 const category = [
-    "Tất cả",
     "Quần áo",
     "Giày dép",
     "Đồ nội thất",
@@ -37,7 +36,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
 
     const [indexDistance, setIndexDistance] = useState(2)
     const [indexTime, setIndexTime] = useState(3)
-    const [indexCategory, setIndexCategory] = useState(0)
+    const [indexCategories, setIndexCategories] = useState(Array.from({length: 7}, () => true))
 
     const [checked, setChecked] = useState('first');
 
@@ -68,19 +67,38 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
         console.log(filterValue)
         setIndexDistance(distance.indexOf(filterDistance));
         setIndexTime(time.indexOf(filterTime));
-        setIndexCategory(category.indexOf(filterCategory));
         setChecked(filterSort === 'Mới nhất' ? 'first' : 'second');
+
+        let newFilterCategory = Array.from({length: 7}, () => false)
+        filterCategory.map((item: any) => {
+            newFilterCategory[category.indexOf(item)] = true
+        })
+
+        setIndexCategories(newFilterCategory);
     }, [filterValue]);
 
+    const handleSetCategory = (index: number) => {
+        let newCategories = [...indexCategories]
+        newCategories[index] = !newCategories[index]
+        setIndexCategories(newCategories)
+    }
+
     const handleApply = () => {
+        let newCategories: any = []
+        indexCategories.map((item: any, index: number) => {
+            if(item === true){
+                newCategories.push(category[index])
+            }
+        })
         hideModal();
         setFilterValue({
             distance: distance[indexDistance],
             time: time[indexTime],
-            category: category[indexCategory],
+            category: newCategories,
             sort: checked === 'first' ? 'Mới nhất' : 'Gần nhất'
         })
     }
+    
 
     return (
         <View style={styles.container}>
@@ -208,44 +226,38 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             <View style={styles.group}>
                 <Text style={[styles.textDefault,{marginLeft: 10, fontWeight: 'bold'}]}>Danh mục</Text>
                 
-                <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}>
-                    <View style={styles.groupItem}>
-                        <TouchableOpacity style={[styles.item, indexCategory === 0 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(0)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 0 && styles.selectTextItem]}>Tất cả</Text>
+                <View>
+                    <View style={styles.groupItemCategory}>
+                        <TouchableOpacity style={[styles.item, indexCategories[0] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(0)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[0] === true && styles.selectTextItem]}>Quần áo</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 1 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(1)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 1 && styles.selectTextItem]}>Quần áo</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[1] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(1)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[1] === true && styles.selectTextItem]}>Giày dép</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 2 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(2)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 2 && styles.selectTextItem]}>Giày dép</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[2] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(2)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[2] === true && styles.selectTextItem]}>Đồ nội thất</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 3 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(3)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 3 && styles.selectTextItem]}>Đồ nội thất</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[3] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(3)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[3] === true && styles.selectTextItem]}>Công cụ</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 4 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(4)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 4 && styles.selectTextItem]}>Công cụ</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[4] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(4)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[4] === true && styles.selectTextItem]}>Dụng cụ học tập</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 5 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(5)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 5 && styles.selectTextItem]}>Dụng cụ học tập</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[5] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(5)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[5] === true && styles.selectTextItem]}>Thể thao</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 6 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(6)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 6 && styles.selectTextItem]}>Thể thao</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexCategory === 7 && styles.selectItem]}
-                            onPress={() => {setIndexCategory(7)}}>
-                            <Text style={[{fontSize: 15}, indexCategory === 7 && styles.selectTextItem]}>Khác</Text>
+                        <TouchableOpacity style={[styles.item, indexCategories[6] === true && styles.selectItem]}
+                            onPress={() => {handleSetCategory(6)}}>
+                            <Text style={[{fontSize: 15}, indexCategories[6] === true && styles.selectTextItem]}>Khác</Text>
                         </TouchableOpacity>
                     </View>
-                </ScrollView>
+                </View>
             </View>
 
             <View style={styles.group}>
@@ -287,7 +299,6 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
 
 const styles = StyleSheet.create({
     container: {
-        width: '100%',
         borderTopLeftRadius: 25,
         borderTopRightRadius: 25,
         backgroundColor: 'white',
@@ -298,25 +309,29 @@ const styles = StyleSheet.create({
         fontSize: 15
     },
     group: {
-        width: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         marginTop: 20
     },
     groupItem: {
-        marginTop: 10,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'flex-start',
         
     },
+    groupItemCategory: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
     item: {
+        flexGrow: 0,
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 20,
         backgroundColor: '#EEEEEE',
-        marginHorizontal: 10
+        marginLeft: 15,
+        marginTop: 10
     },
     selectItem: {
         backgroundColor: '#782292',

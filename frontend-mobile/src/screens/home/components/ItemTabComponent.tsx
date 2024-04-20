@@ -15,9 +15,19 @@ import { appInfo } from '../../../constants/appInfos';
 export interface filterValue {
   distance: number;
   time: number;
-  category: string;
+  category: string[];
   sort: string;
 }
+
+const category = [
+  "Quần áo",
+  "Giày dép",
+  "Đồ nội thất",
+  "Công cụ",
+  "Dụng cụ học tập",
+  "Thể thao",
+  "Khác"
+]
 
 const ItemTabComponent = () => {
   const SubTabs = createMaterialTopTabNavigator();
@@ -27,7 +37,7 @@ const ItemTabComponent = () => {
   const [filterValue, setFilterValue] = useState<filterValue>({
     distance: 25,
     time: 14,
-    category: "Tất cả",
+    category: category,
     sort: "Mới nhất"
   })
 

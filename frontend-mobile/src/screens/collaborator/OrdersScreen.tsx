@@ -17,6 +17,16 @@ import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
 
+const category = [
+    "Quần áo",
+    "Giày dép",
+    "Đồ nội thất",
+    "Công cụ",
+    "Dụng cụ học tập",
+    "Thể thao",
+    "Khác"
+  ]
+
 export default function OrdersScreen({navigation}: any) {
 
     const [refresh, setRefresh] = useState(false)
@@ -36,7 +46,7 @@ export default function OrdersScreen({navigation}: any) {
     const [filterValue, setFilterValue] = useState({
         distance: 15,
         time: 0,
-        category: "Tất cả",
+        category: category,
         sort: 'Mới nhất'
     })
 
@@ -68,9 +78,21 @@ export default function OrdersScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPI = async () => {
             try{
+                let categoryQuery = ''
+                if(filterValue.category.length < 7){
+                    filterValue.category.map((item: any, index: number) => {
+                        categoryQuery += item
+                        if(index < filterValue.category.length - 1){
+                            categoryQuery += ','
+                        }
+                    })
+                }else{
+                    categoryQuery = 'Tất cả'
+                }
+                console.log(filterValue.category.length, categoryQuery)
                 setIsLoading(true)
                 const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}&distance=${filterValue.distance}
-                    &time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}`)
+                    &time=${filterValue.time}&category=${categoryQuery}&sort=${filterValue.sort}`)
                 setOrders(response.data.orders)
                 setIsLoading(false)
             }catch(error){
