@@ -21,7 +21,7 @@ const HeaderComponent = () => {
         <Ionicons name="search-outline" size={26} color={appColors.black} />
       </TouchableOpacity>
       <SpaceComponent width={10} />
-      <TouchableOpacity onPress={() => navigation.navigate('MapSettingAddressScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'})}>
         <Ionicons name="location-outline" size={26} color={appColors.black} />
       </TouchableOpacity>
       <SpaceComponent width={10} />

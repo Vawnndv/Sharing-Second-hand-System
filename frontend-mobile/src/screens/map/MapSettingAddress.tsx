@@ -45,7 +45,10 @@ const LocationComponent = ({name, address, handleClick}: any) => {
     )
 }
 
-export default function MapSettingAddress() {
+// use to: setAddress, setPostAddress, no
+export default function MapSettingAddress({natigation, route}: any) {
+
+    const {useTo} = route.params;
 
     const [inputSearch, setInputSearch] = useState('')
     const debouncedSearch = useDebounce(inputSearch, 500);
@@ -262,10 +265,15 @@ export default function MapSettingAddress() {
                     <EvilIcons name='location' size={35} color='white'/>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.myLocationButton}
-                    onPress={() => handleGetCenter()}>
-                    <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
-                </TouchableOpacity>
+                {
+                    (useTo === 'setAddress' || useTo === 'setPostAddress')
+                    &&
+                    <TouchableOpacity style={styles.myLocationButton}
+                        onPress={() => handleGetCenter()}>
+                        <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
+                    </TouchableOpacity>
+                }
+                
 
                 <View style={styles.pinLocation}>
                     <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>

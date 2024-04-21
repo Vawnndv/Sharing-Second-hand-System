@@ -403,6 +403,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                           latitude: parseFloat(post.latitude),
                           longitude: parseFloat(post.longitude),
                         }}
+                        useTo={'no'}
                     />
                   </View>
                   
