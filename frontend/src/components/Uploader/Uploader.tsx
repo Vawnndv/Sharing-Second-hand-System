@@ -25,6 +25,7 @@ function Uploader(props: Props) {
         // await deleteImageService(imageUrl);
       }
     }
+    console.log(file);
     // const data = await uploadImageService(file, setLoading);
     // if (data) {
       // setImageUrl(data)
