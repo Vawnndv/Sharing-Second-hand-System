@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
+import { ProfileModel } from '../../models/ProfileModel';
+import { authSelector } from '../../redux/reducers/authReducers';
+import axios from 'axios';
+import { appInfo } from '../../constants/appInfos';
+
 
 
 
@@ -32,12 +38,53 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+
+
+
+
+  const [profile, setProfile] = useState<ProfileModel>();
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const auth = useSelector(authSelector);
+
+  useEffect( () => {
+    const fetchUserData = async () =>{
+        try {
+  
+          const res = await axios.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
+          // const res = await postsAPI.HandlePost(
+          //   `/${postID}`,
+          // );
+          if (!res) {
+            throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
+          }
+          setProfile(res.data);
+          } catch (error) {
+          console.error('Error fetching user info:', error);
+        } finally {
+          setIsLoading(false);
+        }
+    }
+
+    fetchUserData();
+  
+  },[] )
+
+  useEffect(() =>{
+    if(profile){
+      setFormData({ ...formData, postPhoneNumber: profile.phonenumber, postAddress: profile.address});
+    }
+
+  },[profile])
   
   useEffect(() => {
     if (startDate) {
       setMinEndDate(startDate);
     }
   }, [startDate]);
+
+
 
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate  || startDate;
@@ -70,6 +117,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
   const showEndDatePicker = () => {
     setEndDatePickerVisibility(true);
   };
+
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
 
   return (
@@ -138,7 +194,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         )}
       <TextInput
         label="Số điện thoại"
-        value={formData.postPhoneNumber}
+        value={profile?.phonenumber}
         onChangeText={(text) => {
           // Chỉ cho phép cập nhật nếu text mới là số
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
@@ -151,12 +207,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       />  
       <TextInput
         label="Địa chỉ"
-        value={formData.postAddress}
+        value={profile?.address}
         onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-      />  
+      />
       {/* Thêm các trường input khác tương tự */}
     </ScrollView>
   );

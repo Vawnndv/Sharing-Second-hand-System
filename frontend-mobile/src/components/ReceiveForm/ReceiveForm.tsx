@@ -100,13 +100,13 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   
   const methodsBringItemToWarehouse = [
-    { label: 'Tự đem đến kho', value: 1 },
-    { label: 'Nhân viên kho sẽ đến lấy', value: 2 },
+    { label: '  Tự đem đến kho', value: 1 },
+    { label: '  Nhân viên kho sẽ đến lấy', value: 2 },
   ];
 
   const methodsReceive = [
-    { label: 'Nhận đồ qua kho', value: 1 },
-    { label: 'Nhận đồ trực tiếp', value: 2 },
+    { label: '  Nhận đồ qua kho', value: 1 },
+    { label: '  Nhận đồ trực tiếp', value: 2 },
   ];
 
   const [warehouse, setWarehouse] = useState<Warehouse>();
@@ -161,7 +161,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
@@ -492,7 +492,7 @@ const handleGive = async () =>{
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? 'Phương thức nhận đồ' : '...'}
+          placeholder={!isFocus ? '  Phương thức nhận đồ' : '...'}
           searchPlaceholder="Tìm kiếm..."
           value={selectedReceiveMethodDropdown}
           onFocus={() => setIsFocus(true)}
@@ -500,91 +500,37 @@ const handleGive = async () =>{
           onChange={item => {
             setSelectedReceiveMethodDropdown(item.value);
             setIsFocus(false);
-            setSelectedReceiveMethod(item.label)
+            setSelectedReceiveMethod(item.label.substring(2));
           }}
         />
-        // renderLeftIcon={() => (
-        //   <AntDesign
-        //     style={styles.icon}
-        //     color={isFocus ? 'blue' : 'black'}
-        //     name="Safety"
-        //     size={20}
-        //   />
-        // )}
-        
-      // <RNPickerSelect
-      //   onValueChange={(value) => setSelectedReceiveMethod(value)}
-      //   items={methodsReceive.map((method) => ({ label: method, value: method }))}
-      //   value={selectedReceiveMethod}
-      //   placeholder={{ label: 'Chọn phương thức nhận' }}fdvxczsa 
-      //   style={{
-      //     inputIOS: {
-      //       ...styles.inputDropDown,
-      //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //     },
-      //     inputAndroid: {
-      //       ...styles.inputDropDown,
-      //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //     },
-      //     placeholder: {
-      //       color: 'black', // Màu của chữ label khi chưa chọn
-      //       fontSize: 14,
-      //       // enabled: false
-      //     },
-      //   }}
-      //   useNativeAndroidPickerStyle={false}
-      //   Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-      // />
     )}
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && (
-      // <RNPickerSelect
-      //     onValueChange={(value) => handleWarehouseChange(value)}
-      //     items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehousename + ', ' + wareHouse.address }))}
-      //     value={formData?.warehouseInfo}
-      //     placeholder={{ label: 'Chọn kho'}}
-      //     style={{
-      //       inputIOS: {
-      //         ...styles.inputDropDown,
-      //         color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //       },
-      //       inputAndroid: {
-      //         ...styles.inputDropDown,
-      //         color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //       },
-      //       placeholder: {
-      //         color: 'black', // Màu của chữ label khi chưa chọn
-      //         fontSize: 14,
-      //         // enabled: false
-      //       },
-      //     }}
-      //     useNativeAndroidPickerStyle={false}
-      //     Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-      // />
+
 
       <Dropdown
-      style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-      placeholderStyle={styles.placeholderStyle}
-      selectedTextStyle={styles.selectedTextStyle}
-      inputSearchStyle={styles.inputSearchStyle}
+        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        // inputSearchStyle={styles.inputSearchStyle}
 
-      iconStyle={styles.iconStyle}
-      data={warehouseDropdown}
-      search
-      maxHeight={300}
-      labelField="label"
-      valueField="value"
-      placeholder={!isFocus ? 'Chọn kho' : '...'}
-      searchPlaceholder="Tìm kiếm..."
-      value={selectedWarehouseDropdown}
-      onFocus={() => setIsFocus(true)}
-      onBlur={() => setIsFocus(false)}
-      onChange={item => {
-        setSelectedWarehouseDropdown(item.value);
-        setIsFocus(false);
-        handleWarehouseChange(item.value)
-        // setSelectedReceiveMethod(item.value)
-      }}
+        iconStyle={styles.iconStyle}
+        data={warehouseDropdown}
+        // search
+        maxHeight={300}
+        labelField="label"
+        valueField="value"
+        placeholder={!isFocus ? ' Chọn kho' : '...'}
+        // searchPlaceholder="Tìm kiếm..."
+        value={selectedWarehouseDropdown}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={item => {
+          setSelectedWarehouseDropdown(item.value);
+          setIsFocus(false);
+          handleWarehouseChange(item.label.substring(2));
+          // setSelectedReceiveMethod(item.value)
+        }}
       />
     )}
 
@@ -646,51 +592,28 @@ const handleGive = async () =>{
     )}
 
     {isUserPost && receivetype == 'Cho nhận qua kho' && (
-      // <RNPickerSelect
-      //     onValueChange={(value) => handleBringItemToWareHouseChange(value)}
-      //     items={methodsBringItemToWarehouse.map((methodBringItemToWarehouse) => ({ label: methodBringItemToWarehouse, value: methodBringItemToWarehouse}))}
-      //     value={formData?.methodBringItemToWarehouse}
-      //     placeholder={{ label: 'Chọn phương thức đem đồ đến kho'}}
-      //     style={{
-      //       inputIOS: {
-      //         ...styles.inputDropDown,
-      //         color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //       },
-      //       inputAndroid: {
-      //         ...styles.inputDropDown,
-      //         color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-      //       },
-      //       placeholder: {
-      //         color: 'black', // Màu của chữ label khi chưa chọn
-      //         fontSize: 14,
-      //         // enabled: false
-      //       },
-      //     }}
-      //     useNativeAndroidPickerStyle={false}
-      //     Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-      // />
 
         <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        // inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        data={methodsBringItemToWarehouse}
-        // search
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? 'Phương thức nhận đồ' : '...'}
-        searchPlaceholder="Tìm kiếm..."
-        value={bringItemToWarehouseMethodsDropDown}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={item => {
-          setBringItemToWarehouseMethodDropdown(item.value);
-          setIsFocus(false);
-          handleBringItemToWareHouseChange(item.label)        
-        }}
+          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          // inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={methodsBringItemToWarehouse}
+          // search
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder={!isFocus ? '  Phương thức đem đồ đến kho' : '...'}
+          // searchPlaceholder="Tìm kiếm..."
+          value={bringItemToWarehouseMethodsDropDown}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            setBringItemToWarehouseMethodDropdown(item.value);
+            setIsFocus(false);
+            handleBringItemToWareHouseChange(item.label.substring(2));
+          }}
         />
     )}
 
@@ -712,6 +635,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     backgroundColor: 'white',
+    flexDirection: 'column',
+    // alignItems: 'center'
   },
   title: {
     fontSize: 20,

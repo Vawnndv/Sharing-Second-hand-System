@@ -7,6 +7,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 import { Dropdown } from 'react-native-element-dropdown';
+import { ProfileModel } from '../../models/ProfileModel';
 
 // import { Picker } from '@react-native-picker/picker';
 
@@ -23,6 +24,7 @@ interface FormData {
   methodsBringItemToWarehouse?: string;
   warehouseAddress?: string;
   warehouseAddressID?: number;
+  warehouseID?: number;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -35,6 +37,7 @@ interface Warehouse {
   warehouseid: number;
   address: string;
   warehousename: string;
+  addressid: number;
 }
 
 
@@ -51,7 +54,6 @@ const windowHeight = Dimensions.get('window').height;
 
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => {
 
-  const [showDropdown, setShowDropdown] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const [itemTypes, setItemTypes] = useState<ItemTypes[]>([]);
@@ -62,19 +64,20 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
   const methodsGive = [
-    { label: "Đăng món đồ lên hệ thống ứng dụng", value: 1 },
-    { label: "Gửi món đồ đến kho", value: 2 },
+    { label: "  Đăng món đồ lên hệ thống ứng dụng", value: "  Đăng món đồ lên hệ thống ứng dụng" },
+    { label: "  Gửi món đồ đến kho", value: "  Gửi món đồ đến kho" },
   ];
 
   // const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
 
   const methodsBringItemToWarehouse = [
-    { label: "Tự đem đến kho", value: 1 },
-    { label: "Nhân viên kho sẽ đến lấy", value: 2 },
+    { label: "  Tự đem đến kho", value: "  Tự đem đến kho" },
+    { label: "  Nhân viên kho sẽ đến lấy", value: "  Nhân viên kho sẽ đến lấy" },
   ];
 
 
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
+
 
   const [warehouseDropdown, setWarehouseDropdown] = useState<any>([])
 
@@ -120,10 +123,29 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   }, [formData.methodsBringItemToWarehouse])
 
 
-  console.log(formData.itemPhotos)
+  useEffect(() =>{
+    if (formData.warehouseAddress){
+      setSelectedWarehouseDropdown('  ' + formData.warehouseAddress)
+    }
+
+    if (formData.itemCategory){
+      setSelectedItemTypeDropdown(formData.itemCategory)
+    }
+
+    if (formData.methodGive){
+      setSelectedMethodGive('  ' + formData.methodGive)
+    }
+
+    if (formData.methodsBringItemToWarehouse){
+      setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
+    }
+
+
+  })
+
 
   useEffect(() => {
-    const fetchItemTypes = async () => {
+    const fetchAllData = async () => {
       try {
         setIsLoading(true);
         const res = await axios.get(`${appInfo.BASE_URL}/items/types`)
@@ -138,8 +160,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         let itemTypesArray = [];
         for(let i = 0; i< count; i++){
           itemTypesArray.push({
-            value: res.data.itemTypes[i].nametype,
-            label: res.data.itemTypes[i].nametype
+            value: res.data.itemTypes[i].itemtypeid,
+            label: '  ' + res.data.itemTypes[i].nametype
           })
         }
         setItemTypesDropdown(itemTypesArray);
@@ -163,7 +185,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
@@ -176,8 +198,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       } finally {
         setIsLoading(false);
       }
+      
     };
-    fetchItemTypes();
+    fetchAllData();
 }, [])
 
 
@@ -221,13 +244,16 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   const handleWarehouseChange = (warehouseAddress: string) => {
     // Tìm warehousename dựa vào warehouseid
     const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehousename + ', ' + wareHouse.address === warehouseAddress);
+
     if (selectedWarehouse) {
       // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
       setFormData({
         ...formData,
         warehouseAddress: selectedWarehouse.warehousename + ', ' + selectedWarehouse.address,
-        warehouseAddressID: selectedWarehouse.warehouseid
+        warehouseAddressID: selectedWarehouse.addressid,
+        warehouseID: selectedWarehouse.warehouseid
       });
+
     }
   };
 
@@ -369,40 +395,17 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         maxHeight={windowHeight*0.2}
         labelField="label"
         valueField="value"
-        placeholder={!isFocusSelectedItemType ? 'Chọn loại món đồ' : '...'}
+        placeholder={!isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
         // searchPlaceholder="Tìm kiếm..."
         value={selectedItemTypeDropdown}
         onFocus={() => setIsFocusSelectedItemType(true)}
         onBlur={() => setIsFocusSelectedItemType(false)}
         onChange={item => {
-          setFormData({ ...formData, itemCategory: item.label });
-          setSelectedItemTypeDropdown(item.label)
+          setFormData({ ...formData, itemCategory: item.value});
+          setSelectedItemTypeDropdown(item.value);
           setIsFocusSelectedItemType(false);
         }}
       />
-{/* 
-      <RNPickerSelect
-        onValueChange={(value) => setFormData({ ...formData, methodGive: value })}
-        items={methodsGive.map((method) => ({ label: method, value: method }))}
-        value={formData.methodGive}
-        placeholder={{ label: 'Chọn phương thức cho', value: null }}
-        style={{
-          inputIOS: {
-            ...styles.inputDropDown,
-            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-          },
-          inputAndroid: {
-            ...styles.inputDropDown,
-            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-          },
-          placeholder: {
-            color: 'black', // Màu của chữ label khi chưa chọn
-            fontSize: 14,
-          },
-        }}
-        useNativeAndroidPickerStyle={false}
-        Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-      /> */}
 
     <Dropdown
         style={[styles.dropdown, isFocusMethodGive && { borderColor: 'blue' }]}
@@ -416,7 +419,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         maxHeight={300}
         labelField="label"
         valueField="value"
-        placeholder={!isFocusMethodGive ? 'Phương thức cho đồ' : '...'}
+        placeholder={!isFocusMethodGive ? '  Phương thức cho đồ' : '...'}
         searchPlaceholder="Tìm kiếm..."
         value={selectedMethodGive}
         onFocus={() => setIsFocusMethodGive(true)}
@@ -424,34 +427,11 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         onChange={item => {
           setSelectedMethodGive(item.value);
           setIsFocusMethodGive(false);
-          setFormData({ ...formData, methodGive: item.label})      
-          }}
+          setFormData({ ...formData, methodGive: item.label.substring(2)})      
+        }}
         />
 
       {isWarehouseGive && (
-        // <RNPickerSelect
-        //   onValueChange={(value) => setFormData({ ...formData, methodsBringItemToWarehouse: value })}
-        //   items={methodsBringItemToWarehouse.map((methodBringItemToWarehouse) => ({ label: methodBringItemToWarehouse, value: methodBringItemToWarehouse }))}
-        //   value={formData.methodsBringItemToWarehouse}
-        //   placeholder={{ label: 'Chọn phương thức đem đến kho', value: null}}
-        //   style={{
-        //     inputIOS: {
-        //       ...styles.inputDropDown,
-        //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-        //     },
-        //     inputAndroid: {
-        //       ...styles.inputDropDown,
-        //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-        //     },
-        //     placeholder: {
-        //       color: 'black', // Màu của chữ label khi chưa chọn
-        //       fontSize: 14,
-        //     },
-        //   }}
-        //   useNativeAndroidPickerStyle={false}
-        //   Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-        // />
-
         <Dropdown
           style={[styles.dropdown, isFocusBringItemToWarehouse && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
@@ -463,7 +443,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocusBringItemToWarehouse ? 'Phương thức đem đồ đến kho' : '...'}
+          placeholder={!isFocusBringItemToWarehouse ? '  Phương thức đem đồ đến kho' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={bringItemToWarehouseMethodsDropDown}
           onFocus={() => setIsFocusBringItemToWarehouse(true)}
@@ -471,56 +451,34 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           onChange={item => {
             setBringItemToWarehouseMethodDropdown(item.value);
             setIsFocusBringItemToWarehouse(false);
-            setFormData({ ...formData, methodsBringItemToWarehouse: item.label})
+            setFormData({ ...formData, methodsBringItemToWarehouse: item.label.substring(2)})
           }}
         />
       )}
 
       {isBringItemToWarehouse && isWarehouseGive && (
-        // <RNPickerSelect
-        //   onValueChange={(value) => handleWarehouseChange(value)}
-        //   items={wareHouses.map((wareHouse) => ({ label: wareHouse.warehousename + ', ' + wareHouse.address, value: wareHouse.warehousename + ', ' + wareHouse.address }))}
-        //   value={formData.warehouseAddress}
-        //   placeholder={{ label: 'Chọn kho', value: null}}
-        //   style={{
-        //     inputIOS: {
-        //       ...styles.inputDropDown,
-        //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-        //     },
-        //     inputAndroid: {
-        //       ...styles.inputDropDown,
-        //       color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-        //     },
-        //     placeholder: {
-        //       color: 'black', // Màu của chữ label khi chưa chọn
-        //       fontSize: 14,
-        //     },
-        //   }}
-        //   useNativeAndroidPickerStyle={false}
-        //   Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-        // />
 
         <Dropdown
           style={[styles.dropdown, isFocusSelectedWarehouse && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
+          // inputSearchStyle={styles.inputSearchStyle}
     
           iconStyle={styles.iconStyle}
           data={warehouseDropdown}
-          search
-          maxHeight={300}
+          // search
+          maxHeight={windowHeight*0.2}
           labelField="label"
           valueField="value"
-          placeholder={!isFocusSelectedWarehouse ? 'Chọn kho' : '...'}
-          searchPlaceholder="Tìm kiếm..."
+          placeholder={!isFocusSelectedWarehouse ? '   Chọn kho' : '...'}
+          // searchPlaceholder="Tìm kiếm..."
           value={selectedWarehouseDropdown}
           onFocus={() => setIsFocusSelectedWarehouse(true)}
           onBlur={() => setIsFocusSelectedWarehouse(false)}
           onChange={item => {
-            setSelectedWarehouseDropdown(item.value);
             setIsFocusSelectedWarehouse(false);
-            handleWarehouseChange(item.value);
+            setSelectedWarehouseDropdown(item.value);
+            handleWarehouseChange(item.label.substring(2));
             // setSelectedReceiveMethod(item.value)
           }}
         />
@@ -580,7 +538,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   dropdownText: {
     flex: 1,
@@ -591,7 +549,7 @@ const styles = StyleSheet.create({
   },
   inputDropDown: {
     width: '100%',
-    marginBottom: 20,
+    // marginBottom: 20,
     backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
     borderBottomWidth: 1,
     borderBottomColor: 'rgb(200, 200, 200)',
