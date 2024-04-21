@@ -12,7 +12,7 @@ const loginAction = (datas: any): ThunkAction<void, RootState, unknown, Action<s
     const response = await loginService(datas);
     dispatch({
       type: authConstants.USER_LOGIN_SUCCESS,
-      payload: response.data
+      payload: response
     });
   } catch (error) {
     ErrorsAction(error, dispatch, authConstants.USER_LOGIN_FAIL);

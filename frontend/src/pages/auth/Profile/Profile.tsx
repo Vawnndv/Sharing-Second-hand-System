@@ -1,20 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
-import dayjs from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { useDispatch, useSelector } from 'react-redux';
+// import dayjs from 'dayjs';
+// import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import toast from 'react-hot-toast';
 import ImagePreview from '../../../components/ImagePreview/ImagePreview';
 import Uploader from '../../../components/Uploader/Uploader';
-import { deleteImageService } from '../../redux/APIs/ImageUpload';
+// import { deleteImageService } from '../../redux/APIs/ImageUpload';
 import Loader from '../../../components/notification/Loader';
 import { ProfileValidation } from '../../../validation/userValidation';
 import './style.scss';
+import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
+import { getProfileAction, updateProfileAction } from '../../../redux/actions/userActions';
 
 const defaultTheme = createTheme({
   palette: {
@@ -28,24 +30,26 @@ const defaultTheme = createTheme({
 });
 
 function Profile() {
-  const [date, setDate] = useState<any>(null);
-//   const dispatch = useDispatch();
+  // const [date, setDate] = useState<any>(null);
+  const dispatch: AppDispatch = useAppDispatch();
   const initialized = useRef(false);
 
-  // eslint-disable-next-line no-unused-vars
-//   const { isError, isLoading, userInfo, isSuccess } = useSelector((state) => state.userGetProfile);
+  const { isLoading, userInfo } = useSelector((state: RootState) => state.userGetProfile);
+  const { userInfo: authInfo } = useSelector( (state: RootState) => state.userLogin);
 
   const [imageUrl, setImageUrl] = useState('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
-//   const {
-//     isLoading: updateLoading,
-//     isError: editError,
-//     userInfo: editUserInfo,
-//     isSuccess: editSuccess
-//   } = useSelector((state) => state.userUpdateProfile);
+  console.log(authInfo);
 
+  const {
+    isLoading: updateLoading,
+    isError: editError,
+    userInfo: editUserInfo,
+    isSuccess: editSuccess
+  } = useSelector((state: RootState) => state.userUpdateProfile);
+
+  console.log(editUserInfo);
   // validate user
   const {
     register,
@@ -62,12 +66,13 @@ function Profile() {
     if (imageUpdateUrl !== imageUrl) {
     //   await deleteImageService(imageUpdateUrl);
     }
-    // dispatch(
-    //   updateProfileAction({
-    //     ...data,
-    //     ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
-    //   })
-    // );
+    dispatch(
+      updateProfileAction({
+        ...data,
+        id: authInfo?.id,
+        // ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
+      })
+    );
   };
 
   // useEffect
@@ -75,7 +80,9 @@ function Profile() {
     if (!initialized.current) {
       initialized.current = true;
       const fetchUserInfo = async () => {
-        //   dispatch(getProfileAction())
+        if (authInfo?.id) {
+          dispatch(getProfileAction(authInfo.id));
+        }
       };
 
       fetchUserInfo();
@@ -83,42 +90,43 @@ function Profile() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-//   useEffect(() => {
-//     if (userInfo) {
-//       setValue('firstName', userInfo?.firstName);
-//       setValue('lastName', userInfo?.lastName);
-//       setValue('email', userInfo?.email);
-//       setValue('phone', userInfo?.phone);
-//       setValue('userId', userInfo?.userId);
-//       if (userInfo?.dob !== '') {
-//         setDate(dayjs(userInfo?.dob));
-//       }
-//       userInfo?.image && setImageUrl(userInfo?.image);
-//     }
+  useEffect(() => {
+    if (userInfo) {
+      setValue('firstName', userInfo?.firstName);
+      setValue('lastName', userInfo?.lastName);
+      setValue('email', userInfo?.email);
+      setValue('phone', userInfo?.phoneNumber);
+      setValue('userId', userInfo?.id);
+      // if (userInfo?.dob !== '') {
+      //   setDate(dayjs(userInfo?.dob));
+      // }
+      if (userInfo?.avatar)  setImageUrl(userInfo?.avatar);
+    }
 
-//     if (editUserInfo) {
-//       setValue('firstName', editUserInfo?.firstName);
-//       setValue('lastName', editUserInfo?.lastName);
-//       setValue('email', editUserInfo?.email);
-//       setValue('phone', editUserInfo?.phone);
-//       setValue('userId', editUserInfo?.userId);
-//       if (editUserInfo?.dob !== '') {
-//         setDate(dayjs(editUserInfo?.dob));
-//       }
-//       setImageUrl(editUserInfo?.image);
-//     }
+    if (editUserInfo) {
+      console.log(editUserInfo);
+      setValue('firstName', editUserInfo?.firstName);
+      setValue('lastName', editUserInfo?.lastName);
+      setValue('email', editUserInfo?.email);
+      setValue('phone', editUserInfo?.phoneNumber);
+      setValue('userId', editUserInfo?.id);
+      // if (editUserInfo?.dob !== '') {
+      //   setDate(dayjs(editUserInfo?.dob));
+      // }
+      setImageUrl(editUserInfo?.avatar);
+    }
 
-//     if (editSuccess) {
-//       setImageUpdateUrl(editUserInfo?.image);
-//       dispatch({ type: 'USER_UPDATE_PROFILE_RESET' });
-//       dispatch({ type: 'USER_GET_PROFILE_RESET' });
-//     }
-//     if (editError) {
-//       toast.error(editError);
-//       dispatch({ type: 'USER_UPDATE_PROFILE_RESET' });
-//       dispatch({ type: 'USER_GET_PROFILE_RESET' });
-//     }
-//   }, [editUserInfo, setValue, editSuccess, editError, dispatch, userInfo]);
+    if (editSuccess) {
+      // setImageUpdateUrl(editUserInfo?.avatar);
+      dispatch({ type: 'USER_UPDATE_PROFILE_RESET' });
+      dispatch({ type: 'USER_GET_PROFILE_RESET' });
+    }
+    if (editError) {
+      toast.error(editError);
+      dispatch({ type: 'USER_UPDATE_PROFILE_RESET' });
+      dispatch({ type: 'USER_GET_PROFILE_RESET' });
+    }
+  }, [editUserInfo, setValue, editSuccess, editError, dispatch, userInfo]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -215,7 +223,7 @@ function Profile() {
                           label="Date of birth"
                           value={date}
                           onChange={(newValue) => setDate(newValue)}
-                          error={false}
+                          onError={false}
                           placeholder="MM/DD/YYYY"
                         />
                       </DemoContainer>
@@ -223,7 +231,7 @@ function Profile() {
                   </Grid> */}
                 </Grid>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}>
-                  Update Profile
+                  {updateLoading ? 'Updating...' : 'Update Profile'}
                 </Button>
               </Box>
             )}

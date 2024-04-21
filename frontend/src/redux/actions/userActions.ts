@@ -24,10 +24,10 @@ const changePasswordAction = (password: string): ThunkAction<void, RootState, un
 }
 
 // get profile action
-const getProfileAction = (): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch => {
+const getProfileAction = (id: string): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch => {
   try {
     dispatch({ type: userConstants.USER_GET_PROFILE_REQUEST })
-    const response = await userApi.getProfileService()
+    const response = await userApi.getProfileService(id)
     dispatch({
       type: userConstants.USER_GET_PROFILE_SUCCESS,
       payload: response

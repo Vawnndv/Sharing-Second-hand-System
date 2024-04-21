@@ -9,18 +9,36 @@ const changePasswordService = async (password: string): Promise<any>  => {
 
 // update profile API call
 const updateProfileService = async (user: any): Promise<any>  => {
-  const { data } = await Axios.put('/user/profile', user)
-  if (data) {
-    localStorage.setItem('userInfo', JSON.stringify(data))
-  }
-  return data
+  console.log(user);
+  const { data } = await Axios.post('/user/change-profile', {
+    email: user.email,
+    firstname: user.firstName,
+    lastname: user.lastName,
+    phonenumber: user.phone,
+    avatar: user.Avatar,
+  })
+  // if (data) {
+  //   localStorage.setItem('userInfo', JSON.stringify(data))
+  // }
+  console.log(data);
+  return data;
 }
 
 // Get profile API call
-const getProfileService = async (): Promise<any>  => {
-  const { data } = await Axios.get('/user/info')
+const getProfileService = async (id: string): Promise<any>  => {
+  console.log(id);
+  const { data } = await Axios.get(`/user/get-profile?userId=${id}`)
+  console.log(data);
 
-  return data
+  return {
+    id: data.userid,
+    address: data.address ?? '',
+    firstName: data.firstname ?? '',
+    lastName: data.lastname ?? '',
+    avatar: data.avatar ?? '',
+    phoneNumber: data.phonenumber ?? '',
+    email: data.email ?? '',
+  };
 }
 
 export {

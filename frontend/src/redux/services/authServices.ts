@@ -14,12 +14,14 @@ export interface UserInfo {
   roleId: number;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
 }
 
 // Login user API
 const loginService = async (user: AuthData): Promise<any> => {
-  const { data } = await Axios.post('/auth/login', {...user, platform: 'web'});
-
+  const {data} = await Axios.post('/auth/login', {...user, platform: 'web'});
+  
+  console.log(data);
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
