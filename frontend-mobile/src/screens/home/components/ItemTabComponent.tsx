@@ -44,7 +44,7 @@ const ItemTabComponent = () => {
   const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
   useEffect(() => {
     setCheckWarehouses(Array.from({ length: warehouses.length }, () => true))
-  }, warehouses)
+  }, [warehouses])
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
