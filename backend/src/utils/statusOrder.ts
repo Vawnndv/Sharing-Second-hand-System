@@ -10,4 +10,5 @@ export const statusOrder = {
   STOCK_RECEIVED: { statusid: '9', statusname: 'Hàng đã nhập kho' },
   REJECTED: { statusid: '10', statusname: 'Từ chối xét duyệt' },
   AWAITING_PICKUP_ARRIVAL: { statusid: '11', statusname: 'Hàng đang được đến lấy' },
+  APPROVAL: { statusid: '12', statusname: 'Đã duyệt' },
 };

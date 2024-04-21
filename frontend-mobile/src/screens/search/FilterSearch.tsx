@@ -14,6 +14,11 @@ export default function FilterSearch({navigation, filterValue, setFilterValue, i
   const hideModal = () => setVisible(false);
   const [warehouses, setWarehouses] = useState<any[]>([]);
 
+  const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
+  useEffect(() => {
+    setCheckWarehouses(Array.from({ length: warehouses.length }, () => true))
+  }, [warehouses])
+
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
@@ -32,7 +37,9 @@ export default function FilterSearch({navigation, filterValue, setFilterValue, i
   const handleNavigateMapSelectWarehouses = () => {
     navigation.navigate('MapSelectWarehouseScreen', {
       warehouses: warehouses,
-      setWarehousesID: setWarehousesID
+      setWarehousesID: setWarehousesID,
+      checkWarehouses,
+      setCheckWarehouses
     })
   }
 

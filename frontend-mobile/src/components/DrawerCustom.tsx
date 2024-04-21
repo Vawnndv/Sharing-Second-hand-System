@@ -101,14 +101,14 @@ const DrawerCustom = ({navigation}: any) => {
         handleSettingAddress();
         break;
 
-      case 'MyProfile':
-        navigation.navigate('Profile', {
-          screen: 'ProfileScreen',
-          params: {
-            id: auth.id,
-          },
-        });
-        break;
+      // case 'MyProfile':
+      //   navigation.navigate('Profile', {
+      //     screen: 'ProfileScreen',
+      //     params: {
+      //       id: auth.id,
+      //     },
+      //   });
+      //   break;
       default:
         console.log(key);
         navigation.navigate(key);

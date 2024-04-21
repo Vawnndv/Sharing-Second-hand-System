@@ -53,7 +53,7 @@ const AccountScreen = () => {
     setErrorMessage(initValue);
     setIsLoading(true);
     try {
-      const res = await userAPI.HandleUser('/change-password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.newPassword}, 'post');
+      const res = await userAPI.HandleUser('/change-password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.newPassword}, 'put');
       setIsLoading(false);
       setValues(initValue);
       Alert.alert('Change Password successfully!!!');

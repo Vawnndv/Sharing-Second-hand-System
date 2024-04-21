@@ -84,6 +84,7 @@ const windowHeight = Dimensions.get('window').height;
 const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
+  // console.log(postID)
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
   const [profile, setProfile] = useState<ProfileModel>();
