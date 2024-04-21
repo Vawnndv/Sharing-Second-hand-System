@@ -11,6 +11,7 @@ import { ItemManager } from './ItemManager';
 import { PostManager } from './PostManager';
 import { Post } from '../Post';
 import { Address } from '../Address';
+import { statusOrder } from '../../utils/statusOrder';
 
 
 interface FilterOrder {
@@ -31,7 +32,7 @@ interface FilterOrder {
   row_num: string;
 }
 
-function filterOrders(distance: string, time: string, category: string, sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
+function filterOrders(distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
   // Chuyển các tham số string sang số
   const distanceFloat: number = parseFloat(distance);
   const timeInt: number = parseInt(time);
@@ -75,11 +76,7 @@ function filterOrders(distance: string, time: string, category: string, sort: st
       const isValidTime: boolean = timeInt !== -1 ? isTimeBefore(item.createdat, timeInt) : true;
 
       // Lọc theo danh mục
-      let isValidCategory: boolean = item.nametype === category;
-      if (category === "Tất cả") {
-        isValidCategory = true
-      }
-      console.log('KDJKLD', isValidDistance, isValidTime, isValidCategory)
+      let isValidCategory: boolean = category.includes(item.nametype) || category.includes("Tất cả");
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory;
   });
@@ -565,7 +562,7 @@ export class OrderManager {
   //   return new Order('');
   // }
 
-  public static async getOrderList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     // let query = `
@@ -677,7 +674,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -841,6 +838,7 @@ export class OrderManager {
         WHERE orderid = $2
       `
       const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
+      const res = await this.updateStatusOrder(orderid, statusOrder.COMPLETED.statusid)
       return true;
     }catch(error){
       console.log(error)
@@ -985,16 +983,16 @@ export class OrderManager {
 
 
   
-  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string): Promise<void> {
+  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `
-      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive)
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
       RETURNING *;
       `;
       // TODO sửa lại locationgive and locationreceive
-    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, 3, 4, givetypeid, imgconfirmreceive];
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, 3, 4, givetypeid, imgconfirmreceive, warehouseid];
     
     try {
       const result: QueryResult = await client.query(query, values);

@@ -35,12 +35,13 @@ const initalPosition = {
 
 export default function MapSelectWarehouse({navigation, route}: any) {
 
-    const {warehouses}: any = route.params;
+    const {warehouses, checkWarehouses, setCheckWarehouses}: any = route.params;
     // console.log("setWarehousesID", setWarehousesID)
 
-    const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => false))
+    // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
+    const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(checkWarehouses)
     const [location, setLocation] = useState<any>(null);
-    console.log(location)
+    // console.log(location)
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -80,14 +81,16 @@ export default function MapSelectWarehouse({navigation, route}: any) {
 
 
     const handleClickWarehouse = (index: number) => {
-        let newData = [...checkWarehouses]
+        let newData = [...checkWarehousesOnMap]
         newData[index] = !newData[index]
-        setCheckWarehouses(newData)
+        setCheckWarehousesOnMap(newData)
+        console.log(checkWarehousesOnMap)
+        // console.log('press check box')
     }
 
     const handleConfirmSelect = () => {
         let listWarehouseID: any = []
-        checkWarehouses.map((item, index) => {
+        checkWarehousesOnMap.map((item:any, index:number) => {
             if(item === true){
                 listWarehouseID.push(warehouses[index].warehouseid)
             }
@@ -96,6 +99,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         if (route.params && route.params.setWarehousesID) {
             route.params.setWarehousesID(listWarehouseID);
         }
+        setCheckWarehouses(checkWarehousesOnMap)
         // setWarehousesID(listWarehouseID)
         navigation.goBack()
     }
@@ -131,7 +135,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                                                 <TouchableOpacity
                                                     onPress={() => console.log('checkbox')}>
                                                     <Checkbox
-                                                        status={checkWarehouses[index] === false ? 'unchecked' : 'checked'}
+                                                        status={checkWarehousesOnMap[index] === false ? 'unchecked' : 'checked'}
                                                         uncheckedColor='#693F8B'
                                                         color='#693F8B'
                                                         />

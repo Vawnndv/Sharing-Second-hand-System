@@ -22,13 +22,23 @@ interface Item {
   imgconfirmreceive:string;
 }
 
+const category = [
+  "Quần áo",
+  "Giày dép",
+  "Đồ nội thất",
+  "Công cụ",
+  "Dụng cụ học tập",
+  "Thể thao",
+  "Khác"
+]
+
 export default function GiveOrderScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [filterValue, setFilterValue] = useState({
-    distance: 25,
-    time: 30,
-    category: "Tất cả",
+    distance: -1,
+    time: -1,
+    category: category,
     sort: "Mới nhất"
 })
   const auth = useSelector(authSelector);
@@ -59,8 +69,17 @@ export default function GiveOrderScreen({ navigation, route }: any) {
       }
 
       const res = await orderAPI.HandleOrder(
-        `/list?userID=${userID}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`,
-        'get'
+        `/list`,
+        {
+          userID: userID,
+          distance: filterValue.distance,
+          category: filterValue.category,
+          sort: filterValue.sort,
+          time: filterValue.time,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+        'post'
       );
       
       setIsLoading(false);

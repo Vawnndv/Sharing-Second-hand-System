@@ -8,12 +8,14 @@ import CardItemResult from '../../search/CardItemResult'
 import { MyData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
+import { limit } from 'firebase/firestore'
+import { filter } from 'lodash'
 
 interface Props {
   filterValue: filterValue;
-
+  warehousesID: any
 }
-const UserPostComponent: React.FC<Props> = ({filterValue}) => {
+const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   moment.locale();
   const navigation = useNavigation();
 
@@ -42,8 +44,9 @@ const UserPostComponent: React.FC<Props> = ({filterValue}) => {
     setPage(0);
     setIsEmpty(false);
     setData([]);
+    setIsEndOfData(false);
 
-  }, [filterValue, refresh])
+  }, [filterValue, refresh, warehousesID])
 
   useEffect(() => {
     if (shouldFetchData) {
@@ -61,15 +64,31 @@ const UserPostComponent: React.FC<Props> = ({filterValue}) => {
         return;
       }
       
-      const res: any = await postsAPI.HandlePost(`/user-post?page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`);
-
+      const res: any = await postsAPI.HandlePost(
+        `/user-post`,
+        {
+          page: page,
+          limit: LIMIT,
+          distance: filterValue.distance,
+          time: filterValue.time,
+          sort: filterValue.sort,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          category: filterValue.category,
+          warehouses: warehousesID
+        },
+        'post'
+      )
       const newData: MyData[] = res.allPosts;
 
-      if (newData.length <= 0 && page === 0)
-        setIsEmpty(true)
-
-      if (newData.length <= 0 && data.length > 0)
+      if (!newData) {
         setIsEndOfData(true)
+      } else {
+        if (newData.length <= 0 && page === 0)
+          setIsEmpty(true)
+        if (newData.length <= 0 && data.length > 0)
+          setIsEndOfData(true)
+      }
 
       if (newData.length > 0)
         setPage(page + 1); // Tăng số trang lên

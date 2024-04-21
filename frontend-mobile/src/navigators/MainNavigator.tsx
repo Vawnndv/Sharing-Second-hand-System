@@ -6,6 +6,7 @@ import { authSelector } from '../redux/reducers/authReducers';
 import MainTabNavigator from './collaborator/MainTabNavigator';
 import SearchScreen from '../screens/search/SearchScreen';
 import SearchResultScreen from '../screens/search/SearchResultScreen';
+import MapSelectWarehouse from '../screens/map/MapSelectWarehouse';
 
 const MainNavigator = () => {
 
@@ -41,6 +42,7 @@ const MainNavigator = () => {
       <Stack.Screen name="Main" component={DrawerNavigator} />
       <Stack.Screen name="SearchScreen" component={SearchScreen} />
       <Stack.Screen name="SearchResultScreen" component={SearchResultScreen} />
+      <Stack.Screen name="MapSelectWarehouseScreen" component={MapSelectWarehouse} />
 
     </Stack.Navigator>
   

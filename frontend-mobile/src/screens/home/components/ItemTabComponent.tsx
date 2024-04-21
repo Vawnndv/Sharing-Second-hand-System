@@ -41,6 +41,11 @@ const ItemTabComponent = () => {
     sort: "Mới nhất"
   })
 
+  const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
+  useEffect(() => {
+    setCheckWarehouses(Array.from({ length: warehouses.length }, () => true))
+  }, warehouses)
+
   useEffect(() => {
     const fetchDataWarehouses = async () => {
       const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
@@ -59,7 +64,9 @@ const ItemTabComponent = () => {
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {
       warehouses: warehouses,
-      setWarehousesID: setWarehousesID
+      setWarehousesID: setWarehousesID,
+      checkWarehouses,
+      setCheckWarehouses
     })
   }
 
@@ -126,10 +133,10 @@ const ItemTabComponent = () => {
       )}
     >
       <SubTabs.Screen name="Bài Đăng">
-        {(props) => <UserPostComponent  {...props} filterValue={filterValue} />}
+        {(props) => <UserPostComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
       </SubTabs.Screen>
       <SubTabs.Screen name="Lưu kho">
-        {(props) => <WarehouseComponent  {...props} filterValue={filterValue} />}
+        {(props) => <WarehouseComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
       </SubTabs.Screen>
     </SubTabs.Navigator>
   );

@@ -2,17 +2,10 @@ import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
 
 export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
-  const limit : any = req.query.limit;
-  const page : any = req.query.page;
-  const distance : any = req.query.distance;
-  const time : any = req.query.time;
-  const category : any = req.query.category;
-  const sort : any = req.query.sort;
-  const latitude : any = req.query.latitude;
-  const longitude : any = req.query.longitude;
+  const { limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
 
   console.log(req.query);
-  const allPosts = await PostManager.getAllPostsFromUserPost(limit, page, distance, time, category, sort, latitude, longitude);
+  const allPosts = await PostManager.getAllPostsFromUserPost(limit, page, distance, time, category, sort, latitude, longitude, warehouses);
   console.log(allPosts);
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
@@ -22,17 +15,10 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
 });
 
 export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
-  const limit : any = req.query.limit;
-  const page : any = req.query.page;
-  const distance : any = req.query.distance;
-  const time : any = req.query.time;
-  const category : any = req.query.category;
-  const sort : any = req.query.sort;
-  const latitude : any = req.query.latitude;
-  const longitude : any = req.query.longitude;
+  const { limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
 
   console.log(req.query);
-  const allPosts = await PostManager.getAllPostFromWarehouse(limit, page, distance, time, category, sort, latitude, longitude);
+  const allPosts = await PostManager.getAllPostFromWarehouse(limit, page, distance, time, category, sort, latitude, longitude, warehouses);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
 
@@ -159,19 +145,10 @@ export const createPostReceiver = asyncHandle(async (req, res) => {
 });
 
 export const searchPost = asyncHandle(async (req, res) => {
-  const keyword : any = req.query.keyword;
-  const limit : any = req.query.limit;
-  const iswarehousepost : any = req.query.iswarehousepost;
-  const page : any = req.query.page;
-  const distance : any = req.query.distance;
-  const time : any = req.query.time;
-  const category : any = req.query.category;
-  const sort : any = req.query.sort;
-  const latitude : any = req.query.latitude;
-  const longitude : any = req.query.longitude;
+  const { keyword, limit, iswarehousepost, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
   
   try {
-    const postList = await PostManager.searchPost(keyword, limit, iswarehousepost, page, distance, time, category, sort, latitude, longitude);
+    const postList = await PostManager.searchPost(keyword, limit, iswarehousepost, page, distance, time, category, sort, latitude, longitude, warehouses);
     res.status(200).json({ message: 'Get post list success', data: postList });
   } catch (error) {
     console.error(error);

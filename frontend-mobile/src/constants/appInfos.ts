@@ -8,16 +8,16 @@ export const appInfo = {
 
 
 
-  // BASE_URL: 'http://192.168.1.2:3000', // This is URL of TAANS
+  BASE_URL: 'http://192.168.1.2:3000', // This is URL of TAANS
 
 
   // BASE_URL: 'http://192.168.38.83:3000', // This is URL of CUONG
 
 
   // BASE_URL: 'http://192.168.1.101:3000',  // This is URL of VWAN
-  // BASE_URL: 'http://192.168.1.7:3000',  // This is URL of VWAN
+  BASE_URL: 'http://192.168.1.112:3000',  // This is URL of VWAN
   
-  BASE_URL: 'http://192.168.0.113:3000',
+  // BASE_URL: 'http://192.168.0.113:3000',
 
 }
 
