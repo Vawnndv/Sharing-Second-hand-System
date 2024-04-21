@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Modal, Dimensions, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconA from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native';
@@ -13,7 +13,7 @@ export default function CardOrderView ({ navigation, title, location, givetype, 
 
   return (
     <View>
-      <Pressable
+      <TouchableOpacity
         onPress={() => {
           // setIsModalVisible(true)
           navigation.navigate('ViewDetailOrder', { orderid: orderid })
@@ -44,7 +44,7 @@ export default function CardOrderView ({ navigation, title, location, givetype, 
 
             <Text style={{ textAlign: 'right', color: 'red', marginBottom: 10, marginRight: 10}}> {statusname} </Text>
         </View>
-      </Pressable>
+      </TouchableOpacity>
 
       {/* <Modal
         visible={isModalVisible}
