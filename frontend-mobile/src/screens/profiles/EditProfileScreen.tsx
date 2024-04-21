@@ -14,6 +14,8 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { PickImage, TakePhoto, UploadImageToAws3, getCameraPermission, getGallaryPermission } from '../../ImgPickerAndUpload';
 import { globalStyles } from '../../styles/globalStyles';
 import userAPI from '../../apis/userApi';
+import { useDispatch } from 'react-redux';
+import { updateAuth } from '../../redux/reducers/authReducers';
 
 const initValue = {
   email: '',
@@ -28,7 +30,11 @@ const initValue = {
 // for uploading image to backend ;
 
 const EditProfileScreen = ({navigation, route}: any) => {
+  
   const {profile}: {profile:ProfileModel} = route.params;
+  
+  const dispatch = useDispatch();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
   const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber});
@@ -75,10 +81,8 @@ const EditProfileScreen = ({navigation, route}: any) => {
   
   const handleChangeProfile = async () => {
     setIsLoading(true);
-    console.log(values);
     try {
       const {url} = image ? await UploadImageToAws3(image) : profile.avatar;
-      console.log (url)
       const res = await userAPI.HandleUser('/change-profile', 
         {
           email: values.email, 
@@ -88,6 +92,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
           avatar: url ?? null,
         }
         , 'post');
+      dispatch(updateAuth(res.data));
       setIsLoading(false);
       navigation.navigate('ProfileScreen', {
         isUpdated: true,
@@ -122,7 +127,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
         <SectionComponent styles={[globalStyles.center]}>
           <AvatarComponent
             avatar={image ? image.uri : profile.avatar }
-            username={profile.firstname ? profile.firstname : profile.email} 
+            username={profile.lastname ? profile.lastname : profile.email} 
             onButtonPress={() => setModalVisible(true)} 
             size={150}
             isEdit 

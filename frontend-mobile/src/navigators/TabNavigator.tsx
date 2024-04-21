@@ -11,12 +11,7 @@ import ProfileNavigator from './ProfileNavigator';
 import ScanNavigator from './ScanNavigator';
 import ChatNavigator from './ChatNavigator';
 
-interface TabBarIconProps {
-  focused: boolean;
-  color: string;
-  size: number;
-  variant: string; // Thêm thuộc tính 'variant' vào kiểu dữ liệu
-}
+
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
 
