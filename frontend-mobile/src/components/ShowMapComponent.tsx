@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 
 const { width, height } = Dimensions.get("window")
 
-export default function ShowMapComponent({location, setLocation} : any) {
+export default function ShowMapComponent({location, setLocation, useTo} : any) {
 
 
     const [distance, setDistance] = useState(0)
@@ -82,7 +82,7 @@ export default function ShowMapComponent({location, setLocation} : any) {
 
                 <TouchableOpacity
                     style={styles.buttonNavigateMap}
-                    onPress={() => navigation.navigate('MapSettingAddressScreen')}>
+                    onPress={() => navigation.navigate('MapSettingAddressScreen', useTo)}>
                     <Text style={{color: 'white'}}>Chọn trên bản đồ</Text>
                 </TouchableOpacity>
             </View>

@@ -41,7 +41,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
     const [checked, setChecked] = useState('first');
 
     const auth = useSelector(authSelector)
-    if(auth.id === 1){
+    if(auth.roleID === 1){
         time = [  
             1,
             3,

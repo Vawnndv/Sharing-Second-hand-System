@@ -88,7 +88,7 @@ const DrawerCustom = ({navigation}: any) => {
   }
 
   const handleSettingAddress = () => {
-    navigation.navigate('MapSettingAddressScreen');
+    navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
   }
 
   const handleNavigation = (key: string) => {
