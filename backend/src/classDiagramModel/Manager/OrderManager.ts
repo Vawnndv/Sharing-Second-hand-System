@@ -873,32 +873,31 @@ export class OrderManager {
     try {
       const result = await client.query(`
       SELECT *,
-      CASE
-          WHEN userreceiveid IS NULL THEN false
-          ELSE true
-      END AS isReciever
-      FROM (
-        SELECT 
-              o.orderid,
-              o.usergiveid,
-              o.userreceiveid,
-              o.title,
-              ad.address,
-              grt.give_receivetype as givetype,
-              o.status,
-              i.Path AS Image,
-              th.Time AS StatusCreatedAt,
-              o.imgconfirmreceive,
-              por.PostID
-            FROM orders AS o
-            JOIN Address ad ON ad.AddressID = o.LocationGive
-            JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
-            JOIN Image i ON o.ItemID = i.ItemID
-            JOIN Trace t ON o.OrderID = t.OrderID
-            JOIN Trace_History th ON t.TraceID = th.TraceID
-            LEFT JOIN Postreceiver por ON por.PostID = o.PostID
-            WHERE o.orderid = $1
-        LIMIT 1)AS ranked_orders
+        CASE
+            WHEN userreceiveid IS NULL THEN false
+            ELSE true
+        END AS isReciever
+        FROM (
+          SELECT 
+                o.orderid,
+                o.usergiveid,
+                o.userreceiveid,
+                o.title,
+                ad.address,
+                grt.give_receivetype as givetype,
+                o.status,
+                i.Path AS Image,
+                th.Time AS StatusCreatedAt,
+                o.imgconfirmreceive,
+                o.postid
+              FROM orders AS o
+              JOIN Address ad ON ad.AddressID = o.LocationGive
+              JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
+              JOIN Image i ON o.ItemID = i.ItemID
+              JOIN Trace t ON o.OrderID = t.OrderID
+              JOIN Trace_History th ON t.TraceID = th.TraceID
+              WHERE o.orderid = $1
+          LIMIT 1)AS ranked_orders
         
       `, [orderID]);
       if (result.rows.length === 0) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Modal, Dimensions, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import IconA from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native';
@@ -13,10 +13,10 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
 
   return (
     <View>
-      <Pressable
-        onPress={() => {
-          setIsModalVisible(true)
-        }}
+      <TouchableOpacity
+        onPress={() => {[
+          setIsModalVisible(true), console.log('card order view', "hello")
+        ]}}
       >
         <View style={styles.card}>
             <View style={styles.content}>
@@ -43,7 +43,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
 
             <Text style={{ textAlign: 'right', color: 'red', marginBottom: 10, marginRight: 10}}> {statusname} </Text>
         </View>
-      </Pressable>
+      </TouchableOpacity>
 
       <Modal
         visible={isModalVisible}

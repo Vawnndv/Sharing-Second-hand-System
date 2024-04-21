@@ -70,6 +70,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       
       setIsLoading(false);
       setData(res.data)
+      console.log('test',res.data)
     } catch (error) {
       console.log(error);
     }
@@ -174,9 +175,12 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
               // key={index}
               color={appColors.white4}
               isShadow
-              onPress={() => navigation.navigate('ItemDetailScreen', {
-                postId : data?.postid,
-              })}
+              // onPress={() => navigation.navigate('ItemDetailScreen', {
+              //   postId : data?.postid,
+              // })}
+              onPress={() => [navigation.navigate('MapSettingAddressScreen',{
+                useTo: 'setAddress'
+              }), setModalVisible(false), console.log('navigate to map')]}
               styles={styles.info}
             >
               <Image
