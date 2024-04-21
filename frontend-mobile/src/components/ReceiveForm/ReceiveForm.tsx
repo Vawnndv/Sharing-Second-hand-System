@@ -30,6 +30,8 @@ interface Warehouse {
   warehouseid: number;
   address: string;
   warehousename: string;
+  longitude: string;
+  latitude: string;
 }
 
 
