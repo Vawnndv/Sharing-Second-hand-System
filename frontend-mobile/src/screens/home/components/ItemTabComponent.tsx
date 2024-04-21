@@ -41,9 +41,9 @@ const ItemTabComponent = () => {
     sort: "Mới nhất"
   })
 
-  const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => false))
+  const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
   useEffect(() => {
-    setCheckWarehouses(Array.from({ length: warehouses.length }, () => false))
+    setCheckWarehouses(Array.from({ length: warehouses.length }, () => true))
   }, warehouses)
 
   useEffect(() => {
