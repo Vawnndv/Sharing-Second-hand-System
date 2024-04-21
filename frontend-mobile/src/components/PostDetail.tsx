@@ -240,7 +240,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     )
   }
 
-  if(!goToChat && !isLoading){
+  if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
 
     return(
       <ScrollView>

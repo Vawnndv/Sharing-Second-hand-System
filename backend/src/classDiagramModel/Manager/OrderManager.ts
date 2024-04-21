@@ -1058,7 +1058,7 @@ export class OrderManager {
   public static async getOrderByPostID(postID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT * FROM ORDERS WHERE postid = $1`, [postID]);
+      const result = await client.query(`SELECT * FROM ORDERS JOIN ADDRESS ON locationgive = addressid WHERE postid = $1`, [postID]);
       if (result.rows.length === 0) {
         return null;
       }

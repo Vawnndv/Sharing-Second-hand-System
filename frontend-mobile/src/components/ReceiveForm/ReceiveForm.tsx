@@ -62,6 +62,9 @@ interface postOwnerInfo {
   timeend?: string;
   phonenumber?: string;
   itemid?: number;
+  iswarehousepost?: boolean;
+  longitude?: string;
+  latitude?: string;
 
 
 }
@@ -69,6 +72,9 @@ interface postOwnerInfo {
 interface Order {
   orderid: number;
   postid: number;
+  address: string;
+  longitude: string;
+  latitude: string;
 }
 
 interface WarehouseDropdown{
@@ -481,7 +487,7 @@ const handleGive = async () =>{
 
     />  
 
-    {!isUserPost && (
+    {!isUserPost && !postOwnerInfo?.iswarehousepost && (
         <Dropdown
           style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
@@ -507,7 +513,7 @@ const handleGive = async () =>{
         />
     )}
 
-    {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && (
+    {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && !postOwnerInfo?.iswarehousepost && (
 
 
       <Dropdown
@@ -536,7 +542,22 @@ const handleGive = async () =>{
       />
     )}
 
-    {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && (
+    {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && !postOwnerInfo?.iswarehousepost && (
+      <TextInput
+        label="Địa chỉ đến lấy đồ"
+        value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
+        style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        multiline={true} // Cho phép nhập nhiều dòng văn bản
+        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        editable={false} // Ngăn không cho người dùng nhập vào
+
+      /> 
+    )}
+    
+
+    {!isUserPost && postOwnerInfo?.iswarehousepost && (
       <TextInput
         label="Địa chỉ đến lấy đồ"
         value={postOwnerInfo?.address}
@@ -546,7 +567,6 @@ const handleGive = async () =>{
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
         editable={false} // Ngăn không cho người dùng nhập vào
-
       /> 
     )}
 

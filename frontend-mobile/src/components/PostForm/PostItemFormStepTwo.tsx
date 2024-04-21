@@ -19,6 +19,7 @@ interface FormData {
   postEndDate: string;
   postPhoneNumber: string
   postAddress: string;
+  postGiveMethod?: string;
   
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -37,8 +38,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
-
 
 
 
@@ -87,7 +86,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
 
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate  || startDate;
+    const currentDate = selectedDate ? selectedDate : startDate;
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
     setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') });
@@ -97,11 +96,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
     if (!startDate) {
       alert('Vui lòng chọn ngày bắt đầu trước.');
+      setStartDatePickerVisibility(false);
+      setEndDatePickerVisibility(false);
       return;
     }
 
     if (startDate != null) {
-      const currentDate = selectedDate || endDate;
+      const currentDate = selectedDate ? selectedDate : endDate;
       setEndDatePickerVisibility(Platform.OS === 'ios');
       setEndDate(currentDate);
       setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
@@ -210,6 +211,16 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         value={profile?.address}
         onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
         style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      />
+
+      <TextInput
+        label="Phương thức cho"
+        value={formData.postGiveMethod}
+        // onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
+        style={styles.input}
+        editable={false}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
