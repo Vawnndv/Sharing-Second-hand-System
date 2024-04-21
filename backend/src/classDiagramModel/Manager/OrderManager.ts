@@ -11,6 +11,7 @@ import { ItemManager } from './ItemManager';
 import { PostManager } from './PostManager';
 import { Post } from '../Post';
 import { Address } from '../Address';
+import { statusOrder } from '../../utils/statusOrder';
 
 
 interface FilterOrder {
@@ -837,6 +838,7 @@ export class OrderManager {
         WHERE orderid = $2
       `
       const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
+      const res = await this.updateStatusOrder(orderid, statusOrder.COMPLETED.statusid)
       return true;
     }catch(error){
       console.log(error)
