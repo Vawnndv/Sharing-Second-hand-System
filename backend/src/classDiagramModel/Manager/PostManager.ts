@@ -573,7 +573,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = ${iswarehousepost}  AND od.givetypeid != 3 AND od.givetypeid != 4
+      WHERE (po.iswarehousepost = ${iswarehousepost}  AND od.givetypeid != 3 AND od.givetypeid != 4) AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Chờ người nhận lấy hàng%')
       AND (LOWER(po.title) LIKE LOWER('%${keyword}%') OR LOWER(po.description) LIKE LOWER('%${keyword}%'))
       GROUP BY
           us.userid,
