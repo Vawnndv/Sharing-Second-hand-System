@@ -15,6 +15,7 @@ import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 import ContainerComponent from '../ContainerComponent';
 import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import { useNavigation } from '@react-navigation/native';
+import { ProfileModel } from '../../models/ProfileModel';
 
 
 
@@ -29,6 +30,8 @@ interface FormDataStepOne {
   methodsBringItemToWarehouse?: string;
   warehouseAddress?: string;
   warehouseAddressID?: number;
+  warehouseID?: number;
+
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -38,7 +41,7 @@ interface FormDataStepTwo {
   postDescription: string;
   postStartDate: string;
   postEndDate: string;
-  postPhoneNumber: string
+  postPhoneNumber: string;
   postAddress: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -48,11 +51,11 @@ const MultiStepForm = () => {
   const navigation: any = useNavigation();
   const [currentStep, setCurrentStep] = useState(1);
   const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
-  const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: ''  /* khởi tạo các trường khác */ });
-
+  const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
 
   const auth = useSelector(authSelector);
+
 
   const renderStep = () => {
     switch (currentStep) {
@@ -167,15 +170,19 @@ const MultiStepForm = () => {
       let givetypeid = 1;
       const imgconfirmreceive = ' ';
       let givetype = 'Cho nhận trực tiếp';
+      let warehouseid = null;
       // let givetype = 'Cho nhận trực tiếp';
       // if(formDataStepOne.methodsBringItemToWarehouse )
       if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
         givetype = 'Cho kho';
         givetypeid = 3;
-        if(formDataStepOne.methodsBringItemToWarehouse == "Chúng tôi sẽ đến lấy"){
-          locationreceive = formDataStepOne.warehouseAddressID;
+        if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
+          // locationreceive = formDataStepOne.warehouseAddressID;
           givetype = 'Cho kho (kho đến lấy)';
           givetypeid = 4;
+        }
+        else{
+          warehouseid = formDataStepOne.warehouseID;
         }
       }
 
@@ -197,7 +204,8 @@ const MultiStepForm = () => {
         locationreceive,
         givetypeid,
         imgconfirmreceive,
-        givetype
+        givetype,
+        warehouseid
 
       });       
       console.log(response.data.orderCreated);
@@ -222,7 +230,6 @@ const MultiStepForm = () => {
       setCurrentStep(1);
       setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
       setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
-      setIsCompleted(false);
       navigation.navigate('Home', {screen: 'HomeScreen'})
       // navigation.goBack();
     } catch (error) {
@@ -246,7 +253,6 @@ const MultiStepForm = () => {
     } catch (error) {
       console.log(error)
     }
-
 
   };
 
