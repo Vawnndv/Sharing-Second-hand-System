@@ -120,32 +120,51 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const login = asyncHandle(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
+  const { platform, email, password } = req.body;
   const existingUser = await Account.findUserByEmail(email);
 
   if (!existingUser) {
-    res.status(403);
+    res.status(400);
     throw new Error('Email is invalid!!!');
   }
 
   const isMatchPassword = await bcrypt.compare(password, existingUser.password);
 
   if (!isMatchPassword) {
-    res.status(401);
+    res.status(400);
     throw new Error('Password is invalid!!!');
   }
 
-  res.status(200).json({
-    message: 'Login successfully!!!',
-    data: {
-      id: existingUser.userid,
-      email: existingUser.email,
-      username: existingUser.username,
-      accessToken: await getJsonWebToken(email, existingUser.userid),
-      roleID: existingUser.roleid,
-    },
-  });
+  if (platform === 'web' && existingUser.roleid > 1) {
+    res.status(200).json({
+      message: 'Login successfully!!!',
+      data: {
+        id: existingUser.userid,
+        email: existingUser.email,
+        firstName: existingUser.firstname,
+        lastName: existingUser.lastname,
+        avatar: existingUser.avatar,
+        roleID: existingUser.roleid,
+        accessToken: await getJsonWebToken(email, existingUser.userid),
+      },
+    });
+  } else if (platform === 'web' && existingUser.roleid === 1) {
+    res.status(400);
+    throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
+  } else {
+    res.status(200).json({
+      message: 'Login successfully!!!',
+      data: {
+        id: existingUser.userid,
+        email: existingUser.email,
+        firstName: existingUser.firstname,
+        lastName: existingUser.lastname,
+        avatar: existingUser.avatar,
+        roleID: existingUser.roleid,
+        accessToken: await getJsonWebToken(email, existingUser.userid),
+      },
+    });
+  }
 });
 
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {

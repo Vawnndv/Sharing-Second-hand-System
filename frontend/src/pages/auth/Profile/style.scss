@@ -1,0 +1,14 @@
+.image-upload-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+
+    .uploader {
+        grid-column: span 10;
+    }
+    
+    .image-preview {
+        grid-column: span 2;
+    }
+}

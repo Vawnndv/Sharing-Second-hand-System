@@ -55,9 +55,6 @@ const ItemTabComponent = () => {
     fetchDataWarehouses()
   }, [])
   console.log("warehousesID", warehousesID)
-  // console.log("setWarehousesID:", setWarehousesID);
-
-  // console.log("warehouses", warehouses)
 
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {
@@ -68,74 +65,73 @@ const ItemTabComponent = () => {
 
   return (
     <SubTabs.Navigator
-  style={styles.tabs}
-  tabBar={({ state, descriptors, navigation, position }) => (
-    <View style={styles.tabBar}>
-      <RowComponent>
-        {/* Render các tab */}
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const label =
-            options.tabBarLabel !== undefined
-              ? options.tabBarLabel
-              : options.title !== undefined
-              ? options.title
-              : route.name;
+      style={styles.tabs}
+      tabBar={({ state, descriptors, navigation, position }) => (
+      <View style={styles.tabBar}>
+        <RowComponent>
+          {/* Render các tab */}
+          {state.routes.map((route, index) => {
+            const { options } = descriptors[route.key];
+            const label =
+              options.tabBarLabel !== undefined
+                ? options.tabBarLabel
+                : options.title !== undefined
+                ? options.title
+                : route.name;
 
-        const isFocused = state.index === index;
-        const inputRange = state.routes.map((_, i) => i);
+          const isFocused = state.index === index;
+          const inputRange = state.routes.map((_, i) => i);
 
-        const outputRange = inputRange.map(i => (i === index ? 1 : 0)); 
-          const translateX = position.interpolate({
-            inputRange,
-            outputRange,
-          });
+          const outputRange = inputRange.map(i => (i === index ? 1 : 0)); 
+            const translateX = position.interpolate({
+              inputRange,
+              outputRange,
+            });
 
-          return (
-            <SectionComponent 
-              key={index}
-              styles={{
-                paddingBottom: 4,
-              }}
-            >
-              <Text
-                onPress={() => {
-                  navigation.navigate(route.name);
+            return (
+              <SectionComponent 
+                key={index}
+                styles={{
+                  paddingBottom: 4,
                 }}
-                style={[
-                  styles.tabLabel,
-                  { color: isFocused ? appColors.primary : '#666', marginBottom: isFocused ? 4 : 7 },
-                ]}
               >
-                {typeof label === 'function' ? label({ focused: isFocused, color: appColors.primary, children: '' }) : label}
-              </Text>
-              {isFocused && <Animated.View style={[styles.tabIndicator, { transform: [{ translateX }] }]} />}
-            </SectionComponent>
-          );
-        })}
-      </RowComponent>
-      <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-        <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
-        {state.index === 1 && (
-          <TouchableOpacity
-            style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.gray5, borderRadius: 15 }}
-            onPress={() => handleNavigateMapSelectWarehouses(navigation)}
-          >
-            <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary}/>
-          </TouchableOpacity>
-        )}
+                <Text
+                  onPress={() => {
+                    navigation.navigate(route.name);
+                  }}
+                  style={[
+                    styles.tabLabel,
+                    { color: isFocused ? appColors.primary : '#666', marginBottom: isFocused ? 4 : 7 },
+                  ]}
+                >
+                  {typeof label === 'function' ? label({ focused: isFocused, color: appColors.primary, children: '' }) : label}
+                </Text>
+                {isFocused && <Animated.View style={[styles.tabIndicator, { transform: [{ translateX }] }]} />}
+              </SectionComponent>
+            );
+          })}
+        </RowComponent>
+        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
+          {state.index === 1 && (
+            <TouchableOpacity
+              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.gray5, borderRadius: 15 }}
+              onPress={() => handleNavigateMapSelectWarehouses(navigation)}
+            >
+              <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary}/>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  )}
->
-  <SubTabs.Screen name="Nguời Cho">
-    {(props) => <UserPostComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
-  </SubTabs.Screen>
-  <SubTabs.Screen name="Lưu kho">
-    {(props) => <WarehouseComponent  {...props} filterValue={filterValue} warehousesID={warehousesID}/>}
-  </SubTabs.Screen>
-</SubTabs.Navigator>
-
+      )}
+    >
+      <SubTabs.Screen name="Bài Đăng">
+        {(props) => <UserPostComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
+      </SubTabs.Screen>
+      <SubTabs.Screen name="Lưu kho">
+        {(props) => <WarehouseComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
+      </SubTabs.Screen>
+    </SubTabs.Navigator>
   );
 
   // return (

@@ -36,7 +36,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
   console.log(req.body);
   const { email, oldPassword, newPassword } = req.body;
-
+  console.log(req.body);
   const user = await Account.findUserByEmail(email);
   
   if (user) {
@@ -86,9 +86,9 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
       res.status(200).json({
         message: 'Profile changed successfully!!!',
         data: {
-          firstname: updateUser.firstname,
-          lastname: updateUser.lastname,
-          phonenumber: updateUser.phonenumber,
+          firstName: updateUser.firstname,
+          lastName: updateUser.lastname,
+          phoneNumber: updateUser.phonenumber,
           avatar: updateUser.avatar,
         },
       });

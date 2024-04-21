@@ -12,7 +12,7 @@ describe('App', () => {
     // EXPECT
     expect(
       screen.getByRole('heading', {
-        level: 1,
+        level: 1
       })
     ).toHaveTextContent('Hello World');
   });
@@ -24,7 +24,7 @@ describe('App', () => {
     );
     expect(
       screen.getByRole('heading', {
-        level: 1,
+        level: 1
       })
     ).toHaveTextContent('Not Found');
   });

@@ -55,10 +55,10 @@ const LoginScreen = ({navigation}: any) => {
     try {
       const res = await authenticationAPI.HandleAuthentication(
         '/login',
-        {email: values.email , password: values.password},
+        {platform: 'mobile', email: values.email , password: values.password},
         'post'
       );
-
+      console.log(res.data)
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
