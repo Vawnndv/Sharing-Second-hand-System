@@ -100,6 +100,7 @@ export default function GiveOrderScreen({ navigation, route }: any) {
             {orderGive.length !== 0 ? (
               orderGive.map((item : Item, index) => (
                   <CardOrderView
+                      navigation={navigation}
                       key={index}
                       title={item.title}
                       location={item.location}

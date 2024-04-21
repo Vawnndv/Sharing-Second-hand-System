@@ -32,7 +32,7 @@ const category = [
   "Khác"
 ]
 
-export default function ReceiveHistoryScreen() {
+export default function ReceiveHistoryScreen({navigation, route}: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
   const [filterValue, setFilterValue] = useState({
@@ -96,6 +96,7 @@ export default function ReceiveHistoryScreen() {
             {orderReceive.length !== 0 ? (
               orderReceive.map((item : Item, index) => (
                   <CardOrderView
+                      navigation={navigation}
                       key={index}
                       title={item.title}
                       location={item.location}

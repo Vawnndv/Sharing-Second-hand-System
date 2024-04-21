@@ -231,8 +231,8 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = true AND od.givetypeid != 3 AND od.givetypeid != 4 AND od.userreceiveid is null
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Chờ người nhận lấy hàng%')
+      WHERE po.iswarehousepost = false AND od.givetypeid != 3 AND od.givetypeid != 4 AND od.userreceiveid is null
+	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
       GROUP BY
           us.userid,
           us.firstname,
@@ -359,7 +359,7 @@ export class PostManager {
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = true AND od.givetypeid != 3 AND od.givetypeid != 4
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Chờ người nhận lấy hàng%')
+	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
       GROUP BY
           us.userid,
           us.firstname,
@@ -678,7 +678,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE (po.iswarehousepost = ${iswarehousepost}  AND od.givetypeid != 3 AND od.givetypeid != 4) AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Chờ người nhận lấy hàng%')
+      WHERE (po.iswarehousepost = ${iswarehousepost}  AND od.givetypeid != 3 AND od.givetypeid != 4) AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
       AND (LOWER(po.title) LIKE LOWER('%${keyword}%') OR LOWER(po.description) LIKE LOWER('%${keyword}%'))
       GROUP BY
           us.userid,

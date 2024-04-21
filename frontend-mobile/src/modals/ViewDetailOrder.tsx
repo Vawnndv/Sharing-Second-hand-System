@@ -15,7 +15,6 @@ import QRCodeGenerator from '../components/GenerateQRCode';
 import orderAPI from '../apis/orderApi';
 import LoadingModal from './LoadingModal';
 import CardComponent from '../components/CardComponent';
-import { useNavigation } from '@react-navigation/native';
 import { appColors } from '../constants/appColors';
 import { appInfo } from '../constants/appInfos';
 import { useSelector } from 'react-redux';
@@ -23,6 +22,7 @@ import { authSelector } from '../redux/reducers/authReducers';
 import postsAPI from '../apis/postApi';
 import { ActivityIndicator } from 'react-native-paper';
 import { statusOrder } from '../constants/statusOrder';
+import { ContainerComponent } from '../components';
 
 interface Data {
   title: string;
@@ -39,7 +39,9 @@ interface Data {
   isreciever: boolean,
 }
 
-export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsModalVisible: (isVisible: boolean) => void, orderid: string }) {
+export default function ViewDetailOrder({navigation, route}: any) {
+  const {orderid} = route.params;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
@@ -50,7 +52,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Data>();
 
-  const navigation: any = useNavigation();
+  // const navigation: any = useNavigation();
 
   const auth = useSelector(authSelector);
   const userID = auth.id;
@@ -70,6 +72,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       
       setIsLoading(false);
       setData(res.data)
+      console.log('test',res.data)
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +88,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       );
 
       setIsLoading(false);
-      setIsModalVisible(false)
+      // setIsModalVisible(false)
       navigation.navigate('OrderReceive', { reload: true })
     } catch (error) {
       console.log(error);
@@ -106,7 +109,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
       );
       
       setIsLoading(false);
-      setIsModalVisible(false)
+      // setIsModalVisible(false)
       navigation.navigate('OrderGive', { reload: true })
     } catch (error) {
       console.log(error);
@@ -156,13 +159,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
   }
   
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ justifyContent: 'flex-start' }}>
-          <Ionicons name="arrow-back" size={28}></Ionicons>
-        </TouchableOpacity>
-        <Text style={{flex: 1, textAlign: 'center', alignItems: 'center', fontSize: 18, fontWeight: 'bold'}}>{data?.status}</Text>
-      </View>
+    <ContainerComponent back title={data?.status}>
       {
         isLoading ? (
           <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
@@ -177,6 +174,9 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
               onPress={() => navigation.navigate('ItemDetailScreen', {
                 postId : data?.postid,
               })}
+              // onPress={() => [navigation.navigate('MapSettingAddressScreen',{
+              //   useTo: 'setAddress'
+              // }), setModalVisible(false), console.log('navigate to map')]}
               styles={styles.info}
             >
               <Image
@@ -276,7 +276,7 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
           )
         }
       </ShowImageModal>
-    </View>
+    </ContainerComponent>
   );
 }
 

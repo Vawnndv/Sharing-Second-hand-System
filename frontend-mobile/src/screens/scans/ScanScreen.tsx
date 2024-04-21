@@ -5,19 +5,17 @@ import { ContainerComponent, SectionComponent } from '../../components'
 import { Ionicons } from '@expo/vector-icons';
 import { appInfo } from '../../constants/appInfos';
 import orderAPI from '../../apis/orderApi';
-import ViewDetailOrder from '../../modals/ViewDetailOrder';
 import { LoadingModal } from '../../modals';
 import { IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { useFocusEffect } from '@react-navigation/native';
 
-export default function ScanScreen({navigation} : any) {
+export default function ScanScreen({navigation, route} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
   const [scanned, setScanned] = useState(false);
   const [orderID, setOrderID] = useState(null);
   const [postID, setPostID] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isFrontCamera, setIsFrontCamera] = useState(false);
 
@@ -49,8 +47,9 @@ export default function ScanScreen({navigation} : any) {
         alert(`Không tìm thấy bài đăng hay đơn hàng của bạn`);
       } else if (res.data.userreceiveid === userID || res.data.usergiveid === userID) {
         setOrderID(data);
-        setIsModalVisible(true);
+        // setIsModalVisible(true);
         setIsLoading(false);
+        navigation.navigate('ViewDetailOrder', { orderid: data })
       } else {
         navigation.navigate('ItemDetailScreen', {
           postId : res.data.postid,
@@ -112,14 +111,14 @@ export default function ScanScreen({navigation} : any) {
         </View>
 
       </View>
-      <Modal
+      {/* <Modal
         visible={isModalVisible}
         onRequestClose={() => setIsModalVisible(false)}
         animationType='slide'
         presentationStyle='pageSheet'
       >
         {orderID && <ViewDetailOrder setIsModalVisible={setIsModalVisible} orderid={orderID}/>}
-      </Modal>
+      </Modal> */}
       <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
