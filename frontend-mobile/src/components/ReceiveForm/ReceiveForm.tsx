@@ -63,6 +63,8 @@ interface postOwnerInfo {
   phonenumber?: string;
   itemid?: number;
   iswarehousepost?: boolean;
+  longitude?: string;
+  latitude?: string;
 
 
 }
@@ -70,6 +72,9 @@ interface postOwnerInfo {
 interface Order {
   orderid: number;
   postid: number;
+  address: string;
+  longitude: string;
+  latitude: string;
 }
 
 interface WarehouseDropdown{
@@ -540,7 +545,7 @@ const handleGive = async () =>{
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && !postOwnerInfo?.iswarehousepost && (
       <TextInput
         label="Địa chỉ đến lấy đồ"
-        value={postOwnerInfo?.address}
+        value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -550,6 +555,7 @@ const handleGive = async () =>{
 
       /> 
     )}
+    
 
     {!isUserPost && postOwnerInfo?.iswarehousepost && (
       <TextInput
@@ -561,7 +567,6 @@ const handleGive = async () =>{
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
         editable={false} // Ngăn không cho người dùng nhập vào
-
       /> 
     )}
 
