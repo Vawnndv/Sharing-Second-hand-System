@@ -95,59 +95,111 @@ export class PostManager {
   public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
     const client = await pool.connect();
     try {
+      // const postsQuery = `
+      // SELECT 
+      //   u.userid,
+      //   u.avatar, 
+      //   u.username, 
+      //   CONCAT(u.firstname, ' ', u.lastname) AS name,
+      //   p.description, 
+      //   p.postid,
+      //   p.updatedat, 
+      //   p.createdat,
+      //   p.postid,
+      //   a.address,
+      //   itt.nametype,
+      //   a.longitude,
+      //   a.latitude,
+      //   MIN(i.path) AS path,
+      //   CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+      //   CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
+      // FROM 
+      //   "User" u
+      // RIGHT JOIN 
+      //   "posts" p ON u.userId = p.owner
+      // RIGHT JOIN 
+      //   "orders" o ON p.postid = o.postid
+      // RIGHT JOIN 
+      //   "postreceiver" pr ON p.postid = pr.postid
+      // JOIN 
+      //   "address" a ON a.addressid = p.addressid
+      // JOIN 
+      //   item it ON it.itemid = p.itemid
+      // JOIN item_type 
+      //   itt ON itt.itemtypeid = it.itemtypeid
+      // LEFT JOIN 
+      //   "image" i ON p.itemid = i.itemid
+      // LEFT JOIN 
+      //   "like_post" lp ON p.postid = lp.postid
+      // WHERE 
+      //   u.userId NOT IN (SELECT userId FROM workAt) AND o.userreceiveid is null
+      // GROUP BY 
+      //   u.userid,
+      //   u.avatar, 
+      //   u.username, 
+      //   u.firstname, 
+      //   u.lastname, 
+      //   p.description, 
+      //   p.postid,
+      //   p.updatedat, 
+      //   p.createdat,
+      //   p.postid,
+      //   a.address,
+      //   itt.nametype,
+      //   a.longitude,
+      //   a.latitude
+      // ORDER BY
+      //   p.createdat DESC
+      // LIMIT ${limit}
+      // OFFSET ${limit} * ${page};
+      // `;
+
       const postsQuery = `
-      SELECT 
-        u.userid,
-        u.avatar, 
-        u.username, 
-        CONCAT(u.firstname, ' ', u.lastname) AS name,
-        p.description, 
-        p.postid,
-        p.updatedat, 
-        p.createdat,
-        p.postid,
-        a.address,
+      SELECT DISTINCT
+        us.userid,
+        CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+        CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+        po.postid,
+        po.title,
+        po.description,
+        po.createdat,
+        ad.address,
+        ad.longitude,
+        ad.latitude,
+        img.path,
         itt.nametype,
-        a.longitude,
-        a.latitude,
-        MIN(i.path) AS path,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
-      FROM 
-        "User" u
-      RIGHT JOIN 
-        "posts" p ON u.userId = p.owner
-      JOIN 
-        "address" a ON a.addressid = p.addressid
-      JOIN 
-        item it ON it.itemid = p.itemid
-      JOIN item_type 
-        itt ON itt.itemtypeid = it.itemtypeid
-      LEFT JOIN 
-        "image" i ON p.itemid = i.itemid
-      LEFT JOIN 
-        "like_post" lp ON p.postid = lp.postid
-      WHERE 
-        u.userId NOT IN (SELECT userId FROM workAt)
-      GROUP BY 
-        u.userid,
-        u.avatar, 
-        u.username, 
-        u.firstname, 
-        u.lastname, 
-        p.description, 
-        p.postid,
-        p.updatedat, 
-        p.createdat,
-        p.postid,
-        a.address,
-        itt.nametype,
-        a.longitude,
-        a.latitude
-      ORDER BY
-        p.createdat DESC
+      FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN Address ad ON po.addressid = ad.addressid
+      LEFT JOIN item it ON it.itemid = po.itemid
+      LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+      LEFT JOIN "like_post" lp ON po.postid = lp.postid
+      LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+      LEFT JOIN orders od ON od.postid = po.postid
+      LEFT JOIN (
+          SELECT DISTINCT ON (itemid) * FROM Image
+      ) img ON img.itemid = po.itemid
+      WHERE po.iswarehousepost = true  AND od.givetypeid != 3 AND od.givetypeid != 4
+	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Chờ người nhận lấy hàng%')
+      GROUP BY
+          us.userid,
+          us.firstname,
+          us.lastname,
+          us.avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          wh.warehousename,
+          itt.nametype
+      ORDER BY po.createdat DESC
       LIMIT ${limit}
-      OFFSET ${limit} * ${page};
-      `;
+      OFFSET ${limit} * ${page};`
       const result: QueryResult = await client.query(postsQuery);
       if (result.rows.length === 0) {
         return null;
@@ -185,6 +237,10 @@ export class PostManager {
           "workat" wa
         ON 
           p.owner = wa.userid
+        LEFT JOIN 
+          "orders" o 
+        ON 
+          o.postid = p.postid
         JOIN 
           "warehouse" w
         ON 
@@ -203,8 +259,10 @@ export class PostManager {
           p.itemid = i.itemid
         LEFT JOIN 
           "like_post" lp
-        ON p.postid = lp.postid
-        
+        ON 
+          p.postid = lp.postid
+        wHERE 
+          o.status LIKE 'Chờ xét duyệt' OR  o.status LIKE 'Chờ người nhận lấy hàng'
         GROUP BY
           p.description, 
           p.updatedat, 
