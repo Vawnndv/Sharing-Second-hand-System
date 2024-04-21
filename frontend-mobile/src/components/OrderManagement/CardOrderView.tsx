@@ -8,14 +8,15 @@ import { fontFamilies } from '../../constants/fontFamilies';
 
 const {width, height} = Dimensions.get("window");
 
-const CardOrderView: React.FC<{ title: string, location: string, givetype: string, statusname: string, image: string, status: string, createdat: string, orderid: string, statuscreatedat: string, isVisibleConfirm: boolean, imgconfirmreceive: string }> = ({ title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat, isVisibleConfirm, imgconfirmreceive}) => {
-  const [isModalVisible, setIsModalVisible] = useState(false);
+export default function CardOrderView ({ navigation, title, location, givetype, statusname, image, status, createdat, orderid, statuscreatedat, isVisibleConfirm, imgconfirmreceive}: any) {
+  // const [isModalVisible, setIsModalVisible] = useState(false);
 
   return (
     <View>
       <Pressable
         onPress={() => {
-          setIsModalVisible(true)
+          // setIsModalVisible(true)
+          navigation.navigate('ViewDetailOrder', { orderid: orderid })
         }}
       >
         <View style={styles.card}>
@@ -45,7 +46,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
         </View>
       </Pressable>
 
-      <Modal
+      {/* <Modal
         visible={isModalVisible}
         onRequestClose={() => setIsModalVisible(false)}
         animationType='slide'
@@ -55,7 +56,7 @@ const CardOrderView: React.FC<{ title: string, location: string, givetype: strin
           setIsModalVisible={setIsModalVisible} 
           orderid={orderid} 
         />
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
@@ -96,5 +97,3 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   }
 });
-
-export default CardOrderView;

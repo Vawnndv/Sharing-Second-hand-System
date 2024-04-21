@@ -32,7 +32,7 @@ const category = [
   "Khác"
 ]
 
-export default function GiveHistoryScreen() {
+export default function GiveHistoryScreen({navigation, route}: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [filterValue, setFilterValue] = useState({
@@ -96,6 +96,7 @@ export default function GiveHistoryScreen() {
             {orderGive.length !== 0 ? (
               orderGive.map((item : Item, index) => (
                   <CardOrderView
+                      navigation={navigation}
                       key={index}
                       title={item.title}
                       location={item.location}

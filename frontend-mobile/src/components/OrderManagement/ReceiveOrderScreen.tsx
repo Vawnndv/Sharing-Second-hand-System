@@ -103,6 +103,7 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
             {orderReceive.length !== 0 ? (
               orderReceive.map((item : Item, index) => (
                   <CardOrderView
+                      navigation={navigation}
                       key={index}
                       title={item.title}
                       location={item.location}

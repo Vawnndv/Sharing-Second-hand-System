@@ -838,7 +838,7 @@ export class OrderManager {
         WHERE orderid = $2
       `
       const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
-      const res = await this.updateStatusOrder(orderid, statusOrder.COMPLETED.statusid)
+      const res = await this.updateStatusOfOrder(orderid, statusOrder.COMPLETED.statusid)
       return true;
     }catch(error){
       console.log(error)
