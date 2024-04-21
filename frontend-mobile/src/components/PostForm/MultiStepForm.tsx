@@ -43,6 +43,8 @@ interface FormDataStepTwo {
   postEndDate: string;
   postPhoneNumber: string;
   postAddress: string;
+  postGiveMethod?: string;
+
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -68,6 +70,13 @@ const MultiStepForm = () => {
         return null;
     }
   };
+
+  useEffect(() =>{
+    if(formDataStepOne.methodGive){
+      setFormDataStepTwo({...formDataStepTwo, postGiveMethod: formDataStepOne.methodGive});
+    }
+
+  },[formDataStepOne.methodGive])
 
 
 
