@@ -91,7 +91,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
           phonenumber: values.phonenumber,
           avatar: url ?? null,
         }
-        , 'put');
+        , 'post');
       dispatch(updateAuth(res.data));
       setIsLoading(false);
       navigation.navigate('ProfileScreen', {
