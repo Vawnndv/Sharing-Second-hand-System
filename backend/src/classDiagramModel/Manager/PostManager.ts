@@ -512,7 +512,7 @@ export class PostManager {
   public static async viewPostOwnerInfo(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT owner, itemid, postid, POSTS.addressid, title, firstname, lastname, phonenumber, timestart, timeend, ADDRESS.address, ADDRESS.longitude, ADDRESS.latitude FROM POSTS JOIN "User" ON userid = owner JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE postid = $1`, [postID]);
+      const result = await client.query(`SELECT owner, itemid, postid, POSTS.addressid, title, firstname, lastname, phonenumber, timestart, timeend, iswarehousepost, ADDRESS.address, ADDRESS.longitude, ADDRESS.latitude FROM POSTS JOIN "User" ON userid = owner JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE postid = $1`, [postID]);
       if (result.rows.length === 0) {
         return null;
       }
