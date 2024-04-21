@@ -41,6 +41,11 @@ const ItemTabComponent = () => {
     sort: "Mới nhất"
   })
 
+  const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => false))
+  useEffect(() => {
+    setCheckWarehouses(Array.from({ length: warehouses.length }, () => false))
+  }, warehouses)
+
   useEffect(() => {
     const fetchDataWarehouses = async () => {
       const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
@@ -59,7 +64,9 @@ const ItemTabComponent = () => {
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {
       warehouses: warehouses,
-      setWarehousesID: setWarehousesID
+      setWarehousesID: setWarehousesID,
+      checkWarehouses,
+      setCheckWarehouses
     })
   }
 
