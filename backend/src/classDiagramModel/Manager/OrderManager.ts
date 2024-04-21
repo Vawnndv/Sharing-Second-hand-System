@@ -31,7 +31,7 @@ interface FilterOrder {
   row_num: string;
 }
 
-function filterOrders(distance: string, time: string, category: string, sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
+function filterOrders(distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
   // Chuyển các tham số string sang số
   const distanceFloat: number = parseFloat(distance);
   const timeInt: number = parseInt(time);
@@ -75,11 +75,7 @@ function filterOrders(distance: string, time: string, category: string, sort: st
       const isValidTime: boolean = timeInt !== -1 ? isTimeBefore(item.createdat, timeInt) : true;
 
       // Lọc theo danh mục
-      let isValidCategory: boolean = item.nametype === category;
-      if (category === "Tất cả") {
-        isValidCategory = true
-      }
-      console.log('KDJKLD', isValidDistance, isValidTime, isValidCategory)
+      let isValidCategory: boolean = category.includes(item.nametype) || category.includes("Tất cả");
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory;
   });
@@ -136,14 +132,26 @@ export class OrderManager {
       }
       let categoryQuery = ``;
       if(category !== "Tất cả" ){
+
+        let listCategory = []
+        if(category !== ''){
+          listCategory = category.split(',')
+        }
+        let listCategoryQuery = `'${listCategory[0]}'`
+        
+        for(let i = 1; i < listCategory.length; i++){
+          listCategoryQuery += ` OR it.nametype = '${listCategory[i]}'`
+        }
+        console.log(listCategoryQuery)
+        
         categoryQuery = `AND EXISTS (
           SELECT it.nametype
           FROM "item_type" it
-          WHERE it.itemtypeid = (
+          WHERE it.itemtypeid IN (
             SELECT i.itemtypeid
             FROM "item" i
             WHERE o.itemid = i.itemid
-          ) AND it.nametype LIKE N'${category}'
+          ) AND it.nametype = ${listCategoryQuery}
         )` 
       }
       const ordersQuery = `
@@ -553,7 +561,7 @@ export class OrderManager {
   //   return new Order('');
   // }
 
-  public static async getOrderList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     // let query = `
@@ -665,7 +673,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -911,7 +919,7 @@ export class OrderManager {
           o.usergiveid,
           o.postid
         FROM orders AS o
-        WHERE o.orderid = $1
+        WHERE o.orderid = $1 AND o.givetypeid != 3 AND o.givetypeid != 4
       `, [orderID]);
       if (result.rows.length === 0) {
         return null;

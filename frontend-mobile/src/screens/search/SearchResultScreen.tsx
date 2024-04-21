@@ -42,7 +42,17 @@ export interface MyData {
   path: string;
 }
 
-const SearchResultScreen = ({ route } : any) => {
+const category = [
+  "Quần áo",
+  "Giày dép",
+  "Đồ nội thất",
+  "Công cụ",
+  "Dụng cụ học tập",
+  "Thể thao",
+  "Khác"
+]
+
+const SearchResultScreen = ({ route, navigation } : any) => {
   const { searchQuery } = route.params;
   const [isPosts, setIsPosts] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -51,20 +61,23 @@ const SearchResultScreen = ({ route } : any) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEndOfData, setIsEndOfData] = useState(false);
+  const [warehousesID, setWarehousesID] = useState([])
 
   const [filterValue, setFilterValue] = useState({
-    distance: 5,
-    time: 14,
-    category: "Tất cả",
+    distance: -1,
+    time: -1,
+    category: category,
     sort: "Mới nhất"
   })
 
   useEffect(() => {
-    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
     setPage(0);
     setIsEmpty(false);
     setData([]);
-  }, [filterValue, isPosts]);
+    setIsEndOfData(false);
+    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    console.log(data.length)
+  }, [filterValue, isPosts, warehousesID]);
 
   useEffect(() => {
     if (shouldFetchData) {
@@ -83,8 +96,21 @@ const SearchResultScreen = ({ route } : any) => {
       }
 
       const response: AxiosResponse<MyData[]> = await postsAPI.HandlePost(
-        `/search?keyword=${ searchQuery ? searchQuery.toLowerCase() : ''}&iswarehousepost=${!isPosts}&page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`,
-        'get'
+        `/search`,
+        {
+          keyword: searchQuery ? searchQuery.toLowerCase() : '',
+          iswarehousepost: !isPosts,
+          page: page,
+          limit: LIMIT,
+          distance: filterValue.distance,
+          time: filterValue.time,
+          category: filterValue.category,
+          sort: filterValue.sort,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          warehouses: warehousesID
+        },
+        'post'
       );
       const newData: MyData[] = response.data;
 
@@ -114,7 +140,7 @@ const SearchResultScreen = ({ route } : any) => {
 
   return (
     <ContainerComponent back>
-      <FilterSearch filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts}/>
+      <FilterSearch navigation={navigation} filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts} warehousesID={warehousesID} setWarehousesID={setWarehousesID}/>
       {
         isEmpty ? (
           <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

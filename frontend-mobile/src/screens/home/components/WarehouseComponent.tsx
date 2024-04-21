@@ -11,9 +11,10 @@ import { useNavigation } from '@react-navigation/native'
 
 interface Props {
   filterValue: filterValue;
+  warehousesID: any;
 }
 
-const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
+const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const navigation = useNavigation();
   const [refresh, setRefresh] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
@@ -36,12 +37,13 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
   }, [navigation]);
 
   useEffect(() => {
-    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    setData([]);
     setPage(0);
     setIsEmpty(false);
-    setData([]);
+    setIsEndOfData(false);
+    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
 
-  }, [filterValue, refresh])
+  }, [filterValue, refresh, warehousesID])
 
   useEffect(() => {
     if (shouldFetchData) {
@@ -59,14 +61,32 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
         return;
       }
       
-      const res: any = await postsAPI.HandlePost(`/warehouse?page=${page}&limit=${LIMIT}&distance=${filterValue.distance}&time=${filterValue.time}&category=${filterValue.category}&sort=${filterValue.sort}&latitude=${location.latitude}&longitude=${location.longitude}`);
+      const res: any = await postsAPI.HandlePost(
+        `/warehouse`,
+        {
+          page: page,
+          limit: LIMIT,
+          distance: filterValue.distance,
+          time: filterValue.time,
+          sort: filterValue.sort,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          category: filterValue.category,
+          warehouses: warehousesID
+        },
+        'post'
+      )
 
       const newData: MyData[] = res.allPosts;
-      if (newData.length <= 0 && page === 0)
-        setIsEmpty(true)
 
-    if (newData.length <= 0 && data.length > 0)
+      if (!newData) {
         setIsEndOfData(true)
+      } else {
+        if (newData.length <= 0 && page === 0)
+          setIsEmpty(true)
+        if (newData.length <= 0 && data.length > 0)
+          setIsEndOfData(true)
+      }
 
       if (newData.length > 0)
       setPage(page + 1); // Tăng số trang lên
@@ -81,6 +101,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue}) => {
   };
 
   const handleEndReached = () => {
+    console.log(isLoading, isEmpty, isEndOfData)
     if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }

@@ -12,6 +12,7 @@ interface Item {
     createdat: string;
     orderid: string;
     statuscreatedat: string;
+    imgconfirmreceive: string;
 }
 
 interface DropdownContentProps {
@@ -73,6 +74,7 @@ const DropdownContentComponent: React.FC<DropdownContentProps> = ({ title, data,
                       orderid={item.orderid}
                       statuscreatedat={item.statuscreatedat}
                       isVisibleConfirm={isVisibleConfirm}
+                      imgconfirmreceive={item.imgconfirmreceive}
                   />
               ))
           ) : (

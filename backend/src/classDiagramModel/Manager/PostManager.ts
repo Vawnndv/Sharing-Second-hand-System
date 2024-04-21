@@ -19,7 +19,13 @@ interface FilterSearch {
   nametype: string;
 }
 
-function filterSearch(distance: string, time: string, category: string, sort: string, latitude: string, longitude: string, data: FilterSearch[]): FilterSearch[] {
+interface Address {
+  longitude: string;
+  latitude: string;
+}
+
+
+function filterSearch(distance: string, time: string, category: string[], warehouseList: Address[], sort: string, latitude: string, longitude: string, isFilterWarehouse: boolean, data: FilterSearch[]): FilterSearch[] {
   // Chuyển các tham số string sang số
   const distanceFloat: number = parseFloat(distance);
   const timeInt: number = parseInt(time);
@@ -45,6 +51,19 @@ function filterSearch(distance: string, time: string, category: string, sort: st
       return itemTime.getTime() >= (currentTime.getTime() - (limitTime * 24 * 60 * 60 * 1000));
   }
 
+  function isCoordinateInWarehouseList(lon1: string, lat1: string, warehouseList: Address[]): boolean {
+    // Duyệt qua mỗi phần tử trong mảng warehouseList
+    for (const address of warehouseList) {
+      // So sánh longitude và latitude với lon1 và lat1
+      if (address.longitude === lon1 && address.latitude === lat1) {
+        // Nếu tìm thấy, trả về true
+        return true;
+      }
+    }
+    // Nếu không tìm thấy, trả về false
+    return false;
+  }
+
   // Lọc dữ liệu
   const filteredData: FilterSearch[] = data.filter(item => {
 
@@ -58,13 +77,13 @@ function filterSearch(distance: string, time: string, category: string, sort: st
       const isValidTime: boolean = timeInt !== -1 ? isTimeBefore(item.createdat, timeInt) : true;
 
       // Lọc theo danh mục
-      let isValidCategory: boolean = item.nametype === category;
-      if (category === "Tất cả") {
-        isValidCategory = true
-      }
-      console.log(isValidDistance , isValidTime , isValidCategory, 'hello')
+      let isValidCategory: boolean = category.includes(item.nametype) || category.includes("Tất cả");
+
+      let isValidWarehouse: boolean = isCoordinateInWarehouseList(item.longitude, item.latitude, warehouseList) || !isFilterWarehouse;
+
+      console.log(isValidDistance , isValidTime , isValidCategory, isValidWarehouse, 'Check Filter')
       // Kết hợp tất cả các điều kiện
-      return isValidDistance && isValidTime && isValidCategory;
+      return isValidDistance && isValidTime && isValidCategory && isValidWarehouse;
   });
 
   // Sắp xếp dữ liệu nếu cần
@@ -92,7 +111,37 @@ export class PostManager {
     return [];
   }
 
-  public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getListAddressByWarehouseID(warehouses: string[]): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const query = `
+        SELECT *
+        FROM warehouse wh
+        LEFT JOIN address ad ON ad.addressid = wh.addressid
+        {placeholder}
+      `;
+      let constraints = 'WHERE ';
+      if (warehouses.length == 0)
+        constraints= '';
+      for (let i = 0; i < warehouses.length; i++) {
+        if (i == warehouses.length - 1)
+          constraints = constraints + `wh.warehouseid = ${warehouses[i]} `
+        else
+          constraints = constraints + `wh.warehouseid = ${warehouses[i]} OR `
+      }
+
+      const result: QueryResult = await client.query(query.replace('{placeholder}', constraints));
+
+      return result.rows; 
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
+  public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -152,7 +201,10 @@ export class PostManager {
       if (result.rows.length === 0) {
         return null;
       }
-      return filterSearch(distance, time, category, sort, latitude, longitude, result.rows); 
+
+      const warehouseList = await this.getListAddressByWarehouseID(warehouses);
+
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, false, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -161,7 +213,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -227,7 +279,10 @@ export class PostManager {
       if (result.rows.length === 0) {
         return null;
       }
-      return filterSearch(distance, time, category, sort, latitude, longitude, result.rows); 
+
+      const warehouseList = await this.getListAddressByWarehouseID(warehouses);
+
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -450,37 +505,53 @@ export class PostManager {
     // code here
   }
 
-  public static async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string, time: string, category: string, sort: string, latitude: string, longitude: string): Promise<any> {
+  public static async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
+        // SELECT 
+    //   us.userid,
+    //   CONCAT(us.firstname, ' ', us.lastname) AS name,
+    //   us.avatar,
+    //   po.postid,
+    //   po.title,
+    //   po.description,
+    //   po.createdat,
+    //   ad.address,
+    //   ad.longitude,
+    //   ad.latitude,
+    //   img.path,
+    //   itt.nametype,
+    //   CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+    //   FROM Posts AS po
+    //   JOIN "User" us ON po.owner = us.UserID
+    //   JOIN Address ad ON po.addressid = ad.addressid
+    //   JOIN item it ON it.itemid = po.itemid
+    //   JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+    //   LEFT JOIN "like_post" lp ON po.postid = lp.postid
+    //   LEFT JOIN Image img ON img.itemid = po.itemid
+    //   WHERE po.iswarehousepost = ${iswarehousepost}
+    //   AND (po.title LIKE '%${keyword}%' OR po.description LIKE '%${keyword}%')
+    //   GROUP BY
+    //     us.userid,
+    //     us.firstname,
+    //     us.lastname,
+    //     us.avatar,
+    //     po.postid,
+    //     po.title,
+    //     po.description,
+    //     po.createdat,
+    //     ad.address,
+    //     ad.longitude,
+    //     ad.latitude,
+    //     img.path,
+    //     itt.nametype
+    //   ORDER BY po.createdat DESC
+    //   LIMIT ${limit}
+    //   OFFSET ${limit} * ${page};
     let query = `
-    SELECT 
-      us.userid,
-      CONCAT(us.firstname, ' ', us.lastname) AS name,
-      us.avatar,
-      po.postid,
-      po.title,
-      po.description,
-      po.createdat,
-      ad.address,
-      ad.longitude,
-      ad.latitude,
-      img.path,
-      itt.nametype,
-      CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
-      FROM Posts AS po
-      JOIN "User" us ON po.owner = us.UserID
-      JOIN Address ad ON po.addressid = ad.addressid
-      JOIN item it ON it.itemid = po.itemid
-      JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-      LEFT JOIN "like_post" lp ON po.postid = lp.postid
-      LEFT JOIN Image img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = ${iswarehousepost}
-      AND (po.title LIKE '%${keyword}%' OR po.description LIKE '%${keyword}%')
-      GROUP BY
+      SELECT DISTINCT
         us.userid,
-        us.firstname,
-        us.lastname,
-        us.avatar,
+        CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+        CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
         po.postid,
         po.title,
         po.description,
@@ -489,7 +560,36 @@ export class PostManager {
         ad.longitude,
         ad.latitude,
         img.path,
-        itt.nametype
+        itt.nametype,
+        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+      FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN Address ad ON po.addressid = ad.addressid
+      LEFT JOIN item it ON it.itemid = po.itemid
+      LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+      LEFT JOIN "like_post" lp ON po.postid = lp.postid
+      LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+      LEFT JOIN orders od ON od.postid = po.postid
+      LEFT JOIN (
+          SELECT DISTINCT ON (itemid) * FROM Image
+      ) img ON img.itemid = po.itemid
+      WHERE po.iswarehousepost = ${iswarehousepost}  AND od.givetypeid != 3 AND od.givetypeid != 4
+      AND (LOWER(po.title) LIKE LOWER('%${keyword}%') OR LOWER(po.description) LIKE LOWER('%${keyword}%'))
+      GROUP BY
+          us.userid,
+          us.firstname,
+          us.lastname,
+          us.avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          wh.warehousename,
+          itt.nametype
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -497,11 +597,8 @@ export class PostManager {
     
     try {
       const result: QueryResult = await client.query(query);
-      console.log(result.rows, 'TRUOWC')
-      console.log(filterSearch(distance, time, category, sort, latitude, longitude, result.rows) 
-      , 'SAU')
-
-      return filterSearch(distance, time, category, sort, latitude, longitude, result.rows) 
+      const warehouseList = await this.getListAddressByWarehouseID(warehouses);
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, Boolean(iswarehousepost), result.rows) 
 
     } catch (error) {
       console.error('Error: ', error);

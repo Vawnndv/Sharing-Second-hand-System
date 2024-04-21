@@ -10,6 +10,7 @@ import { LoadingModal } from '../../modals';
 import { IconButton } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function ScanScreen({navigation} : any) {
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -22,6 +23,12 @@ export default function ScanScreen({navigation} : any) {
 
   const auth = useSelector(authSelector);
   const userID = auth.id;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setScanned(false);
+    }, [])
+  );
 
   useEffect(() => {
     const getCameraPermissions = async () => {
@@ -38,17 +45,22 @@ export default function ScanScreen({navigation} : any) {
         `/verifyOrderQR?orderID=${data}`,
         'get'
       );
-      
-      if (res.data.userreceiveid === userID || res.data.usergiveid === userID) {
+      if (res.data == null) {
+        alert(`Không tìm thấy bài đăng hay đơn hàng của bạn`);
+      } else if (res.data.userreceiveid === userID || res.data.usergiveid === userID) {
         setOrderID(data);
         setIsModalVisible(true);
         setIsLoading(false);
+      } else {
+        navigation.navigate('ItemDetailScreen', {
+          postId : res.data.postid,
+        })
       }
 
     } catch (error) {
       // console.log(error);
       setIsLoading(false);
-      alert(`Can't find posts or orders`);
+      alert(`Không tìm thấy bài đăng hay đơn hàng của bạn`);
     }
   };
 

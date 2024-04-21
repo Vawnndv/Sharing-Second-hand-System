@@ -16,28 +16,32 @@ const initalPosition = {
   longitudeDelta: 0.02 * width / height
 }
 
-const warehouses = [
-    {
-        warehouseid: 19,
-        warehousename: 'Kho số 1',
-        address: 'Đại học khoa học tự nhiên',
-        latitude: 10.763025311133902,
-        longitude: 106.68249312376167
-    },
-    {
-        warehouseid: 20,
-        warehousename: 'Kho số 2',
-        address: 'Nhà thi đấu Phú Thọ',
-        latitude: 10.7688298,
-        longitude: 106.6577947
-    }
-]
+// const warehouses = [
+//     {
+//         warehouseid: 19,
+//         warehousename: 'Kho số 1',
+//         address: 'Đại học khoa học tự nhiên',
+//         latitude: 10.763025311133902,
+//         longitude: 106.68249312376167
+//     },
+//     {
+//         warehouseid: 20,
+//         warehousename: 'Kho số 2',
+//         address: 'Nhà thi đấu Phú Thọ',
+//         latitude: 10.7688298,
+//         longitude: 106.6577947
+//     }
+// ]
 
-export default function MapSelectWarehouse() {
+export default function MapSelectWarehouse({navigation, route}: any) {
 
-    const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => false))
+    const {warehouses, checkWarehouses, setCheckWarehouses}: any = route.params;
+    // console.log("setWarehousesID", setWarehousesID)
+
+    // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
+    const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(checkWarehouses)
     const [location, setLocation] = useState<any>(null);
-    console.log(location)
+    // console.log(location)
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -77,9 +81,27 @@ export default function MapSelectWarehouse() {
 
 
     const handleClickWarehouse = (index: number) => {
-        let newData = [...checkWarehouses]
+        let newData = [...checkWarehousesOnMap]
         newData[index] = !newData[index]
-        setCheckWarehouses(newData)
+        setCheckWarehousesOnMap(newData)
+        console.log(checkWarehousesOnMap)
+        // console.log('press check box')
+    }
+
+    const handleConfirmSelect = () => {
+        let listWarehouseID: any = []
+        checkWarehousesOnMap.map((item:any, index:number) => {
+            if(item === true){
+                listWarehouseID.push(warehouses[index].warehouseid)
+            }
+        })
+
+        if (route.params && route.params.setWarehousesID) {
+            route.params.setWarehousesID(listWarehouseID);
+        }
+        setCheckWarehouses(checkWarehousesOnMap)
+        // setWarehousesID(listWarehouseID)
+        navigation.goBack()
     }
     
     return (
@@ -95,12 +117,12 @@ export default function MapSelectWarehouse() {
                 showsMyLocationButton={false}
                 userLocationAnnotationTitle="Your Location">
                     {
-                        warehouses.map((item: any, index) => {
+                        warehouses.map((item: any, index: number) => {
                             return(
                                 <Marker
                                     coordinate={{
-                                        latitude: item.latitude,
-                                        longitude: item.longitude
+                                        latitude: parseFloat(item.latitude),
+                                        longitude: parseFloat(item.longitude)
                                     }}
                                     onPress={() => handleClickWarehouse(index)}
                                     key={index}
@@ -113,7 +135,7 @@ export default function MapSelectWarehouse() {
                                                 <TouchableOpacity
                                                     onPress={() => console.log('checkbox')}>
                                                     <Checkbox
-                                                        status={checkWarehouses[index] === false ? 'unchecked' : 'checked'}
+                                                        status={checkWarehousesOnMap[index] === false ? 'unchecked' : 'checked'}
                                                         uncheckedColor='#693F8B'
                                                         color='#693F8B'
                                                         />
@@ -135,9 +157,9 @@ export default function MapSelectWarehouse() {
                     }
                 </MapView>
                 
-                <View style={styles.header}>
+                {/* <View style={styles.header}>
                     <Text>Bản đồ đang hiển thị các kho ở gần bạn trong bán kính 20km</Text>
-                </View>
+                </View> */}
 
                 <TouchableOpacity style={styles.getMyLocation}
                     onPress={handleGetMyLocation}>
@@ -145,6 +167,7 @@ export default function MapSelectWarehouse() {
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                    onPress={() => handleConfirmSelect()}
                     style={styles.confirmButton}>
                     <Text style={{fontSize: 16, color: 'white'}}>Xác nhận chọn kho</Text>
                 </TouchableOpacity>
@@ -156,6 +179,8 @@ export default function MapSelectWarehouse() {
         
     );
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

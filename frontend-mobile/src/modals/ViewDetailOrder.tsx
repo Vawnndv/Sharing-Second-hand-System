@@ -21,6 +21,8 @@ import { appInfo } from '../constants/appInfos';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../redux/reducers/authReducers';
 import postsAPI from '../apis/postApi';
+import { ActivityIndicator } from 'react-native-paper';
+import { statusOrder } from '../constants/statusOrder';
 
 interface Data {
   title: string;
@@ -90,6 +92,27 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
     }
   };
 
+  const cancelGiveOrder = async () => {
+    try {
+      setIsLoading(true);
+
+      const res = await orderAPI.HandleOrder(
+        `/update-status`,
+        {
+          orderID: orderid,
+          statusID: statusOrder.CANCELED.statusid
+        },
+        'post'
+      );
+      
+      setIsLoading(false);
+      setIsModalVisible(false)
+      navigation.navigate('OrderGive', { reload: true })
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const removeImage = async () => {
     try {
       setModalVisible(false);
@@ -118,6 +141,10 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
     deletePostReceiver()
   };
 
+  const handleCancelGive = async () => {
+    cancelGiveOrder()
+  };
+
   const handleShowImage = () => {
     setVisible(true)
     setIsShowQR(false)
@@ -136,86 +163,104 @@ export default function ViewDetailOrder({ setIsModalVisible, orderid }: { setIsM
         </TouchableOpacity>
         <Text style={{flex: 1, textAlign: 'center', alignItems: 'center', fontSize: 18, fontWeight: 'bold'}}>{data?.status}</Text>
       </View>
-
-      <View style={styles.body}>
-        <CardComponent
-          // key={index}
-          color={appColors.white4}
-          isShadow
-          onPress={() => navigation.navigate('ItemDetailScreen')}
-          styles={styles.info}
-        >
-          <Image
-            source={{ uri: data?.image }} 
-            style={styles.image} 
-            resizeMode="contain"
-          />
-
-          <View style={styles.infomation}>
-            <Text style={{ fontWeight: 'bold' }}>{data?.title}</Text>
-            <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
-                <Icon name="map-pin" size={20} color="#552466" />
-                <Text style={{ paddingLeft: 20 }}>{data?.address}</Text>
-            </View>
-
-            <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                <Text style={{ fontWeight: 'bold' }}> {data?.status} </Text>
-                <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data ? data.statuscreatedat : '' )}</Text>
-            </View>
+      {
+        isLoading ? (
+          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <ActivityIndicator animating={true} color={appColors.purple} />
           </View>
-        </CardComponent>
+        ) : (
+          <View style={styles.body}>
+            <CardComponent
+              // key={index}
+              color={appColors.white4}
+              isShadow
+              onPress={() => navigation.navigate('ItemDetailScreen', {
+                postId : data?.postid,
+              })}
+              styles={styles.info}
+            >
+              <Image
+                source={{ uri: data?.image }} 
+                style={styles.image} 
+                resizeMode="contain"
+              />
 
-        <View style={{flexDirection: 'row'}}>
-          {
-            // userID == data?.userreceiveid ? (
-              userID == data?.userreceiveid && data?.isreciever ? (
-                <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-                  Xác nhận
-                </Button>
+              <View style={styles.infomation}>
+                <Text style={{ fontWeight: 'bold' }}>{data?.title}</Text>
+                <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
+                    <Icon name="map-pin" size={20} color="#552466" />
+                    <Text style={{ paddingLeft: 20 }}>{data?.address}</Text>
+                </View>
 
-              ) : (
-                <Button mode="contained" onPress={handleCancel} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
-                  Hủy
-                </Button>
-              )
-            // ) : (<></>)
-          }
-          <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
-          </IconButton>
+                <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <Text style={{ fontWeight: 'bold' }}> {data?.status} </Text>
+                    <Text style={{ color: 'red', fontWeight: 'bold' }}> {formatDateTime(data ? data.statuscreatedat : '' )}</Text>
+                </View>
+              </View>
+            </CardComponent>
 
-          <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
-          </IconButton>
-        </View>
+            <View style={{flexDirection: 'row'}}>
+              {
+                userID == data?.userreceiveid ? (
+                  data?.isreciever ? (
+                    <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                      Xác nhận
+                    </Button>
+                  ) : ( <></> )
+                ) : (
+                  userID == data?.usergiveid ? (
+                    data?.status == statusOrder.AWAITING_APPROVAL.statusname &&
+                    <Button mode="contained" onPress={handleCancelGive} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                      Hủy cho
+                    </Button>
+                  ) : (
+                    <Button mode="contained" onPress={handleCancel} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                      Hủy
+                    </Button>
+                  )
+                )
+              }
+              {
+                (image || data?.imgconfirmreceive && data?.imgconfirmreceive != ' ') && 
+                <IconButton style={{marginVertical: 10}} icon="image" mode="outlined" onPress={handleShowImage}>
+                </IconButton>
+              }
 
-        <View style={styles.process}>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 3 }}>
-            <View>
-              <Text style={{ fontWeight: 'bold' }}>Quá Trình</Text>
+              <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
+              </IconButton>
             </View>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text style={{ fontWeight: 'bold' }}>Mã đơn hàng</Text>
-              <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>{data?.orderid}</Text>
+            <View style={styles.process}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 3 }}>
+                <View>
+                  <Text style={{ fontWeight: 'bold' }}>Quá Trình</Text>
+                </View>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: 'bold' }}>Mã đơn hàng</Text>
+                  <Text style={{ paddingLeft: 5, fontWeight: 'bold', color: 'blue' }}>{data?.orderid}</Text>
+                </View>
+              </View>
+
+              <View style={{borderBottomWidth: 1, marginTop: 4, borderBottomColor: 'grey'}}/>
+
+              <ScrollView>
+                {data && <StepIndicatorOrder orderID={data?.orderid}/>}
+              </ScrollView>
             </View>
+            <UploadModal 
+              modalVisible={modalVisible}
+              onBackPress={() => { setModalVisible(false); }}
+              onCameraPress={() => TakePhoto(hasCameraPermission,setImage,() => setModalVisible(false))} 
+              onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
+              onRemovePress={() => removeImage()}
+              isLoading={false}
+              title='Confirm photo'     
+            />
+
           </View>
-
-          <View style={{borderBottomWidth: 1, marginTop: 4, borderBottomColor: 'grey'}}/>
-
-          <ScrollView>
-            {data && <StepIndicatorOrder orderID={data?.orderid}/>}
-          </ScrollView>
-        </View>
-        <UploadModal 
-          modalVisible={modalVisible}
-          onBackPress={() => { setModalVisible(false); }}
-          onCameraPress={() => TakePhoto(hasCameraPermission,setImage,() => setModalVisible(false))} 
-          onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
-          onRemovePress={() => removeImage()}
-          isLoading={false}
-          title='Confirm photo'     
-        />
-
-      </View>
+        )
+      }
       {/* <Text style={styles.body}>Modal</Text> */}
       {/* <View style={styles.separator} /> */}
 

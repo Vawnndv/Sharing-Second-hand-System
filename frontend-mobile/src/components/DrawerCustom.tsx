@@ -88,7 +88,7 @@ const DrawerCustom = ({navigation}: any) => {
   }
 
   const handleSettingAddress = () => {
-    navigation.navigate('MapSettingAddressScreen');
+    navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
   }
 
   const handleNavigation = (key: string) => {
@@ -133,12 +133,12 @@ const DrawerCustom = ({navigation}: any) => {
       >
         <AvatarComponent
           avatar={auth.avatar}
-          username={auth.username ? auth.username : auth.email}
+          username={auth.lastName ? auth.lastName : auth.email}
           styles={localStyles.avatar}
           size={60}
         />
         <SpaceComponent width={10} />
-        <TextComponent text={auth.username} title size={16} />
+        <TextComponent styles={{marginTop: -8}} text={auth.firstName + ' ' + auth.lastName} title size={18} />
       </RowComponent>
       <FlatList
         showsVerticalScrollIndicator={false}

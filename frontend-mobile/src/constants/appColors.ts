@@ -15,4 +15,5 @@ export const appColors = {
   gray5: '#D9D9D9',
   link: '#5669FF',
   danger: '#e74c3c',
+  purple: '#321357',
 };
