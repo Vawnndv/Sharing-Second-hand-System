@@ -172,11 +172,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
         setIsUserPost(res.data.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
-      } finally {
-        setIsLoading(false);
       }
 
       try {
+
         const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
@@ -184,11 +183,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
         setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);
-      } finally {
-        setIsLoading(false);
       }
 
       try {
+
         const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
         // const res = await itemsAPI.HandleAuthentication(
         //   `/${itemID}`,
@@ -201,11 +199,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       
       } catch (error) {
         console.error('Error fetching item details:', error);
-      } finally {
-        setIsLoading(false);
       }
 
       try {
+
         const res = await userAPI.HandleUser(`/get-profile?userId=${owner}`);
         res && res.data && setProfile(res.data);
       } catch (error) {
@@ -246,7 +243,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
     return(
       <ScrollView>
-
         <View style={styles.screenContainer}>
             {modalVisible && (
             <View style={styles.overlayContainer} />
@@ -403,7 +399,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                           latitude: parseFloat(post.latitude),
                           longitude: parseFloat(post.longitude),
                         }}
-                        useTo={'no'}
                     />
                   </View>
                   
