@@ -5,13 +5,7 @@ import asyncHandle from 'express-async-handler';
 dotenv.config();
 
 export const getOrderList = async (req: Request, res: Response) => {
-  const userID : any = req.query.userID;
-  const distance : any = req.query.distance;
-  const time : any = req.query.time;
-  const category : any = req.query.category;
-  const sort : any = req.query.sort;
-  const latitude : any = req.query.latitude;
-  const longitude : any = req.query.longitude;
+  const { userID, distance, time, category, sort, latitude, longitude } = req.body;
   
   try {
     const orderList = await  OrderManager.getOrderList(userID, distance, time, category, sort, latitude, longitude);
@@ -23,13 +17,7 @@ export const getOrderList = async (req: Request, res: Response) => {
 };
 
 export const getOrderFinishList = async (req: Request, res: Response) => {
-  const userID : any = req.query.userID;
-  const distance : any = req.query.distance;
-  const time : any = req.query.time;
-  const category : any = req.query.category;
-  const sort : any = req.query.sort;
-  const latitude : any = req.query.latitude;
-  const longitude : any = req.query.longitude;
+  const { userID, distance, time, category, sort, latitude, longitude } = req.body;
   
   try {
     const orderListFinish = await  OrderManager.getOrderFinishList(userID, distance, time, category, sort, latitude, longitude);

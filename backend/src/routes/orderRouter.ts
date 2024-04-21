@@ -4,8 +4,8 @@ import { updateReceiveID } from '../controllers/orderCollaboratorController';
 
 const router = express.Router();
 
-router.get('/list', getOrderList);
-router.get('/listFinish', getOrderFinishList);
+router.post('/list', getOrderList);
+router.post('/listFinish', getOrderFinishList);
 router.get('/tracking', getTrackingStatus);
 router.post('/upload-image-confirm', uploadImageConfirmOrder);
 router.get('/verifyOrderQR', VerifyOrderQR);

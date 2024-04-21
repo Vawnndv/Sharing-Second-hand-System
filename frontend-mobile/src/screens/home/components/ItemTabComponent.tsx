@@ -129,10 +129,10 @@ const ItemTabComponent = () => {
   )}
 >
   <SubTabs.Screen name="Nguời Cho">
-    {(props) => <UserPostComponent  {...props} filterValue={filterValue} />}
+    {(props) => <UserPostComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
   </SubTabs.Screen>
   <SubTabs.Screen name="Lưu kho">
-    {(props) => <WarehouseComponent  {...props} filterValue={filterValue} />}
+    {(props) => <WarehouseComponent  {...props} filterValue={filterValue} warehousesID={warehousesID}/>}
   </SubTabs.Screen>
 </SubTabs.Navigator>
 
