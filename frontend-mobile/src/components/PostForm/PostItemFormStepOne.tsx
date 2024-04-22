@@ -8,11 +8,21 @@ import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 import { Dropdown } from 'react-native-element-dropdown';
 import { ProfileModel } from '../../models/ProfileModel';
+import { appColors } from '../../constants/appColors';
+import TextComponent from '../TextComponent';
 
 // import { Picker } from '@react-native-picker/picker';
 
-
-
+interface ErrorProps  {
+  itemName: string;
+  itemPhotos: string;
+  itemQuantity: string;
+  itemCategory: string;
+  methodGive: string;
+  itemDescription: string;
+  methodsBringItemToWarehouse: string;
+  warehouseAddress: string;
+}
 
 interface FormData {
   itemName: string;
@@ -42,7 +52,6 @@ interface Warehouse {
   latitude: string;
 }
 
-
 interface StepOneProps {
   setStep: (step: number) => void;
   formData: FormData;
@@ -62,6 +71,18 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const [itemTypesDropdown, setItemTypesDropdown] = useState<any>([]);
 
+  const [errorMessage, setErrorMessage] = useState<ErrorProps>({
+    itemName: '',
+    itemPhotos: '',
+    itemQuantity: '',
+    itemCategory: '',
+    methodGive: '',
+    itemDescription: '',
+    methodsBringItemToWarehouse: '',
+    warehouseAddress: '',
+  });
+
+  const [isDisable, setIsDisable] = useState(true);
 
   // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
@@ -141,6 +162,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     if (formData.methodsBringItemToWarehouse){
       setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
     }
+    
 
 
   })
@@ -234,6 +256,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       // }
       // setImage(finalResult);
       setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
+      setErrorMessage({...errorMessage, itemPhotos: ''})
     }
   };
 
@@ -255,37 +278,81 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         warehouseAddressID: selectedWarehouse.addressid,
         warehouseID: selectedWarehouse.warehouseid
       });
-
+      setErrorMessage({...errorMessage, warehouseAddress: ''})
     }
   };
 
+  
+
   const handleNext = () => {
+    console.log(formData);
+    console.log(errorMessage);
+  
+    let updatedErrorMessage = {...errorMessage};
     // Kiểm tra các trường bắt buộc
     if (!formData.itemName.trim()) {
-      alert('Tên món đồ là bắt buộc.');
-      return;
+      updatedErrorMessage.itemName = 'Tên món đồ là bắt buộc.';
+    } else {
+      updatedErrorMessage.itemName = '';
     }
     if (formData.itemPhotos.length < 1) {
-      alert('Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.');
-      return;
+      updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
+    } else {
+      updatedErrorMessage.itemPhotos = '';
     }
 
     if (!formData.itemQuantity.trim()) {
-      alert('Số lượng là bắt buộc.');
-      return;
+      updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
+    } else {
+      updatedErrorMessage.itemQuantity = '';
     }
 
-    if (!formData.itemCategory) {
-      alert('Loại món đồ là bắt buộc.');
-      return;
+    if (formData.itemCategory === 'Chọn loại món đồ') {
+      updatedErrorMessage.itemCategory = 'Loại món đồ là bắt buộc.';
+    } else {
+      updatedErrorMessage.itemCategory = '';
     }
 
-    if (!formData.methodGive) {
-      alert('Vui lòng chọn phương thức cho');
-      return;
+    if (formData.methodGive === 'Chọn phương thức cho') {
+      updatedErrorMessage.methodGive = 'Vui lòng chọn phương thức cho';
+    } else {
+      updatedErrorMessage.methodGive = '';
     }
 
-    setStep(2);
+    if (formData.methodsBringItemToWarehouse === 'Chọn phương thức mang đồ đến kho' && isWarehouseGive){
+      updatedErrorMessage.methodsBringItemToWarehouse = 'Vui lòng chọn phương thức đem đồ đến kho';
+    } else {
+      updatedErrorMessage.methodsBringItemToWarehouse = '';
+    }
+
+    if (formData.warehouseAddress === 'Chọn kho' && isBringItemToWarehouse){
+      updatedErrorMessage.warehouseAddress = 'Vui lòng chọn kho.';
+    } else {
+      updatedErrorMessage.warehouseAddress = '';
+    }
+
+    setErrorMessage(updatedErrorMessage);
+    if (
+      !errorMessage.itemName && 
+      !errorMessage.itemPhotos && 
+      !errorMessage.itemQuantity && 
+      !errorMessage.itemCategory && 
+      !errorMessage.methodGive && 
+      formData.itemName && 
+      formData.itemPhotos.length > 0 && 
+      formData.itemQuantity &&
+      formData.itemCategory !== 'Chọn loại món đồ' &&
+      formData.methodGive !== 'Chọn phương thức cho'
+    ) {
+      if (isWarehouseGive && !errorMessage.methodsBringItemToWarehouse && formData.methodsBringItemToWarehouse !== 'Chọn phương thức mang đồ đến kho') {
+        if (isBringItemToWarehouse && !errorMessage.warehouseAddress && formData.warehouseAddress !== 'Chọn kho') {
+          setStep(2);
+        }
+      } 
+      if (!isWarehouseGive || !isBringItemToWarehouse) {
+        setStep(2);
+      }
+    }
 
     // Tiếp tục xử lý submit form ở đây
   };
@@ -305,11 +372,22 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <TextInput
         label="Tên món đồ"
         value={formData.itemName}
-        onChangeText={(text) => setFormData({ ...formData, itemName: text })}
+        onChangeText={(text) => {
+          setFormData({ ...formData, itemName: text });
+          setErrorMessage({...errorMessage, itemName: ''})
+        }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        error={errorMessage.itemName? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />
+      {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      
       <TextInput
           label="Ảnh của món đồ"
           style={styles.input}
@@ -321,7 +399,13 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           {formData.itemPhotos.map((image: any, index) => (
             <View key={index} style={styles.imageContainer}>
                 <Image source={{ uri: image.uri }} style={styles.image} />
-                <TouchableOpacity onPress={() => removeImage(index)} style={styles.closeButton}>
+                <TouchableOpacity 
+                  onPress={() => {
+                    removeImage(index);
+                    setErrorMessage({...errorMessage, itemPhotos: ''})
+                  }} 
+                  style={styles.closeButton}
+                >
                   <MaterialIcons name="close" size={24} color="white" />
                 </TouchableOpacity>
               </View>
@@ -331,6 +415,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
         Chọn Ảnh
       </Button>
+      {(errorMessage.itemPhotos) && <TextComponent text={errorMessage.itemPhotos}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
 
       <TextInput
         label="Số lượng"
@@ -339,6 +425,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
           if (parseInt(newText, 10) <= 50) { // Chỉ cho phép cập nhật nếu giá trị mới không lớn hơn 50
             setFormData({ ...formData, itemQuantity: newText });
+            setErrorMessage({...errorMessage, itemQuantity: ''})
           } else if (newText === '') { // Cho phép xoá hết nội dung
             setFormData({ ...formData, itemQuantity: '' });
           }
@@ -348,6 +435,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
       />
+      {(errorMessage.itemQuantity) && <TextComponent text={errorMessage.itemQuantity}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
 
       {/* <RNPickerSelect
         onValueChange={(value) => {
@@ -404,10 +493,13 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         onBlur={() => setIsFocusSelectedItemType(false)}
         onChange={item => {
           setFormData({ ...formData, itemCategory: item.value});
+          setErrorMessage({...errorMessage, itemCategory: ''})
           setSelectedItemTypeDropdown(item.value);
           setIsFocusSelectedItemType(false);
         }}
       />
+      {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
 
     <Dropdown
         style={[styles.dropdown, isFocusMethodGive && { borderColor: 'blue' }]}
@@ -430,60 +522,69 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
           setSelectedMethodGive(item.value);
           setIsFocusMethodGive(false);
           setFormData({ ...formData, methodGive: item.label.substring(2)})      
+          setErrorMessage({...errorMessage, methodGive: ''})
         }}
         />
+      {(errorMessage.methodGive) && <TextComponent text={errorMessage.methodGive}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
 
       {isWarehouseGive && (
-        <Dropdown
-          style={[styles.dropdown, isFocusBringItemToWarehouse && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          // inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={methodsBringItemToWarehouse}
-          // search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocusBringItemToWarehouse ? '  Phương thức đem đồ đến kho' : '...'}
-          // searchPlaceholder="Tìm kiếm..."
-          value={bringItemToWarehouseMethodsDropDown}
-          onFocus={() => setIsFocusBringItemToWarehouse(true)}
-          onBlur={() => setIsFocusBringItemToWarehouse(false)}
-          onChange={item => {
-            setBringItemToWarehouseMethodDropdown(item.value);
-            setIsFocusBringItemToWarehouse(false);
-            setFormData({ ...formData, methodsBringItemToWarehouse: item.label.substring(2)})
-          }}
-        />
+        <>
+          <Dropdown
+            style={[styles.dropdown, isFocusBringItemToWarehouse && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            // inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={methodsBringItemToWarehouse}
+            // search
+            maxHeight={300}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocusBringItemToWarehouse ? '  Phương thức đem đồ đến kho' : '...'}
+            // searchPlaceholder="Tìm kiếm..."
+            value={bringItemToWarehouseMethodsDropDown}
+            onFocus={() => setIsFocusBringItemToWarehouse(true)}
+            onBlur={() => setIsFocusBringItemToWarehouse(false)}
+            onChange={item => {
+              setBringItemToWarehouseMethodDropdown(item.value);
+              setIsFocusBringItemToWarehouse(false);
+              setFormData({ ...formData, methodsBringItemToWarehouse: item.label.substring(2)})
+            setErrorMessage({...errorMessage, methodsBringItemToWarehouse: ''})
+            }}
+          />
+          {(errorMessage.methodsBringItemToWarehouse) && <TextComponent text={errorMessage.methodsBringItemToWarehouse}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+        </>
       )}
 
       {isBringItemToWarehouse && isWarehouseGive && (
-
-        <Dropdown
-          style={[styles.dropdown, isFocusSelectedWarehouse && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          // inputSearchStyle={styles.inputSearchStyle}
-    
-          iconStyle={styles.iconStyle}
-          data={warehouseDropdown}
-          // search
-          maxHeight={windowHeight*0.2}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocusSelectedWarehouse ? '   Chọn kho' : '...'}
-          // searchPlaceholder="Tìm kiếm..."
-          value={selectedWarehouseDropdown}
-          onFocus={() => setIsFocusSelectedWarehouse(true)}
-          onBlur={() => setIsFocusSelectedWarehouse(false)}
-          onChange={item => {
-            setIsFocusSelectedWarehouse(false);
-            setSelectedWarehouseDropdown(item.value);
-            handleWarehouseChange(item.label.substring(2));
-            // setSelectedReceiveMethod(item.value)
-          }}
-        />
+        <>
+          <Dropdown
+            style={[styles.dropdown, isFocusSelectedWarehouse && { borderColor: 'blue' }]}
+            placeholderStyle={styles.placeholderStyle}
+            selectedTextStyle={styles.selectedTextStyle}
+            // inputSearchStyle={styles.inputSearchStyle}
+      
+            iconStyle={styles.iconStyle}
+            data={warehouseDropdown}
+            // search
+            maxHeight={windowHeight*0.2}
+            labelField="label"
+            valueField="value"
+            placeholder={!isFocusSelectedWarehouse ? '   Chọn kho' : '...'}
+            // searchPlaceholder="Tìm kiếm..."
+            value={selectedWarehouseDropdown}
+            onFocus={() => setIsFocusSelectedWarehouse(true)}
+            onBlur={() => setIsFocusSelectedWarehouse(false)}
+            onChange={item => {
+              setIsFocusSelectedWarehouse(false);
+              setSelectedWarehouseDropdown(item.value);
+              handleWarehouseChange(item.label.substring(2));
+              // setSelectedReceiveMethod(item.value)
+            }}
+          />
+          {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+        </>
       )}
       <Button mode="contained" onPress={handleNext}>Tiếp theo</Button>
     </ScrollView>
