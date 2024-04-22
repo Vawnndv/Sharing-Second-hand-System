@@ -88,10 +88,10 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
         message: 'Profile changed successfully!!!',
         data: {
           email,
-          firstName: updateUser.firstname,
-          lastName: updateUser.lastname,
-          phoneNumber: updateUser.phonenumber,
-          avatar: updateUser.avatar,
+          firstName: updateUser.firstname ?? '',
+          lastName: updateUser.lastname ?? '',
+          phoneNumber: updateUser.phonenumber ?? '',
+          avatar: updateUser.avatar ?? '',
         },
       });
     } else {

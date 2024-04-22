@@ -8,9 +8,9 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { authSelector } from '../../redux/reducers/authReducers';
 import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
-
-
-
+import { ErrorProps } from './MultiStepForm';
+import { appColors } from '../../constants/appColors';
+import TextComponent from '../TextComponent';
 
 interface FormData {
   postTitle: string;
@@ -28,9 +28,12 @@ interface StepTwoProps {
   setStep: (step: number) => void;
   formData: FormData;
   setFormData: (formData: FormData) => void;
+  errorMessage: ErrorProps;
+  setErrorMessage: (errorMessage: ErrorProps) => void;
 }
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => {
+
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -38,8 +41,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-
-
 
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
@@ -72,7 +73,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
 
   useEffect(() =>{
     if(profile){
-      setFormData({ ...formData, postPhoneNumber: profile.phonenumber, postAddress: profile.address});
+      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ?? '', postAddress: profile.address ?? ''});
     }
 
   },[profile])
@@ -90,12 +91,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
     setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') });
+    setErrorMessage({...errorMessage, postStartDate: ''});
   };
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
     if (!startDate) {
-      alert('Vui lòng chọn ngày bắt đầu trước.');
+      alert();
+      setErrorMessage({...errorMessage, postEndDate: 'Vui lòng chọn ngày bắt đầu trước.'})
       setStartDatePickerVisibility(false);
       setEndDatePickerVisibility(false);
       return;
@@ -106,6 +109,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       setEndDatePickerVisibility(Platform.OS === 'ios');
       setEndDate(currentDate);
       setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
+      setErrorMessage({...errorMessage, postEndDate: ''});
     }
 
   };
@@ -135,22 +139,37 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
       <TextInput
         label="Tiêu đề bài đăng"
         value={formData.postTitle}
-        onChangeText={(text) => setFormData({ ...formData, postTitle: text })}
+        onChangeText={(text) => {
+          setFormData({ ...formData, postTitle: text });
+          setErrorMessage({...errorMessage, postTitle: ''});
+        }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        error={errorMessage.postTitle? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />
+      {(errorMessage.postTitle) && <TextComponent text={errorMessage.postTitle}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
       <TextInput
         label="Nội dung của bài đăng"
         value={formData.postDescription}
-        onChangeText={(text) => setFormData({ ...formData, postDescription: text })}
+        onChangeText={(text) => {
+          setFormData({ ...formData, postDescription: text });
+          setErrorMessage({...errorMessage, postDescription: ''});
+        }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-
       />  
+      {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           label="Ngày bắt đầu"
@@ -158,6 +177,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
         />
+
       </TouchableOpacity>
         {isStartDatePickerVisible && (
           <DateTimePicker
@@ -171,6 +191,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             onChange={onChangeStartDate}
           />
         )}
+      {(errorMessage.postStartDate) && <TextComponent text={errorMessage.postStartDate}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
@@ -178,7 +199,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
           value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
-        />
+        />      
       </TouchableOpacity>
         {isEndDatePickerVisible && (
           <DateTimePicker
@@ -193,6 +214,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
             onChange={onChangeEndDate}
           />
         )}
+      {(errorMessage.postEndDate) && <TextComponent text={errorMessage.postEndDate}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
       <TextInput
         label="Số điện thoại"
         value={profile?.phonenumber}
@@ -200,20 +223,27 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
           // Chỉ cho phép cập nhật nếu text mới là số
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
           setFormData({ ...formData, postPhoneNumber: newText });
+          setErrorMessage({...errorMessage, postPhoneNumber: ''})
         }}        
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
       />  
+      {(errorMessage.postPhoneNumber) && <TextComponent text={errorMessage.postPhoneNumber}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
       <TextInput
         label="Địa chỉ"
         value={profile?.address}
-        onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
+        onChangeText={(text) =>{ 
+          setFormData({ ...formData, postAddress: text });
+          setErrorMessage({...errorMessage, postAddress: ''})
+        }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
+      {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       <TextInput
         label="Phương thức cho"
@@ -224,6 +254,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData }) => 
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
+      {(errorMessage.postGiveMethod) && <TextComponent text={errorMessage.postGiveMethod}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
       {/* Thêm các trường input khác tương tự */}
     </ScrollView>
   );

@@ -285,9 +285,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   
 
   const handleNext = () => {
-    console.log(formData);
-    console.log(errorMessage);
-  
     let updatedErrorMessage = {...errorMessage};
     // Kiểm tra các trường bắt buộc
     if (!formData.itemName.trim()) {
@@ -300,7 +297,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     } else {
       updatedErrorMessage.itemPhotos = '';
     }
-
     if (!formData.itemQuantity.trim()) {
       updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
     } else {
@@ -332,6 +328,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     }
 
     setErrorMessage(updatedErrorMessage);
+    
     if (
       !errorMessage.itemName && 
       !errorMessage.itemPhotos && 
