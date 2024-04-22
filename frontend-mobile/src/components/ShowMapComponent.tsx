@@ -82,7 +82,10 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
 
                 <TouchableOpacity
                     style={styles.buttonNavigateMap}
-                    onPress={() => navigation.navigate('MapSettingAddressScreen', useTo)}>
+                    onPress={() => navigation.navigate('MapSettingAddressScreen', {
+                        useTo,
+                        originalLocation: location
+                    })}>
                     <Text style={{color: 'white'}}>Chọn trên bản đồ</Text>
                 </TouchableOpacity>
             </View>

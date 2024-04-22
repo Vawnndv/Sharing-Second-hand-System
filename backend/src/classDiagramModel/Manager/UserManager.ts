@@ -45,6 +45,25 @@ export class UserManager {
 
   }
 
+  public static async getUserAddress(userID: string): Promise<any> {
+    const client = await pool.connect()
+
+    const query = `
+      SELECT a.address, a.latitude, a.longitude
+      FROM "User" u
+      INNER JOIN "address" a 
+      ON a.addressid = u.addressid
+      WHERE u.userid = ${userID}
+      `
+
+    try {
+      const response = await client.query(query);
+      
+    } catch (error) {
+      
+    }
+  }
+
   public ban(userID: string): void {
     //code here
   }
