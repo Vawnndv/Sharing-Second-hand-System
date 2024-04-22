@@ -48,7 +48,7 @@ const LocationComponent = ({name, address, handleClick}: any) => {
 // use to: setAddress, setPostAddress, no
 export default function MapSettingAddress({natigation, route}: any) {
 
-    const {useTo} = route.params;
+    const {originalLocation, useTo} = route.params
 
     const [inputSearch, setInputSearch] = useState('')
     const debouncedSearch = useDebounce(inputSearch, 500);

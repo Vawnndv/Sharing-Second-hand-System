@@ -68,7 +68,7 @@ const ProfileScreen = ({navigation, route}: any) => {
       {isLoading ? (
         <ActivityIndicator />
         // <LoadingComponent isLoading={isLoading} value={1} />
-      ) : profile ? (
+      ) : profile && (
         <>
           <SectionComponent styles={[globalStyles.center]}>
             <RowComponent>
@@ -156,8 +156,6 @@ const ProfileScreen = ({navigation, route}: any) => {
             </SectionComponent>
           </RowComponent>
         </>
-      ) : (
-        <TextComponent text="profile not found" />
       )}
     </ContainerComponent>
   )
