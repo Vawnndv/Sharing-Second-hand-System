@@ -20,6 +20,7 @@ interface FormData {
   postPhoneNumber: string
   postAddress: string;
   postGiveMethod?: string;
+  postBringItemToWarehouse?: string;
   
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -255,6 +256,19 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
       {(errorMessage.postGiveMethod) && <TextComponent text={errorMessage.postGiveMethod}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
+
+      {formData.postBringItemToWarehouse &&
+      <TextInput
+        label="Phương thức cho"
+        value={formData.postBringItemToWarehouse}
+        // onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
+        style={styles.input}
+        editable={false}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+      />
+      }
 
       {/* Thêm các trường input khác tương tự */}
     </ScrollView>

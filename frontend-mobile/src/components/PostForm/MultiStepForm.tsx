@@ -42,6 +42,8 @@ interface FormDataStepTwo {
   postPhoneNumber: string;
   postAddress: string;
   postGiveMethod?: string;
+  postBringItemToWarehouse?: string;
+
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -102,12 +104,29 @@ const MultiStepForm = () => {
     }
   };
 
-  useEffect(() =>{
-    if(formDataStepOne.methodGive){
-      setFormDataStepTwo({...formDataStepTwo, postGiveMethod: formDataStepOne.methodGive});
+  useEffect(() => {
+    const updates: Partial<FormDataStepTwo> = {};
+  
+    if (formDataStepOne.methodGive && formDataStepOne.methodGive != 'Chọn phương thức cho') {
+      updates.postGiveMethod = formDataStepOne.methodGive;
     }
 
-  },[formDataStepOne.methodGive])
+
+    if (formDataStepOne.methodsBringItemToWarehouse && formDataStepOne.methodsBringItemToWarehouse != 'Chọn phương thức mang đồ đến kho' &&  formDataStepOne.methodGive != 'Đăng món đồ lên hệ thống ứng dụng') {
+      console.log(formDataStepOne.methodGive);
+      updates.postBringItemToWarehouse = formDataStepOne.methodsBringItemToWarehouse;
+    }
+
+    
+    if (formDataStepOne.methodGive == 'Đăng món đồ lên hệ thống ứng dụng') {
+      console.log(formDataStepOne.methodGive);
+      updates.postBringItemToWarehouse = '';
+    }
+  
+    if (Object.keys(updates).length > 0) {
+      setFormDataStepTwo(prevData => ({ ...prevData, ...updates }));
+    }
+  }, [formDataStepOne.methodGive, formDataStepOne.methodsBringItemToWarehouse]);
 
 
 

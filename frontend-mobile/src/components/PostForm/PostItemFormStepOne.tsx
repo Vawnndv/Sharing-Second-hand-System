@@ -162,7 +162,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     if (formData.methodsBringItemToWarehouse){
       setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
     }
-    
+
 
 
   })
@@ -518,7 +518,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         onChange={item => {
           setSelectedMethodGive(item.value);
           setIsFocusMethodGive(false);
-          setFormData({ ...formData, methodGive: item.label.substring(2)})      
+          setFormData({ ...formData, methodGive: item.label.substring(2)});     
           setErrorMessage({...errorMessage, methodGive: ''})
         }}
         />
