@@ -40,7 +40,7 @@ function Profile() {
   const [imageUrl, setImageUrl] = useState('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
-  console.log(authInfo);
+  console.log(imageUpdateUrl,imageUrl, '123');
 
   const {
     isLoading: updateLoading,
@@ -70,6 +70,7 @@ function Profile() {
       updateProfileAction({
         ...data,
         id: authInfo?.id,
+        avatar: imageUrl,
         // ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
       })
     );
