@@ -124,7 +124,30 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const [isFocusSelectedWarehouse, setIsFocusSelectedWarehouse] = useState<any>();
 
+  const [isValidNext, setIsValidNext] = useState(false);
 
+  const [validAllMethod, setValidAllMethod] = useState(false);
+
+  const [isUploaded, setIsUpdloaded] = useState(false);
+
+
+
+
+  useEffect(() => {
+    if(formData.methodGive == 'Đăng món đồ lên hệ thống ứng dụng'){
+      setValidAllMethod(true);
+    }
+    else if(formData.methodGive == 'Gửi món đồ đến kho' && formData.methodsBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
+      setValidAllMethod(true);
+    }
+    else if(formData.methodGive == 'Gửi món đồ đến kho' && formData.methodsBringItemToWarehouse == 'Tự đem đến kho' && formData.warehouseAddress != 'Chọn kho'){
+      setValidAllMethod(true);
+    }
+    else{
+      setValidAllMethod(false);
+
+    }
+  },[formData])
 
   useEffect(() => {
     if(formData?.methodGive == 'Gửi món đồ đến kho'){
@@ -163,6 +186,18 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     }
 
   },[formData])
+
+  useEffect(() =>{
+    if(isUploaded){
+      let updatedErrorMessage = {...errorMessage};
+      if (formData.itemPhotos.length < 1) {
+        updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
+      } else {
+        updatedErrorMessage.itemPhotos = '';
+      }
+      setErrorMessage(updatedErrorMessage);
+    }
+  },[formData.itemPhotos])
 
 
   useEffect(() => {
@@ -227,6 +262,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const pickImage = async () => {
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    setIsUpdloaded(true);
+
     if (permissionResult.granted === false) {
       alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
       return;
@@ -295,7 +332,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       } else {
         updatedErrorMessage.itemName = '';
         setFormData({ ...formData, itemName: text });
-
       }
     }
 
@@ -332,7 +368,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     }
 
     if(typeCheck == 'methodgive'){
-      if (formData.methodGive == 'Chọn phương thức cho') {
+      if (text == 'Chọn phương thức cho' && !validAllMethod) {
         updatedErrorMessage.methodGive = 'Vui lòng chọn phương thức cho đồ';
       } else {
         updatedErrorMessage.methodGive = '';
@@ -341,7 +377,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     
 
     if(typeCheck == 'methodbringitemtowarehouse'){
-      if (formData.methodsBringItemToWarehouse == 'Chọn phương thức mang đồ đến kho' && isWarehouseGive) {
+      // if (formData.methodsBringItemToWarehouse == 'Chọn phương thức mang đồ đến kho' && formData.methodGive == 'Gửi món đồ đên kho') {
+      if(!validAllMethod && formData.methodsBringItemToWarehouse == 'Chọn phương thức mang đồ đến kho'){
         updatedErrorMessage.methodsBringItemToWarehouse = 'Vui lòng chọn phương thức đem đồ đến kho';
       } else {
         updatedErrorMessage.methodsBringItemToWarehouse = '';
@@ -349,7 +386,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     }
 
     if(typeCheck == 'warehouseselect'){
-      if (formData.warehouseAddress == 'Chọn kho' && isBringItemToWarehouse) {
+      // if (formData.warehouseAddress == 'Chọn kho' && formData.methodGive == 'Gửi món đồ đên kho' && formData.methodsBringItemToWarehouse == 'Tự đem đến kho') {
+      if(!validAllMethod && text == 'Chọn kho'){
         updatedErrorMessage.warehouseAddress = 'Vui lòng chọn kho.';
       } else {
         updatedErrorMessage.warehouseAddress = '';
@@ -359,7 +397,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     setErrorMessage(updatedErrorMessage);
   }
 
-  const [isValidNext, setIsValidNext] = useState(false);
 
   useEffect( () => {
     if(      
@@ -368,19 +405,19 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       !errorMessage.itemQuantity && 
       !errorMessage.itemCategory && 
       !errorMessage.methodGive && 
+      !errorMessage.warehouseAddress &&
       formData.itemName && 
       formData.itemPhotos.length > 0 && 
       formData.itemQuantity &&
       formData.itemCategory !== 'Chọn loại món đồ' &&
-      formData.methodGive !== 'Chọn phương thức cho')
-      {
-        setIsValidNext(true);
-      }
+      formData.methodGive !== 'Chọn phương thức cho' && validAllMethod) {
+        setIsValidNext(true)
+    }
       else{
         setIsValidNext(false);
       }
 
-  },[formData, errorMessage])
+  })
   const handleNext = () => {
     if (
       !errorMessage.itemName && 
@@ -388,32 +425,33 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       !errorMessage.itemQuantity && 
       !errorMessage.itemCategory && 
       !errorMessage.methodGive && 
+      !errorMessage.warehouseAddress &&
       formData.itemName && 
       formData.itemPhotos.length > 0 && 
       formData.itemQuantity &&
       formData.itemCategory !== 'Chọn loại món đồ' &&
-      formData.methodGive !== 'Chọn phương thức cho'
+      formData.methodGive !== 'Chọn phương thức cho' && validAllMethod
     ) {
-      if (isWarehouseGive && !errorMessage.methodsBringItemToWarehouse && formData.methodsBringItemToWarehouse !== 'Chọn phương thức mang đồ đến kho') {
-        if (isBringItemToWarehouse && !errorMessage.warehouseAddress && formData.warehouseAddress !== 'Chọn kho') {
+      // if (isWarehouseGive && !errorMessage.methodsBringItemToWarehouse && formData.methodsBringItemToWarehouse !== 'Chọn phương thức mang đồ đến kho') {
+      //   if (isBringItemToWarehouse && !errorMessage.warehouseAddress && formData.warehouseAddress !== 'Chọn kho') {
           setStep(2);
         }
-      } 
-      if (!isWarehouseGive || !isBringItemToWarehouse) {
-        setStep(2);
-      }
-    }
+      // // } 
+      // if (!isWarehouseGive || !isBringItemToWarehouse) {
+      //   setStep(2);
+      // }
+    // }
 
     // Tiếp tục xử lý submit form ở đây
   };
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
 
   return (
@@ -562,8 +600,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         onChange={item => {
           setSelectedMethodGive(item.value);
           setIsFocusMethodGive(false);
-          setFormData({ ...formData, methodGive: item.label.substring(2)});     
-          setErrorMessage({...errorMessage, methodGive: ''})
+          setFormData({ ...formData, methodGive: item.label.substring(2)});
+          // handleValidate('','methodgive') 
+          // setErrorMessage({...errorMessage, methodGive: ''})
 
         }}
         />
@@ -588,7 +627,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
             value={bringItemToWarehouseMethodsDropDown}
             onFocus={() => {
               setIsFocusBringItemToWarehouse(true);
-              handleValidate('','methodbringitemtowarehouse')
+              handleValidate(formData.methodsBringItemToWarehouse,'methodbringitemtowarehouse')
             }}
             onBlur={() => setIsFocusBringItemToWarehouse(false)}
             onChange={item => {
@@ -622,7 +661,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
             value={selectedWarehouseDropdown}
             onFocus={() => {
               setIsFocusSelectedWarehouse(true);
-              handleValidate('','warehouseselect')
+              handleValidate(formData.warehouseAddress,'warehouseselect')
             }}
             onBlur={() => setIsFocusSelectedWarehouse(false)}
             onChange={item => {

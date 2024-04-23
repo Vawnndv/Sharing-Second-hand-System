@@ -73,7 +73,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   useEffect(() =>{
     if(profile){
-      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ?? '', postAddress: profile.address ?? ''});
+      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ? profile.phonenumber : '', postAddress: profile.address ? profile.address : ''});
     }
 
   },[profile])
@@ -124,7 +124,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
       setErrorMessage({...errorMessage, postEndDate: ''});
     }
-
   };
   
 
@@ -165,7 +164,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         setFormData({ ...formData, postDescription: '' });
 
       } else {
-        updatedErrorMessage.postTitle = '';
+        updatedErrorMessage.postDescription = '';
         setFormData({ ...formData, postDescription: text });
 
       }
