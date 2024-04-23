@@ -46,7 +46,7 @@ function Uploader(props: Props) {
                   // Tạo FormData và thêm tệp tin và thông tin vào đó
                   const formData = new FormData();
                   formData.append('file', fileContent);
-                  formData.append('name', `${new Date().getTime()} ${file.name}`);
+                  formData.append('name', `${new Date().getTime()}${file.name}`);
                   formData.append('type', file.type);
 
                   // Gửi FormData qua phương thức POST
