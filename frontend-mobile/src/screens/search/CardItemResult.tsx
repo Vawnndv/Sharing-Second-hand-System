@@ -145,7 +145,9 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
               <RowComponent>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
                 <SpaceComponent width={4} />
-                <TextComponent text={item.address} />
+                <View style={styles.container}>
+                  <TextComponent numberOfLines={1} text={item.address} />
+                </View>
               </RowComponent>
             </View>
           </RowComponent>
@@ -184,4 +186,10 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
 
 export default CardItemResult;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    width: '95%', // Đảm bảo phần tử cha có chiều rộng 100%
+    overflow: 'hidden', // Ẩn văn bản bị tràn ra ngoài phần tử cha
+  },
+
+});
