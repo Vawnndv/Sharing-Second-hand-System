@@ -517,20 +517,37 @@ export class PostManager {
   }
 
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date): Promise<void> {
+  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any): Promise<void> {
 
     const client = await pool.connect();
+
+    const queryInsertAddress = `
+      INSERT INTO "address" (address, latitude, longitude) 
+      VALUES ('${postLocation.address}', ${postLocation.latitude}, ${postLocation.longitude})
+      RETURNING addressid;
+    `
     const query = `
         INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid)
         VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
       `;
-    const values : any = [title, location, description, owner, time, itemid, timestart, timeend, 3];
+    
     
     try {
-      const result: QueryResult = await client.query(query, values);
-      console.log('Posts inserted successfully:', result.rows[0]);
-      return result.rows[0];
+      if(isNewAddress){
+        const resultInsertAddress: QueryResult = await client.query(queryInsertAddress)
+        
+        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid];
+        const result: QueryResult = await client.query(query, values);
+        console.log('Posts inserted successfully:', result.rows[0]);
+        return result.rows[0];
+      }else{
+        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid];
+        const result: QueryResult = await client.query(query, values);
+        console.log('Posts inserted successfully:', result.rows[0]);
+        return result.rows[0];
+      }
+      
     } catch (error) {
       console.error('Error inserting post:', error);
     } finally {

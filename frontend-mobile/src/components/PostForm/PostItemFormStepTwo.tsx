@@ -22,8 +22,7 @@ interface FormData {
   postAddress: string;
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
-  postLongitude?: string;
-  postLatitude?: string;
+  location?: any;
   
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -49,7 +48,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [location, setLocation] = useState<any>(null);
+  const [location, setLocation] = useState<any>(null)
 
   const auth = useSelector(authSelector);
 
@@ -81,7 +80,34 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           setIsLoading(false);
         }
     }
+
+    const fetchUserAddressData = async () =>{
+      try {
+
+        const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!response) {
+          throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
+        }
+        setLocation({
+          address: response.data.data.address,
+          latitude: parseFloat(response.data.data.latitude),
+          longitude: parseFloat(response.data.data.longitude)
+        })
+        console.log(response.data)
+        
+        } catch (error) {
+        console.error('Error fetching user info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+   
+            
     fetchUserData();
+    fetchUserAddressData()
   
   },[] )
 
