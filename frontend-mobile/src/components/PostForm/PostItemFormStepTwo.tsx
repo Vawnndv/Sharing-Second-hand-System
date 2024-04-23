@@ -22,6 +22,8 @@ interface FormData {
   postAddress: string;
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
+  postLongitude?: string;
+  postLatitude?: string;
   
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -47,7 +49,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [location, setLocation] = useState<any>(null)
+  const [location, setLocation] = useState<any>(null);
 
   const auth = useSelector(authSelector);
 
@@ -67,7 +69,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             address: res.data.data.address,
             latitude: parseFloat(res.data.data.latitude),
             longitude: parseFloat(res.data.data.longitude)
-          })
+          });
+          setFormData({
+            ...formData,
+            postAddress: res.data.data.address,
+            postPhoneNumber: res.data.data.postPhoneNumber,
+          });
           } catch (error) {
           console.error('Error fetching user info:', error);
         } finally {
@@ -78,12 +85,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   
   },[] )
 
-  useEffect(() =>{
-    if(profile){
-      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ? profile.phonenumber : '', postAddress: profile.address ? profile.address : ''});
-    }
-
-  },[profile])
   
   useEffect(() => {
     if (startDate) {
@@ -101,6 +102,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       setEndDate(new Date(Date.parse(formData.postEndDate)));
     }
   },[formData.postStartDate, formData.postEndDate])
+
+  useEffect(() =>{
+    if(location){
+      setFormData({ ...formData, postAddress: location.address ? location.address : ''});
+    }
+  },[location])
 
 
 
@@ -192,13 +199,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
 
     if(typeCheck == 'postaddress'){
-      if (!text.trim()) {
+      if (!formData.postAddress.trim()) {
         updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
         setFormData({ ...formData, postAddress: '' });
 
       } else {
         updatedErrorMessage.postAddress = '';
-        setFormData({ ...formData, postAddress: text });
       }
     }
 
@@ -354,27 +360,31 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}
       />  
       {(errorMessage.postPhoneNumber) && <TextComponent text={errorMessage.postPhoneNumber}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      
+      {
+        (formData.postBringItemToWarehouse !== 'Tự đem đến kho') && 
+          <TextInput
+            label="Địa chỉ"
+            value={location?.address}
+            onFocus={() => handleValidate('', 'postaddress')}
+            onBlur={() => handleValidate('', 'postaddress')}
+            onChangeText={(text) =>{ 
+              // setFormData({ ...formData, postAddress: text });
+              // setErrorMessage({...errorMessage, postAddress: ''})
+              handleValidate(text,'postaddress');
 
-      <TextInput
-        label="Địa chỉ"
-        value={location?.address}
-        onBlur={() => handleValidate(formData.postAddress,'postaddress')}
-        onChangeText={(text) =>{ 
-          // setFormData({ ...formData, postAddress: text });
-          // setErrorMessage({...errorMessage, postAddress: ''})
-          handleValidate(text,'postaddress');
-
-        }}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        error={errorMessage.postAddress? true : false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      />
+            }}
+            style={styles.input}
+            underlineColor="gray" // Màu của gạch chân khi không focus
+            activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+            error={errorMessage.postAddress? true : false}
+            theme={{
+              colors: {
+                error: appColors.danger, 
+              },
+            }}
+          />
+        }
       {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       {

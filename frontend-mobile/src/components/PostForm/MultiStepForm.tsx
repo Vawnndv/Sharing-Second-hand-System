@@ -78,8 +78,9 @@ const MultiStepForm = () => {
   const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
-
   const [isValidSubmit, setIsValidSubmit] = useState(false);
+
+  const [isNewAddress, setIsNewAddress] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({
     postTitle: '',
