@@ -11,6 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 import { ErrorProps } from './MultiStepForm';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
+import ShowMapComponent from '../ShowMapComponent';
 
 interface FormData {
   postTitle: string;
@@ -46,6 +47,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [location, setLocation] = useState<any>(null)
 
   const auth = useSelector(authSelector);
 
@@ -61,6 +63,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
           }
           setProfile(res.data);
+          setLocation({
+            address: res.data.data.address,
+            latitude: parseFloat(res.data.data.latitude),
+            longitude: parseFloat(res.data.data.longitude)
+          })
           } catch (error) {
           console.error('Error fetching user info:', error);
         } finally {
@@ -144,6 +151,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }   
   };
 
+
   const handleValidate = (text: any, typeCheck: string) =>  {
     let updatedErrorMessage = {...errorMessage};
     // Kiểm tra các trường bắt buộc
@@ -207,8 +215,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     setErrorMessage(updatedErrorMessage);
 
   }
-
-
 
   if (isLoading) {
     return (
@@ -351,7 +357,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
       <TextInput
         label="Địa chỉ"
-        value={profile?.address}
+        value={location?.address}
         onBlur={() => handleValidate(formData.postAddress,'postaddress')}
         onChangeText={(text) =>{ 
           // setFormData({ ...formData, postAddress: text });
@@ -370,6 +376,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}
       />
       {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
+      {
+        location && 
+        <ShowMapComponent
+          location={location}
+          setLocation={setLocation}
+          useTo={'setPostAddress'}
+        />
+      }
 
       <TextInput
         label="Phương thức cho"

@@ -68,6 +68,12 @@ const ItemTabComponent = () => {
       checkWarehouses,
       setCheckWarehouses
     })
+    // navigation.navigate('MapSelectWarehouseGiveScreen', {
+    //   warehouses: warehouses,
+    //   setWarehousesID: setWarehousesID,
+    //   checkWarehouses,
+    //   setCheckWarehouses
+    // })
   }
 
   return (

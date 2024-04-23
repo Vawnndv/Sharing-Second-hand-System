@@ -10,6 +10,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { ProfileModel } from '../../models/ProfileModel';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
+import { useNavigation } from '@react-navigation/native';
 
 // import { Picker } from '@react-native-picker/picker';
 
@@ -124,6 +125,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const [isFocusSelectedWarehouse, setIsFocusSelectedWarehouse] = useState<any>();
 
+  const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
+
+  const navigation: any = useNavigation()
   const [isValidNext, setIsValidNext] = useState(false);
 
   const [validAllMethod, setValidAllMethod] = useState(false);
@@ -445,13 +449,22 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     // Tiếp tục xử lý submit form ở đây
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
+
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  
+  const handleSelectWarehouse = () => {
+    navigation.navigate('MapSelectWarehouseGiveScreen', {
+      warehouses: wareHouses,
+      setWarehouseSelected: setWarehouseSelected
+    })
+  }
 
 
   return (
@@ -644,32 +657,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
       {isBringItemToWarehouse && isWarehouseGive && (
         <>
-          <Dropdown
-            style={[styles.dropdown, isFocusSelectedWarehouse ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.warehouseAddress ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            // inputSearchStyle={styles.inputSearchStyle}
-      
-            iconStyle={styles.iconStyle}
-            data={warehouseDropdown}
-            // search
-            maxHeight={windowHeight*0.2}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocusSelectedWarehouse ? '   Chọn kho' : '...'}
-            // searchPlaceholder="Tìm kiếm..."
-            value={selectedWarehouseDropdown}
-            onFocus={() => {
-              setIsFocusSelectedWarehouse(true);
-              handleValidate(formData.warehouseAddress,'warehouseselect')
-            }}
-            onBlur={() => setIsFocusSelectedWarehouse(false)}
-            onChange={item => {
-              setIsFocusSelectedWarehouse(false);
-              setSelectedWarehouseDropdown(item.value);
-              handleWarehouseChange(item.label.substring(2));
+          <TextInput
+            label="Kho"
+            value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
+            style={styles.input}
+            underlineColor="transparent" // Màu của gạch chân khi không focus
+            editable={false} // Người dùng không thể nhập trực tiếp vào trường này
+            error={errorMessage.warehouseAddress? true : false}
+            // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+            theme={{
+              colors: {
+                error: appColors.danger, 
+              },
             }}
           />
+          <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
+            Chọn kho
+          </Button>
           {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
@@ -699,7 +703,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    marginTop: 10,
+    marginTop: 5,
     marginBottom: 20,
   },
   imageContainer: {
