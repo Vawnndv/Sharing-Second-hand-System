@@ -67,7 +67,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           setIsLoading(false);
         }
     }
-
     fetchUserData();
   
   },[] )
@@ -85,20 +84,33 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
   }, [startDate]);
 
+  useEffect(() => {
+    
+    if (formData.postStartDate){
+      setStartDate(new Date(Date.parse(formData.postStartDate)));
+    }
+
+    if(formData.postEndDate){
+      setEndDate(new Date(Date.parse(formData.postEndDate)));
+    }
+  },[formData.postStartDate, formData.postEndDate])
+
 
 
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate ? selectedDate : startDate;
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
+    setEndDate(null);
     setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') });
     setErrorMessage({...errorMessage, postStartDate: ''});
+    setErrorMessage({...errorMessage, postEndDate: ''});
+
   };
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
     if (!startDate) {
-      alert();
       setErrorMessage({...errorMessage, postEndDate: 'Vui lòng chọn ngày bắt đầu trước.'})
       setStartDatePickerVisibility(false);
       setEndDatePickerVisibility(false);
@@ -121,8 +133,82 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   };
 
   const showEndDatePicker = () => {
-    setEndDatePickerVisibility(true);
+    if (!startDate) {
+      setStartDatePickerVisibility(false);
+      setEndDatePickerVisibility(false);
+      setErrorMessage({...errorMessage, postEndDate: 'Vui lòng chọn ngày bắt đầu trước'});
+
+      return;
+    }
+    else{
+      setEndDatePickerVisibility(true);
+    }   
   };
+
+  const handleValidate = (text: any, typeCheck: string) =>  {
+    let updatedErrorMessage = {...errorMessage};
+    // Kiểm tra các trường bắt buộc
+    if(typeCheck == 'postitle'){
+      if (!text.trim()) {
+        updatedErrorMessage.postTitle = 'Vui lòng nhập tiêu đề bài đăng.';
+        setFormData({ ...formData, postTitle: '' });
+
+      } else{
+        updatedErrorMessage.postTitle = '';
+        setFormData({ ...formData, postTitle: text });
+      }
+    }
+
+    if(typeCheck == 'postdescription'){
+      if (!text.trim()) {
+        updatedErrorMessage.postDescription = 'Vui lòng nhập nội dung bài đăng.';
+        setFormData({ ...formData, postDescription: '' });
+
+      } else {
+        updatedErrorMessage.postTitle = '';
+        setFormData({ ...formData, postDescription: text });
+
+      }
+    }
+
+    if(typeCheck == 'postphonenumber'){
+      if (!text.trim()) {
+        updatedErrorMessage.postPhoneNumber = 'Vui lòng nhập số điện thoại.';
+        setFormData({ ...formData, postPhoneNumber: '' });
+      }
+      else if (text.trim().length < 10 || text.trim().length > 11) {
+        updatedErrorMessage.postPhoneNumber = 'Số điện thoại này không hợp lệ.';
+      } else {
+        updatedErrorMessage.postPhoneNumber = '';
+        setFormData({ ...formData, postPhoneNumber: text });
+      }
+    }
+
+    if(typeCheck == 'postaddress'){
+      if (!text.trim()) {
+        updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
+        setFormData({ ...formData, postAddress: '' });
+
+      } else {
+        updatedErrorMessage.postAddress = '';
+        setFormData({ ...formData, postAddress: text });
+      }
+    }
+
+    // if(typeCheck == 'postenddate'){
+    //   if (!startDate){
+    //     updatedErrorMessage.postEndDate = 'Vui lòng chọn ngày bắt đầu trước.';
+    //   }
+    //   else if (!text && startDate) {
+    //     updatedErrorMessage.postEndDate = 'Vui lòng chọn ngày kết thức.';
+    //   } else {
+    //     updatedErrorMessage.postEndDate = '';
+    //   }
+    // }
+    setErrorMessage(updatedErrorMessage);
+
+  }
+
 
 
   if (isLoading) {
@@ -140,9 +226,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       <TextInput
         label="Tiêu đề bài đăng"
         value={formData.postTitle}
+        onBlur={() => handleValidate(formData.postTitle,'postitle')}
         onChangeText={(text) => {
           setFormData({ ...formData, postTitle: text });
-          setErrorMessage({...errorMessage, postTitle: ''});
+          // setErrorMessage({...errorMessage, postTitle: ''});
+          handleValidate(text,'postitle');
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
@@ -159,15 +247,24 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       <TextInput
         label="Nội dung của bài đăng"
         value={formData.postDescription}
+        onBlur={() => handleValidate(formData.postDescription,'postdescription')}
         onChangeText={(text) => {
           setFormData({ ...formData, postDescription: text });
-          setErrorMessage({...errorMessage, postDescription: ''});
+          // setErrorMessage({...errorMessage, postDescription: ''});
+          handleValidate(text,'postdescription');
+
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+        error={errorMessage.postDescription? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />  
       {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
@@ -177,6 +274,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           value={startDate ? moment(startDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
+          error={errorMessage.postStartDate? true : false}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
         />
 
       </TouchableOpacity>
@@ -198,8 +301,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         <TextInput
           label="Ngày kết thúc"
           value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          // onBlur={() => handleValidate(formData.postEndDate,'postenddate')}
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
+          error={errorMessage.postEndDate? true : false}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
         />      
       </TouchableOpacity>
         {isEndDatePickerVisible && (
@@ -211,7 +321,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             display="default"
             minimumDate={minEndDate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
             maximumDate={moment(startDate).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
-
             onChange={onChangeEndDate}
           />
         )}
@@ -220,29 +329,46 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       <TextInput
         label="Số điện thoại"
         value={profile?.phonenumber}
+        onBlur={() => handleValidate(formData.postPhoneNumber,'postphonenumber')}
         onChangeText={(text) => {
           // Chỉ cho phép cập nhật nếu text mới là số
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
-          setFormData({ ...formData, postPhoneNumber: newText });
-          setErrorMessage({...errorMessage, postPhoneNumber: ''})
+          // setFormData({ ...formData, postPhoneNumber: newText });
+          // setErrorMessage({...errorMessage, postPhoneNumber: ''})
+          handleValidate(newText,'postphonenumber');
         }}        
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
+        error={errorMessage.postPhoneNumber? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />  
       {(errorMessage.postPhoneNumber) && <TextComponent text={errorMessage.postPhoneNumber}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       <TextInput
         label="Địa chỉ"
         value={profile?.address}
+        onBlur={() => handleValidate(formData.postAddress,'postaddress')}
         onChangeText={(text) =>{ 
-          setFormData({ ...formData, postAddress: text });
-          setErrorMessage({...errorMessage, postAddress: ''})
+          // setFormData({ ...formData, postAddress: text });
+          // setErrorMessage({...errorMessage, postAddress: ''})
+          handleValidate(text,'postaddress');
+
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        error={errorMessage.postAddress? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />
       {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
@@ -260,7 +386,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
       {formData.postBringItemToWarehouse &&
       <TextInput
-        label="Phương thức cho"
+        label="Phương thức đem món đồ đến kho"
         value={formData.postBringItemToWarehouse}
         // onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
         style={styles.input}
@@ -298,7 +424,6 @@ const styles = StyleSheet.create({
   },
   datePicker: {
     width: '100%',
-    marginBottom: 20,
     backgroundColor: 'transparent',
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
