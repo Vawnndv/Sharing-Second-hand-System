@@ -17,9 +17,73 @@ function Uploader(props: Props) {
   const [loading, setLoading] = useState(false)
   // upload image
 
+  const readFileContent = (file: any) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result);
+      };
+      reader.onerror = (error) => {
+        reject(error);
+      };
+      reader.readAsText(file);
+    });
+  };
+
+  const UploadImageToAws3 = async (file: any) => {
+
+    try {
+      // Đọc nội dung của tệp tin bằng FileReader
+      const fileReader: any = new FileReader();
+      fileReader.readAsDataURL(file);
+
+      return await new Promise((resolve, reject) => {
+          fileReader.onload = async () => {
+              try {
+                  // Chuyển đổi nội dung của tệp thành dạng Base64
+                  const fileContent = fileReader.result.split(',')[1];
+
+                  // Tạo FormData và thêm tệp tin và thông tin vào đó
+                  const formData = new FormData();
+                  formData.append('file', fileContent);
+                  formData.append('name', `${new Date().getTime()} ${file.name}`);
+                  formData.append('type', file.type);
+
+                  // Gửi FormData qua phương thức POST
+                  const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
+                      method: 'POST',
+                      body: formData,
+                  });
+
+                  // Xử lý phản hồi từ server nếu cần
+                  const data = await serverResponse.json();
+                  console.log('Server response:', data);
+                  
+                  resolve(data);
+              } catch (error) {
+                  console.error('Error uploading file:', error);
+                  reject(error);
+              }
+          };
+      });
+    } catch (error) {
+        console.error('Error reading file:', error);
+        return null;
+    }
+  };
+  
+
   const onDrop = useCallback(async (imageFile: any) => {
     const file = new FormData()
     file.append('file', imageFile[0])
+    
+    try {
+      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
+      setImageUrl(responseUploadImage.url)
+      console.log(responseUploadImage)
+    } catch (error) {
+      console.log(error)
+    }
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);
@@ -31,12 +95,15 @@ function Uploader(props: Props) {
       // setImageUrl(data)
     // }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imageUrl, imageUpdateUrl])
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     multiple: false,
     onDrop
   })
+
+
   return (
     <div className='form-upload-container'>
       {loading ? (

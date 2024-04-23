@@ -49,7 +49,7 @@ export class UserManager {
     const client = await pool.connect()
 
     const query = `
-      SELECT a.address, a.latitude, a.longitude
+      SELECT a.addressid, a.address, a.latitude, a.longitude
       FROM "User" u
       INNER JOIN "address" a 
       ON a.addressid = u.addressid
@@ -57,10 +57,18 @@ export class UserManager {
       `
 
     try {
-      const response = await client.query(query);
+      const result = await client.query(query);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      return result.rows[0];
       
-    } catch (error) {
-      
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
     }
   }
 

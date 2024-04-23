@@ -116,38 +116,6 @@ export const uploadImage = async (file: any) => {
 
 export const UploadImageToAws3 = async (file: any) => {
 
-    // fetch(file.uri).
-    // then(response => response.blob())
-    // .then(async blob => {
-    //     const formData = new FormData();
-    //     formData.append('file', file);
-    //     console.log(formData)
-    //     try {
-    //         // const response = await axios.post(`${appInfo.BASE_URL}/aws3/uploadImage`,formData,{
-    //         //     headers: {
-    //         //         "Content-Type": "multipart/form-data"
-    //         //     }
-    //         // })
-    //         // let options = {
-    //         //     method: 'POST',
-    //         //     body: formData,
-    //         //   };
-    //         let res = await axios.post(`${appInfo.BASE_URL}/aws3/uploadImage`, formData, {
-    //             headers: {
-    //                 "Content-Type": "multipart/form-data"
-    //             }
-    //         })
-        
-    //         console.log(res)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-
-    // }).catch(error => {
-    //     console.error('error reading image', error)
-    // })
-    
-
     try {
         const fileContent = await FileSystem.readAsStringAsync(file.uri, { encoding: FileSystem.EncodingType.Base64 });
         const formData = new FormData();

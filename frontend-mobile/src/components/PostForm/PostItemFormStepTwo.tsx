@@ -11,6 +11,7 @@ import { appInfo } from '../../constants/appInfos';
 import { ErrorProps } from './MultiStepForm';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
+import ShowMapComponent from '../ShowMapComponent';
 
 interface FormData {
   postTitle: string;
@@ -21,6 +22,7 @@ interface FormData {
   postAddress: string;
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
+  location?: any;
   
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -31,10 +33,12 @@ interface StepTwoProps {
   setFormData: (formData: FormData) => void;
   errorMessage: ErrorProps;
   setErrorMessage: (errorMessage: ErrorProps) => void;
+  location: any;
+  setLocation: any;
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -45,7 +49,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
-
 
   const auth = useSelector(authSelector);
 
@@ -60,23 +63,53 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           if (!res) {
             throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
           }
+
           setProfile(res.data);
+          setFormData({
+            ...formData,
+            postAddress: res.data.data.address,
+            postPhoneNumber: res.data.data.postPhoneNumber,
+          });
           } catch (error) {
           console.error('Error fetching user info:', error);
         } finally {
           setIsLoading(false);
         }
     }
+
+    const fetchUserAddressData = async () =>{
+      try {
+
+        const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!response) {
+          throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
+        }
+
+        // console.log('Location Give',response.data)
+        setLocation({
+          addressid: response.data.data.addressid,
+          address: response.data.data.address,
+          latitude: parseFloat(response.data.data.latitude),
+          longitude: parseFloat(response.data.data.longitude)
+        });
+        // console.log(response.data)
+        
+        } catch (error) {
+        console.error('Error fetching user info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+   
+            
     fetchUserData();
+    fetchUserAddressData()
   
   },[] )
 
-  useEffect(() =>{
-    if(profile){
-      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ?? '', postAddress: profile.address ?? ''});
-    }
-
-  },[profile])
   
   useEffect(() => {
     if (startDate) {
@@ -94,6 +127,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       setEndDate(new Date(Date.parse(formData.postEndDate)));
     }
   },[formData.postStartDate, formData.postEndDate])
+
+  useEffect(() =>{
+    if(location){
+      setFormData({ ...formData, postAddress: location.address ? location.address : ''});
+    }
+  },[location])
 
 
 
@@ -124,7 +163,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       setFormData({ ...formData,  postEndDate: moment(currentDate).format('YYYY-MM-DD') }); // Cập nhật formData
       setErrorMessage({...errorMessage, postEndDate: ''});
     }
-
   };
   
 
@@ -144,6 +182,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       setEndDatePickerVisibility(true);
     }   
   };
+
 
   const handleValidate = (text: any, typeCheck: string) =>  {
     let updatedErrorMessage = {...errorMessage};
@@ -165,7 +204,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         setFormData({ ...formData, postDescription: '' });
 
       } else {
-        updatedErrorMessage.postTitle = '';
+        updatedErrorMessage.postDescription = '';
         setFormData({ ...formData, postDescription: text });
 
       }
@@ -185,13 +224,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
 
     if(typeCheck == 'postaddress'){
-      if (!text.trim()) {
+      if (!formData.postAddress.trim()) {
         updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
         setFormData({ ...formData, postAddress: '' });
 
       } else {
         updatedErrorMessage.postAddress = '';
-        setFormData({ ...formData, postAddress: text });
       }
     }
 
@@ -208,8 +246,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     setErrorMessage(updatedErrorMessage);
 
   }
-
-
 
   if (isLoading) {
     return (
@@ -349,28 +385,41 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}
       />  
       {(errorMessage.postPhoneNumber) && <TextComponent text={errorMessage.postPhoneNumber}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      
+      {
+        (formData.postBringItemToWarehouse !== 'Tự đem đến kho') && 
+          <TextInput
+            label="Địa chỉ"
+            value={location?.address}
+            onFocus={() => handleValidate('', 'postaddress')}
+            onBlur={() => handleValidate('', 'postaddress')}
+            onChangeText={(text) =>{ 
+              // setFormData({ ...formData, postAddress: text });
+              // setErrorMessage({...errorMessage, postAddress: ''})
+              handleValidate(text,'postaddress');
 
-      <TextInput
-        label="Địa chỉ"
-        value={profile?.address}
-        onBlur={() => handleValidate(formData.postAddress,'postaddress')}
-        onChangeText={(text) =>{ 
-          // setFormData({ ...formData, postAddress: text });
-          // setErrorMessage({...errorMessage, postAddress: ''})
-          handleValidate(text,'postaddress');
-
-        }}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        error={errorMessage.postAddress? true : false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      />
+            }}
+            style={styles.input}
+            underlineColor="gray" // Màu của gạch chân khi không focus
+            activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+            error={errorMessage.postAddress? true : false}
+            theme={{
+              colors: {
+                error: appColors.danger, 
+              },
+            }}
+          />
+        }
       {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
+      {
+        location && 
+        <ShowMapComponent
+          location={location}
+          setLocation={setLocation}
+          useTo={'setPostAddress'}
+        />
+      }
 
       <TextInput
         label="Phương thức cho"

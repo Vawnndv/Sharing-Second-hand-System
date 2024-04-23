@@ -40,7 +40,7 @@ function Profile() {
   const [imageUrl, setImageUrl] = useState('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
-  console.log(authInfo, 'abc');
+  console.log(authInfo);
 
   const {
     isLoading: updateLoading,

@@ -15,6 +15,8 @@ import PostDetail from '../PostDetail';
 import { useNavigation } from '@react-navigation/native';
 
 import { Dropdown } from 'react-native-element-dropdown';
+import { appColors } from '../../constants/appColors';
+import ShowMapComponent from '../ShowMapComponent';
 
 
 interface Props {
@@ -100,6 +102,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
 
+  const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
+
   // const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
 
   // const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
@@ -128,6 +132,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
 
   const [isCompleted, setIsCompleted] = useState(false);
+
+  const [location, setLocation] = useState<any>(null);
 
 
   const auth = useSelector(authSelector);
@@ -192,6 +198,11 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         if (!res) {
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
+        setLocation({
+          address: res.data.postOwnerInfos.address,
+          latitude: parseFloat(res.data.postOwnerInfos.latitude),
+          longitude: parseFloat(res.data.postOwnerInfos.longitude)
+        })
         setPostOwnerInfo(res.data.postOwnerInfos);
         setFormData({
           ...formData,
@@ -283,7 +294,7 @@ const handleReceive = async () => {
     let warehouseid = null;
     if(selectedReceiveMethod == "Nhận đồ qua kho"){
       receivertypeid = 2;
-      warehouseid = formData?.warehouseID;
+      warehouseid = warehouseSeleted.warehouseID;
     }
 
     if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
@@ -433,6 +444,13 @@ const handleGive = async () =>{
     });
   }
 
+  const handleSelectWarehouse = () => {
+    navigation.navigate('MapSelectWarehouseGiveScreen', {
+      warehouses: wareHouses,
+      setWarehouseSelected: setWarehouseSelected
+    })
+  }
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -440,6 +458,8 @@ const handleGive = async () =>{
       </View>
     );
   }
+
+  console.log(location)
 
 
 
@@ -451,6 +471,7 @@ const handleGive = async () =>{
     {isUserPost && (
       <Text style={styles.title}>Thông tin cho đồ </Text>
     )}
+    
 
     <TextInput
       label="Tên người cho"
@@ -515,45 +536,52 @@ const handleGive = async () =>{
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && !postOwnerInfo?.iswarehousepost && (
 
-
-      <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        // inputSearchStyle={styles.inputSearchStyle}
-
-        iconStyle={styles.iconStyle}
-        data={warehouseDropdown}
-        // search
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? ' Chọn kho' : '...'}
-        // searchPlaceholder="Tìm kiếm..."
-        value={selectedWarehouseDropdown}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={item => {
-          setSelectedWarehouseDropdown(item.value);
-          setIsFocus(false);
-          handleWarehouseChange(item.label.substring(2));
-          // setSelectedReceiveMethod(item.value)
-        }}
-      />
+      <>
+        <TextInput
+          label="Kho"
+          value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
+          style={styles.input}
+          underlineColor="transparent" // Màu của gạch chân khi không focus
+          editable={false} // Người dùng không thể nhập trực tiếp vào trường này
+          // error={errorMessage.warehouseAddress? true : false}
+          // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
+        />
+        <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
+          Chọn kho
+        </Button>
+      </>
+      
     )}
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && !postOwnerInfo?.iswarehousepost && (
-      <TextInput
-        label="Địa chỉ đến lấy đồ"
-        value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-        editable={false} // Ngăn không cho người dùng nhập vào
+      <>
+        <TextInput
+          label="Địa chỉ đến lấy đồ"
+          value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
+          style={styles.input}
+          underlineColor="gray" // Màu của gạch chân khi không focus
+          activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+          multiline={true} // Cho phép nhập nhiều dòng văn bản
+          numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+          editable={false} // Ngăn không cho người dùng nhập vào
 
-      /> 
+        /> 
+        {
+          location && 
+          <ShowMapComponent
+            location={location}
+            setLocation={setLocation}
+            useTo='no'
+          />
+        }
+        
+      </>
+
     )}
     
 

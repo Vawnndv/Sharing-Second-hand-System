@@ -7,7 +7,7 @@ import MapView, {Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 import { fontFamilies } from "../constants/fontFamilies";
 import * as Location from 'expo-location';
 import haversine  from 'haversine'
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const { width, height } = Dimensions.get("window")
 
@@ -47,6 +47,22 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         return haversine(currentLocation, targetLocation, { unit: 'meter' });
     }
 
+    const mapViewRef = useRef<MapView>(null);
+    const moveCameraToCoordinate = (locationTarget: any) => {
+        const camera = {
+          center: locationTarget,
+          zoom: 15, // Level of zoom
+        };
+    
+        // Move camera to the specified coordinate
+        mapViewRef.current?.animateCamera(camera, { duration: 1500 });
+    };
+
+    useEffect(() => {
+        moveCameraToCoordinate(location)
+    }, [location])
+
+
     useEffect(() => {
         const fetchData = async () => {
             const distance = await getHowFarAway();
@@ -56,18 +72,27 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
 
         fetchData()
     }, [])
+
+    const convertMeterToKilometer = (meter: number) => {
+        if(meter > 999){
+            return (meter/1000).toFixed(1) + ' km'
+        }
+        return meter + 'm'
+    }
     
+    console.log(initalPosition)
     
     // console.log(width, height)
     return (
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>
                 <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2}}>
-                    <Text style={{fontFamily: fontFamilies.medium, flex: 1}}>Khoảng cách ước tính: </Text>
-                    <Text style={{fontFamily: fontFamilies.medium}}>{distance}m</Text>
+                    <Text style={{fontFamily: fontFamilies.regular, flex: 1}}>Uớc tính: </Text>
+                    <Text style={{fontFamily: fontFamilies.regular}}>{convertMeterToKilometer(distance)}</Text>
                 </View>
                 <MapView
-                    style={{width: '100%', height: '100%', borderRadius: 10}}
+                    ref={mapViewRef}
+                    style={{width: '100%', height: '100%', borderRadius: 0}}
                     showsUserLocation={true}
                     provider={PROVIDER_DEFAULT}
                     initialRegion={initalPosition}>
@@ -84,7 +109,8 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
                     style={styles.buttonNavigateMap}
                     onPress={() => navigation.navigate('MapSettingAddressScreen', {
                         useTo,
-                        originalLocation: location
+                        originalLocation: location,
+                        setOriginalLocation: setLocation
                     })}>
                     <Text style={{color: 'white'}}>Chọn trên bản đồ</Text>
                 </TouchableOpacity>

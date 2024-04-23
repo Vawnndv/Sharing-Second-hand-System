@@ -43,6 +43,7 @@ interface FormDataStepTwo {
   postAddress: string;
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
+  location?: any
 
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -78,8 +79,11 @@ const MultiStepForm = () => {
   const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
-
   const [isValidSubmit, setIsValidSubmit] = useState(false);
+
+  const [location, setLocation] = useState<any>(false);
+  
+  const [warehouseSelected, setWarehouseSelected] = useState<any>(null);
 
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({
     postTitle: '',
@@ -97,9 +101,9 @@ const MultiStepForm = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1:
-        return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} />;
+        return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} warehouseSelected={warehouseSelected} setWarehouseSelected={setWarehouseSelected}/>;
       case 2:
-        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} />;
+        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} />;
       // Có thể thêm các case khác cho các bước tiếp theo
       default:
         return null;
@@ -198,7 +202,7 @@ const MultiStepForm = () => {
   
       try {
         const title = formDataStepTwo.postTitle;
-        const location = formDataStepTwo.postAddress;
+        const locationTemp = formDataStepTwo.postAddress;
         const description = formDataStepTwo.postDescription;
         const owner = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
         const time = new Date();
@@ -207,16 +211,36 @@ const MultiStepForm = () => {
         const timeend = new Date(formDataStepTwo.postEndDate);
         
         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        const response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
-          title,
-          location,
-          description,
-          owner,
-          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-          itemid,
-          timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
-          timeend: new Date(timeend).toISOString(), // Và timeend
-        });       
+        let response;
+        if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
+          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+            title,
+            location: locationTemp,
+            description,
+            owner,
+            time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            itemid,
+            timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+            timeend: new Date(timeend).toISOString(), // Và timeend
+            isNewAddress: false,
+            postLocation: warehouseSelected
+          });
+        }else{
+          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+            title,
+            location: locationTemp,
+            description,
+            owner,
+            time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            itemid,
+            timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+            timeend: new Date(timeend).toISOString(), // Và timeend
+            isNewAddress: location.addressid ? false : true,
+            postLocation: location
+          });
+        }
+               
+        
         console.log(response.data.postCreated);
         postID = response.data.postCreated.postid;
         address = response.data.postCreated.address;
@@ -256,7 +280,7 @@ const MultiStepForm = () => {
             givetypeid = 4;
           }
           else{
-            warehouseid = formDataStepOne.warehouseID;
+            warehouseid = warehouseSelected.warehouseid;
           }
         }
   
@@ -282,7 +306,7 @@ const MultiStepForm = () => {
           warehouseid
   
         });       
-        console.log(response.data.orderCreated);
+        // console.log(response.data.orderCreated);
         orderID = response.data.orderCreated.orderid;
         // Alert.alert('Success', 'Item, Post, Order created successfully');
       } catch (error) {
@@ -330,7 +354,7 @@ const MultiStepForm = () => {
     }
   };
 
-
+  console.log(location)
   // if (isCompleted) {
   //   return (
   //     <ContainerComponent right>
