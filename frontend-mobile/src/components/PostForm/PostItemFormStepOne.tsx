@@ -82,7 +82,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     warehouseAddress: '',
   });
 
-  const [isDisable, setIsDisable] = useState(true);
 
   // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
@@ -162,10 +161,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     if (formData.methodsBringItemToWarehouse){
       setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
     }
-    
 
-
-  })
+  },[formData])
 
 
   useEffect(() => {
@@ -255,8 +252,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       //   type: result.assets[0].mimeType,
       // }
       // setImage(finalResult);
+
       setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
-      setErrorMessage({...errorMessage, itemPhotos: ''})
+      handleValidate('','photo');
     }
   };
 
@@ -264,6 +262,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     const updatedPhotos = [...formData.itemPhotos];
     updatedPhotos.splice(index, 1);
     setFormData({ ...formData, itemPhotos: updatedPhotos });
+    handleValidate('','photo');
   };
 
   const handleWarehouseChange = (warehouseAddress: string) => {
@@ -284,51 +283,105 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   
 
-  const handleNext = () => {
+  const handleValidate = (text: any, typeCheck: string) =>  {
     let updatedErrorMessage = {...errorMessage};
     // Kiểm tra các trường bắt buộc
-    if (!formData.itemName.trim()) {
-      updatedErrorMessage.itemName = 'Tên món đồ là bắt buộc.';
-    } else {
-      updatedErrorMessage.itemName = '';
-    }
-    if (formData.itemPhotos.length < 1) {
-      updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
-    } else {
-      updatedErrorMessage.itemPhotos = '';
-    }
-    if (!formData.itemQuantity.trim()) {
-      updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
-    } else {
-      updatedErrorMessage.itemQuantity = '';
+
+    if(typeCheck == 'itemname'){
+      if (!text.trim()) {
+        updatedErrorMessage.itemName = 'Tên món đồ là bắt buộc.';
+        setFormData({ ...formData, itemName: '' });
+
+      } else {
+        updatedErrorMessage.itemName = '';
+        setFormData({ ...formData, itemName: text });
+
+      }
     }
 
-    if (formData.itemCategory === 'Chọn loại món đồ') {
-      updatedErrorMessage.itemCategory = 'Loại món đồ là bắt buộc.';
-    } else {
-      updatedErrorMessage.itemCategory = '';
+    if(typeCheck == 'photo'){
+      if (formData.itemPhotos.length < 1) {
+        updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
+      } else {
+        updatedErrorMessage.itemPhotos = '';
+      }
     }
 
-    if (formData.methodGive === 'Chọn phương thức cho') {
-      updatedErrorMessage.methodGive = 'Vui lòng chọn phương thức cho';
-    } else {
-      updatedErrorMessage.methodGive = '';
+    if(typeCheck == 'itemquantiy'){
+      if (!text.trim()) {
+        updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
+        setFormData({ ...formData, itemQuantity: ''});
+      }
+      if(text > 50 || text < 0){
+        updatedErrorMessage.itemQuantity = 'Số lượng món đồ không hợp lệ ( tối đa là 50 )';
+        setFormData({ ...formData, itemQuantity: text});
+      }
+      else {
+        updatedErrorMessage.itemQuantity = '';
+        setFormData({ ...formData, itemQuantity: text});
+
+      }
+    }
+    
+    if(typeCheck == 'itemtype'){
+      if (formData.itemCategory == 'Chọn loại món đồ') {
+        updatedErrorMessage.itemCategory = 'Loại món đồ là bắt buộc.';
+      } else {
+        updatedErrorMessage.itemCategory = '';
+      }
     }
 
-    if (formData.methodsBringItemToWarehouse === 'Chọn phương thức mang đồ đến kho' && isWarehouseGive){
-      updatedErrorMessage.methodsBringItemToWarehouse = 'Vui lòng chọn phương thức đem đồ đến kho';
-    } else {
-      updatedErrorMessage.methodsBringItemToWarehouse = '';
+    if(typeCheck == 'methodgive'){
+      if (formData.methodGive == 'Chọn phương thức cho') {
+        updatedErrorMessage.methodGive = 'Vui lòng chọn phương thức cho đồ';
+      } else {
+        updatedErrorMessage.methodGive = '';
+      }
+    }
+    
+
+    if(typeCheck == 'methodbringitemtowarehouse'){
+      if (formData.methodsBringItemToWarehouse == 'Chọn phương thức mang đồ đến kho' && isWarehouseGive) {
+        updatedErrorMessage.methodsBringItemToWarehouse = 'Vui lòng chọn phương thức đem đồ đến kho';
+      } else {
+        updatedErrorMessage.methodsBringItemToWarehouse = '';
+      }
     }
 
-    if (formData.warehouseAddress === 'Chọn kho' && isBringItemToWarehouse){
-      updatedErrorMessage.warehouseAddress = 'Vui lòng chọn kho.';
-    } else {
-      updatedErrorMessage.warehouseAddress = '';
+    if(typeCheck == 'warehouseselect'){
+      if (formData.warehouseAddress == 'Chọn kho' && isBringItemToWarehouse) {
+        updatedErrorMessage.warehouseAddress = 'Vui lòng chọn kho.';
+      } else {
+        updatedErrorMessage.warehouseAddress = '';
+      }
     }
 
     setErrorMessage(updatedErrorMessage);
-    
+  }
+
+  const [isValidNext, setIsValidNext] = useState(false);
+
+  useEffect( () => {
+    if(      
+      !errorMessage.itemName && 
+      !errorMessage.itemPhotos && 
+      !errorMessage.itemQuantity && 
+      !errorMessage.itemCategory && 
+      !errorMessage.methodGive && 
+      formData.itemName && 
+      formData.itemPhotos.length > 0 && 
+      formData.itemQuantity &&
+      formData.itemCategory !== 'Chọn loại món đồ' &&
+      formData.methodGive !== 'Chọn phương thức cho')
+      {
+        setIsValidNext(true);
+      }
+      else{
+        setIsValidNext(false);
+      }
+
+  },[formData, errorMessage])
+  const handleNext = () => {
     if (
       !errorMessage.itemName && 
       !errorMessage.itemPhotos && 
@@ -369,9 +422,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       <TextInput
         label="Tên món đồ"
         value={formData.itemName}
+        onBlur={() => handleValidate(formData.itemName,'itemname')}
         onChangeText={(text) => {
-          setFormData({ ...formData, itemName: text });
-          setErrorMessage({...errorMessage, itemName: ''})
+          handleValidate(text,'itemname');
+          // setErrorMessage({...errorMessage, itemName: ''})
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
@@ -385,45 +439,56 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       />
       {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       
-      <TextInput
-          label="Ảnh của món đồ"
-          style={styles.input}
-          underlineColor="transparent" // Màu của gạch chân khi không focus
-          editable={false} // Người dùng không thể nhập trực tiếp vào trường này
-        />
-        {/* Hiển thị ảnh đã chọn */}
-      <ScrollView horizontal>
-          {formData.itemPhotos.map((image: any, index) => (
-            <View key={index} style={styles.imageContainer}>
-                <Image source={{ uri: image.uri }} style={styles.image} />
-                <TouchableOpacity 
-                  onPress={() => {
-                    removeImage(index);
-                    setErrorMessage({...errorMessage, itemPhotos: ''})
-                  }} 
-                  style={styles.closeButton}
-                >
-                  <MaterialIcons name="close" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
-            ))}
-      </ScrollView>
+      <TouchableOpacity onPress={() => handleValidate('','photo')}>
+        <TextInput
+            label="Ảnh của món đồ"
+            style={styles.input}
+            underlineColor="transparent" // Màu của gạch chân khi không focus
+            editable={false} // Người dùng không thể nhập trực tiếp vào trường này
+            error={errorMessage.itemPhotos? true : false}
+            // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+            theme={{
+              colors: {
+                error: appColors.danger, 
+              },
+            }}
+          />
+          {/* Hiển thị ảnh đã chọn */}
+        <ScrollView horizontal>
+            {formData.itemPhotos.map((image: any, index) => (
+              <View key={index} style={styles.imageContainer}>
+                  <Image source={{ uri: image.uri }} style={styles.image} />
+                  <TouchableOpacity 
+                    onPress={() => {
+                      removeImage(index);
+                      setErrorMessage({...errorMessage, itemPhotos: ''})
+                      handleValidate(formData.itemPhotos,'photo');
+                    }} 
+                    style={styles.closeButton}
+                  >
+                    <MaterialIcons name="close" size={24} color="white" />
+                  </TouchableOpacity>
+                </View>
+              ))}
+        </ScrollView>
 
-      <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
-        Chọn Ảnh
-      </Button>
+        <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
+          Chọn Ảnh
+        </Button>
+      </TouchableOpacity>
+
       {(errorMessage.itemPhotos) && <TextComponent text={errorMessage.itemPhotos}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
 
       <TextInput
         label="Số lượng"
         value={formData.itemQuantity}
+        onBlur={() => handleValidate(formData.itemQuantity,'itemquantiy')}
         onChangeText={(text) => {
           const newText = text.replace(/[^0-9]/g, ''); // Loại bỏ ký tự không phải số
-          if (parseInt(newText, 10) <= 50) { // Chỉ cho phép cập nhật nếu giá trị mới không lớn hơn 50
-            setFormData({ ...formData, itemQuantity: newText });
-            setErrorMessage({...errorMessage, itemQuantity: ''})
-          } else if (newText === '') { // Cho phép xoá hết nội dung
+          // setFormData({ ...formData, itemQuantity: newText });
+          handleValidate(newText,'itemquantiy');
+          if (newText === '') { // Cho phép xoá hết nội dung
             setFormData({ ...formData, itemQuantity: '' });
           }
         }}   
@@ -431,75 +496,50 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
+        error={errorMessage.itemQuantity? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
       />
       {(errorMessage.itemQuantity) && <TextComponent text={errorMessage.itemQuantity}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
 
-      {/* <RNPickerSelect
-        onValueChange={(value) => {
-          if(value !== null){
-            setFormData({ ...formData, itemCategory: value })}
-            // setLabelTypeItem(' ');
-          }
-        }
-        items={itemTypes.map((category) => ({ label: category.nametype, value: category.itemtypeid }))}
-        value={formData.itemCategory}
-        placeholder= {{ label: 'Chọn loại món đồ', value: null }}
+        <Dropdown
+          style={[styles.dropdown, isFocusSelectedItemType ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.itemCategory ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          // inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={itemTypesDropdown}
+          // search
+          maxHeight={windowHeight*0.2}
+          labelField="label"
+          valueField="value"
+          placeholder={!isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
+          // searchPlaceholder="Tìm kiếm..."
+          value={selectedItemTypeDropdown}
+          onFocus={() => {
+            setIsFocusSelectedItemType(true);             
+            handleValidate('', 'itemtype');
+          }}
+          onBlur={() => setIsFocusSelectedItemType(false)}
+          onChange={item => {
+            setFormData({ ...formData, itemCategory: item.value});
+            setErrorMessage({...errorMessage, itemCategory: ''})
+            // handleValidate(item.value,'itemtype');
+            setSelectedItemTypeDropdown(item.value);
+            setIsFocusSelectedItemType(false);
+          }}
 
-        onOpen={() => {
-          setIsPickerOpen(true);
-          console.log(isPickerOpen);
-        }}
-        onClose={() => {
-          setIsPickerOpen(false)
-        }}
-        style={{
-          inputIOS: {
-            ...styles.inputDropDown,
-            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-          },
-          inputAndroid: {
-            ...styles.inputDropDown,
-            color: 'black', // Đảm bảo rằng màu sắc không đổi sau khi chọn
-          },
-          placeholder: {
-            color: 'black', // Màu của chữ label khi chưa chọn
-            fontSize: 14,
-            // enabled: false
-          },
-        }}
-        useNativeAndroidPickerStyle={false}
-        Icon={() => <MaterialIcons name="arrow-drop-down" size={24} color="gray" style = {{padding: 25}} />}
-      /> */}
-
-      <Dropdown
-        style={[styles.dropdown, isFocusSelectedItemType && { borderColor: 'blue' }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        // inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        data={itemTypesDropdown}
-        // search
-        maxHeight={windowHeight*0.2}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
-        // searchPlaceholder="Tìm kiếm..."
-        value={selectedItemTypeDropdown}
-        onFocus={() => setIsFocusSelectedItemType(true)}
-        onBlur={() => setIsFocusSelectedItemType(false)}
-        onChange={item => {
-          setFormData({ ...formData, itemCategory: item.value});
-          setErrorMessage({...errorMessage, itemCategory: ''})
-          setSelectedItemTypeDropdown(item.value);
-          setIsFocusSelectedItemType(false);
-        }}
-      />
+          
+        />
       {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
 
     <Dropdown
-        style={[styles.dropdown, isFocusMethodGive && { borderColor: 'blue' }]}
+        style={[styles.dropdown, isFocusMethodGive ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodGive ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         // inputSearchStyle={styles.inputSearchStyle}
@@ -513,13 +553,18 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         placeholder={!isFocusMethodGive ? '  Phương thức cho đồ' : '...'}
         searchPlaceholder="Tìm kiếm..."
         value={selectedMethodGive}
-        onFocus={() => setIsFocusMethodGive(true)}
+        onFocus={() => {
+          setIsFocusMethodGive(true);
+          handleValidate('', 'methodgive');
+
+        }}
         onBlur={() => setIsFocusMethodGive(false)}
         onChange={item => {
           setSelectedMethodGive(item.value);
           setIsFocusMethodGive(false);
-          setFormData({ ...formData, methodGive: item.label.substring(2)})      
+          setFormData({ ...formData, methodGive: item.label.substring(2)});     
           setErrorMessage({...errorMessage, methodGive: ''})
+
         }}
         />
       {(errorMessage.methodGive) && <TextComponent text={errorMessage.methodGive}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
@@ -528,7 +573,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       {isWarehouseGive && (
         <>
           <Dropdown
-            style={[styles.dropdown, isFocusBringItemToWarehouse && { borderColor: 'blue' }]}
+            style={[styles.dropdown, isFocusBringItemToWarehouse ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodsBringItemToWarehouse ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             // inputSearchStyle={styles.inputSearchStyle}
@@ -541,14 +586,18 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
             placeholder={!isFocusBringItemToWarehouse ? '  Phương thức đem đồ đến kho' : '...'}
             // searchPlaceholder="Tìm kiếm..."
             value={bringItemToWarehouseMethodsDropDown}
-            onFocus={() => setIsFocusBringItemToWarehouse(true)}
+            onFocus={() => {
+              setIsFocusBringItemToWarehouse(true);
+              handleValidate('','methodbringitemtowarehouse')
+            }}
             onBlur={() => setIsFocusBringItemToWarehouse(false)}
             onChange={item => {
               setBringItemToWarehouseMethodDropdown(item.value);
               setIsFocusBringItemToWarehouse(false);
               setFormData({ ...formData, methodsBringItemToWarehouse: item.label.substring(2)})
-            setErrorMessage({...errorMessage, methodsBringItemToWarehouse: ''})
+              setErrorMessage({...errorMessage, methodsBringItemToWarehouse: ''})
             }}
+
           />
           {(errorMessage.methodsBringItemToWarehouse) && <TextComponent text={errorMessage.methodsBringItemToWarehouse}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
@@ -557,7 +606,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       {isBringItemToWarehouse && isWarehouseGive && (
         <>
           <Dropdown
-            style={[styles.dropdown, isFocusSelectedWarehouse && { borderColor: 'blue' }]}
+            style={[styles.dropdown, isFocusSelectedWarehouse ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.warehouseAddress ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             // inputSearchStyle={styles.inputSearchStyle}
@@ -571,19 +620,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
             placeholder={!isFocusSelectedWarehouse ? '   Chọn kho' : '...'}
             // searchPlaceholder="Tìm kiếm..."
             value={selectedWarehouseDropdown}
-            onFocus={() => setIsFocusSelectedWarehouse(true)}
+            onFocus={() => {
+              setIsFocusSelectedWarehouse(true);
+              handleValidate('','warehouseselect')
+            }}
             onBlur={() => setIsFocusSelectedWarehouse(false)}
             onChange={item => {
               setIsFocusSelectedWarehouse(false);
               setSelectedWarehouseDropdown(item.value);
               handleWarehouseChange(item.label.substring(2));
-              // setSelectedReceiveMethod(item.value)
             }}
           />
           {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
-      <Button mode="contained" onPress={handleNext}>Tiếp theo</Button>
+        <Button mode="contained" onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
+      
+
     </ScrollView>
   );
 };

@@ -42,6 +42,8 @@ interface FormDataStepTwo {
   postPhoneNumber: string;
   postAddress: string;
   postGiveMethod?: string;
+  postBringItemToWarehouse?: string;
+
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -77,6 +79,8 @@ const MultiStepForm = () => {
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
 
+  const [isValidSubmit, setIsValidSubmit] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({
     postTitle: '',
     postDescription: '',
@@ -102,64 +106,57 @@ const MultiStepForm = () => {
     }
   };
 
-  useEffect(() =>{
-    if(formDataStepOne.methodGive){
-      setFormDataStepTwo({...formDataStepTwo, postGiveMethod: formDataStepOne.methodGive});
+  useEffect(() => {
+    const updates: Partial<FormDataStepTwo> = {};
+  
+    if (formDataStepOne.methodGive && formDataStepOne.methodGive != 'Chọn phương thức cho') {
+      updates.postGiveMethod = formDataStepOne.methodGive;
     }
 
-  },[formDataStepOne.methodGive])
+
+    if (formDataStepOne.methodsBringItemToWarehouse && formDataStepOne.methodsBringItemToWarehouse != 'Chọn phương thức mang đồ đến kho' &&  formDataStepOne.methodGive != 'Đăng món đồ lên hệ thống ứng dụng') {
+      console.log(formDataStepOne.methodGive);
+      updates.postBringItemToWarehouse = formDataStepOne.methodsBringItemToWarehouse;
+    }
+
+    
+    if (formDataStepOne.methodGive == 'Đăng món đồ lên hệ thống ứng dụng') {
+      console.log(formDataStepOne.methodGive);
+      updates.postBringItemToWarehouse = '';
+    }
+  
+    if (Object.keys(updates).length > 0) {
+      setFormDataStepTwo(prevData => ({ ...prevData, ...updates }));
+    }
+  }, [formDataStepOne.methodGive, formDataStepOne.methodsBringItemToWarehouse]);
+
+
+
+  useEffect(() => {
+    if (
+      !errorMessage.postTitle && 
+      !errorMessage.postDescription && 
+      !errorMessage.postStartDate && 
+      !errorMessage.postEndDate && 
+      !errorMessage.postPhoneNumber && 
+      !errorMessage.postAddress && 
+      formDataStepTwo.postTitle && 
+      formDataStepTwo.postDescription && 
+      formDataStepTwo.postStartDate && 
+      formDataStepTwo.postEndDate && 
+      formDataStepTwo.postPhoneNumber && 
+      formDataStepTwo.postAddress 
+    ){
+      setIsValidSubmit(true);
+    }
+    else{
+      setIsValidSubmit(false);
+    }
+  })
 
 
 
   const handleSubmit = async () => {
-    let updatedErrorMessage = {...errorMessage};
-
-    // Kiểm tra các trường bắt buộc
-    if (!formDataStepTwo.postTitle.trim()) {
-      updatedErrorMessage.postTitle = 'Tiêu đề bài đăng là bắt buộc.';
-    } else {
-      updatedErrorMessage.postTitle = '';
-    }
-
-
-    if (!formDataStepTwo.postDescription.trim()) {
-      updatedErrorMessage.postDescription = 'Nội dung của bài đăng là bắt buộc.';
-    } else {
-      updatedErrorMessage.postDescription = '';
-    }
-
-
-    if (!formDataStepTwo.postStartDate.trim()) {
-      updatedErrorMessage.postStartDate = 'Ngày bắt đầu là bắt buộc.';
-    } else {
-      updatedErrorMessage.postStartDate = '';
-    }
-
-    console.log(formDataStepTwo.postEndDate)
-    if (!formDataStepTwo.postEndDate.trim()) {
-      updatedErrorMessage.postEndDate = 'Ngày kết thúc là bắt buộc.';
-    } else {
-      updatedErrorMessage.postEndDate = '';
-    }
-
-    
-    if (!formDataStepTwo.postPhoneNumber.trim()) {
-      updatedErrorMessage.postPhoneNumber = 'Số điện thoại là bắt buộc.';
-    } else if (formDataStepTwo.postPhoneNumber.trim().length < 10 || formDataStepTwo.postPhoneNumber.trim().length > 11) {
-      updatedErrorMessage.postPhoneNumber = 'Số điện thoại này không hợp lệ.';
-    } else {
-      updatedErrorMessage.postPhoneNumber = '';
-    }
-
-    if (!formDataStepTwo.postAddress.trim()) {
-      updatedErrorMessage.postAddress = 'Địa chỉ là bắt buộc.';
-    } else {
-      updatedErrorMessage.postAddress = '';
-    }
-
-
-    setErrorMessage(updatedErrorMessage);
-
     if (
       !errorMessage.postTitle && 
       !errorMessage.postDescription && 
@@ -357,7 +354,7 @@ const MultiStepForm = () => {
         </View>
           {renderStep()}
           {currentStep === 2 && (
-            <Button style= {styles.button} mode="contained" onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
+            <Button style= {styles.button} mode="contained" disabled={!isValidSubmit} onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
           )}
         </ScrollView>
       </View>
