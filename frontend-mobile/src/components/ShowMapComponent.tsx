@@ -72,6 +72,13 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
 
         fetchData()
     }, [])
+
+    const convertMeterToKilometer = (meter: number) => {
+        if(meter > 999){
+            return (meter/1000).toFixed(1) + ' km'
+        }
+        return meter + 'm'
+    }
     
     console.log(initalPosition)
     
@@ -80,8 +87,8 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>
                 <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2}}>
-                    <Text style={{fontFamily: fontFamilies.medium, flex: 1}}>Khoảng cách ước tính: </Text>
-                    <Text style={{fontFamily: fontFamilies.medium}}>{distance}m</Text>
+                    <Text style={{fontFamily: fontFamilies.regular, flex: 1}}>Uớc tính: </Text>
+                    <Text style={{fontFamily: fontFamilies.regular}}>{convertMeterToKilometer(distance)}</Text>
                 </View>
                 <MapView
                     ref={mapViewRef}

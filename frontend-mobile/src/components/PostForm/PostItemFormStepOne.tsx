@@ -359,7 +359,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
         updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
         setFormData({ ...formData, itemQuantity: ''});
       }
-      else if(text > 50 || text < 0){
+      else if(text > 50 || text <= 0){
         updatedErrorMessage.itemQuantity = 'Số lượng món đồ không hợp lệ ( tối đa là 50 )';
         setFormData({ ...formData, itemQuantity: text});
       }

@@ -133,6 +133,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [isCompleted, setIsCompleted] = useState(false);
 
+  const [location, setLocation] = useState<any>(null);
+
 
   const auth = useSelector(authSelector);
 
@@ -196,6 +198,11 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
         if (!res) {
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
+        setLocation({
+          address: res.data.postOwnerInfos.address,
+          latitude: parseFloat(res.data.postOwnerInfos.latitude),
+          longitude: parseFloat(res.data.postOwnerInfos.longitude)
+        })
         setPostOwnerInfo(res.data.postOwnerInfos);
         setFormData({
           ...formData,
@@ -452,6 +459,8 @@ const handleGive = async () =>{
     );
   }
 
+  console.log(location)
+
 
 
   return (
@@ -462,6 +471,7 @@ const handleGive = async () =>{
     {isUserPost && (
       <Text style={styles.title}>Thông tin cho đồ </Text>
     )}
+    
 
     <TextInput
       label="Tên người cho"
@@ -561,15 +571,15 @@ const handleGive = async () =>{
           editable={false} // Ngăn không cho người dùng nhập vào
 
         /> 
-
-        <ShowMapComponent
-          location={{
-            address: postOwnerInfo?.address,
-            latitude: postOwnerInfo?.latitude,
-            longitude: postOwnerInfo?.longitude
-          }}
-          useTo='no'
-        />
+        {
+          location && 
+          <ShowMapComponent
+            location={location}
+            setLocation={setLocation}
+            useTo='no'
+          />
+        }
+        
       </>
 
     )}
