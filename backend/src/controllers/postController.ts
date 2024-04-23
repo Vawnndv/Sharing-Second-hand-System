@@ -112,10 +112,12 @@ export const createPost = asyncHandle(async (req, res) => {
   const itemid = req.body.itemid;
   const timestart = req.body.timestart;
   const timeend = req.body.timeend;
+  const isNewAddress = req.body.isNewAddress;
+  const postLocation = req.body.postLocation;
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend);
+    const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend, isNewAddress, postLocation);
     res.status(200).json({ message: 'Create post successfully', postCreated: postCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi

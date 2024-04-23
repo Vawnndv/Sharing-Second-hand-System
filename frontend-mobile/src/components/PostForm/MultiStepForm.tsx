@@ -43,6 +43,7 @@ interface FormDataStepTwo {
   postAddress: string;
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
+  location?: any
 
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -216,6 +217,8 @@ const MultiStepForm = () => {
           itemid,
           timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
           timeend: new Date(timeend).toISOString(), // Và timeend
+          isNewAddress: formDataStepTwo.location.addressid ? false : true,
+          postLocation: location
         });       
         console.log(response.data.postCreated);
         postID = response.data.postCreated.postid;
