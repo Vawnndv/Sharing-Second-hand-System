@@ -36,7 +36,7 @@ const initalPosition = {
 
 export default function MapSelectWarehouseGive({navigation, route}: any) {
 
-    const {warehouses, setCheckWarehouses}: any = route.params;
+    const {warehouses, setWarehouseSelected}: any = route.params;
     // console.log("setWarehousesID", setWarehousesID)
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
@@ -109,6 +109,8 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                 break
             }
         }
+        setWarehouseSelected(warehouseSeleted)
+        navigation.goBack()
         console.log(warehouseSeleted)
         // navigation.goBack()
     }
