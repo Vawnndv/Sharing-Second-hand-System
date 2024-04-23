@@ -127,7 +127,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
 
   const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
 
-  const navigation: any = useNavigation()
+  const navigation: any = useNavigation();
+
   const [isValidNext, setIsValidNext] = useState(false);
 
   const [validAllMethod, setValidAllMethod] = useState(false);
@@ -202,6 +203,12 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
       setErrorMessage(updatedErrorMessage);
     }
   },[formData.itemPhotos])
+
+  useEffect(() => {
+    if(warehouseSeleted){
+      handleWarehouseChange(warehouseSeleted.warehouseid);
+    }
+  },[warehouseSeleted])
 
 
   useEffect(() => {
@@ -306,9 +313,9 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
     handleValidate('','photo');
   };
 
-  const handleWarehouseChange = (warehouseAddress: string) => {
+  const handleWarehouseChange = (warehouseID: number) => {
     // Tìm warehousename dựa vào warehouseid
-    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehousename + ', ' + wareHouse.address === warehouseAddress);
+    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseID);
 
     if (selectedWarehouse) {
       // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
@@ -352,7 +359,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         updatedErrorMessage.itemQuantity = 'Số lượng là bắt buộc.';
         setFormData({ ...formData, itemQuantity: ''});
       }
-      if(text > 50 || text < 0){
+      else if(text > 50 || text < 0){
         updatedErrorMessage.itemQuantity = 'Số lượng món đồ không hợp lệ ( tối đa là 50 )';
         setFormData({ ...formData, itemQuantity: text});
       }
