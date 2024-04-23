@@ -76,14 +76,12 @@ export class Account {
   public static async findUserById(userId: string): Promise<any> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`
-          SELECT * FROM "User" u
-          INNER JOIN "address" a ON a.addressid = u.addressid
-          WHERE userid = $1
-      `, [userId]);
+      console.log(userId, '123');
+      const result = await client.query('SELECT * FROM "User" WHERE userid = $1', [userId]);
       if (result.rows.length === 0) {
         return null;
       }
+      console.log(result.rows[0], '123456');
 
       return result.rows[0];
       // return new Item(row.itemId, row.name, row.quantity);

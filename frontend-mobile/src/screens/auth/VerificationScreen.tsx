@@ -90,7 +90,7 @@ const VerificationScreen = ({navigation, route}: any) => {
 
         try {
           const res: any = await authenticationAPI.HandleAuthentication('/register', data, 'post');
-
+          console.log(res);
           dispatch(addAuth(res.data));
 
           await AsyncStorage.setItem('auth', JSON.stringify(res.data));

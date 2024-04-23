@@ -11,6 +11,7 @@ import { addAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 import { globalStyles } from '../../styles/globalStyles';
 import { ErrorMessages } from '../../models/ErrorMessages';
+import SocialLogin from './components/SocialLogin';
 
 const initValue = {
   email: '',
@@ -151,6 +152,7 @@ const LoginScreen = ({navigation}: any) => {
           }
         />
       </SectionComponent>
+      <SocialLogin />
       <SectionComponent>
         <RowComponent justify="center">
           <TextComponent text="Don't have an account? " />

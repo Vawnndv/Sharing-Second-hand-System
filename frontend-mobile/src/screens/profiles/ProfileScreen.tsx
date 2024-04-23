@@ -49,6 +49,7 @@ const ProfileScreen = ({navigation, route}: any) => {
     setIsLoading(true);
 
     try {
+      console.log(profileId, '12366')
       const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
       res && res.data && setProfile(res.data);
       setIsLoading(false);

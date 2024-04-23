@@ -107,13 +107,15 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
     1,
   );
 
-
   res.status(200).json({
     message: 'Register new user successfully',
     data: {
       email,
       id: newUser.userid,
-      newUser,  
+      firstName: newUser.firstname,
+      lastName: newUser.lastname,
+      avatar: newUser.avatar,
+      roleID: newUser.roleid, 
       accessToken: await getJsonWebToken(email, newUser.userid),
     },
   });

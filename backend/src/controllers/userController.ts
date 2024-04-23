@@ -8,18 +8,16 @@ import { Account } from '../classDiagramModel/Account';
 
 export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
+  console.log(userId, 'userid');
   if (typeof userId === 'string' && userId) {
-    console.log(userId);
+    console.log(userId, 'userid4');
     const user = await Account.findUserById(userId);
-
+    console.log(userId, '123');
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
         userId: user.userid,
         createAt: user.createat,
-        address: user.address ?? '',
-        latitude: user.latitude ?? '',
-        longitude: user.longitude ?? '',
         firstname: user.firstname ?? '',
         lastname: user.lastname ?? '',
         avatar: user.avatar ?? '',
