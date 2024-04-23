@@ -31,7 +31,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="History" component={HistoryScreen} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
       <Drawer.Screen name="MyProfile" component={AccountScreen} />
-      <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} />
+      <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} options={{ unmountOnBlur: true }}/>
       <Drawer.Screen name="Chat" component={ChatNavigator} />
       <Drawer.Screen name="MyLike" component={UserLikePostsScreen} />
     </Drawer.Navigator>

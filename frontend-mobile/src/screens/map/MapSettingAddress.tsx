@@ -4,7 +4,7 @@ import * as Location from 'expo-location';
 import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollView, Keyboard, KeyboardAvoidingView, Alert} from "react-native"
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
-import { EvilIcons, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { EvilIcons, Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import axios from 'axios'
 
 import { useDebounce } from '../../hooks/useDebounce';
@@ -25,7 +25,7 @@ const getUrlRequest = (query: string) => {
 
 const { width, height } = Dimensions.get("window")
 
-const initalPosition = {
+let initalPosition = {
   latitude: 10.768879,
   longitude: 106.656034,
   latitudeDelta: 0.02,
@@ -46,9 +46,9 @@ const LocationComponent = ({name, address, handleClick}: any) => {
 }
 
 // use to: setAddress, setPostAddress, no
-export default function MapSettingAddress({natigation, route}: any) {
+export default function MapSettingAddress({navigation, route}: any) {
 
-    const {originalLocation, useTo} = route.params
+    const {originalLocation, useTo, setOriginalLocation} = route.params
 
     const [inputSearch, setInputSearch] = useState('')
     const debouncedSearch = useDebounce(inputSearch, 500);
@@ -56,16 +56,31 @@ export default function MapSettingAddress({natigation, route}: any) {
     const [isFocusSearch, setIsFocusSearch] = useState(false)
 
     const [location, setLocation] = useState<any>(null);
+    const [homeLocation, setHomeLocation] = useState<any>(null)
 
     const [isLoading, setIsLoading] = useState(false)
+
+    // const [refresh, setRefresh] = useState(false)
 
     const auth = useSelector(authSelector);
     const navitation = useNavigation()
 
+    useEffect(() => {
+        const fetchHomeLocation = async () => {
+            const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+            setHomeLocation({
+                address: response.data.data.address,
+                latitude: parseFloat(response.data.data.latitude),
+                longitude: parseFloat(response.data.data.longitude)
+            })
+        }
+        fetchHomeLocation()
+        
+    }, [])
+
     const handleSearch = () => {
         
         if(dataSearch.length > 0){
-            console.log('handle search')
             const locationTarget = {
                 latitude: parseFloat(dataSearch[0].lat),
                 longitude: parseFloat(dataSearch[0].lon)
@@ -74,7 +89,6 @@ export default function MapSettingAddress({natigation, route}: any) {
             setInputSearch(dataSearch[0].display_name)
             Keyboard.dismiss()
             moveCameraToCoordinate(locationTarget)
-            console.log(locationTarget)
         }
     }
 
@@ -152,15 +166,15 @@ export default function MapSettingAddress({natigation, route}: any) {
           return { latitude: centerLat, longitude: centerLng };
         }
         return null;
-      };
+    };
     
-      const handleGetCenter = async () => {
+    const handleGetCenterMyLocation = async () => {
         const center = await getCenterCoordinates();
         if (center) {
-          
-          // Sử dụng vị trí ở giữa bản đồ ở đây
+            
+            // Sử dụng vị trí ở giữa bản đồ ở đây
 
-          if(inputSearch !== ''){
+            if(inputSearch !== ''){
             console.log('Center coordinates:', center);
             try {
                 setIsLoading(true)
@@ -177,13 +191,61 @@ export default function MapSettingAddress({natigation, route}: any) {
                 console.error(error)
             }
             
-          }else{
+            }else{
             Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
-          }
+            }
         }
-      };
+    };
 
+    const handleGetCenterGiveLocation = async () => {
+        const center = await getCenterCoordinates();
+        if (center) {
+            
+            // Sử dụng vị trí ở giữa bản đồ ở đây
+
+            if(inputSearch !== ''){
+            console.log('Center coordinates:', center);
+            try {
+                setIsLoading(true)
+                setOriginalLocation({
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    address: inputSearch
+                })
+                setIsLoading(true)
+                Alert.alert('Thông báo', 'Xác nhận vị trí cho thành công!')
+                setInputSearch('')
+                navitation.goBack()
+            } catch (error) {
+                console.error(error)
+            }
+            
+            }else{
+            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
+            }
+        }
+    }
+
+    useEffect(() => {
+        if(useTo === 'setAddress' && homeLocation){
+            moveCameraToCoordinate(homeLocation)
+        }
+    }, [homeLocation])
     
+    useEffect(() => {
+        if(useTo === 'setPostAddress' || useTo === 'no'){
+            moveCameraToCoordinate(originalLocation)
+        }
+    }, [])
+
+    // useEffect(() => {
+    //     const unsubscribe = navigation.addListener('focus', () => {
+    //       // Thực hiện các hành động cần thiết khi màn hình được focus
+    //       console.log('Map Setting Address Screen Reloaded:');
+    //       setRefresh(prevRefresh => !prevRefresh);
+    //     });
+    //     return unsubscribe;
+    //   }, [navigation]);
     return (
         <ContainerComponent back title='Cài đặt vị trí của bạn'>
       
@@ -196,13 +258,19 @@ export default function MapSettingAddress({natigation, route}: any) {
                 showsUserLocation={true}
                 showsMyLocationButton={false}
                 userLocationAnnotationTitle="Your Location">
-                    {/* {
-                        location !== null &&
+                    {
+                        homeLocation !== null &&
                         <Marker
-                            coordinate={location}
-                            title="Vị trí của tôi"
-                        />
-                    } */}
+                            coordinate={{
+                                latitude: homeLocation.latitude,
+                                longitude: homeLocation.longitude
+                            }}
+                            title="Vị trí nhà của bạn"
+
+                        >
+                            <FontAwesome name='home' color={"#4A7FD3"} size={30}/>
+                        </Marker>
+                    }
                 </MapView>
                 
                 <View style={styles.containerSearch}>
@@ -266,11 +334,20 @@ export default function MapSettingAddress({natigation, route}: any) {
                 </TouchableOpacity>
 
                 {
-                    (useTo === 'setAddress' || useTo === 'setPostAddress')
+                    (useTo === 'setAddress')
                     &&
                     <TouchableOpacity style={styles.myLocationButton}
-                        onPress={() => handleGetCenter()}>
+                        onPress={() => handleGetCenterMyLocation()}>
                         <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
+                    </TouchableOpacity>
+                }
+
+                {
+                    (useTo === 'setPostAddress')
+                    &&
+                    <TouchableOpacity style={styles.myLocationButton}
+                        onPress={() => handleGetCenterGiveLocation()}>
+                        <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí cho</Text>
                     </TouchableOpacity>
                 }
                 

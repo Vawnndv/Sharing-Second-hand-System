@@ -5,6 +5,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 
 import { Account } from '../classDiagramModel/Account';
+import { UserManager } from '../classDiagramModel/Manager/UserManager';
 
 export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
@@ -150,5 +151,20 @@ export const deleteUserLikePosts = asyncHandle(async (req: Request, res: Respons
   } else {
     res.sendStatus(401);
     throw new Error('Missing uid');
+  }
+});
+
+export const getUserAddress = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    const response = await UserManager.getUserAddress(userId);
+
+    res.status(200).json({
+      message: 'get user address successfully',
+      data: response,
+    });
+  } else {
+    // If userId is missing or invalid, send a 401 status without throwing an error
+    res.sendStatus(401);
   }
 });
