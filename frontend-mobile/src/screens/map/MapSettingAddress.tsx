@@ -175,13 +175,13 @@ export default function MapSettingAddress({navigation, route}: any) {
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
             if(inputSearch !== ''){
-            console.log('Center coordinates:', center);
+            // console.log('Center coordinates:', center);
             try {
                 setIsLoading(true)
                 const response: any = await axios.post(`${appInfo.BASE_URL}/map/set_user_location`,{
                     userID: auth.id,
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+                    latitude: center.latitude,
+                    longitude: center.longitude,
                     address: inputSearch
                 })
                 setIsLoading(true)
@@ -199,17 +199,18 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     const handleGetCenterGiveLocation = async () => {
         const center = await getCenterCoordinates();
+        console.log(center)
         if (center) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
             if(inputSearch !== ''){
-            console.log('Center coordinates:', center);
+            // console.log('Center coordinates:', center);
             try {
                 setIsLoading(true)
                 setOriginalLocation({
-                    latitude: location.latitude,
-                    longitude: location.longitude,
+                    latitude: center.latitude,
+                    longitude: center.longitude,
                     address: inputSearch
                 })
                 setIsLoading(true)

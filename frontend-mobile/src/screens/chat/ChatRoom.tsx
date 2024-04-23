@@ -100,7 +100,7 @@ const ChatRoom = ({ route, navigation }: any) => {
         // createdAt: Timestamp.fromDate(new Date())
         userid: auth?.id,
         text: message,
-        username: auth?.username,
+        username: auth?.username ? auth?.username : '',
         type: 'text',
         createdAt: Timestamp.fromDate(new Date())
       })
@@ -131,7 +131,7 @@ const ChatRoom = ({ route, navigation }: any) => {
                 text: url,
                 type: 'image',
                 createdAt: Timestamp.fromDate(new Date()),
-                username: auth?.username,
+                username: auth?.username ? auth?.username : '',
             });
 
             textRef.current = "";

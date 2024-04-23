@@ -7,11 +7,18 @@ import { ActivityIndicator } from 'react-native-paper'
 import chatAPI from '../../apis/chatApi'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
+import { useFocusEffect } from '@react-navigation/native';
 
 const ChatScreen = ({ router, navigation } : any) => {
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(false);
   const auth = useSelector(authSelector);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUsers()
+    }, [])
+  );
 
   useEffect(() => {
 

@@ -126,7 +126,8 @@ const styles = StyleSheet.create({
         height: width,
         display: 'flex',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: 5
     },
     wrapper: {
         width: '100%',

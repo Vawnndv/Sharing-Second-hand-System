@@ -413,7 +413,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       {(errorMessage.postAddress) && <TextComponent text={errorMessage.postAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       {
-        location && 
+        (location && formData.postBringItemToWarehouse !== 'Tự đem đến kho')
+        &&
         <ShowMapComponent
           location={location}
           setLocation={setLocation}
