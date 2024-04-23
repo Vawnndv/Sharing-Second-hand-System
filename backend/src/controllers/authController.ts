@@ -114,6 +114,7 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
       id: newUser.userid,
       firstName: newUser.firstname,
       lastName: newUser.lastname,
+      userName: newUser.username,
       avatar: newUser.avatar,
       roleID: newUser.roleid, 
       accessToken: await getJsonWebToken(email, newUser.userid),
