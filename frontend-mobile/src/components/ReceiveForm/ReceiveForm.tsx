@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Dropdown } from 'react-native-element-dropdown';
 import { appColors } from '../../constants/appColors';
+import ShowMapComponent from '../ShowMapComponent';
 
 
 interface Props {
@@ -286,7 +287,7 @@ const handleReceive = async () => {
     let warehouseid = null;
     if(selectedReceiveMethod == "Nhận đồ qua kho"){
       receivertypeid = 2;
-      warehouseid = formData?.warehouseID;
+      warehouseid = warehouseSeleted.warehouseID;
     }
 
     if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
@@ -548,17 +549,29 @@ const handleGive = async () =>{
     )}
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && !postOwnerInfo?.iswarehousepost && (
-      <TextInput
-        label="Địa chỉ đến lấy đồ"
-        value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-        editable={false} // Ngăn không cho người dùng nhập vào
+      <>
+        <TextInput
+          label="Địa chỉ đến lấy đồ"
+          value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
+          style={styles.input}
+          underlineColor="gray" // Màu của gạch chân khi không focus
+          activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+          multiline={true} // Cho phép nhập nhiều dòng văn bản
+          numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+          editable={false} // Ngăn không cho người dùng nhập vào
 
-      /> 
+        /> 
+
+        <ShowMapComponent
+          location={{
+            address: postOwnerInfo?.address,
+            latitude: postOwnerInfo?.latitude,
+            longitude: postOwnerInfo?.longitude
+          }}
+          useTo='no'
+        />
+      </>
+
     )}
     
 

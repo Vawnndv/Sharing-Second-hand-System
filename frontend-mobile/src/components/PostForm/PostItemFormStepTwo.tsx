@@ -33,10 +33,12 @@ interface StepTwoProps {
   setFormData: (formData: FormData) => void;
   errorMessage: ErrorProps;
   setErrorMessage: (errorMessage: ErrorProps) => void;
+  location: any;
+  setLocation: any;
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -47,8 +49,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
-
-  const [location, setLocation] = useState<any>(null)
 
   const auth = useSelector(authSelector);
 
@@ -63,12 +63,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           if (!res) {
             throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
           }
+
           setProfile(res.data);
-          setLocation({
-            address: res.data.data.address,
-            latitude: parseFloat(res.data.data.latitude),
-            longitude: parseFloat(res.data.data.longitude)
-          });
           setFormData({
             ...formData,
             postAddress: res.data.data.address,
@@ -91,12 +87,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         if (!response) {
           throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
         }
+
+        // console.log('Location Give',response.data)
         setLocation({
+          addressid: response.data.data.addressid,
           address: response.data.data.address,
           latitude: parseFloat(response.data.data.latitude),
           longitude: parseFloat(response.data.data.longitude)
-        })
-        console.log(response.data)
+        });
+        // console.log(response.data)
         
         } catch (error) {
         console.error('Error fetching user info:', error);

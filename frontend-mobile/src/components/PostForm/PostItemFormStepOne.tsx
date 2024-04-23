@@ -57,6 +57,8 @@ interface StepOneProps {
   setStep: (step: number) => void;
   formData: FormData;
   setFormData: (formData: FormData) => void;
+  warehouseSelected: any,
+  setWarehouseSelected: any
 }
 
 
@@ -64,7 +66,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => {
+const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, warehouseSelected, setWarehouseSelected }) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -124,8 +126,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   const [isFocusSelectedItemType, setIsFocusSelectedItemType] = useState(false);
 
   const [isFocusSelectedWarehouse, setIsFocusSelectedWarehouse] = useState<any>();
-
-  const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
 
   const navigation: any = useNavigation();
 
@@ -205,10 +205,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
   },[formData.itemPhotos])
 
   useEffect(() => {
-    if(warehouseSeleted){
-      handleWarehouseChange(warehouseSeleted.warehouseid);
+    if(warehouseSelected){
+      handleWarehouseChange(warehouseSelected.warehouseid);
     }
-  },[warehouseSeleted])
+  },[warehouseSelected])
 
 
   useEffect(() => {
@@ -666,7 +666,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData }) => 
         <>
           <TextInput
             label="Kho"
-            value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
+            value={warehouseSelected ? `${warehouseSelected.warehousename}, ${warehouseSelected.address}`  : ''}
             style={styles.input}
             underlineColor="transparent" // Màu của gạch chân khi không focus
             editable={false} // Người dùng không thể nhập trực tiếp vào trường này

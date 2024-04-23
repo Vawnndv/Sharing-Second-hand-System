@@ -41,7 +41,7 @@ function Profile() {
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
   console.log(authInfo);
-
+  console.log(imageUrl)
   const {
     isLoading: updateLoading,
     isError: editError,
