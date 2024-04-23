@@ -15,6 +15,7 @@ import PostDetail from '../PostDetail';
 import { useNavigation } from '@react-navigation/native';
 
 import { Dropdown } from 'react-native-element-dropdown';
+import { appColors } from '../../constants/appColors';
 
 
 interface Props {
@@ -99,6 +100,8 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
   const [isUserPost, setIsUserPost] = useState(false);
 
   const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
+
+  const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
 
   // const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
 
@@ -433,6 +436,13 @@ const handleGive = async () =>{
     });
   }
 
+  const handleSelectWarehouse = () => {
+    navigation.navigate('MapSelectWarehouseGiveScreen', {
+      warehouses: wareHouses,
+      setWarehouseSelected: setWarehouseSelected
+    })
+  }
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -515,31 +525,26 @@ const handleGive = async () =>{
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && !postOwnerInfo?.iswarehousepost && (
 
-
-      <Dropdown
-        style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        // inputSearchStyle={styles.inputSearchStyle}
-
-        iconStyle={styles.iconStyle}
-        data={warehouseDropdown}
-        // search
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? ' Chọn kho' : '...'}
-        // searchPlaceholder="Tìm kiếm..."
-        value={selectedWarehouseDropdown}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={item => {
-          setSelectedWarehouseDropdown(item.value);
-          setIsFocus(false);
-          handleWarehouseChange(item.label.substring(2));
-          // setSelectedReceiveMethod(item.value)
-        }}
-      />
+      <>
+        <TextInput
+          label="Kho"
+          value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
+          style={styles.input}
+          underlineColor="transparent" // Màu của gạch chân khi không focus
+          editable={false} // Người dùng không thể nhập trực tiếp vào trường này
+          // error={errorMessage.warehouseAddress? true : false}
+          // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
+        />
+        <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
+          Chọn kho
+        </Button>
+      </>
+      
     )}
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ trực tiếp' && !postOwnerInfo?.iswarehousepost && (
