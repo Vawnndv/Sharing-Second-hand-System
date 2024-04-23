@@ -21,7 +21,7 @@ import { getProfileAction, updateProfileAction } from '../../../redux/actions/us
 const defaultTheme = createTheme({
   palette: {
     primary: {
-      main: '#466874'
+      main: '#321357'
     },
     secondary: {
       main: '#f2f2f2'
@@ -159,7 +159,8 @@ function Profile() {
               variant="h5"
               sx={{
                 fontSize: '40px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                color: 'primary.main'
               }}
             >
               Edit Profile

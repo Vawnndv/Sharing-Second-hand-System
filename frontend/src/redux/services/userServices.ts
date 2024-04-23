@@ -15,7 +15,7 @@ const updateProfileService = async (user: any): Promise<any>  => {
     firstname: user.firstName,
     lastname: user.lastName,
     phonenumber: user.phone,
-    avatar: user.Avatar,
+    avatar: user.avatar,
   })
   // if (data) {
   //   localStorage.setItem('userInfo', JSON.stringify(data))
