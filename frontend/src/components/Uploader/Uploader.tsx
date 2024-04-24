@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { FiUploadCloud } from 'react-icons/fi'
 import Loader from '../notification/Loader'
+import toast from 'react-hot-toast'
 
 interface Props {
   imageUrl: string; 
@@ -46,7 +47,7 @@ function Uploader(props: Props) {
                   // Tạo FormData và thêm tệp tin và thông tin vào đó
                   const formData = new FormData();
                   formData.append('file', fileContent);
-                  formData.append('name', `${new Date().getTime()} ${file.name}`);
+                  formData.append('name', `${new Date().getTime()}${file.name}`);
                   formData.append('type', file.type);
 
                   // Gửi FormData qua phương thức POST
@@ -77,13 +78,6 @@ function Uploader(props: Props) {
     const file = new FormData()
     file.append('file', imageFile[0])
     
-    try {
-      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
-      setImageUrl(responseUploadImage.url)
-      console.log(responseUploadImage)
-    } catch (error) {
-      console.log(error)
-    }
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);
@@ -91,12 +85,26 @@ function Uploader(props: Props) {
     }
     console.log(file);
     // const data = await uploadImageService(file, setLoading);
+    try {
+      setLoading(true)
+      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
+      setImageUrl(responseUploadImage.url);
+      setLoading(false)
+      toast.success('Image Upload successfully')
+    } catch (error: any) {
+      // console.log(error)
+      if (error.response && error.response.data && error.response.data.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Network Error');
+      }
+    }
     // if (data) {
-      // setImageUrl(data)
+    //   setImageUrl(data)
     // }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageUrl, imageUpdateUrl])
+  }, [setImageUrl, imageUrl, imageUpdateUrl])
 
   const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     multiple: false,

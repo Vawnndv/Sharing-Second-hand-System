@@ -100,7 +100,7 @@ function Password() {
               alignItems: 'center'
             }}
           >
-            <Typography component="h1" variant="h5" sx={{ fontSize: '40px', fontWeight: 'bold' }}>
+            <Typography component="h1" variant="h5" sx={{ fontSize: '40px', fontWeight: 'bold', color: 'primary.main' }}>
               Change Password
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>

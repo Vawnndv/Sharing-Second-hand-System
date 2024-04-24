@@ -21,7 +21,7 @@ import { getProfileAction, updateProfileAction } from '../../../redux/actions/us
 const defaultTheme = createTheme({
   palette: {
     primary: {
-      main: '#466874'
+      main: '#321357'
     },
     secondary: {
       main: '#f2f2f2'
@@ -40,7 +40,7 @@ function Profile() {
   const [imageUrl, setImageUrl] = useState('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
-  console.log(authInfo);
+  console.log(imageUpdateUrl,imageUrl, '123');
 
   const {
     isLoading: updateLoading,
@@ -70,6 +70,7 @@ function Profile() {
       updateProfileAction({
         ...data,
         id: authInfo?.id,
+        avatar: imageUrl,
         // ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
       })
     );
@@ -158,7 +159,8 @@ function Profile() {
               variant="h5"
               sx={{
                 fontSize: '40px',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                color: 'primary.main'
               }}
             >
               Edit Profile
