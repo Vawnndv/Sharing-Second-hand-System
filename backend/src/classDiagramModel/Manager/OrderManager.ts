@@ -849,16 +849,16 @@ export class OrderManager {
   }
 
   
-  public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string ) : Promise<boolean> {
+  public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
     const client = await pool.connect()
     console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
     try{
       const query = `
         UPDATE "orders"
-        SET userreceiveid = $1, givetypeid = $3, givetype = $4, status = 'Chờ người nhận lấy hàng'
+        SET userreceiveid = $1, givetypeid = $3, givetype = $4, warehouseid = $5
         WHERE orderid = $2
       `
-      const result: QueryResult = await client.query(query, [userreceiveid, orderid, givetypeid, givetype])
+      const result: QueryResult = await client.query(query, [userreceiveid, orderid, givetypeid, givetype, warehouseid])
       return true;
     }catch(error){
       console.log(error)
@@ -1033,12 +1033,38 @@ export class OrderManager {
     }
   };
 
-  public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined): Promise<boolean> {
+  
+  public static async updateTraceStatus(orderid: number, newstatus: string, statusid: string): Promise<boolean> {
+    const client = await pool.connect();
+
+    const query =`
+        UPDATE "trace"
+        SET currentstatus = '${newstatus}'
+        WHERE orderid = ${orderid}
+        RETURNING *
+    `
+
+    try {
+      const result: QueryResult = await client.query(query);
+      const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
+      console.log('Trace History inserted successfully:', createTraceHistoryPostItemResult);
+
+      return result.rows[0];
+    } catch (error) {
+      console.log(error) 
+      return false
+    }
+    
+  };
+
+
+
+  public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined, warehouseid: string | undefined): Promise<boolean> {
     const client = await pool.connect();
 
     const query =`
         UPDATE "orders"
-        SET userreceiveid = ${receiveID}
+        SET userreceiveid = ${receiveID}, warehouseid = ${warehouseid}
         WHERE orderid = ${postID}
     `
 

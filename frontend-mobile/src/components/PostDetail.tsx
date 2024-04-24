@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-native-paper';
 import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, TouchableWithoutFeedback  } from 'react-native';
 import { StringLiteral } from 'typescript';
@@ -23,6 +23,7 @@ import ShowMapComponent from './ShowMapComponent';
 // import ImageCropPicker from 'react-native-image-crop-picker';
 
 import { useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
 
 
 interface Post {
@@ -112,6 +113,31 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
   const [item, setItem] = useState<any>(undefined)
   const [goToChat, setGoToChat] = useState(false);
 
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
+  const scrollViewRef = useRef(null);
+
+
+  const handleScroll = (event: any) => {
+    const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
+    const scrollViewWidth = event.nativeEvent.layoutMeasurement.width;  // Chiều rộng của view hiển thị
+    const contentWidth = event.nativeEvent.contentSize.width;  // Tổng chiều rộng của nội dung
+
+    // Kiểm tra để hiển thị mũi tên trái
+    if (scrollPosition > 0) {
+      setShowLeftArrow(true);
+    } else {
+      setShowLeftArrow(false);
+    }
+
+    // Kiểm tra để hiển thị mũi tên phải
+    if (scrollPosition + scrollViewWidth < contentWidth) {
+      setShowRightArrow(true);
+    } else {
+      setShowRightArrow(false);
+    }
+  };
+
   // Check when chat screen go back to postdetail
   useFocusEffect(
     React.useCallback(() => {
@@ -196,6 +222,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
         setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+        setShowRightArrow(res.data.itemImages > 1 ? true : false)
         // setItemID(data.id);
       
       } catch (error) {
@@ -248,20 +275,35 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
             {modalVisible && (
             <View style={styles.overlayContainer} />
             )}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.imageContainer}
-            pagingEnabled={true}
-            >
-              {itemImages?.map((itemImage, index) => (
-                <Image
-                key={index}
-                source={{ uri: itemImage.path }}
-                style={styles.itemPhoto}
-                />
-              ))}
-          </ScrollView>
+          <View style={styles.img_icon_container}>
+            {showLeftArrow  && (
+              <TouchableOpacity style={[styles.arrow, styles.leftArrow]}>
+                <Icon name="chevron-left" size={50}  color="#000" />
+              </TouchableOpacity>
+            )}
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false} 
+              style={styles.imageContainer}
+              pagingEnabled={true}
+              onScroll={handleScroll}
+              onScrollBeginDrag={handleScroll}
+              scrollEventThrottle={5}  // Cập nhật vị trí scroll mỗi 16ms
+              >
+                {itemImages?.map((itemImage, index) => (
+                  <Image
+                  key={index}
+                  source={{ uri: itemImage.path }}
+                  style={styles.itemPhoto}
+                  />
+                ))}
+            </ScrollView>
+            {showRightArrow  && (
+              <TouchableOpacity style={[styles.arrow, styles.rightArrow]}>
+                <Icon name="chevron-right" size={50} color="#000" />
+              </TouchableOpacity>
+            )}
+          </View>
 
           <View style={styles.like_receiver_CountContainer}>
             <AntDesign name="inbox" size={24} color="green" />
@@ -773,6 +815,24 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     color: 'gray',
   },
+  arrow: {
+    position: 'absolute',
+    top: '50%',
+    zIndex: 10,
+    // backgroundColor: 'rgba(255, 255, 255, 0.5)',  // Thêm nền để tăng độ rõ nét cho mũi tên
+    borderRadius: 15,
+  },
+  leftArrow: {
+    left: 10,
+  },
+  rightArrow: {
+    right: 10,
+  },
+
+  img_icon_container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
 
 })
 

@@ -58,9 +58,9 @@ export const statisticOrderCollaborator = async (req: Request, res: Response) =>
 };
 
 export const updateReceiveID = async (req: Request, res: Response) => {
-  const { postID, receiveID } = req.body;
+  const { postID, receiveID, warehouseid } = req.body;
   try {
-    const response = await OrderManager.updateReceiveID(postID, receiveID);
+    const response = await OrderManager.updateReceiveID(postID, receiveID, warehouseid);
       
     res.status(201).json({ message: 'Get orders successfully', status: response });
   } catch (error) {

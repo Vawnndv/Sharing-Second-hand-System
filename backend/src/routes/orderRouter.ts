@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOrderByPostID, updateOrderReceiver, createTrace, createOrder, getOrderList, getTrackingStatus, getOrderFinishList, uploadImageConfirmOrder, getOrderDetails, VerifyOrderQR, updateStatusOfOrder } from '../controllers/orderController';
+import { getOrderByPostID, updateOrderReceiver, createTrace, createOrder, getOrderList, getTrackingStatus, getOrderFinishList, uploadImageConfirmOrder, getOrderDetails, VerifyOrderQR, updateStatusOfOrder, updateTraceStatus } from '../controllers/orderController';
 import { updateReceiveID } from '../controllers/orderCollaboratorController';
 
 const router = express.Router();
@@ -16,6 +16,7 @@ router.post('/createTrace', createTrace);
 router.get('/getOrder/:postID', getOrderByPostID);
 router.put('/update-receiveid', updateReceiveID);
 router.post('/updateOrderReceiver', updateOrderReceiver);
+router.post('/updateTraceStatus', updateTraceStatus);
 router.get('/:orderID', getOrderDetails);
 
 

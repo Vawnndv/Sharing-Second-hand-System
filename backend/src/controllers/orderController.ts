@@ -149,10 +149,11 @@ export const updateOrderReceiver = asyncHandle(async (req, res) => {
   const userreceiveid = req.body.userreceiveid;
   const givetypeid = req.body.givetypeid;
   const givetype = req.body.givetype;
+  const warehouseid = req.body.warehouseid;
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const updatedOrder = await OrderManager.updateOrderReceiver(orderid, userreceiveid, givetypeid, givetype);
+    const updatedOrder = await OrderManager.updateOrderReceiver(orderid, userreceiveid, givetypeid, givetype, warehouseid);
     // const orderid: string = String(traceCreated.traceid);
     res.status(200).json({ message: 'Update order successfully', updatedOrder: updatedOrder });
   } catch (error) {
@@ -161,6 +162,24 @@ export const updateOrderReceiver = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+export const updateTraceStatus = asyncHandle(async (req, res) => {
+  const orderid = req.body.orderid;
+  const newstatus = req.body.newstatus;
+  const statusid = req.body.statusid;
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const updatedOrder = await OrderManager.updateTraceStatus(orderid, newstatus, statusid);
+    // const orderid: string = String(traceCreated.traceid);
+    res.status(200).json({ message: 'Update trace successfully', updatedOrder: updatedOrder });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Fail while updating trace:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
 
 
 export const getOrderByPostID = asyncHandle(async (req, res) => {

@@ -46,7 +46,7 @@ export class WarehouseManager {
   public static async viewWarehouse(warehouseid: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT * FROM warehouse WHERE warehouseid = $1`,[warehouseid]);
+      const result = await client.query(`SELECT warehouseid, address.address, phonenumber, warehousename, warehouse.addressid, longitude, latitude  FROM warehouse JOIN address ON warehouse.addressid = address.addressid WHERE warehouseid = $1`,[warehouseid]);
       if (result.rows.length === 0) {
         console.log('Không tìm thấy kho');
       }

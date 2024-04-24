@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Dropdown } from 'react-native-element-dropdown';
 import { appColors } from '../../constants/appColors';
 import ShowMapComponent from '../ShowMapComponent';
+import TextComponent from '../TextComponent';
 
 
 interface Props {
@@ -84,6 +85,12 @@ interface WarehouseDropdown{
   label: string;
 }
 
+export interface ErrorProps  {
+  bringItemToWarehouseMethod: string;
+  receiveMethod: string;
+  warehouseSelected: string;
+
+}
 
 
 export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
@@ -100,7 +107,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [isUserPost, setIsUserPost] = useState(false);
 
-  const [selectedReceiveMethod, setSelectedReceiveMethod] = useState(' ');
+  const [selectedReceiveMethod, setSelectedReceiveMethod] = useState('');
 
   const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
 
@@ -108,9 +115,6 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   // const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
 
-
-
-  
   const methodsBringItemToWarehouse = [
     { label: '  Tự đem đến kho', value: 1 },
     { label: '  Nhân viên kho sẽ đến lấy', value: 2 },
@@ -146,18 +150,101 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
 
   const [isFocus, setIsFocus] = useState(false);
 
-  // const renderLabel = () => {
-  //   if (value || isFocus) {
-  //     return (
-  //       <Text style={[styles.label, isFocus && { color: 'blue' }]}>
-  //         Dropdown label
-  //       </Text>
-  //     );
-  //   }
-  //   return null;
-  // };
+  const [errorMessage, setErrorMessage] = useState<ErrorProps>({
+    bringItemToWarehouseMethod: '',
+    receiveMethod: '',
+    warehouseSelected: '',
+  });
+
+  const [validAllMethod, setValidAllMethod] = useState(false);
+  const [isValidSubmit, setIsValidSubmit] = useState(false);
+
+  useEffect(() => {
+    if(warehouseSeleted){
+      setIsValidSubmit(true);
+    }
+  })
 
 
+
+  const handleValidate = (text: any, typeCheck: string) => {
+    let updatedErrorMessage = {...errorMessage};
+
+    if(typeCheck = 'bringitemtowarehousemethod'){
+      if(!validAllMethod){
+        updatedErrorMessage.bringItemToWarehouseMethod = 'Vui lòng chọn phương thức mang đồ đến kho.';
+        setErrorMessage(updatedErrorMessage);
+
+      }
+      else{
+        updatedErrorMessage.bringItemToWarehouseMethod = '';
+        setErrorMessage(updatedErrorMessage);
+
+      }
+    }
+
+    if(typeCheck = 'receivemethod' ){
+      if(!validAllMethod && !selectedReceiveMethod){
+        updatedErrorMessage.receiveMethod = 'Vui lòng chọn phương thức nhận đồ.';
+      }
+      if(warehouseSeleted && selectedReceiveMethod){
+        setIsValidSubmit(true);
+      }
+      else{
+        updatedErrorMessage.receiveMethod = '';
+
+      }
+    }
+
+
+    else if(typeCheck = 'warehouseselected'){
+      if(!validAllMethod){
+        updatedErrorMessage.warehouseSelected = 'Vui lòng chọn kho.';
+      }
+      else{
+        updatedErrorMessage.warehouseSelected = '';
+
+      }
+    }
+    setErrorMessage(updatedErrorMessage);
+
+  }
+
+  useEffect(() => {
+    if(isUserPost && bringItemToWarehouseMethodsDropDown){
+      setValidAllMethod(true);
+      setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
+
+    }
+
+    else if(selectedReceiveMethod == 'Nhận đồ trực tiếp'){
+      setValidAllMethod(true);
+      setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
+    }
+
+    else if(selectedReceiveMethod == 'Nhận đồ qua kho' && warehouseSeleted){
+      setValidAllMethod(true);
+      setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
+    }
+    else{
+      setValidAllMethod(false);
+
+    }
+  },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown])
+
+  useEffect( () => {
+    if(      
+      !errorMessage.bringItemToWarehouseMethod && 
+      !errorMessage.receiveMethod && 
+      !errorMessage.warehouseSelected && 
+      validAllMethod) {
+        setIsValidSubmit(true);
+    }
+      else{
+        setIsValidSubmit(false);
+      }
+
+  })
 
 
   useEffect(() => {
@@ -294,7 +381,7 @@ const handleReceive = async () => {
     let warehouseid = null;
     if(selectedReceiveMethod == "Nhận đồ qua kho"){
       receivertypeid = 2;
-      warehouseid = warehouseSeleted.warehouseID;
+      warehouseid = warehouseSeleted.warehouseid;
     }
 
     if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
@@ -323,7 +410,8 @@ const handleReceive = async () => {
 
 
 const handleGive = async () =>{
-  if(receivetype == 'Cho nhận trực tiếp'){
+
+  if(receivetype === 'Cho nhận trực tiếp'){
     const orderid = order?.orderid;
     const userreceiveid = receiveid;
     const givetypeid = receivetypeid;
@@ -334,8 +422,20 @@ const handleGive = async () =>{
         orderid,
         userreceiveid,
         givetypeid,
-        givetype
+        givetype,
       })
+    } catch(error){
+      Alert.alert('Error', 'Cho món đồ thất bại.');
+    }
+
+    try{
+      const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
+        orderid: orderid,
+        newstatus: "Chờ người nhận lấy hàng",
+        statusid: "3",
+        
+      })
+      console.log(response.data);
       Alert.alert('Thành công', 'Cho món đồ thành công');
       navigation.navigate('ItemDetailScreen', {
         postID: postID,
@@ -344,87 +444,106 @@ const handleGive = async () =>{
     } catch(error){
       Alert.alert('Error', 'Cho món đồ thất bại.');
       setIsCompleted(false);
-
     }
   }
 
-  if(receivetype == 'Cho nhận qua kho'){
-    const orderid = order?.orderid;
-    const userreceiveid = receiveid;
-    let givetypeid = receivetypeid;
-    let givetype = receivetype;
-    if(formData?.methodBringItemToWarehouse == 'Tự mang đồ đến kho'){
-      try{
-        const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-          orderid,
-          userreceiveid,
-          givetypeid,
-          givetype
-        })
-        Alert.alert('Thành công', 'Cho món đồ thành công');
-
-      } catch(error){
-        Alert.alert('Error', 'Cho món đồ thất bại.');
-        setIsCompleted(false);
-      }
-    }
-    
-
-
-    if(formData?.methodBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
-      try{
-        givetypeid = 5;
-        givetype = 'Cho nhận qua kho(kho đến lấy)';
-        const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-          orderid,
-          userreceiveid,
-          givetypeid,
-          givetype
-        })
-        Alert.alert('Thành công', 'Cho món đồ thành công');
-
-      } catch(error){
-        Alert.alert('Error', 'Cho món đồ thất bại.');
-        setIsCompleted(false);
-
-      }
-    }
-
-    try{
-      const qrcode = ' ';
-      const usergiveid = postOwnerInfo?.owner;
-      const itemid = postOwnerInfo?.itemid;
+  else{
       const orderid = order?.orderid;
+      const userreceiveid = receiveid;
+      let givetypeid = receivetypeid;
+      let givetype = receivetype;
+      if(formData?.methodBringItemToWarehouse === 'Tự đem đến kho'){
+        try{
+          const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
+            orderid,
+            userreceiveid,
+            givetypeid,
+            givetype,
+            warehouseid
+          })
 
-      const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
-        qrcode,
-        warehouseid,
-        orderid,
-        usergiveid,
-        itemid
-      })
+        } catch(error){
+          Alert.alert('Error', 'Cho món đồ thất bại.');
+          setIsCompleted(false);
+        }
+        try{
+          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
+            orderid: orderid,
+            newstatus: "Chờ người cho giao hàng",
+            statusid: "13"
+          })
+          console.log('STATUS UPDATE',response.data);
+        } catch(error){
+          Alert.alert('Error', 'Cho món đồ thất bại.');
+          setIsCompleted(false);
+        }
+        
+      }
+      
+      if(formData?.methodBringItemToWarehouse === 'Nhân viên kho sẽ đến lấy'){
+        try{
+          givetypeid = 5;
+          givetype = 'Cho nhận qua kho(kho đến lấy)';
+          const resUpdateOrderReceiver = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
+            orderid,
+            userreceiveid,
+            givetypeid,
+            givetype,
+            warehouseid
+          })
 
-      Alert.alert('Thành công', 'Tạo input card thành công');
-      navigation.navigate('ItemDetailScreen', {
-        postID: postID,
-      })
-      // setIsCompleted(true);
-      // navigation.navigate('Home', {screen: 'HomeScreen'})
+        } catch(error){
+          Alert.alert('Error', 'Cho món đồ thất bại.');
+          setIsCompleted(false);
+        }
+
+        try{
+          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
+            orderid: orderid,
+            newstatus: "Chờ cộng tác viên lấy hàng",
+            statusid: "7"
+          })
+        } catch(error){
+          Alert.alert('Error', 'Cho món đồ thất bại.');
+          setIsCompleted(false);
+        }
+      }
+
+      try{
+        const qrcode = ' ';
+        const usergiveid = postOwnerInfo?.owner;
+        const itemid = postOwnerInfo?.itemid;
+        const orderid = order?.orderid;
+
+        const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+          qrcode,
+          warehouseid,
+          orderid,
+          usergiveid,
+          itemid
+        })
+
+        Alert.alert('Thành công', 'Cho món đồ thành công');
+        navigation.navigate('ItemDetailScreen', {
+          postID: postID,
+        })
+        // setIsCompleted(true);
+        // navigation.navigate('Home', {screen: 'HomeScreen'})
 
 
-    } catch(error){
-      Alert.alert('Error', 'Tạo input card thất bại.');
-      // setIsCompleted(false);
+      } catch(error){
+        Alert.alert('Error', 'Tạo input card thất bại.');
+        // setIsCompleted(false);
+      }
     }
-  }
   }
   
 
 
 
-  const handleWarehouseChange = (warehouseInfo: string) => {
+  const handleWarehouseChange = (warehouseid: number) => {
     // Tìm warehousename dựa vào warehouseid
-    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehousename + ', ' + wareHouse.address === warehouseInfo);
+    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseid);
     
     if (selectedWarehouse) {
       // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
@@ -438,6 +557,7 @@ const handleGive = async () =>{
 
 
   const handleBringItemToWareHouseChange = (methodBringItemToWarehouse: string) => {
+    console.log('ĐEM ĐỒ ĐẾN KHO:', methodBringItemToWarehouse)
     setFormData({
       ...formData,
       methodBringItemToWarehouse: methodBringItemToWarehouse
@@ -449,6 +569,10 @@ const handleGive = async () =>{
       warehouses: wareHouses,
       setWarehouseSelected: setWarehouseSelected
     })
+
+    setErrorMessage({...errorMessage, warehouseSelected: ''});
+    setIsValidSubmit(true);
+
   }
 
   if (isLoading) {
@@ -509,8 +633,9 @@ const handleGive = async () =>{
     />  
 
     {!isUserPost && !postOwnerInfo?.iswarehousepost && (
+      <>
         <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          style={[styles.dropdown, isFocus ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.receiveMethod ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           // inputSearchStyle={styles.inputSearchStyle}
@@ -524,14 +649,21 @@ const handleGive = async () =>{
           placeholder={!isFocus ? '  Phương thức nhận đồ' : '...'}
           searchPlaceholder="Tìm kiếm..."
           value={selectedReceiveMethodDropdown}
-          onFocus={() => setIsFocus(true)}
+          onFocus={() => {
+            setIsFocus(true);
+            handleValidate( selectedReceiveMethod,'receivemethod');
+          }}
           onBlur={() => setIsFocus(false)}
           onChange={item => {
             setSelectedReceiveMethodDropdown(item.value);
             setIsFocus(false);
             setSelectedReceiveMethod(item.label.substring(2));
+            setErrorMessage({...errorMessage, receiveMethod: ''})
+
           }}
         />
+        {(errorMessage.receiveMethod) && <TextComponent text={errorMessage.receiveMethod}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      </>
     )}
 
     {!isUserPost && selectedReceiveMethod == 'Nhận đồ qua kho' && !postOwnerInfo?.iswarehousepost && (
@@ -551,7 +683,17 @@ const handleGive = async () =>{
             },
           }}
         />
-        <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
+        {/* {(errorMessage.warehouseSelected) && <TextComponent text={errorMessage.warehouseSelected}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>} */}
+
+        <Button 
+          icon="warehouse" 
+          mode="contained" 
+          onPress={() => {
+            handleSelectWarehouse();    
+            setErrorMessage({...errorMessage, warehouseSelected: ''});
+            // setIsValidSubmit(true);          
+          }} 
+          style={styles.button}>
           Chọn kho
         </Button>
       </>
@@ -562,7 +704,7 @@ const handleGive = async () =>{
       <>
         <TextInput
           label="Địa chỉ đến lấy đồ"
-          value={postOwnerInfo?.address + ' kinh độ: ' + postOwnerInfo?.longitude + ', vĩ độ: ' + postOwnerInfo?.latitude}
+          value={postOwnerInfo?.address}
           style={styles.input}
           underlineColor="gray" // Màu của gạch chân khi không focus
           activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -579,6 +721,7 @@ const handleGive = async () =>{
             useTo='no'
           />
         }
+
         
       </>
 
@@ -628,6 +771,7 @@ const handleGive = async () =>{
 
 
     {isUserPost && receivetype == 'Cho nhận qua kho' && (
+      <>
         <TextInput
         label="Thông tin kho"
         value={formData?.warehouseInfo}
@@ -637,14 +781,28 @@ const handleGive = async () =>{
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
         editable={false} // Ngăn không cho người dùng nhập vào
+        /> 
 
-      /> 
+        {
+          warehouse && 
+          <ShowMapComponent
+            location={{ 
+              address: warehouse.address,
+              longitude: parseFloat(warehouse.longitude),
+              latitude: parseFloat(warehouse.latitude)
+              }}
+            useTo='no'
+          />
+        }
+
+      
+      </>
     )}
 
     {isUserPost && receivetype == 'Cho nhận qua kho' && (
-
+      <>
         <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          style={[styles.dropdown, isFocus ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.bringItemToWarehouseMethod ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           // inputSearchStyle={styles.inputSearchStyle}
@@ -657,25 +815,39 @@ const handleGive = async () =>{
           placeholder={!isFocus ? '  Phương thức đem đồ đến kho' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={bringItemToWarehouseMethodsDropDown}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
+          onFocus={() => {
+            setIsFocus(true);
+            handleValidate(formData?.methodBringItemToWarehouse ,'bringitemtowarehousemethod')
+          }}
+          onBlur={() => {
+            if(isFocus){
+              // handleValidate(formData?.methodBringItemToWarehouse ,'bringitemtowarehousemethod')
+            }
+            setIsFocus(false);
+
+          }}
           onChange={item => {
             setBringItemToWarehouseMethodDropdown(item.value);
             setIsFocus(false);
             handleBringItemToWareHouseChange(item.label.substring(2));
+            // handleValidate(bringItemToWarehouseMethodsDropDown ,'bringitemtowarehousemethod')
+            setErrorMessage({...errorMessage, bringItemToWarehouseMethod: ''})
+
           }}
         />
+        {(errorMessage.bringItemToWarehouseMethod) && <TextComponent text={errorMessage.bringItemToWarehouseMethod}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      </>
     )}
 
 
 
 
     {!isUserPost && (
-      <Button mode="contained" onPress={handleReceive}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleReceive} disabled={!isValidSubmit}>Xác nhận</Button>
     )}
 
     {isUserPost && (
-      <Button mode="contained" onPress={handleGive}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit}>Xác nhận</Button>
     )}
   </ScrollView>
   );
@@ -686,7 +858,9 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: 'white',
     flexDirection: 'column',
-    // alignItems: 'center'
+    flex: 1,
+    // alignItems: 'center',
+    // justifyContent: 'space-around'
   },
   title: {
     fontSize: 20,
@@ -696,7 +870,7 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 30,
     backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
     fontSize: 14,
   },
