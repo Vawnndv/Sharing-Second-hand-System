@@ -1,23 +1,13 @@
 import { Dimensions } from "react-native";
+import { BASE_URL } from "@env";
 
 export const appInfo = {
   sizes: {
     WIDTH: Dimensions.get('window').width,
     HEIGHT: Dimensions.get('window').height,
   },
-
-
-
-  // BASE_URL: 'http://192.168.1.2:3000', // This is URL of TAANS
-
-
-  // BASE_URL: 'http://192.168.38.83:3000', // This is URL of CUONG
-
-
-  // BASE_URL: 'http://192.168.1.101:3000',  // This is URL of VWAN
-  // BASE_URL: 'http://192.168.1.112:3000',  // This is URL of VWAN
   
-  BASE_URL: 'http://192.168.0.113:3000',
+  BASE_URL: BASE_URL,
 
 }
 
