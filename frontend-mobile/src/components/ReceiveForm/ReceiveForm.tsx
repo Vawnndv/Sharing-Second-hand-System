@@ -26,6 +26,8 @@ interface Props {
   receivetype?: string;
   receivetypeid?: number;
   warehouseid?: number;
+  navigation?: any;
+  route?: any;
 }
 
 
@@ -93,9 +95,9 @@ export interface ErrorProps  {
 }
 
 
-export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
+export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
 
-  const navigation: any = useNavigation();
+  // const navigation: any = useNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -211,11 +213,20 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
   }
 
   useEffect(() => {
-    if(isUserPost && bringItemToWarehouseMethodsDropDown){
+
+    if(isUserPost && receivetype === 'Cho nhận trực tiếp'){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
 
     }
+
+    else if(isUserPost && bringItemToWarehouseMethodsDropDown){
+      setValidAllMethod(true);
+      setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
+
+    }
+
+
 
     else if(selectedReceiveMethod == 'Nhận đồ trực tiếp'){
       setValidAllMethod(true);
@@ -230,7 +241,7 @@ export const ReceiveForm: React.FC<Props> = ({  postID, receiveid, receivetype, 
       setValidAllMethod(false);
 
     }
-  },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown])
+  },[selectedReceiveMethod, warehouseSeleted])
 
   useEffect( () => {
     if(      
@@ -399,7 +410,7 @@ const handleReceive = async () => {
     });       
     Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
     navigation.navigate('ItemDetailScreen', {
-      postID: postID,
+      postId: postID,
     })
     
   } catch (error) {
@@ -438,7 +449,7 @@ const handleGive = async () =>{
       console.log(response.data);
       Alert.alert('Thành công', 'Cho món đồ thành công');
       navigation.navigate('ItemDetailScreen', {
-        postID: postID,
+        postId: postID,
       })
 
     } catch(error){
@@ -525,7 +536,7 @@ const handleGive = async () =>{
 
         Alert.alert('Thành công', 'Cho món đồ thành công');
         navigation.navigate('ItemDetailScreen', {
-          postID: postID,
+          postId: postID,
         })
         // setIsCompleted(true);
         // navigation.navigate('Home', {screen: 'HomeScreen'})
@@ -571,8 +582,6 @@ const handleGive = async () =>{
     })
 
     setErrorMessage({...errorMessage, warehouseSelected: ''});
-    setIsValidSubmit(true);
-
   }
 
   if (isLoading) {

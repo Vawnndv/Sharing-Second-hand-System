@@ -60,8 +60,8 @@ interface ItemImage {
 
 interface PostDetailProps {
   postID: number;
-  navigation: any;
-  route: any;
+  navigation?: any;
+  route?: any;
 }
 
 interface PostReceiver {
@@ -256,19 +256,25 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
   }
 
   if(goToReceiveForm  && postID && !isUserPost){
-    return(
-      <ReceiveForm postID={postID}/>
-    )
+    setGoToReceiveForm(false);
+    navigation.navigate('ReceiveFormScreen', {
+      postID: postID,
+    });
   }
 
   if(goToGiveForm && postID  && isUserPost){
-    return(
-      <ReceiveForm  postID={postID} receiveid={selectedReceiver} receivetype={receivemethod} receivetypeid={receivetypeid} warehouseid={warehouseid}/>
-    )
+    setGoToGiveForm(false);
+    navigation.navigate('ReceiveFormScreen', {
+      postID: postID,
+      receiveid: selectedReceiver,
+      receivetype: receivemethod,
+      receivetypeid: receivetypeid,
+      warehouseid: warehouseid
+    });
+
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
-
     return(
       <ScrollView>
         <View style={styles.screenContainer}>

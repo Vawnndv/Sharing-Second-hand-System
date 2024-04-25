@@ -8,6 +8,8 @@ import ScanScreen from "./scans/ScanScreen";
 import AddScreen from "./adds/AddScreen";
 import MessageScreen from "./messages/MessageScreen";
 import ProfileScreen from "./profiles/ProfileScreen";
+import ReceiveFormScreen from "./receiveform/ReceiveFormScreen";
+
 
 export {
   LoginScreen,
@@ -20,4 +22,5 @@ export {
   AddScreen,
   MessageScreen,
   ProfileScreen,
+  ReceiveFormScreen,
 }
