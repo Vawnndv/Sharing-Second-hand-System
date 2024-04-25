@@ -14,10 +14,9 @@ import { authSelector } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 import { isLoading } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
+import { GOOGLE_MAP_API_KEY, BING_MAP_API_KEY } from '@env';
 
 
-const GOOGLE_MAP_API_KEY = "AIzaSyAbk-Yxdn_arPK7y6BHG25BauJy4f-vppc"
-const BING_MAP_API_KEY = "AkbbA9uPU7tvwlE1ASjaoNdewiGGUMD-jdDh4I_umwvjlb72eROt-JFTDzDApMCr"
 const getUrlRequest = (query: string) => {
     return `https://nominatim.openstreetmap.org/search?q=${query}&format=json`
 }
