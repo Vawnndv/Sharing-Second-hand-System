@@ -18,6 +18,7 @@ function Uploader(props: Props) {
   const [loading, setLoading] = useState(false)
   // upload image
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const readFileContent = (file: any) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
