@@ -1,0 +1,29 @@
+import { Request, Response } from 'express';
+import { ChatManager } from '../classDiagramModel/Manager/ChatManager';
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const getUserChatList = async (req: Request, res: Response) => {
+  const userID : any = req.query.userID;
+  
+  try {
+    const userList = await ChatManager.getUserChatList(userID);
+    res.status(200).json({ message: 'Get users list success:', data: userList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const createNewChat = async (req: Request, res: Response) => {
+  const { firstuserid, seconduserid } = req.body;
+  
+  try {
+    const result = await ChatManager.createNewChat(firstuserid, seconduserid);
+    if (result)
+      res.status(200).json({ message: 'Create new chat success' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

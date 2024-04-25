@@ -2,15 +2,18 @@ import { Item } from './Item';
 import { Status } from './Status';
 import { Trace } from './Trace';
 import pool from '../config/DatabaseConfig';
+import { User } from './User';
+import { Post } from './Post';
+import { Address } from './Address';
 
 export class Order {
-  private orderID: string | undefined;
+  private orderID: number | undefined;
 
   private title: string | undefined;
 
-  private receiverId: string | undefined;
+  private receiver: User | undefined;
 
-  private giverId: string | undefined;
+  private giver: User | undefined;
 
   private orderCode: string | undefined;
 
@@ -24,18 +27,49 @@ export class Order {
 
   private time: string | undefined;
 
-  private itemID: string | undefined;
+  private itemID: number | undefined;
 
   private departure: string | undefined;
 
-  private item: Item | undefined;
+  private item: Item | null;
 
   private trace: Trace | undefined;
 
   private currentStatus: Status | undefined;
 
-  public constructor(orderID: string) {
+  private post: Post | null;
+
+  private addressGive: Address | null;
+
+  private addressReceive: Address | null;
+
+  private timeStart: string | undefined;
+
+  private timeEnd: string | undefined;
+
+  private giveTypeID: number | undefined
+
+  public constructor(orderID: number, title: string, receiver: User | undefined, giver: User | undefined,
+    orderCode: string, qrCode: string, status: string, location: string, description: string,
+    time: string, item: Item | null, departure: string, post: Post | null, addressGive: Address | null, addressReceive: Address | null) {
     this.orderID = orderID;
+    this.title = title;
+    this.receiver = receiver;
+    this.giver = giver;
+    this.orderCode = orderCode;
+    this.qrCode = qrCode;
+    this.status = status;
+    this.location = location;
+    this.description = description;
+    this.time = time;
+    this.item = item;
+    this.departure = departure;
+    this.post = post
+    this.addressGive = addressGive;
+    this.addressReceive = addressReceive;
+    // this.item = item;
+    // this.trace = trace;
+    // this.currentStatus = currentStatus;
   }
 
   public updateStatus(status: string, time: string) {
@@ -44,5 +78,22 @@ export class Order {
 
   public deleteOrder(): void {
     // code here
+  }
+
+  public setGiver(giver: User): void{
+    this.giver = giver
+  }
+
+  public setReceiver(receiver: User): void{
+    this.receiver = receiver
+  }
+
+  public setTime(timeStart: string, timeEnd: string){
+    this.timeStart = timeStart;
+    this.timeEnd = timeEnd;
+  }
+
+  public setGiveTypeID (giveTypeID: number){
+    this.giveTypeID = giveTypeID;
   }
 }

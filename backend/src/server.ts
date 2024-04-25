@@ -4,35 +4,53 @@
 
 import express from 'express';
 // import { mapOrder } from './utils/sorts.ts';
-import routerItem from './routes/v1/itemRouter';
+import routerItem from './routes/itemRouter';
+import orderCollaboratorRoute from './routes/orderCollaboratorRoute';
 import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
+// import authRouter from './routes/v1/authRouter';
+import routerPost from './routes/postRouter';
+import authRouter from './routes/authRouter';
+import orderRouter from './routes/orderRouter';
+import uploadImageToAwsRoute from './routes/uploadImageToAwsRoute';
+import warehouseRouter from '././routes/warehouseRouter';
+import cors from 'cors';
+import errorMiddleHandle from './middlewares/errorMiddleware';
+import userRouter from './routes/userRouter';
+import cardRouter from './routes/cardRouter';
+import chatRouter from './routes/chatRouter';
+import mapRouter from './routes/mapRouter';
 
 const app = express();
 
-const hostname = 'localhost';
-const port = 8017;
+app.use(cors());
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  // Test Absolute import mapOrder
-  // console.log(mapOrder(
-  //   [ { id: 'id-1', name: 'One' },
-  //     { id: 'id-2', name: 'Two' },
-  //     { id: 'id-3', name: 'Three' },
-  //     { id: 'id-4', name: 'Four' },
-  //     { id: 'id-5', name: 'Five' } ],
-  //   ['id-5', 'id-4', 'id-2', 'id-3', 'id-1'],
-  //   'id',
-  // ));
-  res.end('<h1>Hello World!</h1><hr>');
-});
+const port = 3000;
 
 app.use(express.json());
 
-app.use(routerItem);
+app.use('/posts', routerPost);
+app.use('/items', routerItem);
+app.use(orderCollaboratorRoute);
+app.use('/warehouse', warehouseRouter);
 
-app.listen(port, hostname, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Listenning, I am running at ${ hostname }:${ port }/`);
+app.use('/auth', authRouter);
+app.use('/user', userRouter);
+app.use('/order', orderRouter);
+app.use('/aws3', uploadImageToAwsRoute);
+app.use('/card', cardRouter);
+app.use('/chat', chatRouter);
+app.use('/map', mapRouter);
+
+app.use(errorMiddleHandle);
+
+app.listen(port, (err?: Error) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
+
+  console.log(`Server starting at http://localhost:${port}`);
 });
 
 process.on('SIGINT', () => {
