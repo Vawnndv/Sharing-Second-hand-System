@@ -1,17 +1,17 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { getRoomId } from '../utils/GetRoomID';
+import { getRoomId, getRoomIdWithPost } from '../utils/GetRoomID';
 import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData } from 'firebase/firestore'
 import { db } from '../../firebaseConfig';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../redux/reducers/authReducers';
 
-const LastMessageComponent = ({firstUserID, secondUserID}: any) => {
+const LastMessageComponent = ({firstUserID, secondUserID, postid}: any) => {
   const [lastMessage, setLastMessage] = useState<DocumentData | null | undefined>(undefined);
 
 
   const renderLastMessage = () =>{
-    let roomID = getRoomId(firstUserID, secondUserID);
+    let roomID = postid ? getRoomIdWithPost(firstUserID, secondUserID, postid) : getRoomId(firstUserID, secondUserID);
     const docRef = doc(db, "rooms", roomID);
     const messagesRef = collection(docRef, "messages");
     const q = query(messagesRef, orderBy('createdAt', 'desc'));

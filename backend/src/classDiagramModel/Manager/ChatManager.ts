@@ -16,15 +16,15 @@ export class ChatManager {
     return [];
   }
 
-  public static async createNewChat (firstuserid: string, seconduserid: string): Promise<any> {
+  public static async createNewChat (firstuserid: string, seconduserid: string, postid: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
-      INSERT INTO Chats (FirstUserID, SecondUserID, ChatStarted)
-      VALUES ($1, $2, CURRENT_TIMESTAMP);
+      INSERT INTO Chats (FirstUserID, SecondUserID, ChatStarted, postid)
+      VALUES ($1, $2, CURRENT_TIMESTAMP, $3);
     `
     try {
-      const result: QueryResult = await client.query(query, [firstuserid, seconduserid]);
+      const result: QueryResult = await client.query(query, [firstuserid, seconduserid, postid]);
       console.log('Create new chat success');
       return true
     } catch (error) {
@@ -40,20 +40,31 @@ export class ChatManager {
     const client = await pool.connect();
     let query = `
       SELECT DISTINCT
-        "User".avatar,
-        "User".userid,
-        "User".username,
-        "User".firstname,
-        "User".lastname,
-        "User".phonenumber
-      FROM
-          Chats
-          JOIN "User" ON ("User".userID = CASE
-              WHEN Chats.FirstUserID = $1 THEN Chats.SecondUserID
-              WHEN Chats.SecondUserID = $1 THEN Chats.FirstUserID
-          END)
-      WHERE
-          Chats.FirstUserID = $1 OR Chats.SecondUserID = $1;
+      "User".avatar,
+      "User".userid,
+      "User".username,
+      "User".firstname,
+      "User".lastname,
+      "User".phonenumber,
+      po.title,
+      po.postid,
+      CASE
+  --         WHEN od.usergiveid IS NOT NULL AND od.userreceiveid IS NOT NULL AND od.status = 'Hoàn tất' THEN 'false'
+          WHEN od.usergiveid IS NOT NULL AND od.userreceiveid IS NOT NULL AND od.status <> 'Hoàn tất' THEN 'true'
+          WHEN od.userreceiveid IS NULL AND od.status != 'Đã duyệt' THEN 'true'
+  -- 		WHEN od.userreceiveid IS NULL AND od.status == 'Đã duyệt' THEN 'true'
+          ELSE 'false'
+      END AS enableChat
+  FROM
+      Chats
+  JOIN "User" ON ("User".userID = CASE
+      WHEN Chats.FirstUserID = $1 THEN Chats.SecondUserID
+      WHEN Chats.SecondUserID = $1 THEN Chats.FirstUserID
+  END)
+  LEFT JOIN Posts po ON Chats.postid = po.postid
+  LEFT JOIN Orders od ON od.postid = Chats.postid
+  WHERE
+      Chats.FirstUserID = $1 OR Chats.SecondUserID = $1;
     `
     
     try {

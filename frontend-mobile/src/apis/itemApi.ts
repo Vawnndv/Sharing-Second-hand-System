@@ -1,7 +1,7 @@
 import axiosClient from "./axiosClient"
 
 class itemAPI {
-  HandleAuthentication = async (
+  HandleItem = async (
     url: string,
     data?: any,
     method?: 'get' | 'post' | 'put' | 'delete'
