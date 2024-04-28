@@ -61,6 +61,11 @@ export default function ViewDetailOrder({navigation, route}: any) {
     getOrderDetails()
   }, []);
 
+  useEffect(function(){
+    !modalConfirmVisible && 
+    getOrderDetails()
+  }, [modalConfirmVisible]);
+
   const getOrderDetails = async () => {
     try {
       setIsLoading(true);
@@ -203,6 +208,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               {
                 userID == data?.userreceiveid ? (
                   data?.isreciever ? (
+                    !(image || data?.imgconfirmreceive && data?.imgconfirmreceive != ' ') && 
                     <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                       Xác nhận
                     </Button>
@@ -259,35 +265,35 @@ export default function ViewDetailOrder({navigation, route}: any) {
             />
 
           </View>
-        )
-      }
-      {/* <Text style={styles.body}>Modal</Text> */}
-      {/* <View style={styles.separator} /> */}
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-      {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
-      <ShowImageModal visible={visible} setVisible={setVisible}>
-        {
-          isShowQR ? (
-            <QRCodeGenerator data={ data ? data.orderid.toString() : ''}/>
-          ) : (
-            <Image source={{ uri: image ? image.uri : data?.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
           )
         }
-      </ShowImageModal>
-    </ContainerComponent>
-  );
-}
+        {/* <Text style={styles.body}>Modal</Text> */}
+        {/* <View style={styles.separator} /> */}
 
-const styles = StyleSheet.create({
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '10%',
-    flexDirection: 'row',
-    padding: 5,
-    borderBottomColor: 'grey',
+        {/* Use a light status bar on iOS to account for the black space above the modal */}
+        <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
+        <ShowImageModal visible={visible} setVisible={setVisible}>
+          {
+            isShowQR ? (
+              <QRCodeGenerator data={ data ? data.orderid.toString() : ''}/>
+            ) : (
+              <Image source={{ uri: image ? image.uri : data?.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
+            )
+          }
+        </ShowImageModal>
+      </ContainerComponent>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      height: '10%',
+      flexDirection: 'row',
+      padding: 5,
+      borderBottomColor: 'grey',
     borderBottomWidth: 1
   },
   container: {
