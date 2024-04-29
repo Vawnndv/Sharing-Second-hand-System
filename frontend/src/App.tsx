@@ -7,6 +7,8 @@ import ForgotPassword from './pages/auth/ForgotPassword/ForgotPassword';
 import Password from './pages/auth/Password/Password';
 import Profile from './pages/auth/Profile/Profile';
 import ToastContainer from './components/notification/ToastContainer';
+import Order from './pages/order/Order';
+import ViewDetailOrder from './pages/order/Viewdetail/ViewDetailOrder';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,6 +23,10 @@ export function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password" element={<Password />} />
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/order" element={<Order />} />
+        <Route path="/order/:orderid" element={<ViewDetailOrder />} />
+
       </Routes>
     </>
   );

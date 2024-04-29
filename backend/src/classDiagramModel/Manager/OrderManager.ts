@@ -32,6 +32,11 @@ interface FilterOrder {
   row_num: string;
 }
 
+enum QueryType {
+  Status = 'status',
+  Method = 'method'
+}
+
 function filterOrders(distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
   // Chuyển các tham số string sang số
   const distanceFloat: number = parseFloat(distance);
@@ -99,6 +104,33 @@ function filterOrders(distance: string, time: string, category: string[], sort: 
   }
 
   return filteredData;
+}
+
+function buildStatusQuery(statusArray: string[], type: QueryType) {
+  // Kiểm tra xem mảng trống không
+  if (statusArray.length === 0) {
+      return '';
+  }
+
+  let prefix: string;
+  if (type === QueryType.Status) {
+      prefix = 'o.status';
+  } else if (type === QueryType.Method) {
+      prefix = 'o.givetypeid';
+  } else {
+      throw new Error('Invalid query type');
+  }
+
+  // Tạo chuỗi truy vấn từ mảng status
+  const statusQuery = 'AND (' + statusArray.map(status => {
+      if (type === QueryType.Status) {
+          return `${prefix} = '${status}'`;
+      } else if (type === QueryType.Method) {
+          return `${prefix} = ${status}`;
+      }
+  }).join(' OR ');
+
+  return statusQuery + ')';
 }
 
 export class OrderManager {
@@ -887,13 +919,22 @@ export class OrderManager {
                 i.Path AS Image,
                 th.Time AS StatusCreatedAt,
                 o.imgconfirmreceive,
-                o.postid
+                o.postid,
+                u.avatar,
+                u.username,
+                u.firstname,
+                u.lastname,
+                o.createdat,
+                po.description,
+                po.itemid
               FROM orders AS o
               JOIN Address ad ON ad.AddressID = o.LocationGive
               JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
               JOIN Image i ON o.ItemID = i.ItemID
               JOIN Trace t ON o.OrderID = t.OrderID
               JOIN Trace_History th ON t.TraceID = th.TraceID
+              LEFT JOIN "User" u ON u.userid = o.usergiveid
+              LEFT JOIN Posts po ON po.postid = o.postid
               WHERE o.orderid = $1
           LIMIT 1)AS ranked_orders
         
@@ -1166,5 +1207,89 @@ export class OrderManager {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string): Promise<any> {
+
+    const client = await pool.connect();
+    let query = `
+    SELECT
+        u.avatar,
+        u.username,
+        u.firstname,
+        u.lastname,
+        po.postid,
+        po.title,
+        po.createdat,
+        po.description,
+        o.orderid,
+        o.status,
+        MIN(img.path) AS path
+    FROM
+        Orders o
+    LEFT JOIN Posts po ON po.postid = o.postid
+    LEFT JOIN "User" u ON po.owner = u.userid
+    LEFT JOIN Item it ON it.itemid = po.itemid
+    LEFT JOIN Image img ON img.itemid = it.itemid
+    LEFT JOIN Address ad ON ad.addressid = po.addressid
+    LEFT JOIN Workat w ON u.userid = w.userid
+    LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
+    -- WHERE
+    --    w.userid = ${userID} -- Kiểm tra userID của bảng Workat
+    --    {placeholder1}
+    --    {placeholder1}
+    --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
+    GROUP BY
+        u.avatar,
+        u.username,
+        u.firstname,
+        u.lastname,
+        po.postid,
+        po.title,
+        po.createdat,
+        po.description,
+        o.orderid,
+        o.status
+    LIMIT ${limit}
+        OFFSET ${page} * ${limit};
+    `;
+    // Truy vấn để lấy tổng số lượng item
+    const countQuery = `
+    SELECT COUNT(*) AS total_items
+    FROM Orders o
+    LEFT JOIN Posts po ON po.postid = o.postid
+    LEFT JOIN "User" u ON po.owner = u.userid
+    LEFT JOIN Item it ON it.itemid = po.itemid
+    -- LEFT JOIN Image img ON img.itemid = it.itemid
+    LEFT JOIN Address ad ON ad.addressid = po.addressid
+    LEFT JOIN Workat w ON u.userid = w.userid
+    LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
+    -- WHERE
+    --    w.userid = ${userID} -- Kiểm tra userID của bảng Workat
+    --    {placeholder1}
+    --    {placeholder1}
+    --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
+    `;
+    
+    console.log("A   ", buildStatusQuery(status, QueryType.Status), '  |  ', buildStatusQuery(method, QueryType.Method));
+    
+    try {
+        // Thực hiện truy vấn để lấy tổng số lượng item
+        const countResult = await client.query(countQuery);
+        const totalItems = countResult.rows[0].total_items;
+
+        // Thực hiện truy vấn chính để lấy dữ liệu theo phân trang
+        const result = await client.query(query);
+
+        console.log('Get orders list success:', result.rows);
+
+        // Trả về cả dữ liệu và tổng số lượng item trong một đối tượng
+        return { orders: result.rows, totalItems: totalItems };
+    } catch (error) {
+        console.error('Error get orders:', error);
+    } finally {
+        client.release(); // Release client sau khi sử dụng
+    }
+  }
+
 
 }

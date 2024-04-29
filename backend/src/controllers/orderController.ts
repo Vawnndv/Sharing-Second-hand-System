@@ -209,3 +209,14 @@ export const getOrderListReceive = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getOrderListByStatus = async (req: Request, res: Response) => {
+  const { userid, status, method, limit, page } = req.body;
+  try {
+    const orderList = await  OrderManager.getOrderListByStatus(userid, status, method, limit, page);
+    res.status(200).json({ message: 'Get orders list success:', data: orderList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
