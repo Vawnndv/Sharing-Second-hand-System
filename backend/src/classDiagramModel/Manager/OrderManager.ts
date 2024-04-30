@@ -926,7 +926,12 @@ export class OrderManager {
                 u.lastname,
                 o.createdat,
                 po.description,
-                po.itemid
+                po.itemid,
+                us.avatar AS avatarreceive,
+                us.username AS usernamereceive,
+                us.firstname AS firstnamereceive,
+                us.lastname AS lastnamereceive,
+                us.phonenumber AS phonenumberreceive
               FROM orders AS o
               JOIN Address ad ON ad.AddressID = o.LocationGive
               JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
@@ -934,6 +939,7 @@ export class OrderManager {
               JOIN Trace t ON o.OrderID = t.OrderID
               JOIN Trace_History th ON t.TraceID = th.TraceID
               LEFT JOIN "User" u ON u.userid = o.usergiveid
+              LEFT JOIN "User" us ON us.userid = o.userreceiveid
               LEFT JOIN Posts po ON po.postid = o.postid
               WHERE o.orderid = $1
           LIMIT 1)AS ranked_orders
@@ -1208,7 +1214,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string): Promise<any> {
+  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -1233,8 +1239,8 @@ export class OrderManager {
     LEFT JOIN Address ad ON ad.addressid = po.addressid
     LEFT JOIN Workat w ON u.userid = w.userid
     LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
-    -- WHERE
-    --    w.userid = ${userID} -- Kiểm tra userID của bảng Workat
+    ${isOverdue === true ? 'WHERE po.timeend < CURRENT_TIMESTAMP' : ''}
+    --    AND w.userid = ${userID} -- Kiểm tra userID của bảng Workat
     --    {placeholder1}
     --    {placeholder1}
     --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
@@ -1263,15 +1269,14 @@ export class OrderManager {
     LEFT JOIN Address ad ON ad.addressid = po.addressid
     LEFT JOIN Workat w ON u.userid = w.userid
     LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
-    -- WHERE
-    --    w.userid = ${userID} -- Kiểm tra userID của bảng Workat
+      ${isOverdue === true ? 'WHERE po.timeend < CURRENT_TIMESTAMP' : ''}
+    --    AND w.userid = ${userID} -- Kiểm tra userID của bảng Workat
     --    {placeholder1}
     --    {placeholder1}
     --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
     `;
     
-    console.log("A   ", buildStatusQuery(status, QueryType.Status), '  |  ', buildStatusQuery(method, QueryType.Method));
-    
+    // console.log("A   ", buildStatusQuery(status, QueryType.Status), '  |  ', buildStatusQuery(method, QueryType.Method));
     try {
         // Thực hiện truy vấn để lấy tổng số lượng item
         const countResult = await client.query(countQuery);
@@ -1279,8 +1284,6 @@ export class OrderManager {
 
         // Thực hiện truy vấn chính để lấy dữ liệu theo phân trang
         const result = await client.query(query);
-
-        console.log('Get orders list success:', result.rows);
 
         // Trả về cả dữ liệu và tổng số lượng item trong một đối tượng
         return { orders: result.rows, totalItems: totalItems };

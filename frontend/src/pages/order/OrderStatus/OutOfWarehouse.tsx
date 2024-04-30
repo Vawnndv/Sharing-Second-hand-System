@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import ViewOrders from './ViewOrders';
+import ViewOrders from '../ViewOrders';
 
 export default function OutOfWarehouse() {
   const [value, setValue] = React.useState('1');

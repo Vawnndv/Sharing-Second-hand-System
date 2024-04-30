@@ -7,32 +7,37 @@ import { getOrderListByStatus } from '../../redux/services/orderServices';
 
 const LIMIT: any = 6;
 
-function getStatusAndMethod(status: string, locationOfItem: string) {
+function getStatusAndMethod(status: number, locationOfItem: number) {
   let statusArray: any = [];
   let methodArray: any = [];
 
-  if (locationOfItem === '1') {
+  if (locationOfItem === 1) {
       methodArray = ['2', '3', '4', '5'];
-  } else if (locationOfItem === '2') {
+  } else if (locationOfItem === 2) {
       methodArray = ['1'];
   }
 
-  if (locationOfItem === '1') {
-      if (status === '1') {
+  // TH xem những đơn hàng đã hoàn tất
+  if (!status)
+    return { status: ['Hoàn tất'], method: methodArray };
+
+  // TH Theo dõi những đơn hàng
+  if (locationOfItem === 1) {
+      if (status === 1) {
           statusArray = ['Chờ người cho giao hàng', 'Chờ cộng tác viên lấy hàng'];
-      } else if (status === '2') {
+      } else if (status === 2) {
           statusArray = ['Hàng đã nhập kho', 'Hàng đang được đến lấy', 'Chờ người nhận lấy hàng'];
-      } else if (status === '3') {
+      } else if (status === 3) {
           statusArray = ['Hoàn tất'];
-      } else if (status === '4') {
+      } else if (status === 4) {
           statusArray = [];
       }
-  } else if (locationOfItem === '2') {
-      if (status === '1') {
+  } else if (locationOfItem === 2) {
+      if (status === 1) {
           statusArray = ['Đã duyệt', 'Chờ người nhận lấy hàng'];
-      } else if (status === '2') {
+      } else if (status === 2) {
           statusArray = ['Người nhận đã nhận hàng', 'Hoàn tất'];
-      } else if (status === '3') {
+      } else if (status === 3) {
           statusArray = ['Hủy'];
       }
   }
@@ -54,9 +59,12 @@ export default function ViewOrders({ locationOfItem, status }: any) {
     try {
       const result = await getOrderListByStatus(
         userID,
-        getStatusAndMethod(locationOfItem, status).status,
-        getStatusAndMethod(locationOfItem, status).method,
-        LIMIT, page - 1);
+        getStatusAndMethod(status, locationOfItem).status,
+        getStatusAndMethod(status, locationOfItem).method,
+        LIMIT,
+        page - 1,
+        status === 4
+      );
       setOrders(result.orders);
       setTotalItems(result.totalItems);
     } catch (error) {

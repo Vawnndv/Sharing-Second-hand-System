@@ -19,7 +19,7 @@ function ViewDetailOrder() {
   const [order, setOrder] = useState<any>();
   const [isLoading, setIsLoading] = useState(false)
   const [itemImages, setItemImages] = useState<any>([]);
-  const [activeStep, setActiveStep] = React.useState(0);
+  // const [activeStep, setActiveStep] = React.useState(0);
   const [data, setData] = useState<any>([]);
 
   const fetchData = async () => {
@@ -39,7 +39,7 @@ function ViewDetailOrder() {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const result_tracking = await getTrackingOrder(orderID);
       setData(result_tracking.data)
-      setActiveStep(data.length)
+      // setActiveStep(data.length)
 
       setIsLoading(false)
       
@@ -77,6 +77,45 @@ function ViewDetailOrder() {
               <Typography gutterBottom variant="body1" fontWeight='bold'>Trạng thái </Typography>
               <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color="customColor.status"> {order?.status} </Typography>
             </Box>
+            {
+              order?.userreceiveid &&
+              <Box>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                  <Typography gutterBottom variant="body1" fontWeight='bold'>Người nhận: </Typography>
+                  <Typography ml={1} gutterBottom variant="body1" fontWeight='bold'>
+                    {order?.usernamereceive ? order?.usernamereceive : `${order?.firstnamereceive} ${order?.lastnamereceive}`}
+                  </Typography>
+                </Box>
+                {
+                  order.phonenumberreceive &&
+                  <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                    <Typography gutterBottom variant="body1" fontWeight='bold'>Số điện thoại: </Typography>
+                    <Typography ml={1} gutterBottom variant="body1" fontWeight='bold'>
+                      {order?.phonenumberreceive}
+                    </Typography>
+                  </Box>
+                }
+                {
+                  order.imgconfirmreceive &&
+                  <Box sx={{mb: 2}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                      <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày nhận người nhận: </Typography>
+                      <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color='primary.main'>
+                        {formatDateTime(data[data.length - 1].createdat)}
+                      </Typography>
+                    </Box>
+                    <Typography gutterBottom variant="body1" fontWeight='bold' fontStyle='italic' color='red'>Ảnh xác nhận </Typography>
+                    <Paper sx={{ height: 200, width: 200 }}>
+                      <img
+                        src={order.imgconfirmreceive}
+                        alt=""
+                        style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                      />
+                    </Paper>
+                  </Box>
+                }
+              </Box>
+            }
             
             <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: 'break-word', mb: 2 }}>
               {order?.description}
@@ -114,7 +153,7 @@ function ViewDetailOrder() {
             </Typography>
           <Box sx={{ display: 'flex', justifyItems: 'center', justifyContent: 'center' }}>
             <Box sx={{ maxWidth: 400 }}>
-              <Stepper activeStep={activeStep} orientation="vertical">
+              <Stepper activeStep={data.length} orientation="vertical">
                 {data.map((step: any, index: any) => (
                   <Step key={index}>
                     <StepLabel

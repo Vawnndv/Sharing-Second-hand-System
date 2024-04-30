@@ -35,11 +35,11 @@ export default function OrderCard({order}: any) {
           </Box>
           <Box sx={{ mt: 2, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
             <Typography gutterBottom variant="body1" fontWeight='bold'>Trạng thái </Typography>
-            <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color="customColor.status"> ${order.status} </Typography>
+            <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color="customColor.status"> {order.status} </Typography>
           </Box>
           
           <Typography variant="body2" color="text.secondary">
-            ${order.description}
+            {order.description}
           </Typography>
         </CardContent>
         <CardMedia
