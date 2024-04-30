@@ -1,12 +1,13 @@
 import MapView, {Callout, Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 
 import * as Location from 'expo-location';
-import {Dimensions, View, StyleSheet, TextInput, Text, ScrollView, Keyboard, TouchableOpacity,KeyboardAvoidingView, Alert} from "react-native"
+import {Dimensions, View, StyleSheet, TextInput, Text, ScrollView, Keyboard, TouchableOpacity,KeyboardAvoidingView, Alert, TouchableWithoutFeedback, Modal, Pressable} from "react-native"
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
-import { EvilIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { EvilIcons, Ionicons, MaterialCommunityIcons, FontAwesome6} from '@expo/vector-icons';
 import { Checkbox } from 'react-native-paper';
 import { RadioButton } from 'react-native-paper';
+import { fontFamilies } from '../../constants/fontFamilies';
 
 const { width, height } = Dimensions.get("window")
 
@@ -34,6 +35,44 @@ const initalPosition = {
 //     }
 // ]
 
+
+
+
+const stylesConfirmComponent = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        opacity: 500,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalView: {
+        width: '80%',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: '#E4E4E4',
+        opacity: 500
+    },
+    buttonContainer: {
+        width: '100%', 
+        display: 'flex',
+        flexDirection: 'row', 
+        marginTop: 20,
+        justifyContent: 'space-around'
+    },
+    button: {
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: '#693F8B',
+    }
+})
+
 export default function MapSelectWarehouseGive({navigation, route}: any) {
 
     const {warehouses, setWarehouseSelected}: any = route.params;
@@ -42,6 +81,10 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [radioSelect, setRadioSelect] = useState(warehouses[0].warehouseid)
     const [location, setLocation] = useState<any>(null);
+
+    const [visible, setVisible] = useState(false)
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
     // console.log(location)
 
     const handleGetMyLocation = async () => {
@@ -80,28 +123,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
       mapViewRef.current?.animateCamera(camera, { duration: 1500 });
     };
 
-
-    // const handleClickWarehouse = (index: number) => {
-    //     let newData = [...checkWarehousesOnMap]
-    //     newData[index] = !newData[index]
-    //     setCheckWarehousesOnMap(newData)
-    //     console.log(checkWarehousesOnMap)
-    //     // console.log('press check box')
-    // }
-
     const handleConfirmSelect = () => {
-        // let listWarehouseID: any = []
-        // checkWarehousesOnMap.map((item:any, index:number) => {
-        //     if(item === true){
-        //         listWarehouseID.push(warehouses[index].warehouseid)
-        //     }
-        // })
-
-        // if (route.params && route.params.setWarehousesID) {
-        //     route.params.setWarehousesID(listWarehouseID);
-        // }
-        // setCheckWarehouses(checkWarehousesOnMap)
-        // setWarehousesID(listWarehouseID)
         let warehouseSeleted = {}
         for(let i = 0; i < warehouses.length; i++){
             if(warehouses[i].warehouseid === radioSelect){
@@ -115,6 +137,80 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
         // navigation.goBack()
     }
     
+    const handleSelectWarehouse = (whid: any) => {
+        console.log(whid)
+        setRadioSelect(whid)
+    }   
+    console.log(radioSelect)
+
+    const ConfirmComponent = ({}: any) => {
+        const [tempSelectedWarehouse, setTempSelectedWarehouse] = useState(radioSelect)
+        const handleSelectTempWarehouse = (whid: any) => {
+            setTempSelectedWarehouse(whid)
+        }
+        return (
+    
+                <Modal
+                animationType="slide"
+                transparent={true}
+                visible={visible}>
+                    <View style={stylesConfirmComponent.container}>
+                        <View style={stylesConfirmComponent.modalView}>
+                            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold'}}>
+                                    {'Danh sách kho'}
+                                </Text>
+                            </View>
+                            
+                            <ScrollView horizontal={false} style={{maxHeight: 300}}>
+                            {
+                                warehouses.map((warehouse: any, index: number) => {
+                                    return (
+                                        <View key={index} style={{paddingVertical: 5, display: 'flex', flexDirection: 'row'}}>
+                                            <TouchableOpacity style={{flex: 1}}
+                                                onPress={() => {setVisible(false), moveCameraToCoordinate({
+                                                    latitude: parseFloat(warehouse.latitude),
+                                                    longitude: parseFloat(warehouse.longitude)
+                                                })}}>
+                                                <Text style={{fontFamily: fontFamilies.bold, fontSize: 15}}>{warehouse.warehousename}</Text>
+                                                <Text>{warehouse.address}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => handleSelectWarehouse(warehouse.warehouseid)}>
+                                                <RadioButton
+                                                    value={warehouse.warehouseid}
+                                                    status={tempSelectedWarehouse === warehouse.warehouseid ? 'checked' : 'unchecked'}
+                                                    uncheckedColor='#693F8B'
+                                                    color='#693F8B'
+                                                    onPress={() => handleSelectTempWarehouse(warehouse.warehouseid)}/>
+                                            </TouchableOpacity>
+                                            
+                                        </View>
+                                    )
+                                })
+                            }
+                            </ScrollView>
+                            
+    
+                            <View style={stylesConfirmComponent.buttonContainer}>
+                                <TouchableOpacity
+                                    onPress={() => {setVisible(false), setRadioSelect(tempSelectedWarehouse)}}
+                                    style={[stylesConfirmComponent.button, {backgroundColor: '#693F8B',}]}>
+                                    <Text style={{color: 'white'}}>
+                                        Xác nhận
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                        </View>
+                    </View>
+                    
+                    
+                </Modal>
+    
+            
+        )
+    }
+
     return (
         <ContainerComponent back>
 
@@ -135,7 +231,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                         latitude: parseFloat(item.latitude),
                                         longitude: parseFloat(item.longitude)
                                     }}
-                                    onPress={() => setRadioSelect(item.warehouseid)}
+                                    onPress={() => handleSelectWarehouse(item.warehouseid)}
                                     key={index}
                                 >
                     
@@ -173,6 +269,11 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                     <Text>Bản đồ đang hiển thị các kho ở gần bạn trong bán kính 20km</Text>
                 </View> */}
 
+                <TouchableOpacity style={styles.warehouses}
+                    onPress={showModal}>
+                    <MaterialCommunityIcons name='warehouse' size={35} color='white'/>
+                </TouchableOpacity>
+
                 <TouchableOpacity style={styles.getMyLocation}
                     onPress={handleGetMyLocation}>
                     <EvilIcons name='location' size={35} color='white'/>
@@ -186,7 +287,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                 
             </KeyboardAvoidingView>
             
-            
+            <ConfirmComponent visible={visible} setVisible={setVisible} hideModal={hideModal} warehouses={warehouses} radioSelect={radioSelect} setRadioSelect={handleSelectWarehouse}/>
         </ContainerComponent>
         
     );
@@ -236,6 +337,19 @@ const styles = StyleSheet.create({
     getMyLocation: {
         position: 'absolute',
         bottom: 80,
+        right: 10,
+        elevation: 8,
+        width: 60,
+        height: 60,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems:'center',
+        backgroundColor: '#693F8B',
+        borderRadius: 100,
+    },
+    warehouses: {
+        position: 'absolute',
+        top: 20,
         right: 10,
         elevation: 8,
         width: 60,
