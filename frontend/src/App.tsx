@@ -10,6 +10,8 @@ import ToastContainer from './components/notification/ToastContainer';
 import Order from './pages/order/OrderStatus/Order';
 import ViewDetailOrder from './pages/order/Viewdetail/ViewDetailOrder';
 import History from './pages/order/History/History';
+import ChatScreen from './pages/chat/ChatScreen';
+import ChatRoom from './pages/chat/ChatRoom';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -28,6 +30,8 @@ export function App() {
         <Route path="/order" element={<Order />} />
         <Route path="/order/:orderid" element={<ViewDetailOrder />} />
         <Route path="/history" element={<History />} />
+        <Route path="/chat" element={<ChatScreen />} />
+        <Route path="/chat/:roomid" element={<ChatRoom />} />
 
       </Routes>
     </>

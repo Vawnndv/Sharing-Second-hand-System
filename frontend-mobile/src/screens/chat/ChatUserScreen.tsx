@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
 import { useFocusEffect } from '@react-navigation/native';
 
-const ChatScreen = ({ router, navigation } : any) => {
+const ChatUserScreen = ({ router, navigation } : any) => {
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(false);
   const auth = useSelector(authSelector);
@@ -29,7 +29,7 @@ const ChatScreen = ({ router, navigation } : any) => {
     try {
       setIsLoading(true)
       const res = await chatAPI.HandleChat(
-        `/list?userID=${auth?.id}`,
+        `/listUser?userID=${auth?.id}`,
         'get'
       );
       setUsers(res.data)
@@ -70,7 +70,7 @@ const ChatScreen = ({ router, navigation } : any) => {
   )
 }
 
-export default ChatScreen
+export default ChatUserScreen
 
 const styles = StyleSheet.create({
   image: {

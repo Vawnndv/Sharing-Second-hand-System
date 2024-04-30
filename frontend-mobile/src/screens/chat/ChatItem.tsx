@@ -26,7 +26,7 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
 
   useEffect(() => {
 
-    let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
+    let roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
     const docRef = doc(db, "rooms", roomID);
     const messagesRef = collection(docRef, "messages");
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
@@ -68,7 +68,7 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
     if (auth?.id == lastMessage?.userid)
       return
     try {
-      let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
+      let roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
       const docRef = doc(db, "rooms", roomID);
       const messageRef = collection(docRef, "messages");
   
@@ -127,9 +127,12 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
             {renderTime()}
           </Text>
         </View>
-        <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.bold, fontStyle: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 'italic' : 'normal', opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
-            Đơn hàng: {item?.title}
+        {
+          item?.postid &&
+          <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.bold, fontStyle: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 'italic' : 'normal', opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
+              Đơn hàng: {item?.title}
           </Text>
+        }
         <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 0.5 : 1 }}>
           {renderLastMessage()}
         </Text>
