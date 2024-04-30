@@ -47,7 +47,7 @@ const DrawerCustom = ({navigation}: any) => {
     },
     {
       key: 'MyLike',
-      title: 'Bài viết đã thích',
+      title: 'Bài viết quan tâm',
       icon: <Ionicons name="heart-outline" size={size} color={color} />,
     },
     {

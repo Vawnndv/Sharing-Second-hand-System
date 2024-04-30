@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from 'react';
 import { Platform, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, IconButton } from 'react-native-paper';
 import StepIndicatorOrder from '../components/OrderManagement/StepIndicatorOrder';
@@ -61,6 +61,11 @@ export default function ViewDetailOrder({navigation, route}: any) {
     getOrderDetails()
   }, []);
 
+  useEffect(function(){
+    !modalConfirmVisible && 
+    getOrderDetails()
+  }, [modalConfirmVisible]);
+
   const getOrderDetails = async () => {
     try {
       setIsLoading(true);
@@ -89,7 +94,8 @@ export default function ViewDetailOrder({navigation, route}: any) {
 
       setIsLoading(false);
       // setIsModalVisible(false)
-      navigation.navigate('OrderReceive', { reload: true })
+      // navigation.navigate('OrderReceive', { reload: true })
+      navigation.goBack()
     } catch (error) {
       console.log(error);
     }
@@ -188,8 +194,9 @@ export default function ViewDetailOrder({navigation, route}: any) {
               <View style={styles.infomation}>
                 <Text style={{ fontWeight: 'bold' }}>{data?.title}</Text>
                 <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
-                    <Icon name="map-pin" size={20} color="#552466" />
-                    <Text style={{ paddingLeft: 20 }}>{data?.address}</Text>
+                    {/* <Icon name="map-pin" size={20} color="#552466" /> */}
+                    <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
+                    <Text style={{ paddingLeft: 10 }}>{data?.address}</Text>
                 </View>
 
                 <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -203,6 +210,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               {
                 userID == data?.userreceiveid ? (
                   data?.isreciever ? (
+                    !(image || data?.imgconfirmreceive && data?.imgconfirmreceive != ' ') && 
                     <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
                       Xác nhận
                     </Button>
@@ -259,35 +267,35 @@ export default function ViewDetailOrder({navigation, route}: any) {
             />
 
           </View>
-        )
-      }
-      {/* <Text style={styles.body}>Modal</Text> */}
-      {/* <View style={styles.separator} /> */}
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-      {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
-      <ShowImageModal visible={visible} setVisible={setVisible}>
-        {
-          isShowQR ? (
-            <QRCodeGenerator data={ data ? data.orderid.toString() : ''}/>
-          ) : (
-            <Image source={{ uri: image ? image.uri : data?.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
           )
         }
-      </ShowImageModal>
-    </ContainerComponent>
-  );
-}
+        {/* <Text style={styles.body}>Modal</Text> */}
+        {/* <View style={styles.separator} /> */}
 
-const styles = StyleSheet.create({
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '10%',
-    flexDirection: 'row',
-    padding: 5,
-    borderBottomColor: 'grey',
+        {/* Use a light status bar on iOS to account for the black space above the modal */}
+        <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
+        <ShowImageModal visible={visible} setVisible={setVisible}>
+          {
+            isShowQR ? (
+              <QRCodeGenerator data={ data ? data.orderid.toString() : ''}/>
+            ) : (
+              <Image source={{ uri: image ? image.uri : data?.imgconfirmreceive}} resizeMode="cover" style={{ width: '100%', height: '100%' }}/>
+            )
+          }
+        </ShowImageModal>
+      </ContainerComponent>
+    );
+  }
+
+  const styles = StyleSheet.create({
+    header: {
+      display: 'flex',
+      alignItems: 'center',
+      height: '10%',
+      flexDirection: 'row',
+      padding: 5,
+      borderBottomColor: 'grey',
     borderBottomWidth: 1
   },
   container: {

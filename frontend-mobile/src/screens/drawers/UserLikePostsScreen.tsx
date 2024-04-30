@@ -68,7 +68,8 @@ const UserLikePostsScreen = () => {
     };
 
     return (
-        <ContainerComponent back title='Danh sách bài viết yêu thích'>
+        // <ContainerComponent back title='Danh sách bài viết yêu thích'>
+        <ContainerComponent>
             { isEmpty ? (
                 <View style={{display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
                 <Image
@@ -81,6 +82,7 @@ const UserLikePostsScreen = () => {
                 <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} setData={setData} isRefresh={true} />
             )}
         </ContainerComponent>
+        // </ContainerComponent>
     )
 }
 

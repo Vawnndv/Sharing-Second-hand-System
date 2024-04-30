@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AvatarComponent, TextComponent } from '../../components';
 import { fontFamilies } from '../../constants/fontFamilies';
-import { getRoomId } from '../../utils/GetRoomID';
+import { getRoomId, getRoomIdWithPost } from '../../utils/GetRoomID';
 import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
-import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData } from 'firebase/firestore'
+import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData, updateDoc, getDocs, limit, Firestore } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
 import moment from 'moment';
 import 'moment/locale/vi';
@@ -19,13 +19,14 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
   const openChatRoom = ()=> {
     navigation.navigate('ChatRoomScreen', {
       item: item,
+      postid: item?.postid
     });
   }
 
 
   useEffect(() => {
 
-    let roomID = getRoomId(auth?.id, item?.userid);
+    let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
     const docRef = doc(db, "rooms", roomID);
     const messagesRef = collection(docRef, "messages");
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
@@ -63,6 +64,34 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
     }
   }
 
+  const updateRead = async () => {
+    if (auth?.id == lastMessage?.userid)
+      return
+    try {
+      let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
+      const docRef = doc(db, "rooms", roomID);
+      const messageRef = collection(docRef, "messages");
+  
+      // Lấy tin nhắn cuối cùng từ bộ sưu tập "messages"
+      const querySnapshot = await getDocs(query(messageRef, orderBy("createdAt", "desc"), limit(1)));
+      let lastMessage: any = null; // Khai báo kiểu dữ liệu cho lastMessage
+  
+      querySnapshot.forEach((doc) => {
+        lastMessage = doc;
+      });
+  
+      // Kiểm tra xem có tin nhắn cuối cùng không
+      if (lastMessage) {
+        // Cập nhật trạng thái của tin nhắn mới nhất
+        await updateDoc(lastMessage.ref, {
+          isRead: true
+        });
+      }
+    } catch(err) {
+      console.error('Lỗi khi cập nhật trạng thái tin nhắn:', err);
+    }
+  }
+
   return (
     <TouchableOpacity
       style={{
@@ -75,7 +104,10 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
         paddingBottom: 2,
         // borderBottomWidth: noBorder ? 0 : 0.5
       }}
-      onPress={openChatRoom}
+      onPress={() => {
+        updateRead()
+        openChatRoom()
+      }}
     >
       {/* <Image
         source={{uri: item?.avatar}}
@@ -91,11 +123,14 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
       <View style={{flex: 1, gap: 1}}>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={{fontSize: hp(2), fontFamily: fontFamilies.bold}}>{item?.firstname} {item?.lastname}</Text>
-          <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: 0.5}}>
+          <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
             {renderTime()}
           </Text>
         </View>
-        <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: 0.5}}>
+        <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.bold, fontStyle: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 'italic' : 'normal', opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
+            Đơn hàng: {item?.title}
+          </Text>
+        <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 0.5 : 1 }}>
           {renderLastMessage()}
         </Text>
       </View>

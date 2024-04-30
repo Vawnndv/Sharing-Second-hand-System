@@ -16,10 +16,10 @@ export const getUserChatList = async (req: Request, res: Response) => {
 };
 
 export const createNewChat = async (req: Request, res: Response) => {
-  const { firstuserid, seconduserid } = req.body;
+  const { firstuserid, seconduserid, postid } = req.body;
   
   try {
-    const result = await ChatManager.createNewChat(firstuserid, seconduserid);
+    const result = await ChatManager.createNewChat(firstuserid, seconduserid, postid);
     if (result)
       res.status(200).json({ message: 'Create new chat success' });
   } catch (error) {

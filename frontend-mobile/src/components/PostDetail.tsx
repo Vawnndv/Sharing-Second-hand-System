@@ -145,11 +145,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     }, [])
   );
 
-  const openChatRoomReceive = ({item}: any)=> {
+  const openChatRoomReceive = ({item, postid}: any)=> {
     setGoToChat(true)
 
     navigation.navigate('ChatRoomScreen', {
       item: item,
+      postid: postid
     });
   }
 
@@ -371,7 +372,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                       username: profile?.username,
                       firstname: profile?.firstname,
                       lastname: profile?.lastname,
-                    }})}
+                    },
+                      postid: postID})}
                   }}>
                   <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
                 </TouchableOpacity>
@@ -471,7 +473,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                         username: postReceiver?.username,
                         firstname: postReceiver?.firstname,
                         lastname: postReceiver?.lastname,
-                      }})
+                      }, 
+                        postid: postID})
                     } else {
                       openChatRoomReceive({item: {
                         avatar: profile?.avatar,
@@ -479,7 +482,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                         username: profile?.username,
                         firstname: profile?.firstname,
                         lastname: profile?.lastname,
-                      }}) 
+                      }, 
+                        postid: postID}) 
                     }
 
                     }} key={index}>
@@ -504,7 +508,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                         )}
                       </View>
                       {/* <Text style={styles.comment}>{postReceiver.comment}</Text> */}
-                      <LastMessageComponent firstUserID={postReceiver.receiverid} secondUserID={post.owner}/>
+                      <LastMessageComponent firstUserID={postReceiver.receiverid} secondUserID={post.owner} postid={postID}/>
                     </View>
                   </TouchableOpacity>
                 );

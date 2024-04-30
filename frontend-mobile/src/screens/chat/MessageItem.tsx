@@ -3,8 +3,9 @@ import React from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { appColors } from '../../constants/appColors';
 import ImageComponent from './ImageComponent';
+import CardPostMessageComponent from './CardPostMessageComponent';
 
-const MessageItem = ({message, currentUser}: any) => {
+const MessageItem = ({route, navigation, message, currentUser}: any) => {
 
   if (currentUser?.id == message?.userid) {
     return (
@@ -13,11 +14,15 @@ const MessageItem = ({message, currentUser}: any) => {
             { message?.type == 'image' ? (
               <ImageComponent uri={message?.text}/>
             ) : (
-              <View style={{paddingHorizontal: 10, display: 'flex', justifyContent: 'space-between', borderRadius: 100, backgroundColor: appColors.white}}>
-                <Text style={{fontSize: hp(2.5), padding: 5}}>
-                  {message?.text}
-                </Text>
-              </View>
+              message?.type == 'post' ? (
+                <CardPostMessageComponent route={route} navigation={navigation} uri={message?.uri} title={message?.title} postid={message?.postid} />
+              ) : (
+                <View style={{paddingHorizontal: 10, display: 'flex', justifyContent: 'space-between', borderRadius: 100, backgroundColor: appColors.white}}>
+                  <Text style={{fontSize: hp(2.5), padding: 5}}>
+                    {message?.text}
+                  </Text>
+                </View>
+              )
             )}
         </View> 
       </View>
@@ -29,11 +34,15 @@ const MessageItem = ({message, currentUser}: any) => {
           { message?.type == 'image' ? (
             <ImageComponent uri={message?.text}/>
             ) : (
-            <View style={{paddingHorizontal: 10, display: 'flex', justifyContent: 'space-between', borderRadius: 100, backgroundColor: appColors.gray4}}>
-              <Text style={{fontSize: hp(2.5), padding: 5}}>
-                {message?.text}
-              </Text>
-            </View>
+              message?.type == 'post' ? (
+                <CardPostMessageComponent route={route} navigation={navigation} uri={message?.uri} title={message?.title} postid={message?.postid} />
+              ) : (
+              <View style={{paddingHorizontal: 10, display: 'flex', justifyContent: 'space-between', borderRadius: 100, backgroundColor: appColors.gray4}}>
+                <Text style={{fontSize: hp(2.5), padding: 5}}>
+                  {message?.text}
+                </Text>
+              </View>
+              )
           )}
         </View> 
       </View>

@@ -5,6 +5,8 @@ import IconA from 'react-native-vector-icons/AntDesign';
 import { Pressable } from 'react-native';
 import ViewDetailOrder from '../../modals/ViewDetailOrder';
 import { fontFamilies } from '../../constants/fontFamilies';
+import { SimpleLineIcons } from '@expo/vector-icons'
+import { appColors } from '../../constants/appColors';
 
 const {width, height} = Dimensions.get("window");
 
@@ -30,13 +32,14 @@ export default function CardOrderView ({ navigation, title, location, givetype, 
               <View style={styles.infomation}>
                   <Text style={{ fontWeight: 'bold', fontFamily: fontFamilies.bold, width: width - 150 }}>{title}</Text>
                   <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
-                      <Icon name="map-pin" size={20} color="#552466" />
-                      <Text style={{ paddingLeft: 20, width: width - 150 }}>{location}</Text>
+                      {/* <Icon name="map-pin" size={20} color="#552466" /> */}
+                      <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
+                      <Text style={{ paddingLeft: 10, width: width - 150 }}>{location}</Text>
                   </View>
 
                   <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <IconA name="profile" size={20} color="#552466" />
-                      <Text style={{ paddingLeft: 10, fontWeight: 'bold' }}> Phương thức: </Text>
+                      {/* <IconA name="profile" size={20} color="#552466" /> */}
+                      <Text style={{ fontWeight: 'bold' }}> Phương thức: </Text>
                       <Text> {givetype} </Text>
                   </View>
               </View>

@@ -197,3 +197,15 @@ export const getOrderByPostID = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+export const getOrderListReceive = async (req: Request, res: Response) => {
+  const { userID } = req.body;
+  
+  try {
+    const orderList = await  OrderManager.getOrderListReceive(userID);
+    res.status(200).json({ message: 'Get orders list success:', data: orderList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
