@@ -13,6 +13,7 @@ import History from './pages/order/History/History';
 import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
+import Layout from './layout/Layout';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -21,20 +22,22 @@ export function App() {
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<NotFound />} />
+        
         <Route path="/login" element={<Login rememberMe={rememberMe} setRememberMe={setRememberMe} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/password" element={<Password />} />
         <Route path="/profile" element={<Profile />} />
 
-        <Route path="/order" element={<Order />} />
-        <Route path="/order/:orderid" element={<ViewDetailOrder />} />
-        <Route path="/history" element={<History />} />
-        <Route path="/chat" element={<ChatScreen />} />
-        <Route path="/chat/:roomid" element={<ChatRoom />} />
-        <Route path="/inventory" element={<InventoryScreen />} />
-
+        <Route path='/' element={<Layout/>}>
+          <Route index element={<Home />} />
+          <Route path="*" element={<NotFound />} />
+          <Route path="/order" element={<Order />} />
+          <Route path="/order/:orderid" element={<ViewDetailOrder />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/chat" element={<ChatScreen />} />
+          <Route path="/chat/:roomid" element={<ChatRoom />} />
+          <Route path="/inventory" element={<InventoryScreen />} />
+        </Route>
       </Routes>
     </>
   );

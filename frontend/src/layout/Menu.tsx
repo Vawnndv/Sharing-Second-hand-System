@@ -1,0 +1,180 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import { Avatar, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
+import HomeIcon from '@mui/icons-material/Home';
+import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
+import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
+import WorkHistoryIcon from '@mui/icons-material/WorkHistory';
+import ArticleIcon from '@mui/icons-material/Article';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import PageviewIcon from '@mui/icons-material/Pageview';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
+import ContactPageIcon from '@mui/icons-material/ContactPage';
+// import MenuIcon from '@mui/icons-material/Menu';
+import './styles.scss'
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+// import { handleClickMenu } from '../redux/actions/menuActions';
+
+function Menu() {
+
+    const [index, setIndex] = useState(0);
+    // const [isShowMenu, setIsShowMenu] = useState(false)
+    const isOpenMenu = useSelector((state: RootState) => state.handleClickMenu)
+
+
+    return ( 
+        <div>
+            <Stack direction="column" spacing={1} className={`menu ${isOpenMenu && 'hidden'}`}>
+
+                
+                
+                <Stack direction="row" alignItems="center" spacing={1} style={{paddingLeft: "20px"}}>
+                    <Avatar alt="Remy Sharp" src="https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg" style={{marginRight: "20px"}}/>
+                    <Typography variant="body1" sx={{fontWeight: 'bold', color: 'rgb(50,19,87)'}}>
+                        John
+                    </Typography>
+                </Stack>
+
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 0 ? 'tabSelected' : 'tab'}
+                    component='div'
+                    onClick={() => setIndex(0)}
+                    >
+                    <HomeIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Trang chủ
+                    </Typography>
+                </Stack>
+                
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 1 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(1)}
+                    >
+                    <StackedLineChartIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Thống kê
+                    </Typography>
+                </Stack>
+                
+               
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 2 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(2)}
+                    >
+                    <ContentPasteSearchIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Tình trạng món hàng
+                    </Typography>
+                </Stack>
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 3 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(3)}
+                    >
+                    <WorkHistoryIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Lịch sử giao dịch
+                    </Typography>
+                </Stack>
+                
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 4 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(4)}
+                    >
+                    <ArticleIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Bài viết
+                    </Typography>
+                </Stack>
+                
+               
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 5 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(5)}
+                    >
+                    <AssignmentTurnedInIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Duyệt bài
+                    </Typography>
+                </Stack>
+                
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 6 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(6)}
+                    >
+                    <PageviewIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Quản lý nhập xuất
+                    </Typography>
+                </Stack>
+                
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 7 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(7)}
+                    >
+                    <ReportGmailerrorredIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Tố cáo/Báo cáo
+                    </Typography>
+                </Stack>
+            
+                
+                <Stack 
+                    direction="row" 
+                    alignItems="center" 
+                    spacing={1} 
+                    className={index === 8 ? 'tabSelected' : 'tab'} 
+                    component='div'
+                    onClick={() => setIndex(8)}
+                    >
+                    <ContactPageIcon className='icon'/>
+                    <Typography variant="body1" component="h2" className='text'>
+                        Liên hệ người dùng
+                    </Typography>
+                </Stack>
+                
+                
+            </Stack>
+        </div>
+        
+     );
+}
+
+export default Menu;
