@@ -12,6 +12,7 @@ import ViewDetailOrder from './pages/order/Viewdetail/ViewDetailOrder';
 import History from './pages/order/History/History';
 import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
+import InventoryScreen from './pages/inventory/InventoryScreen';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -32,6 +33,7 @@ export function App() {
         <Route path="/history" element={<History />} />
         <Route path="/chat" element={<ChatScreen />} />
         <Route path="/chat/:roomid" element={<ChatRoom />} />
+        <Route path="/inventory" element={<InventoryScreen />} />
 
       </Routes>
     </>
