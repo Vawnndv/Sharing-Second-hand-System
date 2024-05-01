@@ -88,3 +88,15 @@ export const createNewChatUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+export const getWareHouseByUserID = async (req: Request, res: Response) => {
+  const userID : any = req.query.userID;
+  
+  try {
+    const userList = await ChatManager.getWareHouseByUserID(userID);
+    res.status(200).json({ message: 'Get list success:', data: userList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

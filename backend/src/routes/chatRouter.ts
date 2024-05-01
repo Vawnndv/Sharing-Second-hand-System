@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserChatList, createNewChat, getUserChatListUser, getChatListCollaborator, getChatListUser, getChatWarehouse, createNewChatUser } from '../controllers/chatController';
+import { getUserChatList, createNewChat, getUserChatListUser, getChatListCollaborator, getChatListUser, getChatWarehouse, createNewChatUser, getWareHouseByUserID } from '../controllers/chatController';
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.get('/getChatListCollaborator', getChatListCollaborator);
 router.get('/getChatListUser', getChatListUser);
 router.get('/getChatWarehouse', getChatWarehouse);
 router.post('/createNewChatUser', createNewChatUser);
+router.get('/getWareHouseByUserID', getWareHouseByUserID);
 
 export default router;

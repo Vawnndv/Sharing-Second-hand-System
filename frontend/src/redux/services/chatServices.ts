@@ -37,9 +37,18 @@ const createNewChatUser = async (firstuserid: string, seconduserid: string): Pro
   };
 }
 
+// Get getWareHouseByUserID
+const getWareHouseByUserID = async (userID: string): Promise<any>  => {
+  const { data }: any = await Axios.get(`/chat/getWareHouseByUserID?userID=${userID}`)
+  return {
+    data
+  };
+}
+
 export {
   getChatListCollaborator,
   getChatListUser,
   getChatWarehouse,
-  createNewChatUser
+  createNewChatUser,
+  getWareHouseByUserID
 }

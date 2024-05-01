@@ -5,6 +5,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ChatList from './ChatList';
+import ChatRoom from './ChatRoom';
 
 function ChatScreen() {
   const [value, setValue] = React.useState('1');
@@ -39,7 +40,8 @@ function ChatScreen() {
           <ChatList typeChat={2} />
         </TabPanel>
         <TabPanel sx={{m: 0, p: 0, mt: 1}} value="3">
-          <ChatList typeChat={3} />
+          {/* <ChatList typeChat={3} /> */}
+          <ChatRoom typeChat={3}/>
         </TabPanel>
       </TabContext>
     </Box>

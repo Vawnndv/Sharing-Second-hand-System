@@ -1,5 +1,5 @@
 import { Box, Avatar, Typography, TextField, IconButton, List } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import SendIcon from '@mui/icons-material/Send';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import MessageItem from './MessageItem';
@@ -8,24 +8,40 @@ import { DocumentData, Timestamp, addDoc, collection, doc, getDoc, onSnapshot, o
 import { useParams } from 'react-router-dom';
 import { db } from '../../../firebaseConfig';
 import toast from 'react-hot-toast';
-import { createNewChatUser } from '../../redux/services/chatServices';
+import { createNewChatUser, getWareHouseByUserID } from '../../redux/services/chatServices';
 import { convert } from '../../utils/GetRoomID';
+import { styled } from '@mui/material/styles';
+import UploadImageToAws3 from '../../utils/UploadImage';
+import { getProfileService } from '../../redux/services/userServices';
 
 const userID = '30'
 
-function ChatRoom() {
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
+
+function ChatRoom({typeChat}: any) {
   const { roomid } = useParams();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<DocumentData[]>([]);
-  // const [image, setImage] = useState<any>(null);
-  // const scrollViewRef = useRef(null);
-  // const [lastMessage, setLastMessage] = useState<DocumentData | null | undefined>(undefined);
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const [profile, setProfile] = useState<any>(null)
+  const [warehouse, setWarehouse] = useState<any>(null)
 
   const createRoomIfNotExists = async () => {
-    const roomID = roomid;
+    const roomID = warehouse ? `${warehouse.warehouseid}` : roomid;
 
     if (!roomID)
       return;
+
     const roomRef = doc(db, "rooms", roomID);
     const roomDoc = await getDoc(roomRef);
     if (!roomDoc.exists()) {
@@ -34,16 +50,30 @@ function ChatRoom() {
           roomID,
           createdAt: Timestamp.fromDate(new Date())
       });
-
-      console.log('CONVERT', convert(roomid))
-      await createNewChatUser(userID, convert(roomid).userID2);
+      if (!warehouse)
+        await createNewChatUser(userID, convert(roomid).userID2);
     }
   }
 
+  const getProfile = async () => {
+    const res = await getProfileService(convert(roomid).userID2);
+    setProfile(res)
+  }
+
+  const getWareHouse = async () => {
+    const res = await getWareHouseByUserID(userID);
+    setWarehouse(res.data[0])
+  }
+
   useEffect(() => {
+    if (typeChat === 3)
+      getWareHouse()
+    else
+      getProfile();
+  
     createRoomIfNotExists();
 
-    const roomID = roomid;
+    const roomID = warehouse !== null ? `${warehouse.warehouseid}` : roomid
     if (!roomID)
       return;
     const docRef = doc(db, "rooms", roomID);
@@ -57,34 +87,32 @@ function ChatRoom() {
       })
       if (allMessages !== undefined) {
         setMessages([...allMessages]);
-        // setLastMessage(allMessages[0] ? allMessages[0] : null)
       }
     })
 
-    // const keyboardDidShowListener = Keyboard.addListener(
-    //   'keyboardDidShow', updateScrollView
-    // )
-
-    // return () => {
-    //   keyboardDidShowListener.remove();
-    // }
+    if (listRef.current) {
+      const { current: list } = listRef;
+      list.scrollTop = list.scrollHeight;
+    }
 
   }, [])
 
-  // const updateScrollView = () => {
-  //   setTimeout(() => {
-  //     scrollViewRef?.current?.scrollToEnd({animated: true})
-  //   }, 100)
-  // }
+  useEffect(() => {
+    // Cuộn đến cuối cùng của List
+    if (listRef.current) {
+      const { current: list } = listRef;
+      list.scrollTop = list.scrollHeight;
+    }
+  }, [messages]);
 
-  // useEffect(() => {
-  //   updateScrollView()
-  // }, [messages])
+  useEffect(() => {
+    createRoomIfNotExists();
+  }, [warehouse])
 
   const handleMessageSend = async () => {
     if(!message) return;
     try {
-      const roomID =  roomid
+      const roomID = warehouse ? `${warehouse.warehouseid}` : roomid
       if (!roomID)
         return;
       const docRef = doc(db, "rooms", roomID);
@@ -104,82 +132,60 @@ function ChatRoom() {
     }
   }
 
-  // useEffect(() => {
-  //   if (image !== null && Array.isArray(image)) {
-  //     (async () => {
-  //       for (const img of image) {
-  //         try {
-  //           const temp = await UploadImageToAws3(img);
+  const handleFileChange = (event :any) => {
+    const files = Array.from(event.target.files || []);
+    files.forEach(async (file) => {
+      try {
+        // setLoading(true)
+        const responseUploadImage: any = await UploadImageToAws3(file)
 
-  //           const url = temp.url
-  //           if (!url) continue;
+        const roomID = warehouse ? `${warehouse.warehouseid}` : roomid;
+        if (!roomID)
+          return;
+        const docRef = doc(db, "rooms", roomID);
+        const messageRef = collection(docRef, "messages");
 
-  //           let roomID = postid ? getRoomIdWithPost(auth?.id, item?.userid, postid) : getRoomId(auth?.id, item?.userid);
-  //           const docRef = doc(db, "rooms", roomID);
-  //           const messageRef = collection(docRef, "messages");
-
-  //           await addDoc(messageRef, {
-  //               userid: auth?.id,
-  //               text: url,
-  //               type: 'image',
-  //               createdAt: Timestamp.fromDate(new Date()),
-  //               username: auth?.firstName +  ' '  + auth?.lastName,
-  //               isRead: false
-  //           });
-
-  //           textRef.current = "";
-  //           inputRef?.current?.clear();
-              
-  //         } catch (err: any) {
-  //             Alert.alert('Lỗi', err.message);
-  //         }
-  //       }
-
-  //       setImage(null);
-  //     })();
-  //   }
-  // }, [image]);
-
-  const handleImageSend = async () => {
-    // setImage(null);
-    // let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    // if (permissionResult.granted === false) {
-    //   alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
-    //   return;
-    // }
-
-    // let pickerResult = await ImagePicker.launchImageLibraryAsync({
-    //   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    //   allowsMultipleSelection: true, // Cho phép chọn nhiều ảnh
-    //   quality: 1,
-    // });
-
-    // if (!pickerResult.canceled) {
-    //   const imageData = pickerResult.assets.map((asset: any) => {
-
-    //     return {
-    //       uri: asset.uri,
-    //       name: new Date().getTime() + asset.fileName,
-    //       type: asset.mimeType
-    //     }
-    //   });
-    //   setImage(imageData);
-    // }
-  }
+        await addDoc(messageRef, {
+            userid: userID,
+            text: responseUploadImage.url,
+            type: 'image',
+            createdAt: Timestamp.fromDate(new Date()),
+            username: "VAN NGUYEN",
+            isRead: false
+        });
+        // setLoading(false)
+        toast.success('Image Upload successfully')
+      } catch (error: any) {
+        if (error.response && error.response.data && error.response.data.message) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error('Network Error');
+        }
+      }
+    });
+  };
 
   return (
     <Box sx={{ flex: 1, mx: 2, my: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
       {/* Phần "Công chúa lọ lem" */}
       <Box>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt="Travis Howard" sx={{ ml: 1, width: 70, height: 70 }} src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1nU15m.img?w=678&h=1000&m=6&x=217&y=237&s=173&d=173" />
-          <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>Công chúa lọ lem</Typography>
+          {
+            warehouse ? (
+              <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{warehouse.warehousename}</Typography>
+            ) : (
+              <Box>
+                <Avatar alt="Travis Howard" sx={{ ml: 1, width: 70, height: 70 }} src={profile?.avatar} />
+                <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{profile?.firstName} {profile?.lastName}</Typography>
+              </Box>
+            )
+          }
         </Box>
       </Box>
 
       {/* Danh sách tin nhắn */}
-      <List sx={{height: '70vh', overflowY: 'auto', my: 3}}>
-        <MessageItem messages={messages}/>
+      <List sx={{height: '70vh', overflowY: 'auto', my: 3}} ref={listRef}>
+        <MessageItem messages={messages} typeChat={typeChat}/>
 
       </List>
 
@@ -193,12 +199,26 @@ function ChatRoom() {
             fullWidth
             variant="outlined"
           />
-          <IconButton onClick={handleImageSend} aria-label="send image">
-            <InsertPhotoIcon />
-          </IconButton>
-          <IconButton onClick={handleMessageSend} aria-label="send message">
-            <SendIcon />
-          </IconButton>
+           <>
+            <IconButton
+              onClick={() => {
+                // Khi nhấp vào IconButton, kích hoạt input file ẩn
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.multiple = true; // Cho phép chọn nhiều tệp tin
+                input.addEventListener('change', handleFileChange);
+                input.click();
+              }}
+              aria-label="send image"
+            >
+              <InsertPhotoIcon />
+            </IconButton>
+            {/* input file ẩn */}
+            <VisuallyHiddenInput type="file" multiple />
+            <IconButton onClick={handleMessageSend} aria-label="send message">
+              <SendIcon />
+            </IconButton>
+          </>
         </Box>
       </Box>
     </Box>

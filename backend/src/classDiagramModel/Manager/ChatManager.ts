@@ -151,7 +151,7 @@ export class ChatManager {
               FROM Workat
               WHERE userid = $1
           )
-      );
+      ) AND u.roleid = 1;
     `
     try {
       const result: QueryResult = await client.query(query, [userID]);
@@ -196,6 +196,30 @@ export class ChatManager {
       return true
     } catch (error) {
       console.error('Error create new chat:', error);
+      return false
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async getWareHouseByUserID (userID: string): Promise<any> {
+
+    const client = await pool.connect();
+    let query = `
+      SELECT w.*
+      FROM Warehouse w
+      WHERE 
+      w.warehouseid IN (
+        SELECT warehouseid
+        FROM Workat
+        WHERE userid = $1
+      );
+    `
+    try {
+      const result: QueryResult = await client.query(query, [userID]);
+      return result.rows
+    } catch (error) {
+      console.error('Error get users chat:', error);
       return false
     } finally {
       client.release(); // Release client sau khi sử dụng
