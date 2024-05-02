@@ -8,11 +8,12 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import { formatDateTime } from '../../utils/FormatDateTime';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import img from '../../assets/item.png';
+import { useNavigate } from 'react-router-dom';
 
 function InventoryCard({data}: any) {
-  console.log('data', data)
+  const navigate = useNavigate();
   const handleCardClick = () => {
-    
+    navigate(`/inventory/${data?.orderID}`);
   };
 
   return (
