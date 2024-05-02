@@ -15,6 +15,7 @@ import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
+import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -36,9 +37,10 @@ export function App() {
           <Route path="/chat" element={<ChatScreen />} />
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
+          <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
         </Route>
         <Route element={<AdminProtectedRouter />}>
-          
+
         </Route>
       </Route>
     </Routes>
