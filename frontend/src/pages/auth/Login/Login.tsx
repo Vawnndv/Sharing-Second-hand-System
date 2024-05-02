@@ -230,7 +230,7 @@ function Login(props: Props) {
               />
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
-                  <Link component={RouterLink} to="/user/forgot" variant="body2">
+                  <Link component={RouterLink} to="/forgot-password" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>

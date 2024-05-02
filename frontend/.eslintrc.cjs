@@ -21,6 +21,7 @@ module.exports = {
   },
   plugins: ['react', '@typescript-eslint', 'prettier'],
   rules: {
+    "no-nested-ternary": 0,
     'react/react-in-jsx-scope': 0,
     "prettier/prettier": 0,
     "@typescript-eslint/no-explicit-any": 0,

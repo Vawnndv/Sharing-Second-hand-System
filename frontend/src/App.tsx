@@ -14,23 +14,22 @@ import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
+import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
-    <>
-      <ToastContainer />
-      <Routes>
-        
-        <Route path="/login" element={<Login rememberMe={rememberMe} setRememberMe={setRememberMe} />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/password" element={<Password />} />
-        <Route path="/profile" element={<Profile />} />
+    <Routes> 
+      <Route path="/login" element={<Login rememberMe={rememberMe} setRememberMe={setRememberMe} />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        <Route path='/' element={<Layout/>}>
-          <Route index element={<Home />} />
-          <Route path="*" element={<NotFound />} />
+      <Route path='/' element={<Layout/>}>
+        <Route index element={<Home />} />
+        <Route path="*" element={<NotFound />} />
+        <Route element={<ProtectedRouter />}>
+          <Route path="/password" element={<Password />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
           <Route path="/order/:orderid" element={<ViewDetailOrder />} />
           <Route path="/history" element={<History />} />
@@ -38,15 +37,21 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
         </Route>
-      </Routes>
-    </>
+        <Route element={<AdminProtectedRouter />}>
+          
+        </Route>
+      </Route>
+    </Routes>
   );
 }
 
 export function WrappedApp() {
   return (
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <>
+    <ToastContainer />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </>
   );
 }

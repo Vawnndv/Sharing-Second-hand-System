@@ -171,6 +171,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
+  console.log(req.body);
   const { email } = req.body;
 
   const randomPassword = Math.round(100000 + Math.random() * 99000);
@@ -184,7 +185,7 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
   };
 
   const user = await Account.findUserByEmail(email);
-  
+
   if (user) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
