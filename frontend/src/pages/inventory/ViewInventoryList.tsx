@@ -19,7 +19,7 @@ const category = [
 
 function ViewInventoryList({typeCard, status} : any) {
   const [inventoryList, setInventoryList] = useState([]);
-  const [tab, setTab] = useState('Hàng đang được đến lấy')
+  const [tab, setTab] = useState<any>(null)
   const [loading, setLoading] = useState(true);
   const [filterValue, setFilterValue] = useState({
     distance: 'Tất cả',
@@ -40,8 +40,18 @@ function ViewInventoryList({typeCard, status} : any) {
     }
   };
   useEffect(() => {
-
     fetchInventoryList();
+    console.log('HELo')
+  }, [tab]);
+
+  useEffect(() => {
+    if (status === 1) {
+      setTab('Hàng đang được đến lấy')
+    } else if (status === 2) {
+      setTab('Hàng đã nhập kho')
+    } else {
+      setTab('Chờ người cho giao hàng')
+    }
   }, []);
 
   return (
