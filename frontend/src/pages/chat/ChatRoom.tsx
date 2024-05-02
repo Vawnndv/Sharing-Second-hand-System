@@ -65,15 +65,9 @@ function ChatRoom({typeChat}: any) {
     setWarehouse(res.data[0])
   }
 
-  useEffect(() => {
-    if (typeChat === 3)
-      getWareHouse()
-    else
-      getProfile();
-  
-    createRoomIfNotExists();
-
+  const getMessages = async () => {
     const roomID = warehouse !== null ? `${warehouse.warehouseid}` : roomid
+    console.log('roomID',typeof roomid)
     if (!roomID)
       return;
     const docRef = doc(db, "rooms", roomID);
@@ -94,7 +88,17 @@ function ChatRoom({typeChat}: any) {
       const { current: list } = listRef;
       list.scrollTop = list.scrollHeight;
     }
+  }
 
+  useEffect(() => {
+    if (typeChat === 3)
+      getWareHouse()
+    else
+      getProfile();
+  
+    createRoomIfNotExists();
+    getMessages()
+  
   }, [])
 
   useEffect(() => {
@@ -107,6 +111,7 @@ function ChatRoom({typeChat}: any) {
 
   useEffect(() => {
     createRoomIfNotExists();
+    getMessages();
   }, [warehouse])
 
   const handleMessageSend = async () => {
@@ -174,7 +179,7 @@ function ChatRoom({typeChat}: any) {
             warehouse ? (
               <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{warehouse.warehousename}</Typography>
             ) : (
-              <Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
                 <Avatar alt="Travis Howard" sx={{ ml: 1, width: 70, height: 70 }} src={profile?.avatar} />
                 <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{profile?.firstName} {profile?.lastName}</Typography>
               </Box>
@@ -184,7 +189,7 @@ function ChatRoom({typeChat}: any) {
       </Box>
 
       {/* Danh sách tin nhắn */}
-      <List sx={{height: '70vh', overflowY: 'auto', my: 3}} ref={listRef}>
+      <List sx={{height: '60vh', overflowY: 'auto', my: 3}} ref={listRef}>
         <MessageItem messages={messages} typeChat={typeChat}/>
 
       </List>

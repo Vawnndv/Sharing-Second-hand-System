@@ -30,7 +30,7 @@ function ChatList({ typeChat }: any) {
   }, []); // Chạy một lần sau khi component được render
   
   return (
-    <List>
+    <List sx={{height: '70vh', overflowY: 'auto', my: 2}}>
       {data.map((item: any, index: number) => (
         <ListItem key={index}>
           <ChatItem item={item}/>
