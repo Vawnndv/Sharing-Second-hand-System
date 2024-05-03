@@ -17,14 +17,14 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
+        email: user.email ?? '', 
         userId: user.userid,
-        createAt: user.createat,
         firstname: user.firstname ?? '',
         lastname: user.lastname ?? '',
-        avatar: user.avatar ?? '',
+        createAt: user.createat,
         phonenumber: user.phonenumber ?? '',
         username: user.username ?? '',
-        email: user.email ?? '',
+        avatar: user.avatar ?? '',
       },
     });
   } else {
@@ -74,10 +74,9 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 });
 
 
-
 export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
   console.log(req.body);
-  const { email, firstname, lastname, phonenumber, avatar } = req.body;
+  const { email, firstname, lastname, phonenumber, avatar, accessToken } = req.body;
 
   const user = await Account.findUserByEmail(email);
   
@@ -89,9 +88,12 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
         message: 'Profile changed successfully!!!',
         data: {
           email,
+          accessToken,
+          id: updateUser.userid,
           firstName: updateUser.firstname ?? '',
           lastName: updateUser.lastname ?? '',
           phoneNumber: updateUser.phonenumber ?? '',
+          roleID: updateUser.roleid, 
           avatar: updateUser.avatar ?? '',
         },
       });
@@ -110,7 +112,6 @@ export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) 
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
     const likePosts = await Account.findUserLikePostsById(userId);
-    console.log(likePosts, 'BE');
     res.status(200).json({
       message: 'Get user like posts successfully !!!',
       data: likePosts,

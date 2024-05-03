@@ -38,7 +38,6 @@ function Profile() {
   const { userInfo: authInfo } = useSelector( (state: RootState) => state.userLogin);
 
   const [imageUrl, setImageUrl] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
   console.log(imageUpdateUrl,imageUrl, '123');
@@ -72,6 +71,7 @@ function Profile() {
         ...data,
         id: authInfo?.id,
         avatar: imageUrl,
+        accessToken: authInfo?.accessToken,
         // ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
       })
     );

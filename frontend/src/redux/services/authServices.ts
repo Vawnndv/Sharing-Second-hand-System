@@ -15,7 +15,7 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   phoneNumber: string;
-  Authorization: string;
+  accessToken: string;
 }
 
 // Login user API

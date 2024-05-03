@@ -100,17 +100,15 @@ function Login(props: Props) {
       setValue('email', rememberedCredentials.email);
       setValue('password', rememberedCredentials.password);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
       if (userInfo) {
-      if (userInfo?.isAdmin) {
-          navigate('/dashboard')
-      } else {
-          
-          navigate('/')
-      }
+        if (userInfo?.roleId === 3) {
+            navigate('/dashboard')
+        } else {
+            navigate('/')
+        }
       }
 
       if (isSuccess) {

@@ -26,9 +26,9 @@ export function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route path='/' element={<Layout/>}>
-        <Route index element={<Home />} />
         <Route path="*" element={<NotFound />} />
         <Route element={<ProtectedRouter />}>
+          <Route index element={<Home />} />
           <Route path="/password" element={<Password />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
@@ -39,10 +39,10 @@ export function App() {
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
         </Route>
-        <Route element={<AdminProtectedRouter />}>
+        {/* <Route element={<AdminProtectedRouter />}>
 
+        </Route> */}
         </Route>
-      </Route>
     </Routes>
   );
 }

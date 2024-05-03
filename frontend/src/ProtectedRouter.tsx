@@ -4,22 +4,22 @@ import { Navigate, Outlet } from "react-router-dom";
 
 function ProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
-
-    return userInfo?.Authorization ? <Outlet /> : <Navigate to="/" />
+    console.log(userInfo)
+    return userInfo?.accessToken ? <Outlet /> : <Navigate to="/login" />
 }
 
 // admin router protection
 function AdminProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
 
-    return userInfo?.Authorization ? (
+    return userInfo?.accessToken ? (
         userInfo?.roleId === 3 ? (
             <Outlet />
         ) : (
             <Navigate to="/*" />
         )
     ) : (
-        <Navigate to="/" />
+        <Navigate to="/login" />
     )
 }
 

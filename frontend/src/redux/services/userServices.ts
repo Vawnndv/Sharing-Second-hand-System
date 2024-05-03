@@ -1,6 +1,5 @@
 import Axios from '../APIs/Axios';
 
-
 // Change password API
 const changePasswordService = async (password: string): Promise<any>  => {
   const { data } = await Axios.put('/user/change-password', password)
@@ -16,10 +15,11 @@ const updateProfileService = async (user: any): Promise<any>  => {
     lastname: user.lastName,
     phonenumber: user.phone,
     avatar: user.avatar,
+    accessToken: user.accessToken,
   })
-  // if (data) {
-  //   localStorage.setItem('userInfo', JSON.stringify(data))
-  // }
+  if (data) {
+    localStorage.setItem('userInfo', JSON.stringify(data));
+  }
   console.log(data);
   return data;
 }
@@ -28,7 +28,6 @@ const updateProfileService = async (user: any): Promise<any>  => {
 const getProfileService = async (id: string): Promise<any>  => {
   console.log(id);
   const { data } = await Axios.get(`/user/get-profile?userId=${id}`)
-  console.log(data);
 
   return {
     id: data.userid,

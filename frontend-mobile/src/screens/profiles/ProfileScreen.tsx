@@ -75,7 +75,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             <RowComponent>
               <AvatarComponent 
                 avatar={profile.avatar}
-                username={profile.username ? profile.username : profile.email}
+                username={profile.firstname ? profile.firstname : profile.email}
                 size={150}
                 isBorder
               />
