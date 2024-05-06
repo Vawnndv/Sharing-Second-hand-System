@@ -48,14 +48,14 @@ function ForgotPassword() {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-        const res = await forgotPasswordService(data)
+        const res: any = await forgotPasswordService(data.email)
         setSuccess(res.message)
-      console.log(data);
-    } catch (error: any) {
-      if (error.message) {
-        setErr(error.response.data.message)
+    } catch (error: unknown) {
+      console.log(error)
+      if (error instanceof Error) {
+        setErr(error.message)
       } else {
-        console.log(error);
+        setErr("Network Error")
       }
     } finally {
       setIsLoading(false); // Reset isLoading to false after success/error

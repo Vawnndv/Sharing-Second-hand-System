@@ -15,41 +15,48 @@ import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
+import { ProtectedRouter } from './ProtectedRouter';
+import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
 
   return (
-    <>
-      <ToastContainer />
-      <Routes>
-        
-        <Route path="/login" element={<Login rememberMe={rememberMe} setRememberMe={setRememberMe} />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/password" element={<Password />} />
-        <Route path="/profile" element={<Profile />} />
+    <Routes> 
+      <Route path="/login" element={<Login rememberMe={rememberMe} setRememberMe={setRememberMe} />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        <Route path='/' element={<Layout/>}>
+      <Route path='/' element={<Layout/>}>
+        <Route path="*" element={<NotFound />} />
+        <Route element={<ProtectedRouter />}>
           <Route index element={<Home />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path="/password" element={<Password />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
           <Route path="/order/:orderid" element={<ViewDetailOrder />} />
           <Route path="/history" element={<History />} />
           <Route path="/chat" element={<ChatScreen />} />
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
+          <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+        </Route>
+        {/* <Route element={<AdminProtectedRouter />}>
+
+        </Route> */}
           {/* <Route path="/order" element={<Order />} /> */}
           <Route path="/post/:postid" element={<ViewPostDetail />} />
         </Route>
-      </Routes>
-    </>
+    </Routes>
   );
 }
 
 export function WrappedApp() {
   return (
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <>
+    <ToastContainer />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </>
   );
 }

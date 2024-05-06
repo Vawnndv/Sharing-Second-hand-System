@@ -15,6 +15,7 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  accessToken: string;
 }
 
 // Login user API
@@ -31,8 +32,9 @@ const loginService = async (user: AuthData): Promise<any> => {
 
 // Forgot password API
 const forgotPasswordService = async (email: string) => {
-    const { data } = await Axios.post('/auth/forgot', {email})
-    return data
+    const data = await Axios.post('/auth/forgotPassword', {email})
+    console.log(data);
+    return data;
 }
 
 const logoutService = async (): Promise<any> => {

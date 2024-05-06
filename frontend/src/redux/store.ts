@@ -18,10 +18,13 @@ const rootReducer = combineReducers({
 
 
 // Get userInfo from localStorage
-const userInfoFormStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo')!)
-  : null;
+// const userInfoFormStorage = localStorage.getItem('userInfo')
+//   ? JSON.parse(localStorage.getItem('userInfo')) 
+//   : null;
 
+const userInfoString = localStorage.getItem('userInfo');
+
+const userInfoFormStorage = userInfoString !== null ? JSON.parse(userInfoString) : null;
 // initialState
 const initialState = {
   userLogin: { userInfo: userInfoFormStorage }

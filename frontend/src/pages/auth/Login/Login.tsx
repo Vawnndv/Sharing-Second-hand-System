@@ -1,5 +1,6 @@
 // import './style.scss'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -100,17 +101,15 @@ function Login(props: Props) {
       setValue('email', rememberedCredentials.email);
       setValue('password', rememberedCredentials.password);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
       if (userInfo) {
-      if (userInfo?.isAdmin) {
-          navigate('/dashboard')
-      } else {
-          
-          navigate('/')
-      }
+        if (userInfo?.roleId === 3) {
+            navigate('/dashboard')
+        } else {
+            navigate('/')
+        }
       }
 
       if (isSuccess) {
@@ -230,7 +229,7 @@ function Login(props: Props) {
               />
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
-                  <Link component={RouterLink} to="/user/forgot" variant="body2">
+                  <Link component={RouterLink} to="/forgot-password" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>

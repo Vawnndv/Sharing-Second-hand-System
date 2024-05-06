@@ -37,7 +37,7 @@ export const getOrderDetailsCollaborator = async (req: Request, res: Response) =
     const orders = await OrderManager.showOrderDetails(orderID);
     console.log(orders[0]);
     console.log(orders[0].addressGive);
-    res.status(201).json({ message: 'Get orders successfully', orders: orders });
+    res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

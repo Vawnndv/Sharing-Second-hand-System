@@ -89,9 +89,10 @@ const EditProfileScreen = ({navigation, route}: any) => {
           firstname: values.firstname,
           lastname: values.lastname,
           phonenumber: values.phonenumber,
-          avatar: url ?? null,
+          avatar: url ?? profile.avatar,
         }
         , 'post');
+      console.log(res, 'abcdddddd');
       dispatch(updateAuth(res.data));
       setIsLoading(false);
       navigation.navigate('ProfileScreen', {

@@ -11,19 +11,27 @@ import SearchIcon from '@mui/icons-material/Search'
 import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
-import { Avatar, InputAdornment, InputLabel } from '@mui/material'
+import { Avatar, InputAdornment, InputLabel, Typography } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import FilledInput from '@mui/material/FilledInput'
 import logo from '../assets/logo.png'
 import { useDispatch } from 'react-redux'
 import { handleClickMenu } from '../redux/actions/menuActions';
-import { useNavigate } from 'react-router-dom'
+import { FiSettings } from 'react-icons/fi'
+import { Link, useNavigate } from 'react-router-dom'
+import { RiLockPasswordLine, RiLogoutCircleLine } from 'react-icons/ri'
+import { AppDispatch, useAppDispatch } from '../redux/store'
+import toast from 'react-hot-toast'
+import { logoutAction } from '../redux/actions/authActions'
 // import { useDispatch } from 'react-redux'
 // import { handleClickMenu } from '../redux/actions/menuActions'
 
 
 export default function Header({setIndex}: any) {
   
+  const MyDispatch: AppDispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
 
@@ -42,6 +50,13 @@ export default function Header({setIndex}: any) {
     setAnchorEl(null)
     handleMobileMenuClose()
   }
+
+  const logoutHandler = () => {
+    MyDispatch(logoutAction())
+    toast.success('Logged out successfully')
+    navigate('/login')
+  }
+
 
   const handleMobileMenuOpen = (event: any) => {
     setMobileMoreAnchorEl(event.currentTarget)
@@ -64,8 +79,59 @@ export default function Header({setIndex}: any) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+        <Link
+          to='/profile'
+          style={{
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            color: 'inherit'
+          }}
+        >
+          <FiSettings />
+          <Typography
+            style={{
+              marginLeft: '4px'
+            }}
+          >
+              Profile account
+          </Typography>
+        </Link>
+      </MenuItem>
+      <MenuItem onClick={handleMenuClose}>
+      <Link
+        to='/password'
+        style={{
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          color: 'inherit'
+        }}
+      >
+        <RiLockPasswordLine />
+        <Typography
+          style={{
+            marginLeft: '4px'
+          }}
+        >
+          Change password
+        </Typography>
+      </Link>
+      </MenuItem>
+      <MenuItem
+        onClick={logoutHandler}
+        style={{
+          textDecoration: 'none',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <RiLogoutCircleLine />
+        <Typography style={{ marginLeft: '4px' }}>
+          Log Out
+        </Typography>
+      </MenuItem>
     </Menu>
   )
 
@@ -127,7 +193,6 @@ export default function Header({setIndex}: any) {
   }
 //   console.log(isOpenMenu)
 
-  const navigate = useNavigate();
   const handleNavigateToHome = () => {
     setIndex(0)
     navigate('/')
