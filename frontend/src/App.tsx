@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
-import Home from './pages/Home';
+import Home from './pages/home/Home';
 import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login/Login';
 import ForgotPassword from './pages/auth/ForgotPassword/ForgotPassword';
@@ -14,6 +14,7 @@ import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
+import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -37,6 +38,8 @@ export function App() {
           <Route path="/chat" element={<ChatScreen />} />
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
+          {/* <Route path="/order" element={<Order />} /> */}
+          <Route path="/post/:postid" element={<ViewPostDetail />} />
         </Route>
       </Routes>
     </>

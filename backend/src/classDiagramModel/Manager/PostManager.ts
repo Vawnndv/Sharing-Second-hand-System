@@ -217,6 +217,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
+        od.status,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
         CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
       FROM Posts AS po
@@ -247,7 +248,8 @@ export class PostManager {
           ad.latitude,
           img.path,
           wh.warehousename,
-          itt.nametype
+          itt.nametype,
+          od.status
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -345,6 +347,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
+        od.status,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
@@ -374,7 +377,8 @@ export class PostManager {
           ad.latitude,
           img.path,
           wh.warehousename,
-          itt.nametype
+          itt.nametype,
+          od.status
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
