@@ -24,6 +24,7 @@ export const getItemDetails = asyncHandle(async (req, res) => {
 
 export const getItemImages = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
+  console.log(itemID);
   try {
     const itemImages = await ItemManager.viewItemImages(itemID);
     console.log(itemImages);
