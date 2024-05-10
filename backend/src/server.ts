@@ -1,3 +1,4 @@
+
 /**
  * Your code here
  */
@@ -20,6 +21,7 @@ import cardRouter from './routes/cardRouter';
 import chatRouter from './routes/chatRouter';
 import mapRouter from './routes/mapRouter';
 import statisticRouter from './routes/statisticRouter';
+import collaboratorRouter from './routes/collaboratorRouter';
 
 const app = express();
 
@@ -37,6 +39,7 @@ app.use('/warehouse', warehouseRouter);
 
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
+app.use('/collaborator', collaboratorRouter);
 app.use('/order', orderRouter);
 app.use('/aws3', uploadImageToAwsRoute);
 app.use('/card', cardRouter);

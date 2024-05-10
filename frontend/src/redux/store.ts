@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import * as Auth from './reducers/authReducers';
 import * as User from './reducers/userReducers'
+import * as Collaborator from './reducers/collaboratorReducers'
 import { useDispatch } from 'react-redux';
 import { handleClickMenu } from './reducers/menuReducers';
 
@@ -10,8 +11,12 @@ const rootReducer = combineReducers({
   userChangePassword: User.userChangePasswordReducer,
   userGetProfile: User.userGetProfileReducer,
   userUpdateProfile: User.userUpdateProfileReducer,
+  adminGetAllUsers: User.adminGetAllUsersReducer,
+  adminDeleteUser: User.adminDeleteUserReducer,
+  adminGetAllCollaborators: Collaborator.adminGetAllCollaboratorsReducer,
+  adminDeleteCollaborator: Collaborator.adminDeleteCollaboratorReducer,
+  adminEditCollaborator: Collaborator.adminEditCollaboratorReducer,
 
-  // Menu reducer
   // eslint-disable-next-line object-shorthand
   handleClickMenu: handleClickMenu
 });

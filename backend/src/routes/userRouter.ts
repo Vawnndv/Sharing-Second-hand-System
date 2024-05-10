@@ -1,5 +1,5 @@
 import express from 'express';
-import { changeUserPassword, getProfile, changeUserProfile, getUserLikePosts, setUserLikePosts, deleteUserLikePosts, getUserAddress } from '../controllers/userController';
+import { changeUserPassword, getProfile, changeUserProfile, getUserLikePosts, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser } from '../controllers/userController';
 
 const userRouter = express.Router();
 
@@ -17,5 +17,12 @@ userRouter.delete('/delete-like-post', deleteUserLikePosts);
 
 userRouter.get('/get-user-address', getUserAddress);
 
+userRouter.post('/user-list/all', getAllUser);
+
+userRouter.post('/user-list/total', getTotalUser);
+
+userRouter.delete('/user-list/:id', adminDeleteUser);
+
+userRouter.put('/user-list/banned/:id', adminBanUser);
 
 export default userRouter;

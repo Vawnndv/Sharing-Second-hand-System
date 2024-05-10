@@ -15,9 +15,11 @@ import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
-import { ProtectedRouter } from './ProtectedRouter';
+import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Statistic from './pages/statistic/Statistic';
+import Users from './pages/Admin/users/Users';
+import Collaborators from './pages/Admin/collaborations/Collaborations';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -47,6 +49,10 @@ export function App() {
         </Route> */}
           {/* <Route path="/order" element={<Order />} /> */}
           <Route path="/post/:postid" element={<ViewPostDetail />} />
+          <Route element={<AdminProtectedRouter />}>
+            <Route path="/users" element={<Users />} />
+            <Route path="/collaborators" element={<Collaborators />} />
+          </Route>
         </Route>
     </Routes>
   );
