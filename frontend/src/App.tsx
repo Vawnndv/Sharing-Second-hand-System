@@ -17,6 +17,7 @@ import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
 import { ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
+import Statistic from './pages/statistic/Statistic';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -39,6 +40,7 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+          <Route path="/statistic" element={<Statistic />} />
         </Route>
         {/* <Route element={<AdminProtectedRouter />}>
 
