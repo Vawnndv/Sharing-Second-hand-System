@@ -3,22 +3,29 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, CardActionArea } from '@mui/material';
+import { Avatar, Box, CardActionArea, Stack } from '@mui/material';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useNavigate } from 'react-router-dom';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
-export default function OrderCard({order}: any) {
+export default function OrderCard({order, isPost, canApproval, canDelete}: any) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/order/${order.orderid}`);
+    if(isPost){
+      navigate(`/post/${order.postid}`);
+    }else{
+      navigate(`/order/${order.orderid}`);
+    }
+    
   };
 
   moment.locale();
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345 }} style={{boxShadow: '1px 2px 3px #6D6D6D'}}>
       <CardActionArea onClick={handleCardClick}>
         <CardContent>
           <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
@@ -44,11 +51,40 @@ export default function OrderCard({order}: any) {
         </CardContent>
         <CardMedia
           component="img"
-          height="140"
+          height="180"
           image={order.path}
           alt="img"
         />
       </CardActionArea>
+      <Stack
+        direction="row"
+        justifyContent='flex-end'
+        alignItems='center'>
+        {
+          canApproval && 
+          <Stack
+            direction="row"
+            justifyContent='flex-end'
+            alignItems='center'
+            sx={{p: 2}}>
+              <CheckCircleOutlineOutlinedIcon color='success'/>
+              <Typography variant='inherit' color='success'>Duyệt</Typography>
+          </Stack>
+        }
+
+        {
+          canDelete && 
+          <Stack
+            direction="row"
+            justifyContent='flex-end'
+            alignItems='center'
+            sx={{p: 2}}>
+              <RemoveCircleIcon color='error'/>
+              <Typography variant='inherit' color='error'>Xóa</Typography>
+          </Stack>
+        }
+      </Stack>
+      
     </Card>
   );
 }

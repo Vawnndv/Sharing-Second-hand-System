@@ -1,0 +1,20 @@
+
+
+
+.containerFilter{
+    background-color: #C8CFF2;
+    border-radius: 20px;
+    width: 280px;
+    overflow: auto;
+    transition: all 0.3s ease;
+    // height: 80vh;
+    
+}
+.containerFilter::-webkit-scrollbar {
+    display: none; /* Ẩn thanh cuộn */
+  }
+
+.containerFilter.hidden{
+    width: 0px; 
+    margin-left: 13px;
+}

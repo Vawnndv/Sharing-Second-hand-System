@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import IconButton from '@mui/material/IconButton'
-import Typography from '@mui/material/Typography'
 import Badge from '@mui/material/Badge'
 import MenuItem from '@mui/material/MenuItem'
 import Menu from '@mui/material/Menu'
@@ -12,7 +11,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
-import { Avatar, InputAdornment, InputLabel } from '@mui/material'
+import { Avatar, InputAdornment, InputLabel, Typography } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import FilledInput from '@mui/material/FilledInput'
 import logo from '../assets/logo.png'
@@ -28,7 +27,7 @@ import { logoutAction } from '../redux/actions/authActions'
 // import { handleClickMenu } from '../redux/actions/menuActions'
 
 
-export default function PrimarySearchAppBar() {
+export default function Header({setIndex}: any) {
   
   const MyDispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -193,6 +192,11 @@ export default function PrimarySearchAppBar() {
       dispatch(handleClickMenu())
   }
 //   console.log(isOpenMenu)
+
+  const handleNavigateToHome = () => {
+    setIndex(0)
+    navigate('/')
+  }
   return (
     <Box sx={{ flexGrow: 1}} id='header'>
       <AppBar position="static">
@@ -207,18 +211,19 @@ export default function PrimarySearchAppBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
+          <IconButton
             component="div"
             sx={{ display: { xs: 'none', sm: 'flex' }}}
+            onClick={() => handleNavigateToHome()}
           >
             <img alt='logo' src={logo} style={{width: '80px', height: '60px', color: 'white'}}/>
-          </Typography>
+          </IconButton>
           <FormControl sx={{ m: 1, width: '35ch', borderRadius: 2,
             transition: 'width 3s ease', // Thêm transition cho hiệu ứng mở rộng
             '&:focus-within': {
               width: '60ch', // Kích thước mới khi focus
+              backgroundColor: 'rgb(128, 52, 156)',
+              color: 'rgb(236, 236, 236)'
             },
           }} className='search' variant="filled">
             <InputLabel htmlFor="filled-adornment-password" className='text'>Tìm kiếm</InputLabel>

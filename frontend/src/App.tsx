@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import React, { useState } from 'react';
-import Home from './pages/Home';
+import { useState } from 'react';
+import Home from './pages/home/Home';
 import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login/Login';
 import ForgotPassword from './pages/auth/ForgotPassword/ForgotPassword';
@@ -14,7 +14,8 @@ import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
-import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
+import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
+import { ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
@@ -45,7 +46,10 @@ export function App() {
             <Route path="/collaborators" element={<Collaborators />} />
           </Route>
         </Route>
-      </Route>
+        {/* <Route element={<AdminProtectedRouter />}>
+
+        </Route> */}
+        </Route>
     </Routes>
   );
 }
