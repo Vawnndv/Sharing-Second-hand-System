@@ -15,7 +15,7 @@ import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
-import { ProtectedRouter } from './ProtectedRouter';
+import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
@@ -41,14 +41,12 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+          <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
           </Route>
         </Route>
-        {/* <Route element={<AdminProtectedRouter />}>
-
-        </Route> */}
         </Route>
     </Routes>
   );
