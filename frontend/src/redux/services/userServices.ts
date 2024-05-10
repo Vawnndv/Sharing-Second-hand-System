@@ -40,8 +40,45 @@ const getProfileService = async (id: string): Promise<any>  => {
   };
 }
 
+
+// *************** ADMIN APIs ***************
+
+// admin get all users
+const getAllUsersService = async (page: number, pageSize: number, filterModel: any, sortModel: any):Promise<any> => {
+
+  const { data } = await Axios.post(`/user/user-list/all`, {
+    page, pageSize, filterModel, sortModel
+  })
+  console.log(data);
+  return data
+}
+
+const getUsersTotalService = async (filterModel: any): Promise<any> => {
+  const { data } = await Axios.post(`/user/user-list/total`, {
+    filterModel,
+  })
+  console.log(data);
+  return data.total;
+}
+
+// admin delete user
+const deleteUserService = async (id: string) => {
+  const { data } = await Axios.delete(`/user/user-list/${id}`)
+  return data
+}
+
+// admin update profile API call
+const banUserService = async (id: number, user: any) => {
+  const { data } = await Axios.put(`/user/user-list/banned/${id}`, user)
+  return data
+}
+
 export {
     changePasswordService,
     updateProfileService,
     getProfileService,
+    getAllUsersService,
+    deleteUserService,
+    banUserService,
+    getUsersTotalService,
 }

@@ -11,7 +11,7 @@ export interface UserInfo {
   id: string;
   token: string;
   isAdmin: boolean;
-  roleId: number;
+  roleID: number;
   firstName: string;
   lastName: string;
   phoneNumber: string;

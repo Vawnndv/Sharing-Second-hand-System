@@ -72,6 +72,115 @@ export class UserManager {
     }
   }
 
+  public static async getAllUsers(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
+    const client = await pool.connect()
+  
+    console.log(whereClause, '111111111111');
+    const query = `SELECT 
+    u.userid, 
+    u.username, 
+    u.email, 
+    u.firstname, 
+    u.lastname,
+    u.phonenumber, 
+    u.avatar,
+    u.dateofbirth, 
+    u.addressid, 
+    u.createdat, 
+    u.updatedat, 
+    u.isbanned,
+    a.address,
+    a.longitude,
+    a.latitude
+    FROM public."User" u LEFT JOIN address a ON u.addressid 
+    = a.addressid WHERE u.roleid = 1 AND u.email is not null` + whereClause + orderByClause + ` LIMIT ${pageSize} OFFSET ${page} * ${pageSize}`;
+
+    console.log(query);
+
+    try {
+      const result = await client.query(query);
+      if (result.rows.length === 0) {
+        return [];
+      }
+
+      return result.rows;
+      
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async totalAllUser(whereClause: string): Promise<any> {
+    const client = await pool.connect()
+    const query = 
+    // 'SELECT COUNT(*) FROM users' + whereClause;
+      `SELECT COUNT(*)::INTEGER AS total_users
+      FROM public."User" u
+      WHERE u.roleid = 1 AND u.email is not null` + whereClause;
+
+      console.log(query)
+    try {
+      const result = await client.query(query);
+      if (result.rows.length === 0) {
+        return {total_users: 0};
+      }
+
+      return result.rows[0];
+      
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async adminBanUser(userid: number, isBanned: boolean): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "User"
+      SET isbanned = $2
+      WHERE userid = $1
+    `;
+    const values: any = [userid, isBanned];
+    try {
+      const result = await client.query(query, values);
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+
+  public static async adminDeleteUser(userid: string): Promise<any> {
+    const client = await pool.connect();
+    console.log(userid);
+
+    const query = `
+      UPDATE "User"
+      SET email = null, password = ''
+      WHERE userid = $1
+    `;
+    const values: any = [userid];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+
   public ban(userID: string): void {
     //code here
   }

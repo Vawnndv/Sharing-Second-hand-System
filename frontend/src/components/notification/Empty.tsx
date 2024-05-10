@@ -1,4 +1,5 @@
 import moment from 'moment';
+import 'moment/locale/vi';
 import { RiMovie2Line } from 'react-icons/ri';
 
 interface EmptyProps {
@@ -21,5 +22,6 @@ export const shortUppercaseId = (id: string): string => {
 };
 
 export const DateFormat = (date: Date | string): string => {
+  moment.locale();
   return moment(date).format('LL');
 };

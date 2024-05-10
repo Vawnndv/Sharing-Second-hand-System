@@ -16,6 +16,8 @@ import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
+import Users from './pages/Admin/users/Users';
+import Collaborators from './pages/Admin/collaborations/Collaborations';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -38,11 +40,12 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+          <Route element={<AdminProtectedRouter />}>
+            <Route path="/users" element={<Users />} />
+            <Route path="/collaborators" element={<Collaborators />} />
+          </Route>
         </Route>
-        {/* <Route element={<AdminProtectedRouter />}>
-
-        </Route> */}
-        </Route>
+      </Route>
     </Routes>
   );
 }
