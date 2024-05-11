@@ -26,6 +26,37 @@ function ChartTypeComponent ({typeChart, setTypeChart}: any) {
     )
 }
 
+const timeArr = [
+    {
+        value: 1,
+        label: '1 tháng'
+    },
+    {
+        value: 2,
+        label: '2 tháng'
+    },
+    {
+        value: 3,
+        label: '3 tháng'
+    },
+    {
+        value: 6,
+        label: '6 tháng'
+    },
+    {
+        value: 12,
+        label: '1 năm'
+    },
+    {
+        value: 24,
+        label: '2 năm'
+    },
+    {
+        value: 60,
+        label: '5 năm'
+    }
+]
+
 function Statistic() {
     const [tabValue, setTabValue] = useState('Lượng sản phẩm vào/ra kho')
     const handleChange = (event: any, newValue: any) => {
@@ -38,7 +69,7 @@ function Statistic() {
         setTypeItemInOut(newValue.props.value);
     };
 
-    const [timeUserAccess, setTimeUserAccess] = useState('1 month')
+    const [timeUserAccess, setTimeUserAccess] = useState(1)
     const handleChangeTimeUserAccess = (event: any, newValue: any) => {
         setTimeUserAccess(newValue.props.value);
     };
@@ -49,7 +80,15 @@ function Statistic() {
     useEffect(() => {
         const fetchData = async () => {
             let response;
-            if(tabValue === "Lượng sản phẩm vào/ra kho"){
+            if(tabValue === "Lượng người truy cập"){
+                try{
+                    setIsLoading(true)
+                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?userID=37&timeValue=${timeUserAccess}`)
+                } catch(error){
+                    console.log(error)
+                } 
+            }
+            else if(tabValue === "Lượng sản phẩm vào/ra kho"){
                 try{
                     setIsLoading(true)
                     response = await axios.get(`http://localhost:3000/statistic/statisticImportExport?userID=37&type=${typeItemInOut}`)
@@ -75,6 +114,13 @@ function Statistic() {
         console.log("tabValue", tabValue)
         console.log("typeItemInOut", typeItemInOut)
     }, [tabValue, typeItemInOut, timeUserAccess])
+
+    const currentDate = new Date();
+    // Ngày trong quá khứ (ví dụ: 1 tháng trước)
+    const pastDate = new Date('2024-03-01');
+
+    // Số tháng từ ngày trong quá khứ đến ngày hiện tại
+    const monthsDifference = (currentDate.getFullYear() - pastDate.getFullYear()) * 12 + (currentDate.getMonth() - pastDate.getMonth());
     return ( 
         <div>
             {
@@ -97,14 +143,18 @@ function Statistic() {
                                 value={timeUserAccess}
                                 onChange={handleChangeTimeUserAccess}
                             >
-                                <MenuItem value="1 month">1 tháng</MenuItem>
-                                <MenuItem value="2 month">2 tháng</MenuItem>
-                                <MenuItem value="3 month">3 tháng</MenuItem>
-                                <MenuItem value="6 month">6 tháng</MenuItem>
-                                <MenuItem value="1 year">1 năm</MenuItem>
-                                <MenuItem value="2 year">2 năm</MenuItem>
-                                <MenuItem value="5 year">5 năm</MenuItem>
-                                <MenuItem value="all">Tất cả</MenuItem>
+                                {
+                                    timeArr.map((item: any, index: number) => {
+                                        if(item.value <= monthsDifference){
+                                            console.log(item.value, monthsDifference)
+                                            return (
+                                                <MenuItem key={index} value={item.value}>{item.label}</MenuItem>
+                                            )
+                                        }
+                                        return null
+                                        
+                                    })
+                                }
                             </Select>
                         </FormControl>
                         <Stack

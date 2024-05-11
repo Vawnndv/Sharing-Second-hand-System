@@ -55,8 +55,8 @@ function ViewPostDetail() {
     const [profile, setProfile] = useState<any>();
     const [itemImages, setItemImages] = useState([]);
 
-    const [isUserPost, setIsUserPost] = useState(false);
-    const [itemID, setItemID] = useState();
+    // const [isUserPost, setIsUserPost] = useState(false);
+    // const [itemID, setItemID] = useState();
     useEffect(() => {
         const fetchAllData = async () => {
           let itemIDs = null;
@@ -72,11 +72,11 @@ function ViewPostDetail() {
               throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-            setItemID(res.postDetail.itemid);
+            // setItemID(res.postDetail.itemid);
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
             // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-            setIsUserPost(res.postDetail.owner === '37');
+            // setIsUserPost(res.postDetail.owner === '37');
           } catch (error) {
             console.error('Error fetching post details:', error);
           }
@@ -126,30 +126,17 @@ function ViewPostDetail() {
     
     }, [])
 
-    console.log('post', post)
-    console.log('postReceivers', postReceivers)
-    console.log('profile', profile)
-    console.log('itemImages', itemImages)
-    console.log('isUserPost', isUserPost)
-    console.log('itemID', itemID)
+    // console.log('post', post)
+    // console.log('postReceivers', postReceivers)
+    // console.log('profile', profile)
+    // console.log('itemImages', itemImages)
+    // console.log('isUserPost', isUserPost)
+    // console.log('itemID', itemID)
 
-    // Lấy thời điểm hiện tại
-    const currentDate = new Date();
+    
 
-    // Tính toán ngày bắt đầu của tháng hiện tại
-    const startOfMonth = currentDate
-    startOfMonth.setMonth(currentDate.getMonth() - 1)
-    console.log(`${startOfMonth.toLocaleString('en', { month: 'long'})} ${startOfMonth.getDate()}, ${startOfMonth.getFullYear()}`)
-
-    // Tính toán các ngày cách đều trong tháng
-    const evenlySpacedDates = [];
-    for (let i: number = 0; i < 13; i += 1 ) {
-    const evenlySpacedDate = new Date(startOfMonth);
-    evenlySpacedDate.setDate(startOfMonth.getDate() + (i * Math.floor(30 / 13))); // Sử dụng 30 làm giá trị xấp xỉ cho số ngày trong một tháng
-    evenlySpacedDates.push(evenlySpacedDate);
-    }
-
-    console.log(evenlySpacedDates);
+    
+    // console.log(evenlySpacedDates);
     return ( 
         <div style={{display: 'flex', flexDirection: 'column',
             width: '100%', justifyContent:'center', alignItems: 'center'

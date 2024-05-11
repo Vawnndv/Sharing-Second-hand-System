@@ -183,4 +183,82 @@ export class StatisticManager {
       client.release()
     }
   }
+
+  public static async statisticAccessUser(userID: string | undefined, timeValue: number ): Promise<any[] | undefined>{
+    const client = await pool.connect()
+
+    try{
+      const query = `
+      SELECT count(userid) as quantity
+      FROM "User"
+      WHERE createdat <= $1 AND roleid = '1'
+      `
+      const timeArr = [
+        {
+            value: 1,
+            label: '1 tháng'
+        },
+        {
+            value: 2,
+            label: '2 tháng'
+        },
+        {
+            value: 3,
+            label: '3 tháng'
+        },
+        {
+            value: 6,
+            label: '6 tháng'
+        },
+        {
+            value: 12,
+            label: '1 năm'
+        },
+        {
+            value: 24,
+            label: '2 năm'
+        },
+        {
+            value: 60,
+            label: '5 năm'
+        }
+      ]
+      const index = timeArr.findIndex(item => item.value === timeValue);
+      const results: any = []
+      
+      const currentDate = new Date();
+
+      // Tính toán ngày bắt đầu của tháng hiện tại
+      const startOfMonth = currentDate
+      startOfMonth.setMonth(currentDate.getMonth() - timeValue)
+      // console.log(`${startOfMonth.toLocaleString('en', { month: 'long'})} ${startOfMonth.getDate()}, ${startOfMonth.getFullYear()}`)
+
+      // Tính toán các ngày cách đều trong tháng
+      const evenlySpacedDates = [];
+      for (let i: number = 0; i < (13 + 13*index); i += 1 ) {
+        const evenlySpacedDate = new Date(startOfMonth);
+        evenlySpacedDate.setDate(startOfMonth.getDate() + (i * Math.floor((30*timeValue) / (13 + 13*index)))); // Sử dụng 30 làm giá trị xấp xỉ cho số ngày trong một tháng
+        evenlySpacedDates.push(evenlySpacedDate);
+      }
+      
+      for(let i = 0; i < evenlySpacedDates.length; i++){
+        const specificDate = evenlySpacedDates[i].getFullYear() + '-' + (evenlySpacedDates[i].getMonth() + 1) + '-' + evenlySpacedDates[i].getDate()
+    
+        const result : QueryResult = await client.query(query, [specificDate]);
+        results.push({
+          label: `${evenlySpacedDates[i].toLocaleString('en', { month: 'long'})} ${evenlySpacedDates[i].getDate()}, ${evenlySpacedDates[i].getFullYear()}`,
+          quantity: result.rows[0].quantity
+        })
+      }
+      
+      
+      
+      return results;
+    }catch(error){
+      console.log(error)
+      return []
+    }finally{
+      client.release()
+    }
+  }
 }
