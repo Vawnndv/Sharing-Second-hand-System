@@ -20,6 +20,7 @@ import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Statistic from './pages/statistic/Statistic';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
+import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -52,6 +53,7 @@ export function App() {
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
+            <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
         </Route>
     </Routes>
