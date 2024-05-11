@@ -3,7 +3,6 @@ dotenv.config();
 import asyncHandle from 'express-async-handler';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-
 import { Account } from '../classDiagramModel/Account';
 import { UserManager } from '../classDiagramModel/Manager/UserManager';
 
@@ -166,4 +165,139 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
     // If userId is missing or invalid, send a 401 status without throwing an error
     res.sendStatus(401);
   }
+});
+
+//  ************** ADMIN CONTROLLERS **************
+// @des Get all users
+// @route GET /api/users
+// export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
+//   console.log(req.query);
+//   const { page, pageSize } = req.query;
+//   if (typeof page === 'string' && page && typeof pageSize === 'string' && pageSize) {
+//     console.log(req.query);
+//     const total = await UserManager.totalAllUser();
+
+//     const response = await UserManager.getAllUser(page, pageSize);
+//     res.status(200).json({
+//       message: 'get user address successfully',
+//       data: {
+//         users: response ?? [],
+//         total: total.total_users ?? 0,
+//       },
+//     });
+//   } else {
+//     res.sendStatus(404);
+//     throw new Error('Missing page and pageSize');
+//   }
+// });
+
+export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
+  const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
+  console.log(filterModel);
+  // Build WHERE clause based on filterModel (replace with your logic)
+  let whereClause = '';
+  if (filterModel.items && filterModel.items.length > 0) {
+    whereClause = ' AND ';
+    for (const filter of filterModel.items) {
+      if (filter.operator === 'is' && filter.value) {
+        console.log(filter.value, 'filter');
+        whereClause += `u.${filter.field} is ${filter.value} OR `;
+      } else if (filter.operator === 'contains') {
+        // Add filtering conditions based on filter object properties
+        whereClause += `u.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+      }
+
+    }
+    whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+  }
+
+  // Build ORDER BY clause based on sortModel (replace with your logic)
+  let orderByClause = '';
+  if (sortModel && sortModel.length > 0) {
+    orderByClause = ' ORDER BY ';
+    for (const sort of sortModel) {
+      orderByClause += `u.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+    }
+    orderByClause = orderByClause.slice(0, -2); // Remove trailing comma and space
+  }
+
+  
+  if (orderByClause === '') {
+    orderByClause = ' ORDER BY u.createdat DESC ';
+  }
+
+  const response = await UserManager.getAllUsers(page, pageSize, whereClause, orderByClause);
+  // res.json({ users: users.rows, total: totalUsers.rows[0].count });
+
+  res.status(200).json({
+    message: 'get user address successfully',
+    data: {
+      users: response ?? [],
+    },
+  });
+
+});
+
+export const getTotalUser = asyncHandle(async (req: Request, res: Response) => {
+  const { filterModel = {} } = req.body;
+  // console.log(filterModel)
+  // Build WHERE clause based on filterModel (replace with your logic)
+  let whereClause = '';
+  if (filterModel.items && filterModel.items.length > 0) {
+    whereClause = ' AND ';
+    for (const filter of filterModel.items) {
+      if (filter.operator === 'is' && filter.value) {
+        console.log(filter.value, 'filter');
+        whereClause += `u.${filter.field} is ${filter.value} OR `;
+      } else if (filter.operator === 'contains') {
+        // Add filtering conditions based on filter object properties
+        whereClause += `u.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+      }
+    }
+    whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+  }
+
+  const total = await UserManager.totalAllUser(whereClause);
+  // res.json({ users: users.rows, total: totalUsers.rows[0].count });
+
+  res.status(200).json({
+    message: 'get user address successfully',
+    data: {
+      total: total.total_users ?? 0,
+    },
+  });
+});
+
+export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => {
+  const { userId, isBanned } = req.body;
+  // find user in DB
+  const user = await Account.findUserById(userId);
+
+  if (user) {
+    await UserManager.adminBanUser(userId, isBanned);
+    res.json( { message: 'User was Banned successfully' });
+  } else {
+    res.status(400);
+    throw Error('User not found' );
+  }
+});
+
+export const adminDeleteUser = asyncHandle(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const ids = id.split(',');
+  console.log(ids);
+  for (const userId of ids) {
+    // find user in DB
+    const user = await Account.findUserById(userId);
+    // if users exists update user data and save it in DB
+    if (user) {
+      await UserManager.adminDeleteUser(userId);
+    } else {
+      res.status(400);
+      throw Error('User not found' );
+    }
+  }
+
+  res.json( { message: 'User was deleted successfully' });
+
 });

@@ -55,8 +55,8 @@ function ViewPostDetail() {
     const [profile, setProfile] = useState<any>();
     const [itemImages, setItemImages] = useState([]);
 
-    const [isUserPost, setIsUserPost] = useState(false);
-    const [itemID, setItemID] = useState();
+    // const [isUserPost, setIsUserPost] = useState(false);
+    // const [itemID, setItemID] = useState();
     useEffect(() => {
         const fetchAllData = async () => {
           let itemIDs = null;
@@ -72,11 +72,11 @@ function ViewPostDetail() {
               throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-            setItemID(res.postDetail.itemid);
+            // setItemID(res.postDetail.itemid);
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
             // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-            setIsUserPost(res.postDetail.owner === '37');
+            // setIsUserPost(res.postDetail.owner === '37');
           } catch (error) {
             console.error('Error fetching post details:', error);
           }
@@ -126,12 +126,17 @@ function ViewPostDetail() {
     
     }, [])
 
-    console.log('post', post)
-    console.log('postReceivers', postReceivers)
-    console.log('profile', profile)
-    console.log('itemImages', itemImages)
-    console.log('isUserPost', isUserPost)
-    console.log('itemID', itemID)
+    // console.log('post', post)
+    // console.log('postReceivers', postReceivers)
+    // console.log('profile', profile)
+    // console.log('itemImages', itemImages)
+    // console.log('isUserPost', isUserPost)
+    // console.log('itemID', itemID)
+
+    
+
+    
+    // console.log(evenlySpacedDates);
     return ( 
         <div style={{display: 'flex', flexDirection: 'column',
             width: '100%', justifyContent:'center', alignItems: 'center'

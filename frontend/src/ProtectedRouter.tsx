@@ -5,16 +5,16 @@ import React from "react";
 
 function ProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
-    console.log(userInfo)
     return userInfo?.accessToken ? <Outlet /> : <Navigate to="/login" />
 }
 
 // admin router protection
 function AdminProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
+    console.log(userInfo)
 
     return userInfo?.accessToken ? (
-        userInfo?.roleId === 3 ? (
+        userInfo?.roleID === 3 ? (
             <Outlet />
         ) : (
             <Navigate to="/*" />
