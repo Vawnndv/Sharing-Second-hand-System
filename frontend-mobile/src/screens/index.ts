@@ -9,6 +9,7 @@ import AddScreen from "./adds/AddScreen";
 import MessageScreen from "./messages/MessageScreen";
 import ProfileScreen from "./profiles/ProfileScreen";
 import ReceiveFormScreen from "./receiveform/ReceiveFormScreen";
+import ThankYouScreen from "./thankyou/ThankYou";
 
 
 export {
@@ -23,4 +24,5 @@ export {
   MessageScreen,
   ProfileScreen,
   ReceiveFormScreen,
+  ThankYouScreen,
 }

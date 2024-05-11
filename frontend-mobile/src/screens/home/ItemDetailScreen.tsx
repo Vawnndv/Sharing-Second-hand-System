@@ -5,7 +5,7 @@ import PostDetail from '../../components/PostDetail';
 
 
 const ItemDetailScreen = ({navigation, route}: any) => {
-  console.log(route.params)
+  // console.log('Alo',route.params)
   const postID = route.params.postId;
 
   return (
