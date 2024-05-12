@@ -516,6 +516,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
           </ScrollView>
           </View>
         </View>
+
+        <Button mode="contained" onPress={(() => { navigation.navigate('ThankYouScreen', {
+                                                    title: 'Cảm ơn',
+                                                    postID: postID,
+                                                    content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ',
+                                                     }) })}>
+         Đi đến trang cảm ơn</Button>
       </ScrollView>
     )
   }

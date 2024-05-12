@@ -3,8 +3,12 @@ import Axios from '../../redux/APIs/Axios';
 import { Box, Pagination, Stack } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import OrderCard from '../order/OrderCard';
+import { useSelector } from 'react-redux';
+
 
 function HomeUserPosts({filterValue, warehousesID}: any) {
+
+    const userLogin = useSelector((state: any) => state.userLogin);
 
     const [page, setPage] = useState(1);
     const [posts, setPosts] = useState<any>([])
@@ -12,7 +16,7 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const responseUser = await Axios.get('/user/get-user-address?userId=29');
+            const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
             console.log(responseUser)
             
             const responsePosts: any = await Axios.post('/posts/user-post', {
@@ -37,7 +41,7 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
     }, [page, filterValue])
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
-      };
+    };
 
     return ( 
         <>

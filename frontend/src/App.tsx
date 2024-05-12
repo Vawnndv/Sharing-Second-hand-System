@@ -17,8 +17,10 @@ import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
 import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
+import Statistic from './pages/statistic/Statistic';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
+import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -41,12 +43,18 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+          <Route path="/statistic" element={<Statistic />} />
+        </Route>
+        {/* <Route element={<AdminProtectedRouter />}>
+
+        </Route> */}
+          {/* <Route path="/order" element={<Order />} /> */}
           <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
+            <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
-        </Route>
         </Route>
     </Routes>
   );

@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { HomeScreen } from '../screens';
+import { HomeScreen, ThankYouScreen } from '../screens';
 import OrderDetailsScreen from '../screens/collaborator/OrderDetailsScreen';
 import OrdersScreen from '../screens/collaborator/OrdersScreen';
 import StatisticScreen from '../screens/collaborator/StatisticScreen';
@@ -9,6 +9,7 @@ import MapSelectWarehouse from '../screens/map/MapSelectWarehouse';
 import ChatRoom from '../screens/chat/ChatRoom';
 import MapSelectWarehouseGive from '../screens/map/MapSelectWarehouseGive';
 import ReceiveFormScreen from '../screens/receiveform/ReceiveFormScreen';
+
 
 const HomeNavigator = () => {
   const Stack = createNativeStackNavigator();
@@ -20,6 +21,7 @@ const HomeNavigator = () => {
       <Stack.Screen name="OrdersScreen" component={OrdersScreen} />
       <Stack.Screen name="ItemDetailScreen" component={ItemDetailScreen} />
       <Stack.Screen name="ReceiveFormScreen" component={ReceiveFormScreen} />
+      <Stack.Screen name="ThankYouScreen" component={ThankYouScreen} />
       <Stack.Screen name="MapSelectWarehouseScreen" component={MapSelectWarehouse} />
       <Stack.Screen name="MapSelectWarehouseGiveScreen" component={MapSelectWarehouseGive} />
       <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
