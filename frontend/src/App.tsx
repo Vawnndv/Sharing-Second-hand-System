@@ -22,6 +22,7 @@ import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
 import ManageWarehouse from './pages/warehouse/ManageWarehouse';
 
+import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -58,6 +59,7 @@ export function App() {
             <Route path="/collaborators" element={<Collaborators />} />
             <Route path="/warehouse" element={<ManageWarehouse />} />
 
+            <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
         </Route>
     </Routes>

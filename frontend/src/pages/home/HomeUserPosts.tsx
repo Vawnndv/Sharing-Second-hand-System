@@ -9,14 +9,14 @@ import { useSelector } from 'react-redux';
 function HomeUserPosts({filterValue, warehousesID}: any) {
 
     const userLogin = useSelector((state: any) => state.userLogin);
-    console.log(userLogin)
+
     const [page, setPage] = useState(1);
     const [posts, setPosts] = useState<any>([])
     const LIMIT = 10
 
     useEffect(() => {
         const fetchData = async () => {
-            const responseUser = await Axios.get('/user/get-user-address?userId=29');
+            const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
             console.log(responseUser)
             
             const responsePosts: any = await Axios.post('/posts/user-post', {

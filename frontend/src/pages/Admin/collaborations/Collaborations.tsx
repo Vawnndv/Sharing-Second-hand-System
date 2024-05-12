@@ -5,7 +5,15 @@ import { deleteCollaboratorAction, getAllCollaboratorsAction } from '../../../re
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store'
 import CollaboratorTable from '../components/tables/CollaboratorTable'
 import { getCollaboratorsTotalService } from '../../../redux/services/collaboratorServices'
+import { styled } from '@mui/material/styles'
 
+
+const StyledClassTable = styled('div')({
+    transform: 'scale(0.9)',
+    transformOrigin: 'top left',
+    width: 'calc(100% / 0.9)'
+  })
+  
 function Collaborators() {
     const dispatch: AppDispatch = useAppDispatch();
 
@@ -55,11 +63,11 @@ function Collaborators() {
       dispatch({ type: isError ? 'GET_ALL_COLLABORATORS_RESET' : 'DELETE_COLLABORATORS_RESET' })
     }
     console.log(pageState)
-  }, [pageState, sortModel, filterModel, isSuccess])
+  }, [dispatch, pageState, sortModel, filterModel, isSuccess])
   
    // delete user handler
    const deleteUserHandler = (user: any) => {
-    if (window.confirm(`Are you sure you want to delete ?${  user.firstname}`)) {
+    if (window.confirm(`Are you sure you want to delete ${  user.firstname} ?`)) {
       dispatch(deleteCollaboratorAction(user.userid))
     }
   }
@@ -73,6 +81,7 @@ function Collaborators() {
   }
 
   return (
+    <StyledClassTable>
         <CollaboratorTable 
             deleteHandler={deleteUserHandler} 
             isLoading={isLoading ?? false} 
@@ -88,6 +97,7 @@ function Collaborators() {
             setFilterModel={setFilterModel}
             setSortModel={setSortModel}
         />
+    </StyledClassTable>
   )
 }
 

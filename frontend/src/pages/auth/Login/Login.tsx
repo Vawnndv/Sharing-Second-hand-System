@@ -105,7 +105,7 @@ function Login(props: Props) {
 
   useEffect(() => {
       if (userInfo) {
-        if (userInfo?.roleId === 3) {
+        if (userInfo?.roleID === 3) {
             navigate('/dashboard')
         } else {
             navigate('/')

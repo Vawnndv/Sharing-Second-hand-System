@@ -42,7 +42,7 @@ const getJsonWebToken = async (email: string, id: number) => {
 };
 
 
-const handleSendMail = async (val: {}) => {
+export const handleSendMail = async (val: {}) => {
   try {
     await transporter.sendMail(val);
 

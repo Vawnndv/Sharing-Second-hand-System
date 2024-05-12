@@ -1,3 +1,4 @@
+import { Collaborator } from './Collaborator';
 import { ChatManager } from './Manager/ChatManager';
 import { NotiManager } from './Manager/NotiManager';
 import pool from '../config/DatabaseConfig';
@@ -63,6 +64,27 @@ export class Account {
     try {
       const result = await client.query(query, values);
       console.log('User inserted successfully:', result.rows[0]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+  public static async createCollaborator(username: string, firstname: string, lastname: string, email: string, password: string, phonenumber: string,  roleid: number): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO "User"(username, firstname, lastname, email, password, phonenumber, roleid) 
+        VALUES($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *;
+      `;
+    const values : any = [username, firstname, lastname, email, password, phonenumber, roleid];
+    try {
+      const result = await client.query(query, values);
+      console.log('Collaborator inserted successfully:', result.rows[0]);
 
       return result.rows[0];
     } catch (error) {

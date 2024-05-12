@@ -184,7 +184,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticAccessUser(userID: string | undefined, timeValue: number ): Promise<any[] | undefined>{
+  public static async statisticAccessUser(timeValue: number ): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -254,6 +254,134 @@ export class StatisticManager {
       
       
       return results;
+    }catch(error){
+      console.log(error)
+      return []
+    }finally{
+      client.release()
+    }
+  }
+
+  public static async statisticImportExportAdmin(type: string | undefined, warehouses: []): Promise<any[] | undefined>{
+    const client = await pool.connect()
+
+    console.log(warehouses)
+    if(warehouses.length === 0){
+      return [0,0,0,0,0,0,0]
+    }
+    try{
+
+      let queryWarehouseImport = ``
+      warehouses.map((warehouse: any, index: number) => {
+        queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
+        if(index < warehouses.length - 1){
+          queryWarehouseImport += `OR `
+        }
+      })
+      const queryImport = `
+      SELECT CASE
+        WHEN sum(i.quantity) IS NULL THEN 0
+        ELSE sum(i.quantity)
+        END AS quantity
+      FROM "orders" o
+      JOIN "item" i ON o.itemid = i.itemid
+      JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+      WHERE o.orderid IN (
+        SELECT ic.orderid FROM "inputcard" ic
+        WHERE ${queryWarehouseImport}
+      ) AND it.nametype = $1
+      `
+
+      let queryWarehouseExport = ``
+      warehouses.map((warehouse: any, index: number) => {
+        queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
+        if(index < warehouses.length - 1){
+          queryWarehouseExport += `OR `
+        }
+      })
+      const queryExport = `
+      SELECT CASE
+        WHEN sum(i.quantity) IS NULL THEN 0
+        ELSE sum(i.quantity)
+        END AS quantity
+      FROM "orders" o
+      JOIN "item" i ON o.itemid = i.itemid
+      JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+      WHERE o.orderid IN (
+        SELECT oc.orderid FROM "outputcard" oc
+        WHERE ${queryWarehouseExport}
+      ) AND it.nametype = $1
+      `
+    const results = []
+    if(type === 'import'){
+      for(let i = 0; i < category.length; i+=1){
+        const result : QueryResult = await client.query(queryImport, [category[i]]);
+        results.push({
+          label: category[i],
+          quantity: result.rows[0].quantity
+        })
+      }
+    }else{
+      for(let i = 0; i < category.length; i+=1){
+        const result : QueryResult = await client.query(queryExport, [category[i]]);
+        results.push({
+          label: category[i],
+          quantity: result.rows[0].quantity
+        })
+      }
+    }
+
+    return results
+    }catch(error){
+      console.log(error)
+      return []
+    }finally{
+      client.release()
+    }
+  }
+
+  public static async statisticInventoryAdmin(warehouses: []): Promise<any[] | undefined>{
+    const client = await pool.connect()
+
+    console.log(warehouses)
+    if(warehouses.length === 0){
+      return [0,0,0,0,0,0,0]
+    }
+    try{
+
+      let queryWarehouse = ``
+      warehouses.map((warehouse: any, index: number) => {
+        queryWarehouse += `ic.warehouseid = ${warehouse.warehouseid} `
+        if(index < warehouses.length - 1){
+          queryWarehouse += `OR `
+        }
+      })
+
+      const query = `
+      SELECT CASE
+        WHEN sum(i.quantity) IS NULL THEN 0
+        ELSE sum(i.quantity)
+        END AS quantity
+      FROM "orders" o
+      JOIN "item" i ON o.itemid = i.itemid
+      JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+      WHERE o.orderid IN (
+        SELECT ic.orderid FROM "inputcard" ic
+        WHERE ${queryWarehouse}
+      ) AND it.nametype = $1 AND o.status='Hàng đã nhập kho'
+      `
+    const results = []
+    
+    for(let i = 0; i < category.length; i+=1){
+      const result : QueryResult = await client.query(query, [category[i]]);
+      results.push({
+        label: category[i],
+        quantity: result.rows[0].quantity
+      })
+    }
+    
+
+    return results
     }catch(error){
       console.log(error)
       return []
