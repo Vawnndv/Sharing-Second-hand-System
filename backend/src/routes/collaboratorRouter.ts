@@ -1,5 +1,5 @@
 import express from 'express';
-import { adminBanCollaborator, adminDeleteCollaborator, getAllCollaborator, getTotalCollaborator } from '../controllers/collaboratorController';
+import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getTotalCollaborator } from '../controllers/collaboratorController';
 
 const collaboratorRouter = express.Router();
 
@@ -12,7 +12,13 @@ collaboratorRouter.delete('/collaborator-list/:id', adminDeleteCollaborator);
 
 collaboratorRouter.put('/collaborator-list/banned/:id', adminBanCollaborator);
 
+collaboratorRouter.post('/collaborator-list/create', adminCreateNewCollaborator);
+
+collaboratorRouter.post('/collaborator-list/reset-password', adminResetCollaboratorPassword);
+
 collaboratorRouter.post('/collaborator-list/all', getAllCollaborator);
+
+collaboratorRouter.put('/collaborator-list/:id', adminEditCollaborator);
 
 collaboratorRouter.delete('/collaborator-list/:id', getAllCollaborator);
 

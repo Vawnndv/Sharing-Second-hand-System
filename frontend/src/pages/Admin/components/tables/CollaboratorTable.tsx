@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef, GridToolbar, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
-import { Delete, Edit } from '@mui/icons-material'
+import { Add, Delete, Edit } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../redux/store'
 import { DateFormat } from '../../../../components/notification/Empty'
@@ -12,6 +12,7 @@ import ModalEditCollaborator from '../modals/ModelEditCollaborator'
 import { banUserService } from '../../../../redux/services/userServices'
 import toast from 'react-hot-toast'
 import { TbLock, TbLockOpen } from "react-icons/tb";
+import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -38,10 +39,18 @@ function CollaboratorTable(props: Props) {
 
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
   const [userRow, setUserRow] = useState(null);
+  const [isEdit, setIsEdit] = useState(true);
 
   const handleOpen = () => {
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
+    setIsEdit(!isEdit);
+  }
+
+  
+  const handleOpenModalCreate = () => {
+    setIsOpenModalCreate(!isOpenModalCreate);
   }
 
   useEffect(() => {
@@ -98,6 +107,7 @@ function CollaboratorTable(props: Props) {
         renderCell: (params: any) =>
           DateFormat(params.row.createdat)
       },
+      { field: 'warehousename', headerName: 'Warehouse', width: 100, getTooltip: (params: any) => params.value },
       {
         field: 'isbanned',
         headerName: 'Ban',
@@ -142,7 +152,7 @@ function CollaboratorTable(props: Props) {
       justifyContent="center"
       sx={{ mt: 1, mb: 5, p: 4 }}
     >
-      <ModalEditCollaborator 
+      <ModalEditCollaborator
         isOpen={isOpen}
         handleOpen={handleOpen}
         userRow={userRow}
@@ -151,6 +161,16 @@ function CollaboratorTable(props: Props) {
         pageState={pageState} 
         filterModel={filterModel}
         sortModel={sortModel}
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        />
+        <ModalCreateCollaborator
+        isOpen={isOpenModalCreate}
+        handleOpen={handleOpenModalCreate}
+        setIsOpen={setIsOpenModalCreate}
+        pageState={pageState} 
+        filterModel={{ items: [] }}
+        sortModel={[]}
         />
       <Grid item xs={12}>
         <Box
@@ -165,13 +185,17 @@ function CollaboratorTable(props: Props) {
             component='h3'
             sx={{ textAlign: 'center', mt: 3, mb: 3 }}
           >
-                Manage Users
+                Manage Collaborator
           </Typography>
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
                 Delete selected rows
             </Button>
+            <Button startIcon={<Add/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleOpenModalCreate}>
+                Create 
+            </Button>
           </Box>
+
 
           <DataGrid
             localeText={viVN.components.MuiDataGrid.defaultProps.localeText} 

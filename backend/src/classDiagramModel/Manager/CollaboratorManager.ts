@@ -123,15 +123,15 @@ export class CollaboratorManager extends UserManager {
     }
   };
 
-  public static async adminUpdateCollaborator(userid: number, firstname: string, lastname: string, phonenumber: string, avatar: string): Promise<any> {
+  public static async adminUpdateCollaborator(userid: number, firstname: string, lastname: string ,email: string, phonenumber: string): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
-      SET firstname = $2, lastname = $3, phonenumber = $4, avatar = $5
+      SET firstname = $2, lastname = $3, email =$4, phonenumber = $5
       WHERE userid = $1
       RETURNING *;
     `;
-    const values: any = [userid, firstname, lastname, phonenumber, avatar];
+    const values: any = [userid, firstname, lastname, email, phonenumber];
     try {
       const result = await client.query(query, values);
   

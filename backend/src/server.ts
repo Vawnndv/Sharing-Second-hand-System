@@ -1,8 +1,3 @@
-import { Collaborator } from './classDiagramModel/Collaborator';
-/**
- * Your code here
- */
-
 import express from 'express';
 // import { mapOrder } from './utils/sorts.ts';
 import routerItem from './routes/itemRouter';

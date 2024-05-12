@@ -116,7 +116,12 @@ const EditUserInfoValidation = yup.object().shape({
     .string()
     .required('Last name is required')
     .max(20, 'Last name must be less than 20 characters')
-    .matches(/^[a-zA-ZÀ-ỹ ]*$/, 'Last name must contain only letters')
+    .matches(/^[a-zA-ZÀ-ỹ ]*$/, 'Last name must contain only letters'),
+  phoneNumber: yup
+    .string()
+    .trim()
+    .matches(/^[0-9]*$/, 'Only contain numbers')
+    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits')
 });
 
 export {

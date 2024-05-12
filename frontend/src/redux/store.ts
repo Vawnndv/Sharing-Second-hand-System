@@ -16,6 +16,7 @@ const rootReducer = combineReducers({
   adminGetAllCollaborators: Collaborator.adminGetAllCollaboratorsReducer,
   adminDeleteCollaborator: Collaborator.adminDeleteCollaboratorReducer,
   adminEditCollaborator: Collaborator.adminEditCollaboratorReducer,
+  adminCreateCollaborator: Collaborator.adminCreateCollaboratorReducer,
 
   // eslint-disable-next-line object-shorthand
   handleClickMenu: handleClickMenu

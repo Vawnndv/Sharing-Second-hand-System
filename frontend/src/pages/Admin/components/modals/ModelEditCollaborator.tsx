@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material'
-import { useSelector } from 'react-redux'
-import toast from 'react-hot-toast'
-import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { Box, Button, Grid, Modal, Stack, TextField, Typography } from '@mui/material'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
+import { useSelector } from 'react-redux'
+import { getAllCollaboratorsAction, updateCollaboratorAction } from '../../../../redux/actions/collaboratorActions'
+import { resetCollaboratorPasswordService } from '../../../../redux/services/collaboratorServices'
 import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
 import { EditUserInfoValidation } from '../../../../validation/userValidation'
-import { getAllCollaboratorsAction, updateCollaboratorAction } from '../../../../redux/actions/collaboratorActions'
 
 const styleModalEditCollaborator = {
   position: 'absolute',
@@ -29,19 +30,35 @@ interface Props {
   pageState: any;
   sortModel: any;
   filterModel: any;
+  isEdit: boolean;
+  setIsEdit: (val: boolean) => void;
 }
 
 function ModalEditCollaborator(props: Props) {
-  const { isOpen, handleOpen, setUserRow, userRow, setIsOpen, pageState, sortModel, filterModel} = props;
+  const { isOpen, handleOpen, setUserRow, userRow, setIsOpen, pageState, sortModel, filterModel, isEdit, setIsEdit} = props;
   const dispatch: AppDispatch = useAppDispatch();
 
-  const [isAdmin, setIsAdmin] = useState('')
-  const [isBanned, setIsBanned] = useState('')
+  // const [isAdmin, setIsAdmin] = useState('')
+  // const [isBanned, setIsBanned] = useState('')
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  const { isLoading: updateLoading, isError: editError, collaboratorInfo: editUserInfo, isSuccess: editSuccess } = useSelector(
+  const { isLoading: updateLoading, isError: editError, isSuccess: editSuccess } = useSelector(
     (state: RootState) => state.adminEditCollaborator
   )
+
+  const resetCollaboratorPassword = async () => {
+    try {
+      await resetCollaboratorPasswordService({email: userRow.email});
+      toast.success(`Đặt lại mật khẩu của ${userRow.firstname} thành công`);
+    } catch (error: unknown) {
+      console.log(error)
+      if (error instanceof Error) {
+        toast.error(error.message)
+      } else {
+        toast.error("Network Error");
+      }
+    }
+  }
 
   const {
     register,
@@ -54,21 +71,16 @@ function ModalEditCollaborator(props: Props) {
 
   useEffect(() => {
     if (userRow) {
-      setValue('firstName', userRow?.firstName)
-      setValue('lastName', userRow?.lastName)
+      setValue('firstName', userRow?.firstname)
+      setValue('lastName', userRow?.lastname)
       setValue('email', userRow?.email)
-      setValue('userId', userRow?.userId)
-      setIsAdmin(userRow?.isAdmin ? 'admin' : 'not admin')
-      setIsBanned(userRow?.isBanned ? 'banned' : 'unbanned')
+      setValue('phoneNumber', userRow?.phonenumber)
     }
-  }, [userRow, setValue, setIsAdmin, setIsBanned])
+  }, [userRow, setValue])
 
   useEffect(() => {
-    if (editUserInfo) {
-      dispatch(getAllCollaboratorsAction(pageState.page, pageState.pageSize, filterModel, sortModel))
-    }
-
     if (editSuccess) {
+      dispatch(getAllCollaboratorsAction(pageState.page, pageState.pageSize, filterModel, sortModel))
       setIsOpen(!isOpen)
       dispatch({ type: 'UPDATE_USER_RESET' })
     }
@@ -78,15 +90,17 @@ function ModalEditCollaborator(props: Props) {
       dispatch({ type: 'UPDATE_USER_RESET' })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editUserInfo, editSuccess, editError, dispatch, setIsOpen])
+  }, [editSuccess, editError, dispatch, setIsOpen])
 
   const onSubmit = (data: any) => {
+    setIsEdit(false);
     dispatch(updateCollaboratorAction(
-      userRow?.id,
+      userRow?.userid,
       {
+        userId: userRow.userid,
         ...data,
-        isAdmin: isAdmin === 'admin',
-        isBanned: isBanned === 'banned'
+        // isAdmin: isAdmin === 'admin',
+        // isBanned: isBanned === 'banned'
       }
     ))
   }
@@ -114,6 +128,7 @@ function ModalEditCollaborator(props: Props) {
                 id="firstName"
                 label="First Name"
                 variant="outlined"
+                disabled={!isEdit}
                 fullWidth
                 {...register('firstName')}
                 error={!!errors.firstName}
@@ -125,6 +140,7 @@ function ModalEditCollaborator(props: Props) {
                 id="lastName"
                 label="Last Name"
                 variant="outlined"
+                disabled={!isEdit}
                 fullWidth
                 {...register('lastName')}
                 error={!!errors.lastName}
@@ -137,55 +153,33 @@ function ModalEditCollaborator(props: Props) {
             id="email"
             label="Email"
             variant="outlined"
+            disabled={!isEdit}
             {...register('email')}
             error={!!errors.email}
             helperText={errors.email?.message || ''}
             sx={{ mt: '20px', width:'100%' }}
           />
-          {!userRow?.isAdmin && <TextField
-            id="userId"
-            label="Student Id"
+
+          <TextField
+            id="phone"
+            label="Phone"
             variant="outlined"
-            {...register('userId')}
-            error={!!errors.userId}
-            helperText={errors.userId?.message || ''}
+            disabled={!isEdit}
+            {...register('phoneNumber')}
+            error={!!errors.phoneNumber}
+            helperText={errors.phoneNumber?.message || ''}
             sx={{ mt: '20px', width:'100%' }}
-          />}
-          <Grid container spacing={2} sx={{ mt: '20px' }}>
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel id="admin-label">Set Admin</InputLabel>
-                <Select
-                  labelId="admin-label"
-                  id="admin"
-                  label="Set Admin"
-                  value={isAdmin}
-                  onChange={(e) => setIsAdmin(e.target.value)}
-                >
-                  <MenuItem value="admin" >Admin</MenuItem>
-                  <MenuItem value="not admin" >Not Admin</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              <FormControl fullWidth>
-                <InputLabel id="ban-label">Ban User</InputLabel>
-                <Select
-                  labelId="ban-label"
-                  id="ban"
-                  label="Ban User"
-                  value={isBanned}
-                  onChange={(e) => setIsBanned(e.target.value)}
-                >
-                  <MenuItem value="unbanned">Unbanned</MenuItem>
-                  <MenuItem value="banned">Banned</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
+          />    
           <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
             <Button variant='contained' color='error' onClick={() => {handleOpen(); setUserRow(null)}}>Cancel</Button>
-            <Button variant='contained' type="submit">Save</Button>
+            <Button variant='contained' color='success' onClick={() => {handleOpen(); setUserRow(null); resetCollaboratorPassword()}}>Reset Password</Button>
+            {!isEdit && (
+              <Button variant='contained' onClick={() => setIsEdit(true)}>Edit</Button>
+            )}
+            {isEdit && (
+              <Button variant='contained' type="submit">Save</Button>
+            )}
+            
           </Stack>
         </Box>
       </Modal>

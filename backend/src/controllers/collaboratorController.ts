@@ -4,17 +4,17 @@ import asyncHandle from 'express-async-handler';
 import { Request, Response } from 'express';
 import { Account } from '../classDiagramModel/Account';
 import { CollaboratorManager } from '../classDiagramModel/Manager/CollaboratorManager';
+import bcrypt from 'bcrypt';
+import { handleSendMail } from './authController';
 
 export const getAllCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-  console.log(filterModel);
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {
     whereClause = ' AND ';
     for (const filter of filterModel.items) {
       if (filter.operator === 'is' && filter.value) {
-        console.log(filter.value, 'filter');
         whereClause += `u.${filter.field} is ${filter.value} OR `;
       } else if (filter.operator === 'contains') {
         // Add filtering conditions based on filter object properties
@@ -52,8 +52,96 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
 
 });
 
+export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: Response) => {
+  const { firstName, lastName, email, phoneNumber } = req.body;
+
+  const existingUser = await Account.findUserByEmail(email);
+
+  if (existingUser) {
+    res.status(401);
+    throw new Error('User has already exist!!!');
+  }
+
+  const password: number = Math.round(100000 + Math.random() * 9000);
+  
+  try {
+    const data = {
+      from: `"ReTreasure Application" <${process.env.USERNAME_EMAIL}>`, 
+      to: email,
+      subject: 'Verification email code', 
+      text: 'Your code to verification email',
+      html: `<h1>${password}</h1>`,
+    };
+
+    await handleSendMail(data);
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password.toString(), salt);
+
+    const newUser = await Account.createCollaborator(
+      '',
+      firstName, 
+      lastName, 
+      email, 
+      hashedPassword,
+      phoneNumber,
+      2,
+    );
+    if (newUser) {
+      res.status(200).json({
+        message: 'Register new collaborator successfully',
+        data: {},
+      });
+    } else {
+      res.send(400);
+      throw new Error('Không thể tạo tài khoảng cộng tác viên');
+    }
+  } catch (error) {
+    res.send(401);
+    throw new Error('Can not send email');
+  }
+});
+
+
+export const adminResetCollaboratorPassword = asyncHandle(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const randomPassword = Math.round(100000 + Math.random() * 99000);
+
+  const data = {
+    from: `"New Password" <${process.env.USERNAME_EMAIL}>`, 
+    to: email,
+    subject: 'Verification email code', 
+    text: 'Your code to verification email',
+    html: `<h1>${randomPassword}</h1>`,
+  };
+
+  const user = await Account.findUserByEmail(email);
+
+  if (user) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
+
+    const updateUser = await Account.updateAccountPassword(user.userid, hashedPassword);
+
+    if (updateUser) {
+      await handleSendMail(data).then(() => {
+        res.status(200).json({
+          message: 'Send my new password successfully!!!',
+          data: {},
+        });
+      });
+    } else {
+      res.status(400);
+      throw new Error('Update error!!!');
+    }
+  } else {
+    res.status(401);
+    throw new Error('User not found!!!');
+  }
+});
+
 export const getTotalCollaborator = asyncHandle(async (req: Request, res: Response) => {
-  console.log('13123hello');
   const { filterModel = {} } = req.body;
   // console.log(filterModel)
   // Build WHERE clause based on filterModel (replace with your logic)
@@ -62,7 +150,6 @@ export const getTotalCollaborator = asyncHandle(async (req: Request, res: Respon
     whereClause = ' AND ';
     for (const filter of filterModel.items) {
       if (filter.operator === 'is' && filter.value) {
-        console.log(filter.value, 'filter');
         whereClause += `u.${filter.field} is ${filter.value} OR `;
       } else if (filter.operator === 'contains') {
         // Add filtering conditions based on filter object properties
@@ -74,7 +161,6 @@ export const getTotalCollaborator = asyncHandle(async (req: Request, res: Respon
 
   const total = await CollaboratorManager.totalAllCollaborators(whereClause);
   // res.json({ users: users.rows, total: totalUsers.rows[0].count });
-  console.log(total, '13123');
   res.status(200).json({
     message: 'get Collaborator address successfully',
     data: {
@@ -100,7 +186,6 @@ export const adminBanCollaborator = asyncHandle(async (req: Request, res: Respon
 export const adminDeleteCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { id } = req.params;
   const ids = id.split(',');
-  console.log(ids);
   for (const collaboratorId of ids) {
     // find Collaborator in DB
     const collaborator = await Account.findUserById(collaboratorId);
@@ -114,4 +199,18 @@ export const adminDeleteCollaborator = asyncHandle(async (req: Request, res: Res
   }
 
   res.json({ message: 'Collaborator was deleted successfully' });
+});
+
+export const adminEditCollaborator = asyncHandle(async (req: Request, res: Response) => {
+  const { userId, firstName, lastName, email, phoneNumber } = req.body;
+  // find Collaborator in DB
+  const collaborator = await Account.findUserById(userId);
+
+  if (collaborator) {
+    await CollaboratorManager.adminUpdateCollaborator( userId, firstName, lastName, email, phoneNumber);
+    res.json({ message: 'Collaborator was Banned successfully' });
+  } else {
+    res.status(400);
+    throw Error('Collaborator not found');
+  }
 });

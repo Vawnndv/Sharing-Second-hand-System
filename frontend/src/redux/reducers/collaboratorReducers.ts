@@ -60,3 +60,21 @@ export const adminEditCollaboratorReducer = ( state = {}, action: { type: string
   }
 }
 
+// ADMIN UPDATE PROFILE
+export const adminCreateCollaboratorReducer = ( state = {}, action: { type: string; payload?: any }): CollaboratorState => {
+  switch (action.type) {
+  case collaboratorConstants.CREATE_COLLABORATOR_REQUEST:
+    return { isLoading: true }
+  case collaboratorConstants.CREATE_COLLABORATOR_SUCCESS:
+    return { isLoading: false, collaboratorInfo: action.payload, isSuccess: true }
+  case collaboratorConstants.CREATE_COLLABORATOR_FAIL:
+    return { isLoading: false, isError: action.payload }
+  case collaboratorConstants.CREATE_COLLABORATOR_RESET:
+    return {}
+  default:
+    return state
+  }
+}
+
+
+
