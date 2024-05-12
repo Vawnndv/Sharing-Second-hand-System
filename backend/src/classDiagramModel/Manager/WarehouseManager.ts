@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import pool from '../../config/DatabaseConfig';
 import { Collaborator } from '../Collaborator';
 import { Warehouse } from '../Warehouse';
@@ -103,4 +104,112 @@ export class WarehouseManager {
       client.release(); // Release client sau khi sử dụng
     }
   }
+
+  public static async createWarehouse (phonenumber: string, warehouseName: string, warehouseLocation: any, avatar: string, isNewAddress: string): Promise<void> {
+
+    const client = await pool.connect();
+
+    const queryInsertAddress = `
+      INSERT INTO "address" (address, latitude, longitude) 
+      VALUES ('${warehouseLocation.address}', ${warehouseLocation.latitude}, ${warehouseLocation.longitude})
+      RETURNING addressid;
+    `
+    const query = `
+        INSERT INTO warehouse(warehousename, phonenumber, avatar, addressid)
+        VALUES($1, $2, $3, $4)
+        RETURNING *;
+      `;
+    
+    
+    try {
+      if(isNewAddress){
+        const resultInsertAddress: QueryResult = await client.query(queryInsertAddress)
+        
+        const values : any = [warehouseName, phonenumber, avatar, resultInsertAddress.rows[0].addressid];
+        const result: QueryResult = await client.query(query, values);
+        console.log('Warehouse inserted successfully:', result.rows[0]);
+        return result.rows[0];
+      }else{
+        const values : any = [warehouseName, phonenumber, avatar, warehouseLocation.addressid];
+        const result: QueryResult = await client.query(query, values);
+        console.log('Warehouse inserted successfully:', result.rows[0]);
+        return result.rows[0];
+      }
+      
+    } catch (error) {
+      console.error('Error inserting warehouse:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async updateWarehouse (phonenumber: string, warehousename: string, warehouseLocation: any, avatar: string, isNewAddress: string, warehouseid: string): Promise<void> {
+
+    const client = await pool.connect();
+
+    const queryInsertAddress = `
+      INSERT INTO "address" (address, latitude, longitude) 
+      VALUES ('${warehouseLocation.address}', ${warehouseLocation.latitude}, ${warehouseLocation.longitude})
+      RETURNING addressid;
+    `
+
+    const updateWarehouseAddress = `
+      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      SET addressid = $1
+      WHERE warehouseid = $2
+      RETURNING *;
+    `
+    const updateWarehouseName = `
+      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      SET warehousename = '${warehousename}'
+      WHERE warehouseid = $1
+      RETURNING *;
+    `
+
+    const updateWarehousePhoneNumber = `
+      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      SET phonenumber = '${phonenumber}'
+      WHERE warehouseid = $1
+      RETURNING *;
+      `
+
+    const updateWarehouseAvatar = `
+      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      SET avatar = '${avatar}'
+      WHERE warehouseid = $1
+      RETURNING *;
+      `
+    
+    
+    try {
+      if(isNewAddress){
+        const resultInsertAddress: QueryResult = await client.query(queryInsertAddress)
+        
+        const values : any = [resultInsertAddress.rows[0].addressid, warehouseid];
+        const result: QueryResult = await client.query(updateWarehouseAddress, values);
+        // console.log('Warehouse updated successfully:', result.rows[0]);
+        // return result.rows[0];
+      }
+      
+      if(warehousename){
+        const values : any = [warehouseid];
+        const result: QueryResult = await client.query(updateWarehouseName, values);
+      }
+
+      if(phonenumber){
+        const values : any = [warehouseid];
+        const result: QueryResult = await client.query(updateWarehousePhoneNumber, values);
+      }
+
+      if(avatar){
+        const values : any = [warehouseid];
+        const result: QueryResult = await client.query(updateWarehouseAvatar, values);
+      }
+      
+    } catch (error) {
+      console.error('Error updating warehouse:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
 }
