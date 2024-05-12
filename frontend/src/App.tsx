@@ -44,11 +44,6 @@ export function App() {
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
           <Route path="/statistic" element={<Statistic />} />
-        </Route>
-        {/* <Route element={<AdminProtectedRouter />}>
-
-        </Route> */}
-          {/* <Route path="/order" element={<Order />} /> */}
           <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
@@ -56,6 +51,8 @@ export function App() {
             <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
         </Route>
+      </Route>
+          {/* <Route path="/order" element={<Order />} /> */}
     </Routes>
   );
 }
