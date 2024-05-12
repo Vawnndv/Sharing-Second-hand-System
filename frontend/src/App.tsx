@@ -20,6 +20,8 @@ import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Statistic from './pages/statistic/Statistic';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
+import ManageWarehouse from './pages/warehouse/ManageWarehouse';
+
 import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 
 export function App() {
@@ -44,6 +46,8 @@ export function App() {
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
           <Route path="/statistic" element={<Statistic />} />
+          <Route path="/warehouse" element={<ManageWarehouse />} />
+
         </Route>
         {/* <Route element={<AdminProtectedRouter />}>
 
@@ -53,6 +57,8 @@ export function App() {
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
+            <Route path="/warehouse" element={<ManageWarehouse />} />
+
             <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
         </Route>
