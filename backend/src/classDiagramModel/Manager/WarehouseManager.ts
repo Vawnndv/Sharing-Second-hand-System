@@ -70,6 +70,7 @@ export class WarehouseManager {
           w.warehousename,
           w.avatar,
           w.phonenumber,
+          w.createdat,
           a.address,
           longitude,
           latitude,
