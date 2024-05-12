@@ -9,6 +9,7 @@ import ChartComponent from '../../components/Chart/ChartComponent';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import MapSelectWarehouses from '../../components/Map/MapSelectWarehouses';
+// import MapSelectAddress from '../../components/Map/MapSelectAddress';
 
 function ChartTypeComponent ({typeChart, setTypeChart}: any) {
     return (
@@ -266,6 +267,8 @@ function Statistic() {
         border: '2px solid #CAC9C8',
         boxShadow: '1px 1px 2px #CAC9C8',
     };
+
+    // const [location, setLocation] = useState<any>(null)
     return ( 
         <div>
             {
@@ -329,6 +332,7 @@ function Statistic() {
                                         >
                                             <Box sx={style}>
                                                 <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
+                                                {/* <MapSelectAddress setLocation={setLocation}/> */}
                                             </Box>
                                         </Modal>
                                     </div>
