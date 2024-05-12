@@ -1,7 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-template */
 import React, { useEffect, useState } from 'react';
-
 import axios from 'axios';
+import WarehouseTable from '../Admin/components/tables/WarehouseTable';
+import { AppDispatch, useAppDispatch, RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
+import { deleteCollaboratorAction } from '../../redux/actions/collaboratorActions';
 
 
 interface Warehouse {
@@ -12,18 +17,35 @@ interface Warehouse {
   latitude: string;
   numberofemployees: number;
   avatar: string;
+  createdat: string;
 }
 
 
 export default function ManageWarehouse() {
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
 
-  const [isLoading, setIsLoading] = useState(false);
+  const dispatch: AppDispatch = useAppDispatch();
+
+  const [selectionModel, setSelectionModel] = useState([])
+  const [pageState, setPageState] = useState({
+      page: 0,
+      pageSize: 5,
+    });
+  const [filterModel, setFilterModel] = useState({ items: [] });
+  const [sortModel, setSortModel] = useState([]);
+  const [totalCollaborator, setTotalCollaborator] = useState(0);
+
+  const { isLoading, isError, collaborators } = useSelector(
+    (state: RootState) => state.adminGetAllCollaborators
+  )
+
+  const { isError: deleteError, isSuccess } = useSelector(
+    (state: RootState) => state.adminDeleteCollaborator
+  )
 
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
-        setIsLoading(true);
         const res = await axios.get(`http://localhost:3000/warehouse/getAllWarehousesAllInfo`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -47,49 +69,43 @@ export default function ManageWarehouse() {
 
       } catch (error) {
         console.error('Error fetching warehouses:', error);
-      } finally {
-        setIsLoading(false);
       }
   }
   fetchWarehouses();
   },[])
 
+    // delete user handler
+  const deleteUserHandler = (user: any) => {
+    if (window.confirm(`Are you sure you want to delete ?${  user.firstname}`)) {
+      dispatch(deleteCollaboratorAction(user.userid))
+    }
+  }
+
+  const handleDeleteSelectedRows = () => {
+    const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
+    if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
+      dispatch(deleteCollaboratorAction(id))
+    }
+    setSelectionModel([])
+  }
+
+
   return (
-    <div className="warehouse-container">
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Address</th>
-              <th>Longitude</th>
-              <th>Latitude</th>
-              <th>Employees</th>
-              <th>Avatar</th>
-
-
-            </tr>
-          </thead>
-          <tbody>
-            {wareHouses.map((warehouse) => (
-              <tr key={warehouse.warehouseid}>
-                <td>{warehouse.warehouseid}</td>
-                <td>{warehouse.warehousename}</td>
-                <td>{warehouse.address}</td>
-                <td>{warehouse.longitude}</td>
-                <td>{warehouse.latitude}</td>
-                <td>{warehouse.numberofemployees}</td>
-                <td>{warehouse.avatar}</td>
-
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  )
+    <WarehouseTable 
+        deleteHandler={deleteUserHandler} 
+        isLoading={isLoading ?? false} 
+        warehouses={wareHouses ?? []} 
+        total={wareHouses.length} 
+        deleteSelectedHandler={handleDeleteSelectedRows} 
+        selectionModel={selectionModel} 
+        setSelectionModel={setSelectionModel} 
+        pageState={pageState} 
+        filterModel={filterModel}
+        sortModel={sortModel}
+        setPageState={setPageState} 
+        setFilterModel={setFilterModel}
+        setSortModel={setSortModel}
+    />
+)
 
 }
