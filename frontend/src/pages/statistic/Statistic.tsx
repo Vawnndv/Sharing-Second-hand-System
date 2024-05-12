@@ -95,7 +95,6 @@ const timeArr = [
 function Statistic() {
 
     const userLogin = useSelector((state: any) => state.userLogin);
-    console.log(userLogin.userInfo)
 
     const [tabValue, setTabValue] = useState('Lượng sản phẩm vào/ra kho')
     const handleChange = (event: any, newValue: any) => {
@@ -120,42 +119,46 @@ function Statistic() {
     
     const [warehousesSelected, setWarehousesSelected] = useState<boolean[]>([])
 
+    const [apply, setApply] = useState(false)
+
     const handleSelectWarehouses = (id: number) => {
         
         const newWarehousesSelected = [...warehousesSelected]
         const indexSelect = warehouses.findIndex((warehouse: any) => warehouse.warehouseid === id)
-        console.log(indexSelect)
         newWarehousesSelected[indexSelect] = !newWarehousesSelected[indexSelect]
         setWarehousesSelected(newWarehousesSelected)
-        console.log(warehousesSelected)
     }
 
     useEffect(() => {
         const fetchDataWarehouses = async () => {
             try {
+                setIsLoading(true)
                 const response = await axios.get(`http://localhost:3000/warehouse/`)
                 const tempWarehouses = response.data.wareHouses
+                
                 for(let i = 0; i < tempWarehouses.length; i+=1){
                     tempWarehouses[i].label = tempWarehouses[i].warehousename
                 }
                 setWarehousesSelected(Array.from({length: tempWarehouses.length}, () => true))
                 setWarehouses(tempWarehouses)
+                setIsLoading(false)
+                console.log('fetchDataWarehouses')
             } catch (error) {
                 console.log(error)
             }
             
         }
-
+        
         fetchDataWarehouses()
     }, [])
-
+    
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchDataCollaborator = async () => {
             let response;
             if(tabValue === "Lượng người truy cập"){
                 try{
                     setIsLoading(true)
-                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?userID=${userLogin.userInfo.id}&timeValue=${timeUserAccess}`)
+                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?timeValue=${timeUserAccess}`)
                 } catch(error){
                     console.log(error)
                 } 
@@ -182,10 +185,64 @@ function Statistic() {
             }
         }
 
-        fetchData()
+        const fetchDataAdmin = async () => {
+            let response;
+            if(tabValue === "Lượng người truy cập"){
+                try{
+                    setIsLoading(true)
+                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?timeValue=${timeUserAccess}`)
+                } catch(error){
+                    console.log(error)
+                } 
+            }
+            else if(tabValue === "Lượng sản phẩm vào/ra kho"){
+                try{
+                    setIsLoading(true)
+                    const listWarehousesSelected = []
+                    for(let i = 0; i < warehousesSelected.length; i+=1){
+                        if(warehousesSelected[i]) {
+                            listWarehousesSelected.push(warehouses[i])
+                        }
+                    }
+                    response = await axios.post(`http://localhost:3000/statistic/statisticImportExportAdmin`,{
+                        type: typeItemInOut,
+                        warehouses: listWarehousesSelected
+                    })
+                } catch(error){
+                    console.log(error)
+                }                
+            } else {
+                try {
+                    setIsLoading(true)
+                    const listWarehousesSelected = []
+                    for(let i = 0; i < warehousesSelected.length; i+=1){
+                        if(warehousesSelected[i]) {
+                            listWarehousesSelected.push(warehouses[i])
+                        }
+                    }
+                    response = await axios.post(`http://localhost:3000/statistic/statisticInventoryAdmin`,{
+                        warehouses: listWarehousesSelected
+                    })
+                } catch (error) {
+                    console.log(error)
+                }                
+            }
+            if(response){
+                setData(response.data.data);
+                console.log(response);
+                setIsLoading(false)
+            }
+        }
+
+        if(userLogin.userInfo.roleID === 2){
+            fetchDataCollaborator()
+        }else{
+            fetchDataAdmin()
+        }
+        
         console.log("tabValue", tabValue)
         console.log("typeItemInOut", typeItemInOut)
-    }, [tabValue, typeItemInOut, timeUserAccess])
+    }, [tabValue, typeItemInOut, timeUserAccess,apply, warehouses])
 
     const currentDate = new Date();
     // Ngày trong quá khứ (ví dụ: 1 tháng trước)
@@ -212,7 +269,7 @@ function Statistic() {
     return ( 
         <div>
             {
-                (data.length > 0 && !isLoading) ?
+                (data.length > 0 && !isLoading && warehousesSelected.length > 0) ?
                 <TabContext value={tabValue}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2, ml: 2 }}>
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
@@ -275,6 +332,10 @@ function Statistic() {
                                             </Box>
                                         </Modal>
                                     </div>
+                                    <Button sx={{height: '55px', ml: 1}} variant="outlined"
+                                        onClick={() => setApply(!apply)}>
+                                        Áp dụng
+                                    </Button>
                                 </Stack>
                                 
                             }
@@ -321,6 +382,10 @@ function Statistic() {
                                             </Box>
                                         </Modal>
                                     </div>
+                                    <Button sx={{height: '55px', ml: 1}} variant="outlined"
+                                        onClick={() => setApply(!apply)}>
+                                        Áp dụng
+                                    </Button>
                                 </Stack>
                                 
                             }
