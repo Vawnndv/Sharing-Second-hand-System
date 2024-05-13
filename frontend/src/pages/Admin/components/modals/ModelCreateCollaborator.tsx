@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, Grid, Modal, Stack, TextField, Typography } from '@mui/material'
+import { Backdrop, Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -25,13 +25,16 @@ interface Props {
   isOpen: boolean;
   handleOpen: () => void;
   setIsOpen: (val: boolean) => void;
+  warehouseNameList: any;
   pageState: any;
   sortModel: any;
   filterModel: any;
+  totalCollaborator: any;
+  setTotalCollaborator: (val: boolean) => void;
 }
 
 function ModalCreateCollaborator(props: Props) {
-  const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel} = props;
+  const { isOpen, handleOpen, setIsOpen, warehouseNameList, pageState, sortModel, filterModel, totalCollaborator, setTotalCollaborator} = props;
   const dispatch: AppDispatch = useAppDispatch();
   
   const { isLoading, isError, isSuccess } = useSelector(
@@ -42,22 +45,26 @@ function ModalCreateCollaborator(props: Props) {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(EditUserInfoValidation)
   })
 
   useEffect(() => {
-    setValue('firstName', '')
-    setValue('lastName', '')
-    setValue('email', '')
-    setValue('phoneNumber', '')
+    reset();
+    setValue('firstName', '');
+    setValue('lastName', '');
+    setValue('email', '');
+    setValue('phoneNumber', '');
+    setValue('warehouseName', '');
   }, [isOpen])
 
 
   useEffect(() => {
     if (isSuccess) {
       dispatch(getAllCollaboratorsAction(0, pageState.pageSize, filterModel, sortModel))
+      setTotalCollaborator(totalCollaborator + 1);
       setIsOpen(!isOpen)
       dispatch({ type: 'UPDATE_USER_RESET' })
     }
@@ -70,7 +77,11 @@ function ModalCreateCollaborator(props: Props) {
   }, [isSuccess, isError, dispatch, setIsOpen])
 
   const onSubmit = (data: any) => {
-    dispatch(createCollaboratorAction(data))
+    const selectedWarehouse = warehouseNameList.find((warehouse: any) => warehouse.warehousename === data.warehouseName);
+    // Check if warehouse is found and then access its warehouseid
+    const warehouseId = selectedWarehouse ? selectedWarehouse.warehouseid : null;
+    console.log(warehouseId, 'abcdef')
+    dispatch(createCollaboratorAction({...data, warehouseId}))
   }
 
   return (
@@ -82,20 +93,12 @@ function ModalCreateCollaborator(props: Props) {
       >
         <>
           {isLoading && (
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 9999, // Ensure the loading overlay is on top
-          }}>
+           <Backdrop
+           sx={{ zIndex: (theme: { zIndex: { drawer: number } }) => theme.zIndex.drawer + 1, backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+           open={isLoading}
+         >
             <Loader />
-          </div>
+          </Backdrop>
            )}
           <Box
             sx={styleModalCreateCollaborator}
@@ -150,6 +153,47 @@ function ModalCreateCollaborator(props: Props) {
               helperText={errors.phoneNumber?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
             />    
+
+            <Grid sx={{ mt: '20px' }}>
+                <FormControl fullWidth>
+                  <InputLabel id="warehousename-label">Chọn Kho</InputLabel>
+                  <Select
+                    labelId="warehousename-label"
+                    id="warehousename"
+                    label="Set Admin"
+                   {...register('warehouseName')} // Đăng ký với useForm
+                   defaultValue=""
+                   error={!!errors.warehouseName} // Hiển thị lỗi nếu có
+                  >
+                    <MenuItem value='' style={{ display: 'none' }} />
+                    {warehouseNameList.map((item: any, index: number) => (
+                      <MenuItem key={index} value={item.warehousename}>
+                        {item.warehousename}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.warehouseName && (
+                    <Typography
+                      variant="body2"
+                      color="error"
+                      sx={{
+                        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+                        fontWeight: 400,
+                        fontSize: '0.75rem',
+                        lineHeight: 1.66,
+                        letterSpacing: '0.03333em',
+                        textAlign: 'left',
+                        marginTop: '3px',
+                        marginRight: '14px',
+                        marginBottom: 0,
+                        marginLeft: '14px',
+                      }}
+                    >
+                      {errors.warehouseName.message}
+                    </Typography>
+                  )}
+                </FormControl>
+            </Grid>
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
               <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Cancel</Button>
               <Button variant='contained' type="submit">Save</Button>

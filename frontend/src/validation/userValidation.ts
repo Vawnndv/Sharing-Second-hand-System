@@ -120,8 +120,13 @@ const EditUserInfoValidation = yup.object().shape({
   phoneNumber: yup
     .string()
     .trim()
+    .required('First name is required')
     .matches(/^[0-9]*$/, 'Only contain numbers')
-    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits')
+    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
+  warehouseName: yup
+    .string()
+    .trim()
+    .required('Please select an warehouse work'),
 });
 
 export {
