@@ -17,6 +17,7 @@ import { ProfileValidation } from '../../../validation/userValidation';
 import './style.scss';
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
 import { getProfileAction, updateProfileAction } from '../../../redux/actions/userActions';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 const defaultTheme = createTheme({
   palette: {
@@ -216,6 +217,12 @@ function Profile() {
                       error={!!errors.phone}
                       helperText={errors.phone?.message || ''}
                     />
+                  </Grid>
+
+                  <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
+                    <Button variant='outlined' startIcon={<LocationOnIcon/>}>
+                      Vị trí
+                    </Button>
                   </Grid>
 
                   {/* <Grid item xs={12} sm={6} md={6}>
