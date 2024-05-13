@@ -31,7 +31,7 @@ function Menu({index, setIndex}: any) {
     return ( 
         <div>
             {
-                userLogin.roleID === 2 ?
+                userLogin.userInfo.roleID === 2 ?
                 <Stack direction="column" spacing={1} className={`menu ${isOpenMenu && 'hidden'}`}>
   
                     <Stack direction="row" alignItems="center" spacing={1} style={{paddingLeft: "20px", cursor: 'pointer'}}>
