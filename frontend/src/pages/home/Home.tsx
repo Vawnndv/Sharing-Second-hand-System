@@ -58,10 +58,10 @@ function Home() {
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
-      const response: any = await Axios.get(`/warehouse`)
-      // console.log("WAREHOUSES",response.data.wareHouses)
+      const response: any = await Axios.get('warehouse')
+      console.log("WAREHOUSES",response)
       const listWarehouseID: any = []
-      response.data.wareHouses.map((warehouse: any) => {
+      response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)
       })
       setWarehousesID(listWarehouseID)
