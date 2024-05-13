@@ -32,6 +32,7 @@ export class CollaboratorManager extends UserManager {
       u.updatedat,
       u.isbanned,
       w.warehousename,
+      w.warehouseid,
       a.address,
       a.longitude,
       a.latitude
@@ -132,6 +133,46 @@ export class CollaboratorManager extends UserManager {
       RETURNING *;
     `;
     const values: any = [userid, firstname, lastname, email, phonenumber];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+  public static async adminUpdateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      UPDATE "workat"
+      SET warehouseid = $2
+      WHERE userid = $1
+      RETURNING *;
+    `;
+    const values: any = [userid, warehouseid];
+    try {
+      const result = await client.query(query, values);
+  
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+  public static async adminCreateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+      INSERT INTO public.workat(warehouseid, userid, position)
+      VALUES ($1, $2, $3);
+    `;
+    const values: any = [warehouseid, userid, 'collaborator'];
     try {
       const result = await client.query(query, values);
   

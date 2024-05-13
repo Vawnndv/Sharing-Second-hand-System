@@ -53,7 +53,7 @@ function Users() {
   useEffect(() => {
     console.log(filterModel)
     getTotalUser();
-  }, [filterModel, isSuccess])
+  }, [filterModel])
 
    // useEffect
    useEffect(() => {
@@ -70,6 +70,7 @@ function Users() {
   const deleteUserHandler = (user: any) => {
     if (window.confirm(`Are you sure you want to delete ?${  user.firstname}`)) {
       dispatch(deleteUserAction(user.userid))
+      setTotalUser(totalUser - 1);
     }
   }
 
@@ -77,6 +78,8 @@ function Users() {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
     if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
       dispatch(deleteUserAction(id))
+      setTotalUser(totalUser - selectionModel.length);
+
     }
     setSelectionModel([])
   }

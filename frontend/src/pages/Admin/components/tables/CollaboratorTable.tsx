@@ -19,6 +19,7 @@ interface Props {
   isLoading: boolean;
   collaborators: any; 
   total: number;
+  warehouseNameList: any;
   deleteSelectedHandler: () => void;
   selectionModel: any;
   setSelectionModel: (val: any) => void;
@@ -28,10 +29,11 @@ interface Props {
   setPageState: (val: any) => void;
   setFilterModel: (val: any) => void;
   setSortModel: (val: any) => void;
+  setTotalCollaborator: (val: any) => void;
 }
 
 function CollaboratorTable(props: Props) {
-  const {deleteHandler, isLoading, collaborators, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel} = props;
+  const {deleteHandler, isLoading, collaborators, total, warehouseNameList, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, setTotalCollaborator} = props;
 
   const { userInfo } = useSelector(
     (state: RootState) => state.userLogin
@@ -152,25 +154,29 @@ function CollaboratorTable(props: Props) {
       justifyContent="center"
       sx={{ mt: 1, mb: 5, p: 4 }}
     >
-      <ModalEditCollaborator
-        isOpen={isOpen}
-        handleOpen={handleOpen}
-        userRow={userRow}
-        setUserRow={setUserRow}
-        setIsOpen={setIsOpen}
-        pageState={pageState} 
-        filterModel={filterModel}
-        sortModel={sortModel}
-        isEdit={isEdit}
-        setIsEdit={setIsEdit}
+        <ModalEditCollaborator
+            isOpen={isOpen}
+            handleOpen={handleOpen}
+            userRow={userRow}
+            setUserRow={setUserRow}
+            setIsOpen={setIsOpen}
+            pageState={pageState} 
+            filterModel={filterModel}
+            sortModel={sortModel}
+            warehouseNameList={warehouseNameList}
+            isEdit={isEdit}
+            setIsEdit={setIsEdit}
         />
         <ModalCreateCollaborator
-        isOpen={isOpenModalCreate}
-        handleOpen={handleOpenModalCreate}
-        setIsOpen={setIsOpenModalCreate}
-        pageState={pageState} 
-        filterModel={{ items: [] }}
-        sortModel={[]}
+            isOpen={isOpenModalCreate}
+            handleOpen={handleOpenModalCreate}
+            setIsOpen={setIsOpenModalCreate}
+            pageState={pageState} 
+            warehouseNameList={warehouseNameList}
+            filterModel={{ items: [] }}
+            sortModel={[]}
+            totalCollaborator={total}
+            setTotalCollaborator={setTotalCollaborator}
         />
       <Grid item xs={12}>
         <Box

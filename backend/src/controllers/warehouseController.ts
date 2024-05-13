@@ -59,3 +59,20 @@ export const getWarehouse = asyncHandle(async (req, res) => {
 });
 
 
+export const getWarehouseNameList = asyncHandle(async (_req, res) => {
+  try {
+    const warehouseList = await WarehouseManager.getWarehouseNameList();
+    // If items are found, return them as a response
+    if (warehouseList) {
+      res.status(200).json({ message: 'Get Warehouses Name List Successfully', data: { warehouseList } });
+    } else {
+      // If no items are found, return an empty array
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    // If there's an error, return a 500 error
+    console.error('Error retrieving warehouses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+

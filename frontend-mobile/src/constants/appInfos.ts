@@ -9,7 +9,7 @@ export const appInfo = {
     HEIGHT: Dimensions.get('window').height,
   },
   
-  BASE_URL: 'http://192.168.113.83:3000',
+  BASE_URL: BASE_URL,
 
 }
 

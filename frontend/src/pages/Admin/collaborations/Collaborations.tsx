@@ -6,6 +6,7 @@ import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store'
 import CollaboratorTable from '../components/tables/CollaboratorTable'
 import { getCollaboratorsTotalService } from '../../../redux/services/collaboratorServices'
 import { styled } from '@mui/material/styles'
+import { getWarehouseNameList } from '../../../redux/services/warehouseService'
 
 
 const StyledClassTable = styled('div')({
@@ -25,12 +26,14 @@ function Collaborators() {
     const [filterModel, setFilterModel] = useState({ items: [] });
     const [sortModel, setSortModel] = useState([]);
     const [totalCollaborator, setTotalCollaborator] = useState(0);
+    const [warehouseNameList, setWarehouseNameList] = useState([]);
+
 
   const { isLoading, isError, collaborators } = useSelector(
     (state: RootState) => state.adminGetAllCollaborators
   )
 
-  const { isError: deleteError, isSuccess } = useSelector(
+  const { isError: deleteError, isSuccess} = useSelector(
     (state: RootState) => state.adminDeleteCollaborator
   )
 
@@ -38,7 +41,6 @@ function Collaborators() {
     try {
       const total: number = await getCollaboratorsTotalService(filterModel);
       setTotalCollaborator(total);
-        console.log(total)
     } catch (error: unknown) {
       console.log(error)
       if (error instanceof Error) {
@@ -49,10 +51,28 @@ function Collaborators() {
     }
   }
 
+  const adminGetWarehouseNameList = async () => {
+    try {
+      const res: any = await getWarehouseNameList();
+      setWarehouseNameList(res.warehouseList);
+    //   setWarehouseNameList(res.warehouseList);
+        console.log(warehouseNameList)
+
+    } catch (error: unknown) {
+      console.log(error)
+      if (error instanceof Error) {
+        console.log(error.message)
+      } else {
+        console.log("Network Error");
+      }
+    }
+  }
+
   // useEffect
   useEffect(() => {
     getTotalCollaborator();
-  }, [filterModel, isSuccess])
+    adminGetWarehouseNameList();
+  }, [filterModel])
 
    // useEffect
    useEffect(() => {
@@ -69,13 +89,15 @@ function Collaborators() {
    const deleteUserHandler = (user: any) => {
     if (window.confirm(`Are you sure you want to delete ${  user.firstname} ?`)) {
       dispatch(deleteCollaboratorAction(user.userid))
+      setTotalCollaborator(totalCollaborator - 1);
     }
   }
 
   const handleDeleteSelectedRows = () => {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
     if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
-      dispatch(deleteCollaboratorAction(id))
+        dispatch(deleteCollaboratorAction(id))
+        setTotalCollaborator(totalCollaborator - selectionModel.length)
     }
     setSelectionModel([])
   }
@@ -96,6 +118,8 @@ function Collaborators() {
             setPageState={setPageState} 
             setFilterModel={setFilterModel}
             setSortModel={setSortModel}
+            warehouseNameList={warehouseNameList}
+            setTotalCollaborator={setTotalCollaborator}
         />
     </StyledClassTable>
   )
