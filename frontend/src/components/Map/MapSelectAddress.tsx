@@ -8,12 +8,15 @@ import { Alert, Button, Checkbox, IconButton, InputBase, Stack, TextField, Typog
 import SearchIcon from '@mui/icons-material/Search';
 import { useDebounce } from '../../hooks/useDebounce';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import HomeIcon from '@mui/icons-material/Home';
 import axios from 'axios';
 import Axios from '../../redux/APIs/Axios';
 import { useSelector } from 'react-redux';
+import home from '../../assets/home.png'
 
-const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
+// const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
 // const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
+const API_KEY = 'AIzaSyBW-S8iBG0D-d2QahuXvJbtvkUOpy2A8OY'
 
 const getUrlRequest = (query: string) => {
   return `https://nominatim.openstreetmap.org/search?q=${query}&format=json`
@@ -101,6 +104,7 @@ function MapSelectAddress({setLocation, handleClose}: any) {
   const [center, setCenter] = useState<any>(initialLocation)
 
   const userLogin = useSelector((state: any) => state.userLogin);
+  const [homeLocation, setHomeLocation] = useState<any>(null)
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -198,6 +202,30 @@ function MapSelectAddress({setLocation, handleClose}: any) {
     
   }
 
+  useEffect(() => {
+    const fetchHomeLocation = async () => {
+      try {
+        const response = await Axios.get(`user/get-user-address?userId=${userLogin.userInfo.id}`)
+        console.log(response)
+        setHomeLocation({
+            address: response.data.address,
+            latitude: parseFloat(response.data.latitude),
+            longitude: parseFloat(response.data.longitude)
+        })
+        setCenter({
+          lat: parseFloat(response.data.latitude),
+          lng: parseFloat(response.data.longitude)
+        })
+        
+      } catch (error) {
+        console.log(error)
+      }
+        
+    }
+    fetchHomeLocation()
+    
+  }, [])
+
   return isLoaded && (
     <GoogleMap
         mapContainerStyle={containerStyle}
@@ -207,7 +235,20 @@ function MapSelectAddress({setLocation, handleClose}: any) {
         onUnmount={onUnmount}
       
       >
-        {}
+        {
+            homeLocation !== null &&
+            <Marker
+                position={{
+                    lat: parseFloat(homeLocation.latitude),
+                    lng: parseFloat(homeLocation.longitude)
+                }}
+                title="Vị trí nhà của bạn"
+                icon={{
+                  url: home, // Sử dụng hình ảnh marker tùy chỉnh
+                  scaledSize: new window.google.maps.Size(50, 50), // Kích thước mong muốn của marker
+                }}
+            />
+        }
 
         <Stack
           flexDirection='row'
