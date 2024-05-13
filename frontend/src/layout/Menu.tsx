@@ -209,7 +209,7 @@ function Menu({index, setIndex}: any) {
                         spacing={1} 
                         className={index === 1 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(1); navigate('/users')}}
+                        onClick={() => {setIndex(1); navigate('/collaborators')}}
                         >
                         <Groups2Icon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
@@ -238,7 +238,7 @@ function Menu({index, setIndex}: any) {
                         spacing={1} 
                         className={index === 3 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(3); navigate('/collaborators')}}
+                        onClick={() => {setIndex(3); navigate('/users')}}
                         >
                         <ManageAccountsIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
