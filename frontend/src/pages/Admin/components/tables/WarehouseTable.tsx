@@ -2,16 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef, GridToolbar, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
-import { Delete, Edit } from '@mui/icons-material'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../../redux/store'
+import { Add, Delete, Edit } from '@mui/icons-material'
+// import { useSelector } from 'react-redux'
+// import { RootState } from '../../../../redux/store'
 import { DateFormat } from '../../../../components/notification/Empty'
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import { viVN } from '@mui/x-data-grid/locales';
 import ModalEditCollaborator from '../modals/ModelEditCollaborator'
-import { banUserService } from '../../../../redux/services/userServices'
-import toast from 'react-hot-toast'
-import { TbLock, TbLockOpen } from "react-icons/tb";
+// import { banUserService } from '../../../../redux/services/userServices'
+// import toast from 'react-hot-toast'
+// import { TbLock, TbLockOpen } from "react-icons/tb";
+import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
+
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -32,13 +34,17 @@ interface Props {
 function WarehouseTable(props: Props) {
   const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel} = props;
 
-  const { userInfo } = useSelector(
-    (state: RootState) => state.userLogin
-  );
+  // const { userInfo } = useSelector(
+  //   (state: RootState) => state.userLogin
+  // );
 
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
   const [userRow, setUserRow] = useState(null);
+  const [isEdit, setIsEdit] = useState(true);
+  const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
+
+
 
   const handleOpen = () => {
     setIsOpen(!isOpen)
@@ -53,27 +59,31 @@ function WarehouseTable(props: Props) {
   const handleRowSelection = (newSelectionModel: any) => {
     setSelectionModel(newSelectionModel)
   }
-  
-  const handleBanUser = async (id: number, isBanned: any) => {
-    try {
-      await banUserService(id, {userId: id, isBanned});
-      const userIndex = data.findIndex((user:any) => user.userid === id);
-      if (userIndex !== -1) {
-        const updatedUsers = [...data];
-        updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-        // Create a new array with the user replaced with updated data
-        setData(updatedUsers);
-        toast.success(`Ban user successfully`);
-      }
-    } catch (error: unknown) {
-      console.log(error)
-      if (error instanceof Error) {
-        toast.error(error.message)
-      } else {
-        toast.error("Network Error");
-      }
-    }
+
+  const handleOpenModalCreate = () => {
+    setIsOpenModalCreate(!isOpenModalCreate);
   }
+  
+  // const handleBanUser = async (id: number, isBanned: any) => {
+  //   try {
+  //     await banUserService(id, {userId: id, isBanned});
+  //     const userIndex = data.findIndex((user:any) => user.userid === id);
+  //     if (userIndex !== -1) {
+  //       const updatedUsers = [...data];
+  //       updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
+  //       // Create a new array with the user replaced with updated data
+  //       setData(updatedUsers);
+  //       toast.success(`Ban user successfully`);
+  //     }
+  //   } catch (error: unknown) {
+  //     console.log(error)
+  //     if (error instanceof Error) {
+  //       toast.error(error.message)
+  //     } else {
+  //       toast.error("Network Error");
+  //     }
+  //   }
+  // }
 
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
@@ -111,19 +121,19 @@ function WarehouseTable(props: Props) {
         width: 120,
         renderCell: (params: any) => (
           <Box>
-            <Tooltip title="Ban this user">
+            {/* <Tooltip title="Ban this user">
               <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
             <Tooltip title="Edit this room">
-              <IconButton disabled={params.row.id === userInfo?.id} onClick={() => { handleOpen(); setUserRow(params.row) }}>
+              <IconButton onClick={() => { handleOpen(); setUserRow(params.row) }}>
                 <Edit />
               </IconButton>
             </Tooltip>
             <Tooltip title="Delete this room">
               <IconButton
-                disabled={params.row.id === userInfo?.id}
+                // disabled={params.row.warehouseid === userInfo?.id}
                 onClick={() => deleteHandler(params.row)}
               >
                 <Delete />
@@ -142,7 +152,7 @@ function WarehouseTable(props: Props) {
       justifyContent="center"
       sx={{ mt: 1, mb: 5, p: 4 }}
     >
-      <ModalEditCollaborator 
+      <ModalEditCollaborator
         isOpen={isOpen}
         handleOpen={handleOpen}
         userRow={userRow}
@@ -151,6 +161,16 @@ function WarehouseTable(props: Props) {
         pageState={pageState} 
         filterModel={filterModel}
         sortModel={sortModel}
+        isEdit={isEdit}
+        setIsEdit={setIsEdit}
+        />
+        <ModalCreateCollaborator
+        isOpen={isOpenModalCreate}
+        handleOpen={handleOpenModalCreate}
+        setIsOpen={setIsOpenModalCreate}
+        pageState={pageState} 
+        filterModel={{ items: [] }}
+        sortModel={[]}
         />
       <Grid item xs={12}>
         <Box
@@ -170,6 +190,9 @@ function WarehouseTable(props: Props) {
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
                 Delete selected rows
+            </Button>
+            <Button startIcon={<Add/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleOpenModalCreate}>
+                Create 
             </Button>
           </Box>
 

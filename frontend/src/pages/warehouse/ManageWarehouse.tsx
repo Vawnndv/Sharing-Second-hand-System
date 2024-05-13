@@ -75,16 +75,16 @@ export default function ManageWarehouse() {
   },[])
 
     // delete user handler
-  const deleteUserHandler = (user: any) => {
-    if (window.confirm(`Are you sure you want to delete ?${  user.firstname}`)) {
-      dispatch(deleteCollaboratorAction(user.userid))
+  const deleteWarehouseHandler = (warehouse: any) => {
+    if (window.confirm(`Are you sure you want to delete ?${  warehouse.warehousename}`)) {
+      // dispatch(deleteCollaboratorAction(user.userid))
     }
   }
 
   const handleDeleteSelectedRows = () => {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
-    if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
-      dispatch(deleteCollaboratorAction(id))
+    if (window.confirm(`Are you sure you want to delete ${selectionModel.length} warehouse?` )) {
+      // dispatch(deleteCollaboratorAction(id))
     }
     setSelectionModel([])
   }
@@ -92,7 +92,7 @@ export default function ManageWarehouse() {
 
   return (
     <WarehouseTable 
-        deleteHandler={deleteUserHandler} 
+        deleteHandler={deleteWarehouseHandler} 
         isLoading={isLoading ?? false} 
         warehouses={wareHouses ?? []} 
         total={wareHouses.length} 
