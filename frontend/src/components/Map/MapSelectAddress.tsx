@@ -94,7 +94,7 @@ function SuggestComponent({suggests, handleClickLocation}: any) {
   )
 }
 
-function MapSelectAddress({setLocation, handleClose}: any) {
+function MapSelectAddress({setLocation, handleClose, isUser}: any) {
 
   const [inputSearch, setInputSearch] = useState('')
   const debouncedSearch = useDebounce(inputSearch, 500);
@@ -184,12 +184,17 @@ function MapSelectAddress({setLocation, handleClose}: any) {
           center.lat(),
           center.lng(),
           inputSearch)
-        const response: any = await Axios.post(`map/set_user_location`,{
-          userID: userLogin.userInfo.id,
-          latitude: center.lat(),
-          longitude: center.lng(),
-          address: inputSearch
-        })
+        if(isUser === true) {
+          const response: any = await Axios.post(`map/set_user_location`,{
+            userID: userLogin.userInfo.id,
+            latitude: center.lat(),
+            longitude: center.lng(),
+            address: inputSearch
+          })
+        } else{
+          // set warehouse address here
+        }
+        
         
       } catch (error) {
         console.log(error) 

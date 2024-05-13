@@ -259,7 +259,7 @@ function Profile() {
                       >
                           <Box sx={style}>
                               {/* <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/> */}
-                              <MapSelectAddress setLocation={setLocation} handleClose={handleClose}/>
+                              <MapSelectAddress setLocation={setLocation} handleClose={handleClose} isUser/>
                           </Box>
                       </Modal>
                   </div>
