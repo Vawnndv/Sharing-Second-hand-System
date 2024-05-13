@@ -4,14 +4,16 @@
 
 import React, { useEffect, useState } from 'react'
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
-import { Button, Checkbox, IconButton, InputBase, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Button, Checkbox, IconButton, InputBase, Stack, TextField, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { useDebounce } from '../../hooks/useDebounce';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
+import Axios from '../../redux/APIs/Axios';
+import { useSelector } from 'react-redux';
 
-// const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
-const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
+const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
+// const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
 
 const getUrlRequest = (query: string) => {
   return `https://nominatim.openstreetmap.org/search?q=${query}&format=json`
@@ -89,7 +91,7 @@ function SuggestComponent({suggests, handleClickLocation}: any) {
   )
 }
 
-function MapSelectAddress({setLocation}: any) {
+function MapSelectAddress({setLocation, handleClose}: any) {
 
   const [inputSearch, setInputSearch] = useState('')
   const debouncedSearch = useDebounce(inputSearch, 500);
@@ -97,6 +99,8 @@ function MapSelectAddress({setLocation}: any) {
   const [isFocusSearch, setIsFocusSearch] = useState(false)
   const [locationSelected, setLocationSelected] = useState<any>(null)
   const [center, setCenter] = useState<any>(initialLocation)
+
+  const userLogin = useSelector((state: any) => state.userLogin);
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -157,14 +161,41 @@ function MapSelectAddress({setLocation}: any) {
     return center
   };
 
-  const handleConfirmAddress = () => {
+  const handleConfirmAddress = async () => {
     const center = getCenter()
     console.log('handleConfirmAddress')
-    setLocation({
-      latitude: center.lat(),
-      longitude: center.lng(),
-      address: inputSearch
-    })
+    if(inputSearch === ''){
+      // eslint-disable-next-line no-alert
+      alert('XIn vui lòng nhập địa chỉ của bạn vào thanh tìm kiếm!')
+    }
+    else{
+      setLocation({
+        latitude: center.lat(),
+        longitude: center.lng(),
+        address: inputSearch
+      })
+      handleClose()
+      try {
+        console.log(userLogin.userInfo.id,
+          center.lat(),
+          center.lng(),
+          inputSearch)
+        const response: any = await Axios.post(`map/set_user_location`,{
+          userID: userLogin.userInfo.id,
+          latitude: center.lat(),
+          longitude: center.lng(),
+          address: inputSearch
+        })
+        
+      } catch (error) {
+        console.log(error) 
+      }
+      
+      // eslint-disable-next-line no-alert
+      alert('Cập nhật vị trí thành công!')
+      
+    }
+    
   }
 
   return isLoaded && (
@@ -233,7 +264,7 @@ function MapSelectAddress({setLocation}: any) {
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)',
+            transform: 'translate(-50%, -100%)',
             width: 50,
             height: 50,
             color: '#441672'

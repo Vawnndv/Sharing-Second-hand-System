@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme } from '@mui/material';
+import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme, Modal } from '@mui/material';
 // import dayjs from 'dayjs';
 // import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 // import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -18,6 +18,7 @@ import './style.scss';
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
 import { getProfileAction, updateProfileAction } from '../../../redux/actions/userActions';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MapSelectAddress from '../../../components/Map/MapSelectAddress';
 
 const defaultTheme = createTheme({
   palette: {
@@ -41,6 +42,8 @@ function Profile() {
   const [imageUrl, setImageUrl] = useState('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
+  const [location, setLocation] = useState<any>(null)
+
   console.log(imageUpdateUrl,imageUrl, '123');
 
   const {
@@ -50,7 +53,7 @@ function Profile() {
     isSuccess: editSuccess
   } = useSelector((state: RootState) => state.userUpdateProfile);
 
-  console.log(editUserInfo);
+  // console.log(editUserInfo);
   // validate user
   const {
     register,
@@ -130,6 +133,28 @@ function Profile() {
       dispatch({ type: 'USER_GET_PROFILE_RESET' });
     }
   }, [editUserInfo, setValue, editSuccess, editError, dispatch, userInfo]);
+
+  useEffect(() => {
+    if(location !== null){
+        ///
+    }
+  }, [])
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const style = {
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '95%',
+      height: '95%',
+      bgcolor: 'background.paper',
+      border: '2px solid #CAC9C8',
+      boxShadow: '1px 1px 2px #CAC9C8',
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -220,9 +245,23 @@ function Profile() {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
-                    <Button variant='outlined' startIcon={<LocationOnIcon/>}>
-                      Vị trí
-                    </Button>
+                  <div>
+                      <Button sx={{height: '55px'}} variant="outlined" startIcon={<LocationOnIcon />}
+                          onClick={handleOpen}>
+                          Cập nhật vị trí
+                      </Button>
+                      <Modal
+                          open={open}
+                          onClose={handleClose}
+                          aria-labelledby="modal-modal-title"
+                          aria-describedby="modal-modal-description"
+                      >
+                          <Box sx={style}>
+                              {/* <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/> */}
+                              <MapSelectAddress setLocation={setLocation} handleClose={handleClose}/>
+                          </Box>
+                      </Modal>
+                  </div>
                   </Grid>
 
                   {/* <Grid item xs={12} sm={6} md={6}>
