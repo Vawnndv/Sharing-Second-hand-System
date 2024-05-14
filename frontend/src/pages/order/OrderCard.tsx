@@ -68,7 +68,10 @@ export default function OrderCard({order, isPost, canApproval, canDelete}: any) 
 
           
           
-          <Typography variant="body2" color="text.secondary">
+          <Typography sx={{
+            height: '55px',
+            overflow: 'hidden'
+          }} variant="body2" color="text.secondary">
             {order.description}
           </Typography>
         </CardContent>
