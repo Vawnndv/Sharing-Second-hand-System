@@ -1065,6 +1065,7 @@ export class OrderManager {
       const statusid_waitForApporve = '2';
       const statusid_approved = '12';
       const statusid_waitForGiver = '13';
+      const statisod_waitForCollaborator = '7';
 
 
       const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
@@ -1076,6 +1077,13 @@ export class OrderManager {
         console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
         console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForGiverResult);
+      }
+
+      if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
+        const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForCollaboratorResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statisod_waitForCollaborator)
+        console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForCollaboratorResult);
       }
       return result.rows[0];
     } catch (error) {

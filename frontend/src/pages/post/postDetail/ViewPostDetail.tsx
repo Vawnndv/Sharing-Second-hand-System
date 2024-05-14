@@ -143,7 +143,7 @@ function ViewPostDetail() {
     
     const approvePost = async () => {
 
-        if(post.givetype !== "Cho kho"){
+        if(post.givetype !== "Cho kho" && post.givetype !== "Cho kho (kho đến lấy)"){
             try{
                 const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
                     orderid: post.orderid,
@@ -215,15 +215,41 @@ function ViewPostDetail() {
             }
         
             try {
-                const currentstatus = 'Chờ người cho giao hàng';
-                const orderid = orderID;
-                // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-                const response = await axios.post(`http://localhost:3000/order/createTrace`, {
-                currentstatus,
-                orderid,
-                });
+                if(post.givetype === 'Cho kho'){
+                    const currentstatus = 'Chờ người cho giao hàng';
+                    const orderid = orderID;
+                    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+                    const response = await axios.post(`http://localhost:3000/order/createTrace`, {
+                    currentstatus,
+                    orderid,
+                    });
+                }
 
-                toast.success('Post approved, repost successfully!')
+                if(post.givetype === 'Cho kho (kho đến lấy)'){
+                    const currentstatus = 'Chờ cộng tác viên lấy hàng';
+                    const orderid = orderID;
+                    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+                    const response = await axios.post(`http://localhost:3000/order/createTrace`, {
+                    currentstatus,
+                    orderid,
+                    });
+                }
+
+            try{
+                const response = await axios.post(`http://localhost:3000/card/createInputCard`, {
+                    itemid: post.itemid,
+                    qrcode: '',
+                    usergiveid: userLogin.userInfo.id,
+                    warehouseid: '19',          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
+                    orderid: orderID
+                }); 
+                orderID = response.data.orderCreated.orderid;
+            }
+            catch (error) {
+                console.log(error);
+            }
+
+            toast.success('Post approved, repost successfully!')
             } catch (error) {
                 console.log(error);
             }
