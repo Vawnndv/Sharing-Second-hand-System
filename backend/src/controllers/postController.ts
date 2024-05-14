@@ -29,6 +29,21 @@ export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
   }
 });
 
+export const getAllPostByStatus  = asyncHandle(async (req, res) => {
+  const { status, limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
+
+  console.log(req.query);
+  const allPosts = await PostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses);
+
+  // const postReceivers = await PostManager.viewPostReceivers(postID);
+
+  if (allPosts) {
+    res.status(200).json({ message: 'Get all posts successfully', allPosts });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
+
 // export const getFilterPostList = asyncHandle(async (req, res) => {
 //   const userID : any = req.query.userID;
 //   const distance : any = req.query.distance;

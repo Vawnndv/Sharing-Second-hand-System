@@ -22,6 +22,7 @@ import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
 import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 import ManageWarehouse from './pages/warehouse/ManageWarehouse';
+import PostApproval from './pages/approval/PostApproval';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -45,6 +46,7 @@ export function App() {
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
           <Route path="/statistic" element={<Statistic />} />
+          <Route path="/approval" element={<PostApproval />} />
           <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
