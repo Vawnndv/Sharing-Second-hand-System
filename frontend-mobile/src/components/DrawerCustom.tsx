@@ -127,7 +127,9 @@ const DrawerCustom = ({navigation}: any) => {
           navigation.closeDrawer('');
           navigation.navigate('Profile', {
             screen: 'ProfileScreen',
-            // params: {},
+            params: {
+              id: auth.id
+            },
           });
         }}
       >

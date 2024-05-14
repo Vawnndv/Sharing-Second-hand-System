@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Button, Text, View } from 'react-native'
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
@@ -9,7 +9,7 @@ import { appColors } from '../../constants/appColors'
 import userAPI from '../../apis/userApi'
 import { ProfileModel } from '../../models/ProfileModel'
 import { Avatar } from 'react-native-paper'
-import { Fontisto } from '@expo/vector-icons'
+import { FontAwesome, Fontisto } from '@expo/vector-icons'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -28,8 +28,8 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (route.params) {
-      // const {id} = route.params;
-      setProfileId(auth.id);
+      const {id} = route.params;
+      setProfileId(id);
 
       if (route.params.isUpdated) {
         getProfile();
@@ -115,11 +115,38 @@ const ProfileScreen = ({navigation, route}: any) => {
               </View>
             </RowComponent>
           </SectionComponent>
-          <SpaceComponent height={21} />
-          {/* <SectionComponent>
-            
-          </SectionComponent> */}
-          <SpaceComponent height={20} />
+          {/* <SpaceComponent height={12} /> */}
+          <SectionComponent>
+            <View style={styles.container}>
+              {/* <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome name="user" size={24} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text='John Doe'/>
+                </View>
+              </View> */}
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome name="envelope" size={22} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.email}/>
+                </View>
+              </View>
+                <View style={styles.iconContainer}>
+                  <FontAwesome name="phone" size={22} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.phonenumber}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+            </View>
+          </SectionComponent>
+          <SpaceComponent height={12} />
           <RowComponent justify='center'>
             <SectionComponent>
               <ButtonComponent
@@ -161,5 +188,38 @@ const ProfileScreen = ({navigation, route}: any) => {
     </ContainerComponent>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  iconContainer: {
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  info: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+    paddingBottom: 5,
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+  },
+});
+
 
 export default ProfileScreen

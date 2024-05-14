@@ -32,7 +32,6 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   }
 });
 
-
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
   console.log(req.body);
   const { email, oldPassword, newPassword } = req.body;
