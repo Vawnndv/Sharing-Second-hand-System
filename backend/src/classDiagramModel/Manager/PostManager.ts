@@ -206,6 +206,7 @@ export class PostManager {
       const postsQuery = `
       SELECT DISTINCT
         us.userid,
+        po.iswarehousepost,
         CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
         CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
         po.postid,
@@ -336,6 +337,7 @@ export class PostManager {
       const postsQuery = `
       SELECT DISTINCT
         us.userid,
+        po.iswarehousepost,
         CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
         CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
         po.postid,

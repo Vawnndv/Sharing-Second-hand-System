@@ -17,6 +17,7 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 interface DataItem {
   userid: string;
+  iswarehousepost: boolean;
   avatar: string;
   postid: number;
   title: string;
@@ -129,6 +130,14 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
               username={item.name} 
               avatar={item.avatar}
               size={50}
+              onPress={() => {
+                item.iswarehousepost && navigation.navigate('Profile', {
+                  screen: 'ProfileScreen',
+                  params: {
+                    id: item.userid
+                  },
+                });
+              }}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
