@@ -469,7 +469,24 @@ export class PostManager {
   public static async viewDetailsPost(postID: number): Promise<any> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT POSTS.*, ADDRESS.address, ADDRESS.longitude, ADDRESS.latitude  FROM POSTS JOIN ADDRESS ON POSTS.addressid = ADDRESS.addressid WHERE POSTID = $1`, [postID]);
+      const result = await client.query(`
+        SELECT 
+            POSTS.*,
+            ORDERS.orderid,
+            ORDERS.givetype,
+            ORDERS.givetypeid,
+            ORDERS.warehouseid,
+            ADDRESS.address,
+            ADDRESS.longitude,
+            ADDRESS.latitude
+        FROM 
+            POSTS
+        INNER JOIN 
+            ADDRESS ON POSTS.addressid = ADDRESS.addressid
+        INNER JOIN 
+            ORDERS ON POSTS.postid = ORDERS.postid
+        WHERE 
+            POSTS.postid = $1;`,[postID]);
 
       if (result.rows.length === 0) {
         return null;
@@ -521,7 +538,7 @@ export class PostManager {
   }
 
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any): Promise<void> {
+  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string): Promise<void> {
 
     const client = await pool.connect();
 
@@ -531,8 +548,8 @@ export class PostManager {
       RETURNING addressid;
     `
     const query = `
-        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid, iswarehousepost)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
         RETURNING *;
       `;
     
@@ -541,12 +558,12 @@ export class PostManager {
       if(isNewAddress){
         const resultInsertAddress: QueryResult = await client.query(queryInsertAddress)
         
-        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid];
+        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid, isWarehousePost];
         const result: QueryResult = await client.query(query, values);
         console.log('Posts inserted successfully:', result.rows[0]);
         return result.rows[0];
       }else{
-        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid];
+        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost];
         const result: QueryResult = await client.query(query, values);
         console.log('Posts inserted successfully:', result.rows[0]);
         return result.rows[0];

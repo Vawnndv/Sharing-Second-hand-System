@@ -129,6 +129,51 @@ const EditUserInfoValidation = yup.object().shape({
     .required('Please select an warehouse work'),
 });
 
+const CreateWarehouseValidation = yup.object().shape({
+  warehousename: yup
+    .string()
+    .required('Warehouse name is required')
+    .max(20, 'Warehouse name must be less than 20 characters'),
+
+    address: yup
+    .string()
+    .required('Address is required'),
+
+    avatar: yup
+    .string()
+    .required('Avatar is required'),
+
+    phonenumber: yup
+    .string()
+    .trim()
+    .required('Phone number is required')
+    .matches(/^[0-9]*$/, 'Only contain numbers')
+    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
+
+});
+
+
+const EditWarehouseInfoValidation = yup.object().shape({
+  warehouseid: yup
+    .string(),
+
+  warehousename: yup
+    .string()
+    .max(20, 'Warehouse name must be less than 20 characters'),
+
+    phonenumber: yup
+    .string()
+    .matches(/^[0-9]*$/, 'Only contain numbers')
+    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
+
+    address: yup
+    .string(),
+
+    avatar: yup
+    .string()
+});
+
+
 export {
   LoginValidation,
   RegisterValidation,
@@ -136,5 +181,7 @@ export {
   ProfileValidation,
   ForgotPasswordValidation,
   ResetPasswordValidation,
-  EditUserInfoValidation
+  EditUserInfoValidation,
+  CreateWarehouseValidation,
+  EditWarehouseInfoValidation
 };

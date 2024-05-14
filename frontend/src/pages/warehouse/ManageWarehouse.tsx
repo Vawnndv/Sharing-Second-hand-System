@@ -47,24 +47,10 @@ export default function ManageWarehouse() {
     const fetchWarehouses = async () => {
       try {
         const res = await axios.get(`http://localhost:3000/warehouse/getAllWarehousesAllInfo`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
+
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        // const count = res.data.wareHouses.length;
-        // // eslint-disable-next-line prefer-const
-        // let warehouseArray = [];
-        // let temp = ''
-        // for(let i = 0; i< count; i += 1){
-        //   temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
-        //   warehouseArray.push({
-        //     value: temp,
-        //     label: temp
-        //   })
-        // }
-        console.log('AAaA',res.data.wareHouses);
         setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
 
       } catch (error) {

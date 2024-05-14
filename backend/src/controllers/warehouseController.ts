@@ -88,7 +88,7 @@ export const updateWarehouse = asyncHandle(async (req, res) => {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const warehouseUpdated = await WarehouseManager.updateWarehouse(phonenumber, warehouseName, warehouseLocation, avatar, isNewAddress, warehouseid);
-    res.status(200).json({ message: 'Update warehouse successfully' });
+    res.status(200).json({ message: 'Update warehouse successfully', warehouseUpdated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Lỗi khi cập nhật kho:', error);

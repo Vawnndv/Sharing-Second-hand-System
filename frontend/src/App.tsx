@@ -21,6 +21,7 @@ import Statistic from './pages/statistic/Statistic';
 import Users from './pages/Admin/users/Users';
 import Collaborators from './pages/Admin/collaborations/Collaborations';
 import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
+import ManageWarehouse from './pages/warehouse/ManageWarehouse';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -48,6 +49,7 @@ export function App() {
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
+            <Route path="/warehouse" element={<ManageWarehouse />} />
             <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
           </Route>
         </Route>

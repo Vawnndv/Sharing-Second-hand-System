@@ -12,4 +12,3 @@ export const appInfo = {
   BASE_URL: BASE_URL,
   // BASE_URL: 'http://192.168.113.83:3000',
 }
-
