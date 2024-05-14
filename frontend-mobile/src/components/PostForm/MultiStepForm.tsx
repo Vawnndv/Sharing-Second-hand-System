@@ -233,7 +233,7 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: false,
             postLocation: warehouseSelected,
-            isWarehousePost: true
+            isWarehousePost: false
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
@@ -248,7 +248,7 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: location.addressid ? false : true,
             postLocation: location,
-            isWarehousePost: true
+            isWarehousePost: false
           });
         }
         else{
