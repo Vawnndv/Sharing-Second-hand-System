@@ -140,7 +140,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                   <FontAwesome name="phone" size={22} color="black" />
                 </View>
                 <View style={styles.textContainer}>
-                  <TextComponent text={profile.numberphone}/>
+                  <TextComponent text={profile.phonenumber}/>
                 </View>
               </View>
               <View style={styles.separator} />
