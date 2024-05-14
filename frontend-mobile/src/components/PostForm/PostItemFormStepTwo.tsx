@@ -224,7 +224,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
 
     if(typeCheck == 'postaddress'){
-      if (!formData.postAddress.trim()) {
+      if (!formData.postAddress) {
         updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
         setFormData({ ...formData, postAddress: '' });
 

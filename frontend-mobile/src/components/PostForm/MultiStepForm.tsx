@@ -148,10 +148,19 @@ const MultiStepForm = () => {
       formDataStepTwo.postDescription && 
       formDataStepTwo.postStartDate && 
       formDataStepTwo.postEndDate && 
-      formDataStepTwo.postPhoneNumber && 
-      formDataStepTwo.postAddress 
+      formDataStepTwo.postPhoneNumber      
     ){
-      setIsValidSubmit(true);
+      if(formDataStepOne.methodGive == 'Gửi món đồ đến kho' && formDataStepOne.methodsBringItemToWarehouse == 'Tự đem đến kho'){
+        setIsValidSubmit(true);
+      }
+      else{
+        if(formDataStepTwo.postAddress){
+          setIsValidSubmit(true);
+        }
+        else{
+          setIsValidSubmit(false);
+        }
+      }
     }
     else{
       setIsValidSubmit(false);
@@ -176,7 +185,7 @@ const MultiStepForm = () => {
       formDataStepTwo.postAddress 
     ) {
       console.log(errorMessage);
-      console.log(formDataStepTwo)
+      console.log(formDataStepTwo);
 
       let itemID = 0;
       let postID = 0;

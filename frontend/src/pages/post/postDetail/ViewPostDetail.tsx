@@ -16,6 +16,7 @@ import { format } from 'date-fns';
 import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useSelector } from 'react-redux';
 
 function ShowImages({ images }: any) {
 
@@ -52,7 +53,9 @@ function ShowImages({ images }: any) {
 }
 
 function ViewPostDetail() {
-    const {postid}= useParams()
+    const {postid}= useParams();
+    const userLogin = useSelector((state: any) => state.userLogin);
+
 
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
     const [postReceivers, setPostReceivers] = useState([]);
@@ -168,8 +171,8 @@ function ViewPostDetail() {
                 const res = await axios.post(`http://localhost:3000/posts/createPost`, {
                     title: post.title,
                     location: post.location,
-                    description: post.decription,
-                    owner: post.owner,
+                    description: post.description,
+                    owner: userLogin.userInfo.id,
                     time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
                     itemid: post.itemid,
                     timestart: new Date(post.timestart).toISOString(), // Tương tự cho timestart
@@ -195,7 +198,7 @@ function ViewPostDetail() {
                     status: '',
                     qrcode: '',
                     ordercode: '',
-                    usergiveid: post.owner,
+                    usergiveid: userLogin.userInfo.id,
                     postid: post.postid,
                     imgconfirm: '',
                     locationgive: post.addressid,

@@ -172,7 +172,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   const handleValidate = (text: any, typeCheck: string) => {
     let updatedErrorMessage = {...errorMessage};
 
-    if(typeCheck = 'bringitemtowarehousemethod'){
+    if(typeCheck === 'bringitemtowarehousemethod'){
       if(!validAllMethod){
         updatedErrorMessage.bringItemToWarehouseMethod = 'Vui lòng chọn phương thức mang đồ đến kho.';
         setErrorMessage(updatedErrorMessage);
@@ -185,7 +185,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       }
     }
 
-    if(typeCheck = 'receivemethod' ){
+    if(typeCheck === 'receivemethod' ){
       if(!validAllMethod && !selectedReceiveMethod){
         updatedErrorMessage.receiveMethod = 'Vui lòng chọn phương thức nhận đồ.';
       }
@@ -199,7 +199,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     }
 
 
-    else if(typeCheck = 'warehouseselected'){
+    else if(typeCheck === 'warehouseselected'){
       if(!validAllMethod){
         updatedErrorMessage.warehouseSelected = 'Vui lòng chọn kho.';
       }
@@ -226,14 +226,12 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
     }
 
-
-
-    else if(selectedReceiveMethod == 'Nhận đồ trực tiếp'){
+    else if(selectedReceiveMethod === 'Nhận đồ trực tiếp'){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
     }
 
-    else if(selectedReceiveMethod == 'Nhận đồ qua kho' && warehouseSeleted){
+    else if(selectedReceiveMethod === 'Nhận đồ qua kho' && warehouseSeleted){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
     }
@@ -354,7 +352,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         setIsLoading(false);
       }
 
-      if(warehouseid != 0 && warehouseid){
+      if(warehouseid !== 0 && warehouseid){
         try {
           setIsLoading(true);
           const res = await axios.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
@@ -597,7 +595,7 @@ const handleGive = async () =>{
 
 
   return (
-    <ScrollView style = {styles.container}>
+  <ScrollView style = {styles.container}>
     {!isUserPost && (
       <Text style={styles.title}>Thông tin nhận đồ </Text>
     )}
