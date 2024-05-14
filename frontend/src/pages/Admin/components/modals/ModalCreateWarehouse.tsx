@@ -1,13 +1,16 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, Grid, Modal, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
 import { getAllCollaboratorsAction, createCollaboratorAction } from '../../../../redux/actions/collaboratorActions'
 import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
-import { EditUserInfoValidation } from '../../../../validation/userValidation'
+import { CreateWarehouseValidation, EditUserInfoValidation } from '../../../../validation/userValidation'
 import Loader from '../../../../components/notification/Loader'
+import axios from 'axios'
 
 const styleModalCreateCollaborator = {
   position: 'absolute',
@@ -30,6 +33,13 @@ interface Props {
   filterModel: any;
 }
 
+interface WarehouseLocation {
+  address: string;
+  longitude: number; // Sử dụng kiểu `number` cho cả giá trị kiểu float
+  latitude: number;
+  addressid?: number;
+}
+
 function ModalCreateCollaborator(props: Props) {
   const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel} = props;
   const dispatch: AppDispatch = useAppDispatch();
@@ -38,39 +48,68 @@ function ModalCreateCollaborator(props: Props) {
     (state: RootState) => state.adminCreateCollaborator
   )
 
+  const warehouseLocation: WarehouseLocation = {
+    address: "123 Main St, Anytown, AN",
+    longitude: 123.4567,
+    latitude: 312.219,
+    addressid: 10
+};
+
   const {
     register,
     handleSubmit,
     setValue,
     formState: { errors }
   } = useForm({
-    resolver: yupResolver(EditUserInfoValidation)
+    resolver: yupResolver(CreateWarehouseValidation)
   })
 
   useEffect(() => {
-    setValue('firstName', '')
-    setValue('lastName', '')
-    setValue('email', '')
-    setValue('phoneNumber', '')
+    setValue('warehousename', '')
+    setValue('address', '')
+    setValue('avatar', '')
+    setValue('phonenumber', '')
+    // setValue('phoneNumber', '')
   }, [isOpen])
 
 
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(getAllCollaboratorsAction(0, pageState.pageSize, filterModel, sortModel))
-      setIsOpen(!isOpen)
-      dispatch({ type: 'UPDATE_USER_RESET' })
-    }
-    if (isError) {
-      toast.error(isError)
-      // setIsOpen(!isOpen)
-      dispatch({ type: 'UPDATE_USER_RESET' })
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, isError, dispatch, setIsOpen])
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     dispatch(getAllCollaboratorsAction(0, pageState.pageSize, filterModel, sortModel))
+  //     setIsOpen(!isOpen)
+  //     dispatch({ type: 'UPDATE_USER_RESET' })
+  //   }
+  //   if (isError) {
+  //     toast.error(isError)
+  //     // setIsOpen(!isOpen)
+  //     dispatch({ type: 'UPDATE_USER_RESET' })
+  //   }
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isSuccess, isError, dispatch, setIsOpen])
 
-  const onSubmit = (data: any) => {
-    dispatch(createCollaboratorAction(data))
+  const onSubmit = async (data: any) => {
+    console.log(data);
+
+    try {
+      const warehouseName = data.warehousename;
+      // const address = data.address;
+      const isNewAddress = true;
+      const phonenumber = data.phonenumber;
+      const avatar = 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg';
+      const res = await axios.post(`http://localhost:3000/warehouse/createWarehouse`, {
+        warehouseName,
+        phonenumber,
+        avatar,
+        warehouseLocation,
+        isNewAddress
+      });
+      setIsOpen(!isOpen);
+      toast.success(`Create warehouse successfully`);
+      console.log(res.data.warehouseCreated);
+      // Alert.alert('Success', 'Item created successfully');
+      } catch (error) {
+        console.log(error);
+      }
   }
 
   return (
@@ -103,51 +142,47 @@ function ModalCreateCollaborator(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Create User
+                Create Warehouse
             </Typography>
 
-            <Grid container spacing={2} sx={{ mt: '20px' }}>
-              <Grid item xs={6}>
-                <TextField
-                  id="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  fullWidth
-                  {...register('firstName')}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message || ''}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  id="lastName"
-                  label="Last Name"
-                  variant="outlined"
-                  fullWidth
-                  {...register('lastName')}
-                  error={!!errors.lastName}
-                  helperText={errors.lastName?.message || ''}
-                />
-              </Grid>
-            </Grid>
-
             <TextField
-              id="email"
-              label="Email"
+              id="warehousename"
+              label="WarehouseName"
               variant="outlined"
-              {...register('email')}
-              error={!!errors.email}
-              helperText={errors.email?.message || ''}
+              {...register('warehousename')}
+              error={!!errors.warehousename}
+              helperText={errors.warehousename?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
             />
 
             <TextField
-              id="phone"
+              id="phonenumber"
               label="Phone"
               variant="outlined"
-              {...register('phoneNumber')}
-              error={!!errors.phoneNumber}
-              helperText={errors.phoneNumber?.message || ''}
+              {...register('phonenumber')}
+              error={!!errors.phonenumber}
+              helperText={errors.phonenumber?.message || ''}
+              sx={{ mt: '20px', width:'100%' }}
+            />
+
+
+            <TextField
+              id="address"
+              label="Address"
+              variant="outlined"
+              {...register('address')}
+              error={!!errors.address}
+              helperText={errors.address?.message || ''}
+              sx={{ mt: '20px', width:'100%' }}
+            />
+
+            <TextField
+              id="avatar"
+              label="Avatar"
+              variant="outlined"
+              {...register('avatar')}
+              error={!!errors.avatar}
+              helperText={errors.avatar?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
             />    
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>

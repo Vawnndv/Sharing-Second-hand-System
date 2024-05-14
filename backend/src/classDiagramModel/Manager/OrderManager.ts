@@ -1036,7 +1036,7 @@ export class OrderManager {
       RETURNING *;
       `;
       // TODO sửa lại locationgive and locationreceive
-    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, 3, 4, givetypeid, imgconfirmreceive, warehouseid];
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid];
     
     try {
       const result: QueryResult = await client.query(query, values);
@@ -1063,13 +1063,20 @@ export class OrderManager {
       console.log('Trace inserted successfully:', result.rows[0]);
       const statusid_postItem = '1';
       const statusid_waitForApporve = '2';
+      const statusid_approved = '12';
+      const statusid_waitForGiver = '13';
 
 
       const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
       console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
       const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
       console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
-
+      if(currentstatus == 'Chờ người cho giao hàng'){
+        const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
+        console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForGiverResult);
+      }
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting trace:', error);

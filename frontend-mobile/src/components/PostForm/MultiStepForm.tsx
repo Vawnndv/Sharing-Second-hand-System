@@ -223,9 +223,26 @@ const MultiStepForm = () => {
             timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: false,
-            postLocation: warehouseSelected
+            postLocation: warehouseSelected,
+            isWarehousePost: true
           });
-        }else{
+        }
+        else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
+            response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+            title,
+            location: locationTemp,
+            description,
+            owner,
+            time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            itemid,
+            timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+            timeend: new Date(timeend).toISOString(), // Và timeend
+            isNewAddress: location.addressid ? false : true,
+            postLocation: location,
+            isWarehousePost: true
+          });
+        }
+        else{
           response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
@@ -236,11 +253,11 @@ const MultiStepForm = () => {
             timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: location.addressid ? false : true,
-            postLocation: location
+            postLocation: location,
+            isWarehousePost: false
           });
         }
-               
-        
+              
         console.log(response.data.postCreated);
         postID = response.data.postCreated.postid;
         address = response.data.postCreated.address;

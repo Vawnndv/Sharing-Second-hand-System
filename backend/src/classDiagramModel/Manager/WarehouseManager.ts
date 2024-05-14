@@ -178,27 +178,27 @@ export class WarehouseManager {
     `
 
     const updateWarehouseAddress = `
-      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      UPDATE warehouse
       SET addressid = $1
       WHERE warehouseid = $2
       RETURNING *;
     `
     const updateWarehouseName = `
-      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      UPDATE warehouse
       SET warehousename = '${warehousename}'
       WHERE warehouseid = $1
       RETURNING *;
     `
 
     const updateWarehousePhoneNumber = `
-      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      UPDATE warehouse
       SET phonenumber = '${phonenumber}'
       WHERE warehouseid = $1
       RETURNING *;
       `
 
     const updateWarehouseAvatar = `
-      UPDATE warehouse(warehousename, phonenumber, avatar, addressid)
+      UPDATE warehouse
       SET avatar = '${avatar}'
       WHERE warehouseid = $1
       RETURNING *;
@@ -228,6 +228,7 @@ export class WarehouseManager {
       if(avatar){
         const values : any = [warehouseid];
         const result: QueryResult = await client.query(updateWarehouseAvatar, values);
+        return result.rows[0];
       }
       
     } catch (error) {

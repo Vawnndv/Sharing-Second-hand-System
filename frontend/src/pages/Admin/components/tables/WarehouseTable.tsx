@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef, GridToolbar, gridClasses } from '@mui/x-data-grid'
@@ -8,11 +10,15 @@ import { Add, Delete, Edit } from '@mui/icons-material'
 import { DateFormat } from '../../../../components/notification/Empty'
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import { viVN } from '@mui/x-data-grid/locales';
-import ModalEditCollaborator from '../modals/ModelEditCollaborator'
+// import ModalEditCollaborator from '../modals/ModelEditCollaborator'
 // import { banUserService } from '../../../../redux/services/userServices'
 // import toast from 'react-hot-toast'
 // import { TbLock, TbLockOpen } from "react-icons/tb";
-import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
+import ModalCreateWarehouse from '../modals/ModalCreateWarehouse'
+import ModalEditWarehouse from '../modals/ModalEditWarehouse'
+import { TbLock, TbLockOpen } from 'react-icons/tb'
+import toast from 'react-hot-toast'
+import { banUserService } from '../../../../redux/services/userServices'
 
 
 interface Props {
@@ -40,7 +46,7 @@ function WarehouseTable(props: Props) {
 
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
-  const [userRow, setUserRow] = useState(null);
+  const [warehouseRow, setWarehouseRow] = useState(null);
   const [isEdit, setIsEdit] = useState(true);
   const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
 
@@ -64,26 +70,26 @@ function WarehouseTable(props: Props) {
     setIsOpenModalCreate(!isOpenModalCreate);
   }
   
-  // const handleBanUser = async (id: number, isBanned: any) => {
-  //   try {
-  //     await banUserService(id, {userId: id, isBanned});
-  //     const userIndex = data.findIndex((user:any) => user.userid === id);
-  //     if (userIndex !== -1) {
-  //       const updatedUsers = [...data];
-  //       updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-  //       // Create a new array with the user replaced with updated data
-  //       setData(updatedUsers);
-  //       toast.success(`Ban user successfully`);
-  //     }
-  //   } catch (error: unknown) {
-  //     console.log(error)
-  //     if (error instanceof Error) {
-  //       toast.error(error.message)
-  //     } else {
-  //       toast.error("Network Error");
-  //     }
-  //   }
-  // }
+  const handleBanUser = async (id: number, isBanned: any) => {
+    // try {
+    //   await banUserService(id, {userId: id, isBanned});
+    //   const userIndex = data.findIndex((user:any) => user.userid === id);
+    //   if (userIndex !== -1) {
+    //     const updatedUsers = [...data];
+    //     updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
+    //     // Create a new array with the user replaced with updated data
+    //     setData(updatedUsers);
+    //     toast.success(`Ban user successfully`);
+    //   }
+    // } catch (error: unknown) {
+    //   console.log(error)
+    //   if (error instanceof Error) {
+    //     toast.error(error.message)
+    //   } else {
+    //     toast.error("Network Error");
+    //   }
+    // }
+  }
 
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
@@ -97,8 +103,8 @@ function WarehouseTable(props: Props) {
       }
       ,
       { field: 'warehousename', headerName: 'Warehouse Name', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
-      // { field: 'email', headerName: 'Email', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Address', width: 350, getTooltip: (params: any) => params.value },
+      { field: 'phonenumber', headerName: 'PhoneNumber', width: 150, getTooltip: (params: any) => params.value },
       { field: 'numberofemployees', headerName: 'Employees', width: 150, getTooltip: (params: any) => params.value },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
       {
@@ -108,12 +114,12 @@ function WarehouseTable(props: Props) {
         renderCell: (params: any) =>
           DateFormat(params.row.createdat)
       },
-      {
-        field: 'isbanned',
-        headerName: 'Ban',
-        width: 100,
-        type: 'boolean'
-      },
+      // {
+      //   field: 'isbanned',
+      //   headerName: 'Ban',
+      //   width: 100,
+      //   type: 'boolean'
+      // },
       {
         field: 'actions',
         headerName: 'Actions',
@@ -121,24 +127,24 @@ function WarehouseTable(props: Props) {
         width: 120,
         renderCell: (params: any) => (
           <Box>
-            {/* <Tooltip title="Ban this user">
+            <Tooltip title="Lock this warehouse">
               <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
-            </Tooltip> */}
-            <Tooltip title="Edit this room">
-              <IconButton onClick={() => { handleOpen(); setUserRow(params.row) }}>
+            </Tooltip>
+            <Tooltip title="Edit this warehouse">
+              <IconButton onClick={() => { handleOpen(); setWarehouseRow(params.row) }}>
                 <Edit />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete this room">
+            {/* <Tooltip title="Delete this room">
               <IconButton
                 // disabled={params.row.warehouseid === userInfo?.id}
                 onClick={() => deleteHandler(params.row)}
               >
                 <Delete />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </Box>
         )
       }
@@ -152,19 +158,21 @@ function WarehouseTable(props: Props) {
       justifyContent="center"
       sx={{ mt: 1, mb: 5, p: 4 }}
     >
-      <ModalEditCollaborator
-        isOpen={isOpen}
-        handleOpen={handleOpen}
-        userRow={userRow}
-        setUserRow={setUserRow}
-        setIsOpen={setIsOpen}
-        pageState={pageState} 
-        filterModel={filterModel}
-        sortModel={sortModel}
-        isEdit={isEdit}
-        setIsEdit={setIsEdit}
+
+        <ModalEditWarehouse
+          isOpen={isOpen}
+          handleOpen={handleOpen}
+          warehouseRow={warehouseRow}
+          setWarehouseRow={setWarehouseRow}
+          setIsOpen={setIsOpen}
+          pageState={pageState} 
+          filterModel={filterModel}
+          sortModel={sortModel}
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
+          warehouseNameList={[]}
         />
-        <ModalCreateCollaborator
+        <ModalCreateWarehouse
         isOpen={isOpenModalCreate}
         handleOpen={handleOpenModalCreate}
         setIsOpen={setIsOpenModalCreate}
@@ -188,9 +196,9 @@ function WarehouseTable(props: Props) {
                 Manage Warehouse
           </Typography>
           <Box sx={{ textAlign: 'right', mb: 2 }}>
-            <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
+            {/* <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
                 Delete selected rows
-            </Button>
+            </Button> */}
             <Button startIcon={<Add/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleOpenModalCreate}>
                 Create 
             </Button>

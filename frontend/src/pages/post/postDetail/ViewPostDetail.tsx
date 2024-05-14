@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -12,6 +14,8 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import { format } from 'date-fns';
 import Grid from '@mui/material/Unstable_Grid2';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
 function ShowImages({ images }: any) {
 
@@ -126,7 +130,7 @@ function ViewPostDetail() {
     
     }, [])
 
-    // console.log('post', post)
+    console.log('post', post)
     // console.log('postReceivers', postReceivers)
     // console.log('profile', profile)
     // console.log('itemImages', itemImages)
@@ -134,7 +138,111 @@ function ViewPostDetail() {
     // console.log('itemID', itemID)
 
     
+    const approvePost = async () => {
 
+        if(post.givetype !== "Cho kho"){
+            try{
+                const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
+                    orderid: post.orderid,
+                    newstatus: "Đã duyệt",
+                    statusid: "12",
+                })
+                toast.success(`Post apporved`);            
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        else{
+            let orderID = -1;
+            try{
+                const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
+                    orderid: post.orderid,
+                    newstatus: "Hoàn tất ",
+                    statusid: "5",
+                })
+            } catch (error) {
+                console.log(error);
+            }
+
+            try{
+                const res = await axios.post(`http://localhost:3000/posts/createPost`, {
+                    title: post.title,
+                    location: post.location,
+                    description: post.decription,
+                    owner: post.owner,
+                    time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                    itemid: post.itemid,
+                    timestart: new Date(post.timestart).toISOString(), // Tương tự cho timestart
+                    timeend: new Date(post.timeend).toISOString(), // Và timeend
+                    isNewAddress: false,
+                    postLocation: post,
+                    isWarehousePost: true,
+                });
+            }
+            catch (error) {
+                console.log(error);
+            }
+
+            try{
+                const time = new Date();
+                const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                    title: post.title,
+                    location: '',
+                    description: post.description,
+                    departure: '',
+                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                    itemid: post.itemid,
+                    status: '',
+                    qrcode: '',
+                    ordercode: '',
+                    usergiveid: post.owner,
+                    postid: post.postid,
+                    imgconfirm: '',
+                    locationgive: post.addressid,
+                    locationreceive: null,
+                    givetypeid: post.givetypeid,
+                    imgconfirmreceive: '',
+                    givetype: post.givetype,
+                    warehouseid: post.warehouseid
+                }); 
+                orderID = response.data.orderCreated.orderid;
+            }
+            catch (error) {
+                console.log(error);
+            }
+        
+            try {
+                const currentstatus = 'Chờ người cho giao hàng';
+                const orderid = orderID;
+                // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+                const response = await axios.post(`http://localhost:3000/order/createTrace`, {
+                currentstatus,
+                orderid,
+                });
+
+                toast.success('Post approved, repost successfully!')
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        
+    }
+        
+
+    const declinePost = async () => {
+        try{
+            const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
+                orderid: post.orderid,
+                newstatus: "Hủy ",
+                statusid: "6",
+            })
+            toast.success('Post canceled successfully!')
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
     
     // console.log(evenlySpacedDates);
     return ( 
@@ -221,6 +329,11 @@ function ViewPostDetail() {
                             <Typography variant='body2'>{post.description}</Typography>
 
                             <Stack>
+                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Phương thức đăng bài</Typography>
+                                <Typography variant='body2' component='div'>{post.givetype}</Typography>
+                            </Stack>
+
+                            <Stack>
                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>Thời gian cho đồ</Typography>
                                 <Typography variant='body2' component='div'>Từ ngày <Typography variant='body2' component='span'>{format(new Date(post.timestart), 'dd/MM/yyyy')} đến ngày {format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography>
                             </Stack>
@@ -303,7 +416,8 @@ function ViewPostDetail() {
                     m={2}>
                     
                     <Button
-                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}>
+                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                        onClick={approvePost}>
                         <CheckCircleOutlineOutlinedIcon color='success'/>
                         <Typography variant='inherit' color='success'>Duyệt</Typography>
                     </Button>
@@ -311,7 +425,8 @@ function ViewPostDetail() {
 
                     
                     <Button
-                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}>
+                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                        onClick={declinePost}>
                         <RemoveCircleIcon color='error'/>
                         <Typography variant='inherit' color='error'>Xóa</Typography>
                     </Button>
