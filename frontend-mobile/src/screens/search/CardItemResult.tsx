@@ -131,7 +131,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
               avatar={item.avatar}
               size={50}
               onPress={() => {
-                item.iswarehousepost && navigation.navigate('Profile', {
+                console.log('abcdefgh', item.iswarehousepost);
+                !item.iswarehousepost && navigation.navigate('Profile', {
                   screen: 'ProfileScreen',
                   params: {
                     id: item.userid

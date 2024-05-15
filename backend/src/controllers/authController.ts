@@ -88,7 +88,7 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const register = asyncHandle(async (req: Request, res: Response) => {
-  const { email, username, password } = req.body;
+  const { email, fistname, lastname, password } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
 
@@ -101,8 +101,9 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = await Account.createItem(
-    username,
     email,
+    fistname, 
+    lastname,
     hashedPassword,
     1,
   );

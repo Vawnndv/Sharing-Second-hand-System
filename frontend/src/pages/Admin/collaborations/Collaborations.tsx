@@ -87,7 +87,7 @@ function Collaborators() {
   
    // delete user handler
    const deleteUserHandler = (user: any) => {
-    if (window.confirm(`Are you sure you want to delete ${  user.firstname} ?`)) {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa cộng tác viên ${user.lastname}?`)) {
       dispatch(deleteCollaboratorAction(user.userid))
       setTotalCollaborator(totalCollaborator - 1);
     }
@@ -95,7 +95,7 @@ function Collaborators() {
 
   const handleDeleteSelectedRows = () => {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
-    if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectionModel.length} cộng tac viên này không?` )) {
         dispatch(deleteCollaboratorAction(id))
         setTotalCollaborator(totalCollaborator - selectionModel.length)
     }

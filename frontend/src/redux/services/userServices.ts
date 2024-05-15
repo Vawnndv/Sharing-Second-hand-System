@@ -16,6 +16,7 @@ const updateProfileService = async (user: any): Promise<any>  => {
     phonenumber: user.phone,
     avatar: user.avatar,
     accessToken: user.accessToken,
+    dob: user.dob,
   })
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
@@ -37,6 +38,7 @@ const getProfileService = async (id: string): Promise<any>  => {
     avatar: data.avatar ?? '',
     phoneNumber: data.phonenumber ?? '',
     email: data.email ?? '',
+    dob: data.dob ?? '',
   };
 }
 

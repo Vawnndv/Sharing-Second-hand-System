@@ -179,7 +179,7 @@ function Login(props: Props) {
                 color: 'primary.main'
               }}
             >
-              Sign in
+              Đăng nhập
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
               <TextField
@@ -194,18 +194,18 @@ function Login(props: Props) {
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
-              <Grid container sx={{ justifyContent: 'flex-end' }}>
+              {/* <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
                   <Link component={RouterLink} to="/user/activation" variant="body2">
                     Resend activation email
                   </Link>
                 </Grid>
-              </Grid>
+              </Grid> */}
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                label="Password"
+                label="Mật khẩu"
                 id="password"
                 autoComplete="current-password"
                 {...register('password')}
@@ -230,7 +230,7 @@ function Login(props: Props) {
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
                   <Link component={RouterLink} to="/forgot-password" variant="body2">
-                    Forgot password?
+                    Quên mật khẩu?
                   </Link>
                 </Grid>
               </Grid>
@@ -239,7 +239,7 @@ function Login(props: Props) {
               </Grid>
               <FormControlLabel
                 control={<Checkbox onChange={handleRememberMeChange} checked={rememberMe} value="remember" color="primary" />}
-                label="Remember me"
+                label="Ghi nhớ đăng nhập"
               />
               <Button
                 type="submit"
@@ -249,18 +249,18 @@ function Login(props: Props) {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                      'Loading...'
+                      'Đang tải...'
                   ) : (
                 <>
                   <FiLogIn />
-                  <span style={{ marginLeft: '4px' }}>Sign In</span>
+                  <span style={{ marginLeft: '4px' }}>Đăng nhập</span>
                 </>
               )} 
               </Button>
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
                   <Link component={RouterLink} to="/register" variant="body2">
-                    Don &apos; t have an account? Sign Up
+                    Bạn chưa có tài khoản? Đăng ký
                   </Link>
                 </Grid>
               </Grid>
@@ -274,7 +274,7 @@ function Login(props: Props) {
                     fontSize: '20px'
                   }}
                 >
-                  Or sign in with
+                  Hoặc đăng nhập qua
                 </Typography>
                 <IconButton
                   // variant='rounded'

@@ -19,6 +19,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
         email: user.email ?? '', 
         userId: user.userid,
         firstname: user.firstname ?? '',
+        dob: user.dateofbirth ?? '',
         lastname: user.lastname ?? '',
         createAt: user.createat,
         phonenumber: user.phonenumber ?? '',
@@ -74,12 +75,12 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 
 export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
   console.log(req.body);
-  const { email, firstname, lastname, phonenumber, avatar, accessToken } = req.body;
+  const { email, firstname, lastname, phonenumber, avatar, accessToken, dob } = req.body;
 
   const user = await Account.findUserByEmail(email);
   
   if (user) {      
-    const updateUser = await Account.updateAccountProfile(user.userid, firstname, lastname, phonenumber, avatar);
+    const updateUser = await Account.updateAccountProfile(user.userid, firstname, lastname, phonenumber, avatar, dob);
 
     if (updateUser) {
       res.status(200).json({
@@ -91,6 +92,7 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
           firstName: updateUser.firstname ?? '',
           lastName: updateUser.lastname ?? '',
           phoneNumber: updateUser.phonenumber ?? '',
+          dob: user.dateofbirth ?? '',
           roleID: updateUser.roleid, 
           avatar: updateUser.avatar ?? '',
         },

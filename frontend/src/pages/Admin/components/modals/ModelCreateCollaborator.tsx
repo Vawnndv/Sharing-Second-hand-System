@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Backdrop, Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
@@ -8,6 +8,11 @@ import { getAllCollaboratorsAction, createCollaboratorAction } from '../../../..
 import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
 import { EditUserInfoValidation } from '../../../../validation/userValidation'
 import Loader from '../../../../components/notification/Loader'
+// eslint-disable-next-line no-restricted-imports
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const styleModalCreateCollaborator = {
   position: 'absolute',
@@ -41,6 +46,8 @@ function ModalCreateCollaborator(props: Props) {
     (state: RootState) => state.adminCreateCollaborator
   )
 
+  const [date, setDate] = useState<any>(null);
+
   const {
     register,
     handleSubmit,
@@ -58,6 +65,7 @@ function ModalCreateCollaborator(props: Props) {
     setValue('email', '');
     setValue('phoneNumber', '');
     setValue('warehouseName', '');
+    setDate(null);
   }, [isOpen])
 
 
@@ -81,7 +89,7 @@ function ModalCreateCollaborator(props: Props) {
     // Check if warehouse is found and then access its warehouseid
     const warehouseId = selectedWarehouse ? selectedWarehouse.warehouseid : null;
     console.log(warehouseId, 'abcdef')
-    dispatch(createCollaboratorAction({...data, warehouseId}))
+        dispatch(createCollaboratorAction({...data, warehouseId, dob: date ? date.format('YYYY/MM/DD') : '',}))
   }
 
   return (
@@ -106,25 +114,14 @@ function ModalCreateCollaborator(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Create User
+                Thêm cộng tác viên mới
             </Typography>
 
             <Grid container spacing={2} sx={{ mt: '20px' }}>
               <Grid item xs={6}>
                 <TextField
-                  id="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  fullWidth
-                  {...register('firstName')}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message || ''}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
                   id="lastName"
-                  label="Last Name"
+                  label="Họ"
                   variant="outlined"
                   fullWidth
                   {...register('lastName')}
@@ -132,7 +129,19 @@ function ModalCreateCollaborator(props: Props) {
                   helperText={errors.lastName?.message || ''}
                 />
               </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="firstName"
+                  label="Tên"
+                  variant="outlined"
+                  fullWidth
+                  {...register('firstName')}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName?.message || ''}
+                />
+              </Grid>
             </Grid>
+
 
             <TextField
               id="email"
@@ -146,13 +155,28 @@ function ModalCreateCollaborator(props: Props) {
 
             <TextField
               id="phone"
-              label="Phone"
+              label="Số điện thoại"
               variant="outlined"
               {...register('phoneNumber')}
               error={!!errors.phoneNumber}
               helperText={errors.phoneNumber?.message || ''}
-              sx={{ mt: '20px', width:'100%' }}
+              sx={{ mt: '20px' ,  mb: 1, width:'100%' }}
             />    
+
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+            >
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker
+                  label='Ngày sinh'
+                  value={date}
+                  onChange={newValue =>
+                    setDate(newValue)
+                  }
+                  format="DD/MM/YYYY"
+                />
+              </DemoContainer>
+            </LocalizationProvider>
 
             <Grid sx={{ mt: '20px' }}>
                 <FormControl fullWidth>
@@ -160,7 +184,7 @@ function ModalCreateCollaborator(props: Props) {
                   <Select
                     labelId="warehousename-label"
                     id="warehousename"
-                    label="Set Admin"
+                    label="Kho làm việc"
                    {...register('warehouseName')} // Đăng ký với useForm
                    defaultValue=""
                    error={!!errors.warehouseName} // Hiển thị lỗi nếu có
@@ -195,8 +219,8 @@ function ModalCreateCollaborator(props: Props) {
                 </FormControl>
             </Grid>
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Cancel</Button>
-              <Button variant='contained' type="submit">Save</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Hủy</Button>
+              <Button variant='contained' type="submit">Lưu</Button>
             </Stack>
           </Box>
         </>

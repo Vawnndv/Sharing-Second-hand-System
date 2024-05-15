@@ -49,8 +49,8 @@ const ProfileScreen = ({navigation, route}: any) => {
     setIsLoading(true);
 
     try {
-      console.log(profileId, '12366')
       const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
+      console.log(res, '12366')
       res && res.data && setProfile(res.data);
       setIsLoading(false);
     } catch (error) {
@@ -115,38 +115,39 @@ const ProfileScreen = ({navigation, route}: any) => {
               </View>
             </RowComponent>
           </SectionComponent>
-          {/* <SpaceComponent height={12} /> */}
+          {/* <SpaceComponent height={21} /> */}
           <SectionComponent>
             <View style={styles.container}>
-              {/* <View style={styles.infoContainer}>
-                <View style={styles.iconContainer}>
-                  <FontAwesome name="user" size={24} color="black" />
-                </View>
-                <View style={styles.textContainer}>
-                  <TextComponent text='John Doe'/>
-                </View>
-              </View> */}
-              <View style={styles.separator} />
-              <View style={styles.infoContainer}>
               <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="envelope" size={22} color="black" />
-                </View>
-                <View style={styles.textContainer}>
-                  <TextComponent text={profile.email}/>
-                </View>
-              </View>
-                <View style={styles.iconContainer}>
-                  <FontAwesome name="phone" size={22} color="black" />
+                  <FontAwesome name="phone" size={24} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <TextComponent text={profile.phonenumber}/>
                 </View>
               </View>
               <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome name="envelope" size={24} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.email}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome name="birthday-cake" size={24} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.dob}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
             </View>
           </SectionComponent>
-          <SpaceComponent height={12} />
+          <SpaceComponent height={20} />
           <RowComponent justify='center'>
             <SectionComponent>
               <ButtonComponent

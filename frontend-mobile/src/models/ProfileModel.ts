@@ -7,4 +7,5 @@ export interface ProfileModel {
   lastname: string;
   updateAt: string;
   phonenumber: string;
+  dob?: string;
 }

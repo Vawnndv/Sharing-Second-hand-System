@@ -53,7 +53,7 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
 });
 
 export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: Response) => {
-  const { firstName, lastName, email, phoneNumber, warehouseId } = req.body;
+  const { firstName, lastName, email, phoneNumber, warehouseId, dob } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
 
@@ -85,6 +85,7 @@ export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: 
       email, 
       hashedPassword,
       phoneNumber,
+      dob,
       2,
     );
     if (newUser) {
@@ -204,12 +205,12 @@ export const adminDeleteCollaborator = asyncHandle(async (req: Request, res: Res
 });
 
 export const adminEditCollaborator = asyncHandle(async (req: Request, res: Response) => {
-  const { userId, firstName, lastName, email, phoneNumber, warehouseId } = req.body;
+  const { userId, firstName, lastName, email, phoneNumber, warehouseId, dob } = req.body;
   // find Collaborator in DB
   const collaborator = await Account.findUserById(userId);
 
   if (collaborator) {
-    await CollaboratorManager.adminUpdateCollaborator(userId, firstName, lastName, email, phoneNumber);
+    await CollaboratorManager.adminUpdateCollaborator(userId, firstName, lastName, email, phoneNumber, dob);
     await CollaboratorManager.adminUpdateWarehouseWorkCollaborator(userId, warehouseId);
     res.json({ message: 'Collaborator was Banned successfully' });
   } else {

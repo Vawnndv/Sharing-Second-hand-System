@@ -95,7 +95,7 @@ export default function Header({setIndex}: any) {
               marginLeft: '4px'
             }}
           >
-              Profile account
+              Thông tin
           </Typography>
         </Link>
       </MenuItem>
@@ -115,7 +115,7 @@ export default function Header({setIndex}: any) {
             marginLeft: '4px'
           }}
         >
-          Change password
+          Đổi mật khẩu
         </Typography>
       </Link>
       </MenuItem>
@@ -129,7 +129,7 @@ export default function Header({setIndex}: any) {
       >
         <RiLogoutCircleLine />
         <Typography style={{ marginLeft: '4px' }}>
-          Log Out
+          Đăng suất
         </Typography>
       </MenuItem>
     </Menu>

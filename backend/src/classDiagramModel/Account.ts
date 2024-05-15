@@ -53,14 +53,14 @@ export class Account {
   }
 
   
-  public static async createItem(username: string, email: string, password: string, roleid: number): Promise<any> {
+  public static async createItem(email: string, firstname: string, lastname: string, password: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(username, email, password, roleid) 
-        VALUES($1, $2, $3, $4)
+        INSERT INTO "User"(firstname, lastname, email, password, roleid, username) 
+        VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *;
       `;
-    const values : any = [username, email, password, roleid];
+    const values : any = [firstname, lastname, email, password, roleid, ''];
     try {
       const result = await client.query(query, values);
       console.log('User inserted successfully:', result.rows[0]);
@@ -74,14 +74,14 @@ export class Account {
     }
   };
 
-  public static async createCollaborator(username: string, firstname: string, lastname: string, email: string, password: string, phonenumber: string,  roleid: number): Promise<any> {
+  public static async createCollaborator(username: string, firstname: string, lastname: string, email: string, password: string, phonenumber: string, dob: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(username, firstname, lastname, email, password, phonenumber, roleid) 
-        VALUES($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO "User"(username, firstname, lastname, email, password, phonenumber, roleid, dateofbirth) 
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *;
       `;
-    const values : any = [username, firstname, lastname, email, password, phonenumber, roleid];
+    const values : any = [username, firstname, lastname, email, password, phonenumber, roleid, dob];
     try {
       const result = await client.query(query, values);
       console.log('Collaborator inserted successfully:', result.rows[0]);
@@ -133,15 +133,15 @@ export class Account {
     }
   }
 
-  public static async updateAccountProfile(userid: number, firstname: string, lastname: string, phonenumber: string, avatar: string): Promise<any> {
+  public static async updateAccountProfile(userid: number, firstname: string, lastname: string, phonenumber: string, avatar: string, dob: string): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
-      SET firstname = $2, lastname = $3, phonenumber = $4, avatar = $5
+      SET firstname = $2, lastname = $3, phonenumber = $4, avatar = $5, dateofbirth = $6
       WHERE userid = $1
       RETURNING *;
     `;
-    const values: any = [userid, firstname, lastname, phonenumber, avatar];
+    const values: any = [userid, firstname, lastname, phonenumber, avatar, dob];
     try {
       const result = await client.query(query, values);
   

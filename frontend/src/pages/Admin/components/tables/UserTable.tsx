@@ -5,12 +5,13 @@ import { grey } from '@mui/material/colors'
 import { Delete } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../redux/store'
-import { DateFormat } from '../../../../components/notification/Empty'
+// import { DateFormat } from '../../../../components/notification/Empty'
 import { TbLock, TbLockOpen } from "react-icons/tb";
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import { viVN } from '@mui/x-data-grid/locales';
 import { banUserService } from '../../../../redux/services/userServices'
 import toast from 'react-hot-toast'
+import dayjs from 'dayjs';
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -70,44 +71,47 @@ function UserTable(props: Props) {
     () => [
       {
         field: 'photoURL',
-        headerName: 'Avatar',
+        headerName: 'Hình đại diện',
         width: 60,
         renderCell: (params) => <Avatar src={params.row.image} />,
         sortable: false,
         filterable: false,
       }
       ,
-      { field: 'firstname', headerName: 'First Name', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'lastname', headerName: 'Last Name', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'lastname', headerName: 'Họ', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'firstname', headerName: 'Tên', width: 150, getTooltip: (params: any) => params.value },
       { field: 'email', headerName: 'Email', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'phonenumber', headerName: 'Phone Number', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
+      { field: 'dob', headerName: 'Ngày sinh', width: 100, getTooltip: (params: any) => params.value,  renderCell: (params: any) =>
+        dayjs(params.row.dob).format('DD/MM/YYYY')
+      },
+      { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Địa chỉ', width: 250, getTooltip: (params: any) => params.value },
       {
         field: 'createdat',
-        headerName: 'Created At',
+        headerName: 'Ngày tạo',
         width: 150,
         renderCell: (params: any) =>
-          DateFormat(params.row.createdat)
+          dayjs(params.row.createdat).format('DD/MM/YYYY')
       },
       {
         field: 'isbanned',
-        headerName: 'Ban',
+        headerName: 'Bị khóa',
         width: 100,
         type: 'boolean'
       },
       {
         field: 'actions',
-        headerName: 'Actions',
+        headerName: 'Hành động',
         type: 'actions',
         width: 120,
         renderCell: (params: any) => (
           <Box>
-            <Tooltip title="Ban this user">
+            <Tooltip title="Khóa người dùng">
               <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
             </Tooltip>
-            <Tooltip title="Delete this user">
+            <Tooltip title="Xóa người dùng">
               <IconButton
                 disabled={params.row.id === userInfo?.id}
                 onClick={() => deleteHandler(params.row)}
@@ -141,11 +145,11 @@ function UserTable(props: Props) {
             component='h3'
             sx={{ textAlign: 'center', mt: 3, mb: 3 }}
           >
-                Manage Users
+            Quản lý người dùng
           </Typography>
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
-                Delete selected rows
+              Xóa các dòng đã chọn
             </Button>
           </Box>
 

@@ -2,15 +2,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material'
+import axios from 'axios'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
-import { getAllCollaboratorsAction, createCollaboratorAction } from '../../../../redux/actions/collaboratorActions'
-import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
-import { CreateWarehouseValidation, EditUserInfoValidation } from '../../../../validation/userValidation'
 import Loader from '../../../../components/notification/Loader'
-import axios from 'axios'
+import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
+import { CreateWarehouseValidation } from '../../../../validation/userValidation'
 
 const styleModalCreateCollaborator = {
   position: 'absolute',
@@ -165,7 +164,6 @@ function ModalCreateCollaborator(props: Props) {
               sx={{ mt: '20px', width:'100%' }}
             />
 
-
             <TextField
               id="address"
               label="Address"
@@ -185,6 +183,7 @@ function ModalCreateCollaborator(props: Props) {
               helperText={errors.avatar?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
             />    
+            
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
               <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Cancel</Button>
               <Button variant='contained' type="submit">Save</Button>

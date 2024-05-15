@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme, Modal } from '@mui/material';
-// import dayjs from 'dayjs';
-// import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-// import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+// eslint-disable-next-line no-restricted-imports
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -32,7 +33,7 @@ const defaultTheme = createTheme({
 });
 
 function Profile() {
-  // const [date, setDate] = useState<any>(null);
+  const [date, setDate] = useState<any>(null);
   const dispatch: AppDispatch = useAppDispatch();
   const initialized = useRef(false);
 
@@ -67,7 +68,6 @@ function Profile() {
 
   // update profile
   const onSubmit = async (data: any) => {
-    console.log(data);
     if (imageUpdateUrl !== imageUrl) {
     //   await deleteImageService(imageUpdateUrl);
     }
@@ -77,7 +77,7 @@ function Profile() {
         id: authInfo?.id,
         avatar: imageUrl,
         accessToken: authInfo?.accessToken,
-        // ...{ image: imageUrl, dob: date ? date.format('MM/DD/YYYY') : '' }
+        dob: date ? date.format('YYYY/MM/DD') : '',
       })
     );
   };
@@ -99,14 +99,14 @@ function Profile() {
 
   useEffect(() => {
     if (userInfo) {
+      console.log(userInfo, '123')
       setValue('firstName', userInfo?.firstName);
       setValue('lastName', userInfo?.lastName);
       setValue('email', userInfo?.email);
       setValue('phone', userInfo?.phoneNumber);
-      setValue('userId', userInfo?.id);
-      // if (userInfo?.dob !== '') {
-      //   setDate(dayjs(userInfo?.dob));
-      // }
+      if (userInfo?.dob !== '') {
+        setDate(dayjs(userInfo?.dob));
+      }
       if (userInfo?.avatar)  setImageUrl(userInfo?.avatar);
     }
 
@@ -116,10 +116,9 @@ function Profile() {
       setValue('lastName', editUserInfo?.lastName);
       setValue('email', editUserInfo?.email);
       setValue('phone', editUserInfo?.phoneNumber);
-      setValue('userId', editUserInfo?.id);
-      // if (editUserInfo?.dob !== '') {
-      //   setDate(dayjs(editUserInfo?.dob));
-      // }
+      if (editUserInfo?.dob !== '') {
+        setDate(dayjs(editUserInfo?.dob));
+      }
       setImageUrl(editUserInfo?.avatar);
     }
 
@@ -191,7 +190,7 @@ function Profile() {
                 color: 'primary.main'
               }}
             >
-              Edit Profile
+              Chỉnh sửa thông tin
             </Typography>
             {isLoading ? (
               <Loader />
@@ -233,12 +232,11 @@ function Profile() {
                       helperText={errors.lastName?.message || ''}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sx={{ mt: 1 }}>
                     <TextField
                       fullWidth
                       id="phone"
                       label="Phone"
-                    //   name="phone"
                       {...register('phone')}
                       error={!!errors.phone}
                       helperText={errors.phone?.message || ''}
@@ -246,8 +244,7 @@ function Profile() {
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
-                  <div>
-                      <Button sx={{height: '55px'}} variant="outlined" startIcon={<LocationOnIcon />}
+                      <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
                           onClick={handleOpen}>
                           Cập nhật vị trí
                       </Button>
@@ -262,26 +259,28 @@ function Profile() {
                               <MapSelectAddress setLocation={setLocation} handleClose={handleClose} isUser/>
                           </Box>
                       </Modal>
-                  </div>
                   </Grid>
 
-                  {/* <Grid item xs={12} sm={6} md={6}>
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <Grid item xs={12} sm={6} md={6}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                    >
                       <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           sx={{ width: '100%' }}
-                          label="Date of birth"
+                          label='Date of birth'
                           value={date}
-                          onChange={(newValue) => setDate(newValue)}
-                          onError={false}
-                          placeholder="MM/DD/YYYY"
+                          onChange={newValue =>
+                            setDate(newValue)
+                          }
+                          format="DD/MM/YYYY"
                         />
                       </DemoContainer>
                     </LocalizationProvider>
-                  </Grid> */}
+                  </Grid>
                 </Grid>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}>
-                  {updateLoading ? 'Updating...' : 'Update Profile'}
+                  {updateLoading ? 'Đang tải...' : 'Cập nhật'}
                 </Button>
               </Box>
             )}

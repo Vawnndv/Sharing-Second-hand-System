@@ -77,7 +77,8 @@ export class UserManager {
   
     console.log(whereClause, '111111111111');
     const query = `SELECT 
-    u.userid, 
+    u.userid,
+    u.dateofbirth AS dob, 
     u.username, 
     u.email, 
     u.firstname, 

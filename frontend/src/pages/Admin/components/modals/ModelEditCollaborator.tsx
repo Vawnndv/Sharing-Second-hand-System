@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Backdrop, Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
@@ -9,6 +9,12 @@ import { resetCollaboratorPasswordService } from '../../../../redux/services/col
 import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
 import { EditUserInfoValidation } from '../../../../validation/userValidation'
 import Loader from '../../../../components/notification/Loader'
+// eslint-disable-next-line no-restricted-imports
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 const styleModalEditCollaborator = {
   position: 'absolute',
@@ -22,6 +28,7 @@ const styleModalEditCollaborator = {
   p: 4,
   borderRadius: '20px'
 }
+
 interface Props {
   isOpen: boolean;
   handleOpen: () => void;
@@ -44,6 +51,8 @@ function ModalEditCollaborator(props: Props) {
   const { isLoading, isError: editError, isSuccess: editSuccess } = useSelector(
     (state: RootState) => state.adminEditCollaborator
   )
+
+  const [date, setDate] = useState<any>(null);
 
   const resetCollaboratorPassword = async () => {
     try {
@@ -78,6 +87,9 @@ function ModalEditCollaborator(props: Props) {
       setValue('email', userRow?.email)
       setValue('phoneNumber', userRow?.phonenumber)
       setValue('warehouseName', userRow?.warehousename ? userRow?.warehousename : '');
+      if (userRow?.dob !== '') {
+        setDate(dayjs(userRow?.dob));
+      }
     }
   }, [userRow, setValue])
 
@@ -106,6 +118,7 @@ function ModalEditCollaborator(props: Props) {
         userId: userRow.userid,
         ...data,
         warehouseId,
+        dob: date ? date.format('YYYY/MM/DD') : '',
       }
     ))
   }
@@ -133,32 +146,32 @@ function ModalEditCollaborator(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Edit User
+                Cập nhật thông tin cộng tác viên
             </Typography>
 
             <Grid container spacing={2} sx={{ mt: '20px' }}>
               <Grid item xs={6}>
                 <TextField
-                  id="firstName"
-                  label="First Name"
-                  variant="outlined"
-                  disabled={!isEdit}
-                  fullWidth
-                  {...register('firstName')}
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message || ''}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
                   id="lastName"
-                  label="Last Name"
+                  label="Họ"
                   variant="outlined"
                   disabled={!isEdit}
                   fullWidth
                   {...register('lastName')}
                   error={!!errors.lastName}
                   helperText={errors.lastName?.message || ''}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id="firstName"
+                  label="Tên"
+                  variant="outlined"
+                  disabled={!isEdit}
+                  fullWidth
+                  {...register('firstName')}
+                  error={!!errors.firstName}
+                  helperText={errors.firstName?.message || ''}
                 />
               </Grid>
             </Grid>
@@ -176,23 +189,40 @@ function ModalEditCollaborator(props: Props) {
 
             <TextField
               id="phone"
-              label="Phone Number"
+              label="Số điện thoại"
               variant="outlined"
               disabled={!isEdit}
               {...register('phoneNumber')}
               error={!!errors.phoneNumber}
               helperText={errors.phoneNumber?.message || ''}
-              sx={{ mt: '20px', width:'100%' }}
-            />   
+              sx={{ mt: '20px', width:'100%', mb: '16px' }}
+            />  
 
-            <Grid container spacing={2} sx={{ mt: '20px' }}>
+            <LocalizationProvider
+              dateAdapter={AdapterDayjs}
+            >
+              <DemoContainer components={['DatePicker']}>
+                <DatePicker
+                  sx={{ width: '100%' }}
+                  label='Date of birth'
+                  disabled={!isEdit}
+                  value={date}
+                  onChange={newValue =>
+                    setDate(newValue)
+                  }
+                  format="DD/MM/YYYY"
+                />
+              </DemoContainer>
+            </LocalizationProvider>
+
+            <Grid container sx={{ mt: '20px' }}>
               <Grid item xs={12} md={12}>
                 <FormControl fullWidth>
                   <InputLabel id="warehousename-label">Chọn Kho</InputLabel>
                   <Select
                     labelId="warehousename-label"
                     id="warehousename"
-                    label="Set Admin"
+                    label="Chọn kho"
                     disabled={!isEdit}
                     {...register('warehouseName')} // Đăng ký với useForm
                     defaultValue={userRow?.warehousename}
@@ -208,13 +238,13 @@ function ModalEditCollaborator(props: Props) {
             </Grid>
 
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen(); setUserRow(null)}}>Cancel</Button>
-              <Button variant='contained' color='success' onClick={() => {handleOpen(); setUserRow(null); resetCollaboratorPassword()}}>Reset Password</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen(); setUserRow(null)}}>Hủy</Button>
+              <Button variant='contained' color='success' onClick={() => {handleOpen(); setUserRow(null); resetCollaboratorPassword()}}>Đặt lại mật khẩu</Button>
               {!isEdit && (
-                <Button variant='contained' onClick={() => setIsEdit(true)}>Edit</Button>
+                <Button variant='contained' onClick={() => setIsEdit(true)}>Chỉnh sửa</Button>
               )}
               {isEdit && (
-                <Button variant='contained' type="submit">Save</Button>
+                <Button variant='contained' type="submit">Lưu</Button>
               )}
               
             </Stack>

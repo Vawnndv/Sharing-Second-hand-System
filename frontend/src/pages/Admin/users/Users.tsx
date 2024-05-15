@@ -44,7 +44,7 @@ function Users() {
       if (error instanceof Error) {
         toast.error(error.message)
       } else {
-        toast.error("Network Error");
+        toast.error("Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại sau.");
       }
     }
   }
@@ -68,7 +68,7 @@ function Users() {
   
   // delete user handler
   const deleteUserHandler = (user: any) => {
-    if (window.confirm(`Are you sure you want to delete ?${  user.firstname}`)) {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng ${  user.lastname}?`)) {
       dispatch(deleteUserAction(user.userid))
       setTotalUser(totalUser - 1);
     }
@@ -76,7 +76,7 @@ function Users() {
 
   const handleDeleteSelectedRows = () => {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
-    if (window.confirm(`Are you sure you want to delete ${selectionModel.length} users?` )) {
+    if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectionModel.length} người dùng này không ?` )) {
       dispatch(deleteUserAction(id))
       setTotalUser(totalUser - selectionModel.length);
 

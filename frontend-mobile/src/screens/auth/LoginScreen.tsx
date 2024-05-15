@@ -85,7 +85,7 @@ const LoginScreen = ({navigation}: any) => {
           marginTop: 75,
         }}
       >
-        <TextComponent text="Sign In" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
+        <TextComponent text="Đăng nhập" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
         <SpaceComponent height={21} />
         <InputComponent
           value={values.email }
@@ -98,7 +98,7 @@ const LoginScreen = ({navigation}: any) => {
         />
         <InputComponent
           value={values.password}
-          placeholder="Password"
+          placeholder="Mật khẩu"
           onChange={val => handleChangeValue('password', val)}
           isPassword
           allowClear
@@ -115,10 +115,10 @@ const LoginScreen = ({navigation}: any) => {
               onChange={() => setIsRemember(!isRemember)}
             />
             <SpaceComponent width={4} />
-            <TextComponent text="Remember me" />
+            <TextComponent text="Lưu tài khoản" />
           </RowComponent>
           <ButtonComponent 
-            text="Forgot password?" 
+            text="Quên mật khẩu?" 
             onPress={() => navigation.navigate('ForgotPasswordScreen')}
             type="text"
           />
@@ -135,7 +135,7 @@ const LoginScreen = ({navigation}: any) => {
         <ButtonComponent
           disable={isDisable}
           onPress={handleLogin}
-          text="SIGN IN"
+          text="ĐĂNG NHẬP"
           type='primary'
           iconFlex="right"
           icon={
@@ -155,10 +155,10 @@ const LoginScreen = ({navigation}: any) => {
       <SocialLogin />
       <SectionComponent>
         <RowComponent justify="center">
-          <TextComponent text="Don't have an account? " />
+          <TextComponent text="bạn chưa có tài khoản? " />
           <ButtonComponent 
             type="link" 
-            text="Sign up" 
+            text="Đăng ký" 
             onPress={() => navigation.navigate('RegisterSCreen')} 
           />
         </RowComponent>

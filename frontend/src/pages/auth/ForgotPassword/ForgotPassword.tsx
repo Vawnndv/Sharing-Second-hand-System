@@ -55,6 +55,7 @@ function ForgotPassword() {
       if (error instanceof Error) {
         setErr(error.message)
       } else {
+        // Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại sau.
         setErr("Network Error")
       }
     } finally {
@@ -96,7 +97,7 @@ function ForgotPassword() {
                 color: 'primary.main'
               }}
             >
-              Forgot Password
+              Quên mật khẩu
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
@@ -113,7 +114,7 @@ function ForgotPassword() {
                 </Grid>
               </Grid>
               <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ mt: 3, mb: 2, py: 1 }}>
-                Forgot Password
+                Quên mật khẩu
               </Button>
             </Box>
           </Box>
