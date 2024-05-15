@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
 import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -51,6 +51,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [isLoading, setIsLoading] = useState(false);
 
   const auth = useSelector(authSelector);
+
+  const textInputRef = useRef<any>(null);
+
 
   useEffect( () => {
     const fetchUserData = async () =>{
@@ -134,6 +137,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
   },[location])
 
+  const handleBlur = () => {
+    // Khi mất focus, reset giá trị của TextInput
+    if (textInputRef.current) {
+      textInputRef.current.setNativeProps({ selection: { start: 0, end: 0 } });
+    }
+  };
+
 
 
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
@@ -198,7 +208,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
     }
 
-    if(typeCheck == 'postdescription'){
+    else if(typeCheck == 'postdescription'){
       if (!text.trim()) {
         updatedErrorMessage.postDescription = 'Vui lòng nhập nội dung bài đăng.';
         setFormData({ ...formData, postDescription: '' });
@@ -210,8 +220,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
     }
 
-    if(typeCheck == 'postphonenumber'){
-      if (!text.trim()) {
+    else if(typeCheck == 'postphonenumber'){
+      if (!text) {
         updatedErrorMessage.postPhoneNumber = 'Vui lòng nhập số điện thoại.';
         setFormData({ ...formData, postPhoneNumber: '' });
       }
@@ -223,15 +233,15 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
     }
 
-    if(typeCheck == 'postaddress'){
-      if (!formData.postAddress.trim()) {
-        updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
-        setFormData({ ...formData, postAddress: '' });
+    // if(typeCheck == 'postaddress'){
+    //   if (!formData.postAddress) {
+    //     updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
+    //     setFormData({ ...formData, postAddress: '' });
 
-      } else {
-        updatedErrorMessage.postAddress = '';
-      }
-    }
+    //   } else {
+    //     updatedErrorMessage.postAddress = '';
+    //   }
+    // }
 
     // if(typeCheck == 'postenddate'){
     //   if (!startDate){
@@ -391,18 +401,24 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           <TextInput
             label="Địa chỉ"
             value={location?.address}
-            onFocus={() => handleValidate('', 'postaddress')}
-            onBlur={() => handleValidate('', 'postaddress')}
+            // onFocus={() => handleValidate('', 'postaddress')}
+            onBlur={() => {
+              // handleValidate('', 'postaddress');
+              handleBlur();
+            }}
             onChangeText={(text) =>{ 
-              // setFormData({ ...formData, postAddress: text });
-              // setErrorMessage({...errorMessage, postAddress: ''})
-              handleValidate(text,'postaddress');
+              setFormData({ ...formData, postAddress: text });
+              setErrorMessage({...errorMessage, postAddress: ''})
+              // handleValidate(text,'postaddress');
 
             }}
             style={styles.input}
             underlineColor="gray" // Màu của gạch chân khi không focus
             activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
             error={errorMessage.postAddress? true : false}
+            // textAlignVertical="top"
+            // textAlign="left"
+            // scrollEnabled={true}
             theme={{
               colors: {
                 error: appColors.danger, 
@@ -426,7 +442,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         label="Phương thức cho"
         value={formData.postGiveMethod}
         // onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
-        style={styles.input}
+        style={styles.inputForGiveMethod}
         editable={false}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -439,7 +455,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         label="Phương thức đem món đồ đến kho"
         value={formData.postBringItemToWarehouse}
         // onChangeText={(text) => setFormData({ ...formData, postAddress: text })}
-        style={styles.input}
+        style={styles.inputForGiveMethod}
         editable={false}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -462,6 +478,12 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: 'black',
     fontWeight: 'bold'
+  },
+  inputForGiveMethod:{
+    width: '100%',
+    marginTop: 20,
+    backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
+    fontSize: 14,
   },
   input: {
     width: '100%',

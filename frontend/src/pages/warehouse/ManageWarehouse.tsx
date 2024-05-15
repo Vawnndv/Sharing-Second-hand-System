@@ -56,7 +56,7 @@ export default function ManageWarehouse() {
       } catch (error) {
         console.error('Error fetching warehouses:', error);
       }
-  }
+    }
   fetchWarehouses();
   },[])
 

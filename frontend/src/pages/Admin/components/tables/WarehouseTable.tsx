@@ -94,22 +94,22 @@ function WarehouseTable(props: Props) {
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
       {
-        field: 'photoURL',
-        headerName: 'Avatar',
+        field: 'avatar',
+        headerName: 'Ảnh',
         width: 60,
-        renderCell: (params) => <Avatar src={params.row.image} />,
+        renderCell: (params) => <Avatar src={params.value} />,
         sortable: false,
         filterable: false,
       }
       ,
-      { field: 'warehousename', headerName: 'Warehouse Name', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Address', width: 350, getTooltip: (params: any) => params.value },
-      { field: 'phonenumber', headerName: 'PhoneNumber', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'numberofemployees', headerName: 'Employees', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'warehousename', headerName: 'Tên kho', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Địa chỉ', width: 350, getTooltip: (params: any) => params.value },
+      { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'numberofemployees', headerName: 'Nhân viên', width: 150, getTooltip: (params: any) => params.value },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
       {
         field: 'createdat',
-        headerName: 'Created At',
+        headerName: 'Ngày tạo',
         width: 150,
         renderCell: (params: any) =>
           DateFormat(params.row.createdat)
@@ -122,7 +122,7 @@ function WarehouseTable(props: Props) {
       // },
       {
         field: 'actions',
-        headerName: 'Actions',
+        headerName: 'Hành động',
         type: 'actions',
         width: 120,
         renderCell: (params: any) => (

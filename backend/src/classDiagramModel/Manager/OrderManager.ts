@@ -159,7 +159,7 @@ export class OrderManager {
         `
       }
       let queryTime =``
-      if(time !== 'Tất cả'){
+      if(parseInt(time) !== -1){
         queryTime = `AND p.timeend >= NOW()
                       AND p.timeend <= NOW() + INTERVAL '${time} days'`
       }
@@ -209,12 +209,14 @@ export class OrderManager {
         WHERE addressid = $1
       `
 
+      console.log(ordersQuery)
       const ordersResult: QueryResult = await client.query(ordersQuery, values);
       
       const ordersRow = ordersResult.rows;
       let result: any = []
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
+        console.log(addressReceiveDB)
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
         
@@ -226,7 +228,7 @@ export class OrderManager {
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
 
-          if(distance !== 'Tất cả'){
+          if(parseInt(distance) !== -1){
             if(addressGive.getDistance(addressReceive)/1000 <= parseInt(distance)){
 
               const orderObj = new Order(
@@ -1065,6 +1067,7 @@ export class OrderManager {
       const statusid_waitForApporve = '2';
       const statusid_approved = '12';
       const statusid_waitForGiver = '13';
+      const statisod_waitForCollaborator = '7';
 
 
       const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
@@ -1076,6 +1079,13 @@ export class OrderManager {
         console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
         console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForGiverResult);
+      }
+
+      if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
+        const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForCollaboratorResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statisod_waitForCollaborator)
+        console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForCollaboratorResult);
       }
       return result.rows[0];
     } catch (error) {

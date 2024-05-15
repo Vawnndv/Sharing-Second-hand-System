@@ -64,12 +64,22 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
             </View>
 
             <View style={styles.orderInfo}>
-                <Image
-                    style={{width: 80, height: 80, borderRadius: 50}}
-                    source={{
-                    uri: `${avatar}`,
-                    }}
-                />
+                {
+                    avatar ?
+                    <Image
+                        style={{width: 80, height: 80, borderRadius: 50}}
+                        source={{
+                        uri: `${avatar}`,
+                        }}
+                    /> : 
+                    <Image
+                        style={{width: 80, height: 80, borderRadius: 50}}
+                        source={{
+                        uri: `https://ss-images.saostar.vn/wp700/pc/1613810558698/Facebook-Avatar_3.png`,
+                        }}
+                    />
+                }
+                
 
                 <View style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
 

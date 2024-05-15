@@ -402,6 +402,79 @@ export class PostManager {
     }
   }
 
+  public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const postsQuery = `
+      SELECT DISTINCT
+        us.userid,
+        CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+        CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+        po.postid,
+        po.title,
+        po.description,
+        po.createdat,
+        ad.address,
+        ad.longitude,
+        ad.latitude,
+        img.path,
+        itt.nametype,
+        od.status,
+        gr.give_receivetype,
+        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+      FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN Address ad ON po.addressid = ad.addressid
+      LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
+      LEFT JOIN item it ON it.itemid = po.itemid
+      LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+      LEFT JOIN "like_post" lp ON po.postid = lp.postid
+      LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+      LEFT JOIN orders od ON od.postid = po.postid
+      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = od.givetypeid
+      LEFT JOIN (
+          SELECT DISTINCT ON (itemid) * FROM Image
+      ) img ON img.itemid = po.itemid
+
+	    WHERE (od.status LIKE '%${status}%')
+      GROUP BY
+          us.userid,
+          us.firstname,
+          us.lastname,
+          us.avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          wh.warehousename,
+          itt.nametype,
+          od.status,
+          gr.give_receivetype
+      ORDER BY po.createdat DESC
+      LIMIT ${limit}
+      OFFSET ${limit} * ${page};
+      `;
+
+      const result: QueryResult = await client.query(postsQuery);
+      if (result.rows.length === 0) {
+        return null;
+      }
+
+      const warehouseList = await this.getListAddressByWarehouseID(warehouses);
+
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
   public static async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
     const client = await pool.connect();
     try {

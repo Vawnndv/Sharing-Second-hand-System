@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import OrderCard from '../order/OrderCard';
 import { useSelector } from 'react-redux';
 
-function HomeWarehousePosts({filterValue, warehousesID}: any) {
+function PostApproved({filterValue, warehousesID}: any) {
     
     const userLogin = useSelector((state: any) => state.userLogin);
 
@@ -22,8 +22,8 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
                 const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
                 console.log(responseUser)
                 
-                const responsePosts: any = await Axios.post('/posts/warehouse', {
-                    
+                const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
+                    status: 'Đã duyệt',
                     page: page -1,
                     limit: LIMIT,
                     distance: filterValue.distance,
@@ -60,7 +60,7 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
                         { posts !== null && 
                             posts.map((post: any, index: number) => (
                             <Grid xs={12} sm={4} md={4} key={index}>
-                                <OrderCard order={post} isPost canDelete/>
+                                <OrderCard order={post} isPost canApproval canDelete/>
                             </Grid>
                         ))}
                     </Grid>
@@ -81,4 +81,4 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
      );
 }
 
-export default HomeWarehousePosts;
+export default PostApproved;

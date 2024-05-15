@@ -119,7 +119,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         
     }, [])
     // console.log(image)
-    console.log(orders)
     return(
         <ContainerComponent back title="Chi tiết đơn hàng">
             <View style={styles.container}>

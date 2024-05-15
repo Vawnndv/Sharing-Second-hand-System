@@ -148,10 +148,19 @@ const MultiStepForm = () => {
       formDataStepTwo.postDescription && 
       formDataStepTwo.postStartDate && 
       formDataStepTwo.postEndDate && 
-      formDataStepTwo.postPhoneNumber && 
-      formDataStepTwo.postAddress 
+      formDataStepTwo.postPhoneNumber      
     ){
-      setIsValidSubmit(true);
+      if(formDataStepOne.methodGive == 'Gửi món đồ đến kho' && formDataStepOne.methodsBringItemToWarehouse == 'Tự đem đến kho'){
+        setIsValidSubmit(true);
+      }
+      else{
+        if(formDataStepTwo.postAddress){
+          setIsValidSubmit(true);
+        }
+        else{
+          setIsValidSubmit(false);
+        }
+      }
     }
     else{
       setIsValidSubmit(false);
@@ -176,7 +185,7 @@ const MultiStepForm = () => {
       formDataStepTwo.postAddress 
     ) {
       console.log(errorMessage);
-      console.log(formDataStepTwo)
+      console.log(formDataStepTwo);
 
       let itemID = 0;
       let postID = 0;
@@ -224,7 +233,7 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: false,
             postLocation: warehouseSelected,
-            isWarehousePost: true
+            isWarehousePost: false
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
@@ -239,7 +248,7 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: location.addressid ? false : true,
             postLocation: location,
-            isWarehousePost: true
+            isWarehousePost: false
           });
         }
         else{
@@ -263,8 +272,7 @@ const MultiStepForm = () => {
         address = response.data.postCreated.address;
         addressid = response.data.postCreated.addressid;
       } catch (error) {
-        console.error('Error creating item and post:', error);
-        Alert.alert('Error', 'Failed to create item and post. Please try again later.');
+        Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
       }
   
       try {
@@ -341,11 +349,15 @@ const MultiStepForm = () => {
           orderid,
         });
         console.log(response.data.traceCreated)
-        Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+        // Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
         setCurrentStep(1);
         setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
         setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
-        navigation.navigate('Home', {screen: 'HomeScreen'})
+        navigation.navigate('ThankYouScreen', {
+          title: 'Gửi bài viết thành công!!',
+          postID: postID,
+          content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
+        })
         // navigation.goBack();
       } catch (error) {
         console.error('Error creating Trace:', error);

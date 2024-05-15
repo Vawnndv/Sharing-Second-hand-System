@@ -97,6 +97,7 @@ export const updateWarehouse = asyncHandle(async (req, res) => {
 });
 
 
+
 export const getWarehouseNameList = asyncHandle(async (_req, res) => {
   try {
     const warehouseList = await WarehouseManager.getWarehouseNameList();
@@ -113,4 +114,6 @@ export const getWarehouseNameList = asyncHandle(async (_req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
+
 

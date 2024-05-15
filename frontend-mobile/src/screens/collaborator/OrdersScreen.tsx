@@ -44,8 +44,8 @@ export default function OrdersScreen({navigation}: any) {
     const [ordersGiving, setOrdersGiving] = useState([])
 
     const [filterValue, setFilterValue] = useState({
-        distance: 15,
-        time: 0,
+        distance: -1,
+        time: -1,
         category: category,
         sort: 'Mới nhất'
     })
@@ -60,7 +60,7 @@ export default function OrdersScreen({navigation}: any) {
         const fetchAPI = async () => {
             try{
                 setIsLoading(true)
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=Hàng đang được đến lấy&distance=Tất cả&time=Tất cả&category=Tất cả&sort=Mới nhất`)
+                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=Hàng đang được đến lấy&distance=-1&time=-1&category=Tất cả&sort=Mới nhất`)
                 setOrdersGiving(response.data.orders)
                 setIsLoading(false)
             }catch(error){
@@ -104,12 +104,15 @@ export default function OrdersScreen({navigation}: any) {
     },[tab, filterValue, changeOrdersGiving, refresh])
 
     const calculateDay = (dayAmount: number) => {
+        if(dayAmount === -1){
+            return 'Ngày hết hạn: ' + 'Tất cả'
+        }
         const currentDay = new Date()
         let day = new Date(currentDay)
         day.setDate(currentDay.getDate() + dayAmount)
         const date = day.getDate() > 9 ? day.getDate() : '0'+day.getDate()
         const month = day.getMonth() > 9 ? (day.getMonth() + 1) : ('0'+(day.getMonth() + 1))
-        return date + '/' + month + '/' + day.getFullYear()
+        return 'Ngày hết hạn: '+ date + '/' + month + '/' + day.getFullYear()
     }
 
 
@@ -160,7 +163,7 @@ export default function OrdersScreen({navigation}: any) {
                     <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
                     <View style={styles.wrapper}>
-                        <Text style={{marginTop: 10, fontSize: 18, color: appColors.primary2, fontWeight: 'bold'}}>Ngày {calculateDay(filterValue.time)}  
+                        <Text style={{marginTop: 10, fontSize: 18, color: appColors.primary2, fontWeight: 'bold'}}>{calculateDay(filterValue.time)}  
                             {   
                                 filterValue.time === 0 &&
                                 ' ( Hôm nay )'

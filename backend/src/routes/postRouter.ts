@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers } from '../controllers/postController';
+import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus } from '../controllers/postController';
 
 const router = express.Router();
 
@@ -14,6 +14,7 @@ router.get('/postreceivers/:postID', getPostReceivers);
 router.post('/createPost', createPost);
 
 router.post('/createPostReceiver', createPostReceiver);
+router.post('/get-posts-by-status', getAllPostByStatus);
 
 // router.get('/posts/', getFilterPostList);
 

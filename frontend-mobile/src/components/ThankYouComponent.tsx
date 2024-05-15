@@ -10,7 +10,10 @@ import { appColors } from '../constants/appColors';
 import { appInfo } from '../constants/appInfos';
 import { appSizes } from '../constants/appSizes';
 import { fontFamilies } from '../constants/fontFamilies';
+import LottieView from 'lottie-react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
+import Icon from 'react-native-vector-icons/AntDesign'; // Import Icon
 
 
 interface ThankYouProps  {
@@ -53,20 +56,26 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
   }
   return(
     <View style={styles.container}>
+
+      <LottieView source={require('../../assets/Animation - 1715742581201.json')} style={{width: appInfo.sizes.WIDTH * 1.2 , height: appInfo.sizes.HEIGHT * 0.38}} autoPlay loop />
+      {/* <LottieView source={require('../../assets/Animation - 1715742581201.json')} style={{width: appInfo.sizes.WIDTH , height: appInfo.sizes.HEIGHT * 0.38}} autoPlay loop /> */}
+
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.textContent}>{content}</Text>
 
       <View style={styles.buttonContainer}>
       <TouchableOpacity onPress={goToPostDetail} style={styles.buttonStyle}>
-        <Text style={styles.textStyle}>Đi đến bài đăng</Text>
+        <Icon name="left" size={18} color="white" style={styles.icon} />
+        <Text style={styles.textStyle}>Bài đăng</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={goToOrderScreen} style={styles.buttonStyle}>
-        <Text style={styles.textStyle}>Đi đến trang đơn hàng</Text>
+        <Text style={styles.textStyle}>Đơn hàng</Text>
+        <Icon name="right" size={18} color="white" style={styles.icon} />
       </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={goToHomeScreen} style={styles.buttonStyle}>
+      <TouchableOpacity onPress={goToHomeScreen} style={styles.homeButton}>
         <Text style={styles.textStyle}>Về trang chủ </Text>
       </TouchableOpacity>
     </View>
@@ -78,23 +87,34 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: appColors.purple,
     flexDirection: 'column',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-around'
+    
+  },
+
+  animation:{
+    height: '100%',
+    width: '100%'
+
   },
   title: {
-    marginBottom: 40,
-    color: appColors.black,
+    marginBottom: 20,
+    color: appColors.white,
     fontFamily: fontFamilies.bold,
-    fontSize: 50
+    textAlign: 'center',
+    fontSize: 25,
+    fontStyle: 'italic'
   },
 
   textContent: {
-    color: appColors.black,
+    color: appColors.white,
     fontFamily: fontFamilies.bold,
-    fontSize: appSizes.android.title
+    fontSize: appSizes.android.title,
+    textAlign: 'center',
+
   },
 
   buttonContainer: {
@@ -105,28 +125,35 @@ const styles = StyleSheet.create({
   },
 
   buttonStyle: {
-    backgroundColor: appColors.purple, // Chỉ định màu nền của nút
+    backgroundColor: 'rgba(255, 255, 255, 0.5)', // Chỉ định màu nền của nút
     borderRadius: 10,
-    margin: '2%',
-    width: appInfo.sizes.WIDTH * 0.42,
+    margin: '3%',
+    marginLeft: '4%',
+    width: appInfo.sizes.WIDTH * 0.38,
     height: appInfo.sizes.WIDTH * 0.12,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    flexDirection: 'row',
 
   },
 
-  // homeButton:{
-  //   backgroundColor: appColors.purple, // Chỉ định màu nền của nút
-  //   padding: 10,
-  //   borderRadius: 10,
-  //   // marginTop: '20%',
-  //   // position: 'absolute'
+  homeButton:{
+    backgroundColor: appColors.purple, // Chỉ định màu nền của nút
+    padding: 10,
+    borderRadius: 10,
+    // marginTop: '20%',
+    // position: 'absolute'
 
-  // },
+  },
   textStyle: {
     color: appColors.white, // Chỉ định màu chữ
     textAlign: 'center',
     fontSize: appSizes.android.default,
-    fontFamily: fontFamilies.bold
-  }
+    fontFamily: fontFamilies.bold,   
+    textDecorationLine: 'underline'
+  },
+
+  icon: {
+    // marginHorizontal: 5, // Khoảng cách giữa biểu tượng và văn bản
+  },
 })
