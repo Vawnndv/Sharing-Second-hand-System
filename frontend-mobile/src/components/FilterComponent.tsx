@@ -7,15 +7,7 @@ import { Modal, Portal, PaperProvider } from 'react-native-paper';
 import { useSelector } from "react-redux";
 import { authSelector } from "../redux/reducers/authReducers";
 
-const distance = [
-    1,
-    2,
-    5,
-    10,
-    15,
-    25,
-    -1,
-]
+let distance: any = []
 
 
 let time: any = []
@@ -50,6 +42,16 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             30,
             -1
         ]
+
+        distance = [
+            1,
+            2,
+            5,
+            10,
+            15,
+            25,
+            -1,
+        ]
     }else{
         time = [ 
             0,
@@ -58,6 +60,17 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             7,
             14,
             30,
+            -1
+        ]
+
+        distance = [
+            1,
+            2,
+            5,
+            10,
+            15,
+            25,
+            -1,
         ]
     }
 
@@ -140,11 +153,15 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                             <Text style={[{fontSize: 15}, indexDistance === 5 && styles.selectTextItem]}>25 km</Text>
                         </TouchableOpacity>
                         {
-                          auth.roleID === 1 &&
+                          auth.roleID === 1 ?
                           <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
                               onPress={() => {setIndexDistance(6)}}>
                               <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> {`${'>'} 25 km`}</Text>
-                          </TouchableOpacity>
+                          </TouchableOpacity> :
+                          <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
+                          onPress={() => {setIndexDistance(6)}}>
+                          <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> Tất cả </Text>
+                      </TouchableOpacity>
                         }
                     </View>
                 </ScrollView>
@@ -217,6 +234,10 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                             <TouchableOpacity style={[styles.item, indexTime === 5 && styles.selectItem]}
                                 onPress={() => {setIndexTime(5)}}>
                                 <Text style={[{fontSize: 15}, indexTime === 5 && styles.selectTextItem]}>1 tháng</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 6 && styles.selectItem]}
+                                onPress={() => {setIndexTime(6)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 6 && styles.selectTextItem]}>Tất cả</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
