@@ -10,6 +10,6 @@ export interface ErrorMessages {
   confirmNewPassword?: string;
   phone?: string;
   address?: string;
-  dob: string;
+  dob?: string;
   phonenumber?: string;
 }
