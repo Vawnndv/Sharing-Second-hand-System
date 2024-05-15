@@ -223,7 +223,7 @@ function Menu({index, setIndex}: any) {
                         spacing={1} 
                         className={index === 2 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        // onClick={() => {setIndex(2); navigate('/history')}}
+                        onClick={() => {setIndex(2); navigate('/warehouse')}}
                         >
                         <WarehouseIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>

@@ -184,4 +184,23 @@ export class CollaboratorManager extends UserManager {
       client.release();
     }
   };
+
+  public static async getWarehouseInfoOfCollaborator(userid: number): Promise<any> {
+    const client = await pool.connect()
+    const query = 'SELECT WAREHOUSE.addressid, WORKAT.warehouseid from WORKAT JOIN WAREHOUSE ON WORKAT.warehouseid = WAREHOUSE.warehouseid WHERE userid = $1';
+
+    const value: any = [userid];
+
+    try {
+      const result = await client.query(query, value);
+      return result.rows[0];
+      
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
 }
+

@@ -272,8 +272,7 @@ const MultiStepForm = () => {
         address = response.data.postCreated.address;
         addressid = response.data.postCreated.addressid;
       } catch (error) {
-        console.error('Error creating item and post:', error);
-        Alert.alert('Error', 'Failed to create item and post. Please try again later.');
+        Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
       }
   
       try {
@@ -350,11 +349,15 @@ const MultiStepForm = () => {
           orderid,
         });
         console.log(response.data.traceCreated)
-        Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+        // Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
         setCurrentStep(1);
         setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
         setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
-        navigation.navigate('Home', {screen: 'HomeScreen'})
+        navigation.navigate('ThankYouScreen', {
+          title: 'Gửi bài viết thành công!!',
+          postID: postID,
+          content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
+        })
         // navigation.goBack();
       } catch (error) {
         console.error('Error creating Trace:', error);

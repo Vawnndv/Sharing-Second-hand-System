@@ -1,5 +1,5 @@
 import express from 'express';
-import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getTotalCollaborator } from '../controllers/collaboratorController';
+import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getTotalCollaborator, getWarehouseInfoOfCollaborator } from '../controllers/collaboratorController';
 
 const collaboratorRouter = express.Router();
 
@@ -21,5 +21,8 @@ collaboratorRouter.post('/collaborator-list/all', getAllCollaborator);
 collaboratorRouter.put('/collaborator-list/:id', adminEditCollaborator);
 
 collaboratorRouter.delete('/collaborator-list/:id', getAllCollaborator);
+
+collaboratorRouter.get('/getWarehouseAddress/:userid', getWarehouseInfoOfCollaborator);
+
 
 export default collaboratorRouter;
