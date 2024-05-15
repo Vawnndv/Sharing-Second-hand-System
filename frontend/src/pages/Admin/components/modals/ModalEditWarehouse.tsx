@@ -12,6 +12,8 @@ import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
 import { EditUserInfoValidation, EditWarehouseInfoValidation } from '../../../../validation/userValidation'
 import Loader from '../../../../components/notification/Loader'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+
 
 const styleModalEditCollaborator = {
   position: 'absolute',
@@ -53,6 +55,8 @@ function ModalEditWarehouse(props: Props) {
   const { isLoading, isError: editError, isSuccess: editSuccess } = useSelector(
     (state: RootState) => state.adminEditCollaborator
   )
+
+  const navigate = useNavigate()
 
   const warehouseLocation: WarehouseLocation = {
     address: "123 Main St, Anytown, AN",
@@ -116,8 +120,9 @@ function ModalEditWarehouse(props: Props) {
         warehouseid,
       });
       console.log(res.data);
-      // setIsOpen(!isOpen);
+
       toast.success(`Update warehouse info successfully`);
+      setIsOpen(!isOpen);
 
       // Alert.alert('Success', 'Item created successfully');
       } catch (error) {

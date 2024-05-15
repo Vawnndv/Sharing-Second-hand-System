@@ -157,6 +157,7 @@ function ViewPostDetail() {
         }
         else{
             let orderID = -1;
+            let warehouseIDOfCollaborator = -1;
             try{
                 const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
                     orderid: post.orderid,
@@ -187,28 +188,68 @@ function ViewPostDetail() {
             }
 
             try{
-                const time = new Date();
-                const response = await axios.post(`http://localhost:3000/order/createOrder`, {
-                    title: post.title,
-                    location: '',
-                    description: post.description,
-                    departure: '',
-                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                    itemid: post.itemid,
-                    status: '',
-                    qrcode: '',
-                    ordercode: '',
-                    usergiveid: userLogin.userInfo.id,
-                    postid: post.postid,
-                    imgconfirm: '',
-                    locationgive: post.addressid,
-                    locationreceive: null,
-                    givetypeid: post.givetypeid,
-                    imgconfirmreceive: '',
-                    givetype: post.givetype,
-                    warehouseid: post.warehouseid
-                }); 
-                orderID = response.data.orderCreated.orderid;
+                if(post.givetype === 'Cho kho (kho đến lấy)'){
+                    const time = new Date();
+                    const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                        title: post.title,
+                        location: '',
+                        description: post.description,
+                        departure: '',
+                        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                        itemid: post.itemid,
+                        status: '',
+                        qrcode: '',
+                        ordercode: '',
+                        usergiveid: userLogin.userInfo.id,
+                        postid: post.postid,
+                        imgconfirm: '',
+                        locationgive: post.addressid,
+                        locationreceive: null,
+                        givetypeid: post.givetypeid,
+                        imgconfirmreceive: '',
+                        givetype: post.givetype,
+                        warehouseid: post.warehouseid
+                    }); 
+                    orderID = response.data.orderCreated.orderid;
+                }
+
+                else{
+
+                    try {
+                        const res = await axios.get(`http://localhost:3000/collaborator/getWarehouseAddress/${userLogin.userInfo.id}`)
+                
+                        if (!res) {
+                          throw new Error('Failed to fetch warehouse address of collaborator'); // Xử lý lỗi nếu request không thành công
+                        }
+                        warehouseIDOfCollaborator = res.data.warehouseInfo.addressid
+                
+                      } catch (error) {
+                        console.error('Error fetching warehouses:', error);
+                    }
+
+                    const time = new Date();
+                    const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                        title: post.title,
+                        location: '',
+                        description: post.description,
+                        departure: '',
+                        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                        itemid: post.itemid,
+                        status: '',
+                        qrcode: '',
+                        ordercode: '',
+                        usergiveid: userLogin.userInfo.id,
+                        postid: post.postid,
+                        imgconfirm: '',
+                        locationgive: post.addressid,
+                        locationreceive: warehouseIDOfCollaborator,
+                        givetypeid: post.givetypeid,
+                        imgconfirmreceive: '',
+                        givetype: post.givetype,
+                        warehouseid: post.warehouseid
+                    }); 
+                    orderID = response.data.orderCreated.orderid;
+                }
             }
             catch (error) {
                 console.log(error);

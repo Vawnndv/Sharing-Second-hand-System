@@ -218,4 +218,18 @@ export const adminEditCollaborator = asyncHandle(async (req: Request, res: Respo
   }
 });
 
+export const getWarehouseInfoOfCollaborator = asyncHandle(async (req: Request, res: Response) => {
+
+  const userid: number = parseInt(req.params.userid);
+  const warehouseInfo = await CollaboratorManager.getWarehouseInfoOfCollaborator(userid);
+  if (warehouseInfo) {
+    res.status(200).json({ message: 'Get warehouse address of collaborator successfully', warehouseInfo: warehouseInfo });
+  } else {
+    res.status(400);
+    throw Error('Cannot find warehouse info of this user');
+  }
+
+});
+
+
 
