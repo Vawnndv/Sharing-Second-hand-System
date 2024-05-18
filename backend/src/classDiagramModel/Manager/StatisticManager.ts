@@ -149,20 +149,44 @@ export class StatisticManager {
 
     try{
       const query = `
-      SELECT CASE
-        WHEN sum(i.quantity) IS NULL THEN 0
-        ELSE sum(i.quantity)
-        END AS quantity
-      FROM "orders" o
-      JOIN "item" i ON o.itemid = i.itemid
-      JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
-      WHERE o.orderid IN (
-        SELECT ic.orderid FROM "inputcard" ic
-        WHERE ic.warehouseid = (
-        SELECT w.warehouseid FROM "workat" w
-        WHERE ${userID} = w.userid
-        )
-      ) AND it.nametype = $1 AND o.status='Hàng đã nhập kho'
+      WITH input_quantity AS (
+        SELECT 
+            CASE
+                WHEN sum(i.quantity) IS NULL THEN 0
+                ELSE sum(i.quantity)
+            END AS quantity
+        FROM "orders" o
+        JOIN "item" i ON o.itemid = i.itemid
+        JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+        WHERE o.orderid IN (
+            SELECT ic.orderid FROM "inputcard" ic
+            WHERE ic.warehouseid = (
+                SELECT w.warehouseid FROM "workat" w
+                WHERE ${userID} = w.userid
+            )
+        ) AND it.nametype = $1
+    ),
+    output_quantity AS (
+        SELECT 
+            CASE
+                WHEN sum(i.quantity) IS NULL THEN 0
+                ELSE sum(i.quantity)
+            END AS quantity
+        FROM "orders" o
+        JOIN "item" i ON o.itemid = i.itemid
+        JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+        WHERE o.orderid IN (
+            SELECT oc.orderid FROM "outputcard" oc
+            WHERE oc.warehouseid = (
+                SELECT w.warehouseid FROM "workat" w
+                WHERE ${userID} = w.userid
+            )
+        ) AND it.nametype = $1
+    )
+    SELECT 
+        input_quantity.quantity - output_quantity.quantity AS quantity
+    FROM 
+        input_quantity, output_quantity;
       `
     const results = []
     
@@ -349,26 +373,55 @@ export class StatisticManager {
     }
     try{
 
-      let queryWarehouse = ``
+      let queryWarehouseImport = ``
       warehouses.map((warehouse: any, index: number) => {
-        queryWarehouse += `ic.warehouseid = ${warehouse.warehouseid} `
+        queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
         if(index < warehouses.length - 1){
-          queryWarehouse += `OR `
+          queryWarehouseImport += `OR `
+        }
+      })
+
+      let queryWarehouseExport = ``
+      warehouses.map((warehouse: any, index: number) => {
+        queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
+        if(index < warehouses.length - 1){
+          queryWarehouseExport += `OR `
         }
       })
 
       const query = `
-      SELECT CASE
-        WHEN sum(i.quantity) IS NULL THEN 0
-        ELSE sum(i.quantity)
-        END AS quantity
-      FROM "orders" o
-      JOIN "item" i ON o.itemid = i.itemid
-      JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
-      WHERE o.orderid IN (
-        SELECT ic.orderid FROM "inputcard" ic
-        WHERE ${queryWarehouse}
-      ) AND it.nametype = $1 AND o.status='Hàng đã nhập kho'
+      WITH input_quantity AS (
+        SELECT 
+            CASE
+                WHEN sum(i.quantity) IS NULL THEN 0
+                ELSE sum(i.quantity)
+            END AS quantity
+        FROM "orders" o
+        JOIN "item" i ON o.itemid = i.itemid
+        JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+        WHERE o.orderid IN (
+            SELECT ic.orderid FROM "inputcard" ic
+            WHERE ${queryWarehouseImport}
+        ) AND it.nametype = $1
+    ),
+    output_quantity AS (
+        SELECT 
+            CASE
+                WHEN sum(i.quantity) IS NULL THEN 0
+                ELSE sum(i.quantity)
+            END AS quantity
+        FROM "orders" o
+        JOIN "item" i ON o.itemid = i.itemid
+        JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
+        WHERE o.orderid IN (
+            SELECT oc.orderid FROM "outputcard" oc
+            WHERE ${queryWarehouseExport}
+        ) AND it.nametype = $1
+    )
+    SELECT 
+        input_quantity.quantity - output_quantity.quantity AS quantity
+    FROM 
+        input_quantity, output_quantity;
       `
     const results = []
     

@@ -48,6 +48,8 @@ function MapSelectWarehouses({warehouses, warehousesSelected, handleSelectWareho
     setIsOpens(newIsOpens)
   }
 
+  const warehouse = warehouses[0]
+
   return isLoaded && (
       <GoogleMap
         mapContainerStyle={containerStyle}
@@ -78,7 +80,9 @@ function MapSelectWarehouses({warehouses, warehousesSelected, handleSelectWareho
                                 }}
                                 onCloseClick={() => handleOpen(index)}
                             >
-                                <div>
+                                <Stack
+                                  style={{ maxWidth: '200px', cursor: 'pointer'}}
+                                  onClick={() => handleSelectWarehouses(warehouse.warehouseid)}>
                                     <Stack
                                         flexDirection='row'
                                         alignItems='center'>
@@ -86,11 +90,11 @@ function MapSelectWarehouses({warehouses, warehousesSelected, handleSelectWareho
                                         <Checkbox
                                             checked={warehousesSelected[index]}
                                             inputProps={{ 'aria-label': 'controlled' }}
-                                            onClick={() => handleSelectWarehouses(warehouse.warehouseid)}
+                                            
                                         />
                                     </Stack>
                                     <Typography variant='body2'>{warehouse.address}</Typography>
-                                </div>
+                                </Stack>
                             </InfoWindow>
                         }
                         
