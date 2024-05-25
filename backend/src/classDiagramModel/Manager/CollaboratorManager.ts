@@ -21,7 +21,6 @@ export class CollaboratorManager extends UserManager {
     const query = `SELECT 
       u.userid, 
       u.dateofbirth AS dob, 
-      u.username, 
       u.email, 
       u.firstname, 
       u.lastname,

@@ -79,7 +79,6 @@ export class UserManager {
     const query = `SELECT 
     u.userid,
     u.dateofbirth AS dob, 
-    u.username, 
     u.email, 
     u.firstname, 
     u.lastname,
@@ -131,6 +130,27 @@ export class UserManager {
 
       return result.rows[0];
       
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+
+  
+  public static async totalGiveAndReceiveOrder(userid: number): Promise<any> {
+    const client = await pool.connect()
+    const query = 
+    // 'SELECT COUNT(*) FROM users' + whereClause;
+      `SELECT
+      (SELECT COUNT(*) FROM ORDERS WHERE usergiveid = ${userid} AND status LIKE 'Hoàn tất') AS GiveCount,
+      (SELECT COUNT(*) FROM ORDERS WHERE userreceiveid = ${userid} AND status LIKE 'Hoàn tất') AS ReceiveCount`;
+
+    try {
+      const result = await client.query(query);
+      return result.rows[0];
     } catch(error) {
       console.log(error);
       return null;

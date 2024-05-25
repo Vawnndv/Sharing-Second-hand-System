@@ -923,14 +923,12 @@ export class OrderManager {
                 o.imgconfirmreceive,
                 o.postid,
                 u.avatar,
-                u.username,
                 u.firstname,
                 u.lastname,
                 o.createdat,
                 po.description,
                 po.itemid,
                 us.avatar AS avatarreceive,
-                us.username AS usernamereceive,
                 us.firstname AS firstnamereceive,
                 us.lastname AS lastnamereceive,
                 us.phonenumber AS phonenumberreceive
@@ -1237,7 +1235,6 @@ export class OrderManager {
     let query = `
     SELECT
         u.avatar,
-        u.username,
         u.firstname,
         u.lastname,
         po.postid,
@@ -1263,7 +1260,6 @@ export class OrderManager {
     --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
     GROUP BY
         u.avatar,
-        u.username,
         u.firstname,
         u.lastname,
         po.postid,

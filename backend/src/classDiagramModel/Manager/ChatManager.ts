@@ -42,7 +42,6 @@ export class ChatManager {
       SELECT DISTINCT
       "User".avatar,
       "User".userid,
-      "User".username,
       "User".firstname,
       "User".lastname,
       "User".phonenumber,
@@ -86,7 +85,6 @@ export class ChatManager {
       SELECT DISTINCT
         "User".avatar,
         "User".userid,
-        "User".username,
         "User".firstname,
         "User".lastname,
         "User".phonenumber

@@ -48,12 +48,12 @@ export function App() {
           <Route path="/statistic" element={<Statistic />} />
           <Route path="/approval" element={<PostApproval />} />
           <Route path="/post/:postid" element={<ViewPostDetail />} />
-          <Route element={<AdminProtectedRouter />}>
-            <Route path="/users" element={<Users />} />
-            <Route path="/collaborators" element={<Collaborators />} />
-            <Route path="/warehouse" element={<ManageWarehouse />} />
-            <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
-          </Route>
+        </Route>
+        <Route element={<AdminProtectedRouter />}>
+          <Route path="/users" element={<Users />} />
+          <Route path="/collaborators" element={<Collaborators />} />
+          <Route path="/warehouse" element={<ManageWarehouse />} />
+          <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
         </Route>
       </Route>
           {/* <Route path="/order" element={<Order />} /> */}

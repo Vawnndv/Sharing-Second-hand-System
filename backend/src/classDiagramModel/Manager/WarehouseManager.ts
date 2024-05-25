@@ -83,7 +83,7 @@ export class WarehouseManager {
         LEFT JOIN 
             WorkAt ON w.WarehouseID = WorkAt.WarehouseID
         GROUP BY 
-            w.warehouseid,
+          w.warehouseid,
           w.addressid,
           w.warehousename,
           w.avatar,

@@ -148,7 +148,6 @@ export class PostManager {
       // SELECT 
       //   u.userid,
       //   u.avatar, 
-      //   u.username, 
       //   CONCAT(u.firstname, ' ', u.lastname) AS name,
       //   p.description, 
       //   p.postid,
@@ -185,7 +184,6 @@ export class PostManager {
       // GROUP BY 
       //   u.userid,
       //   u.avatar, 
-      //   u.username, 
       //   u.firstname, 
       //   u.lastname, 
       //   p.description, 
@@ -466,7 +464,7 @@ export class PostManager {
 
       const warehouseList = await this.getListAddressByWarehouseID(warehouses);
 
-      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, false, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -579,7 +577,7 @@ export class PostManager {
   public static async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
+      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
       if (result.rows.length === 0) {
         return [];
       }

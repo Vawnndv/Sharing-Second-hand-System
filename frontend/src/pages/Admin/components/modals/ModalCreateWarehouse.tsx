@@ -1,15 +1,20 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material'
+import { Box, Button, Modal, Stack, TextField, Typography, Grid } from '@mui/material'
 import axios from 'axios'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
 import Loader from '../../../../components/notification/Loader'
 import { AppDispatch, RootState, useAppDispatch } from '../../../../redux/store'
 import { CreateWarehouseValidation } from '../../../../validation/userValidation'
+import ImagePreview from '../../../../components/ImagePreview/ImagePreview';
+import Uploader from '../../../../components/Uploader/Uploader';
+import MapSelectAddress from '../../../../components/Map/MapSelectAddress'
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+
 
 const styleModalCreateCollaborator = {
   position: 'absolute',
@@ -41,6 +46,11 @@ interface WarehouseLocation {
 
 function ModalCreateCollaborator(props: Props) {
   const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel} = props;
+  const [imageUrl, setImageUrl] = useState<any>('');
+  const [imageUpdateUrl, setImageUpdateUrl] = useState<any>(null);
+  const [openMap, setOpenMap] = useState(false);
+  const [location, setLocation] = useState<any>('')
+
   const dispatch: AppDispatch = useAppDispatch();
   
   const { isLoading, isError, isSuccess } = useSelector(
@@ -52,7 +62,8 @@ function ModalCreateCollaborator(props: Props) {
     longitude: 123.4567,
     latitude: 312.219,
     addressid: 10
-};
+  };
+
 
   const {
     register,
@@ -63,13 +74,27 @@ function ModalCreateCollaborator(props: Props) {
     resolver: yupResolver(CreateWarehouseValidation)
   })
 
+  const handleOpenMap = () => setOpenMap(true);
+  const handleCloseMap = () => setOpenMap(false);
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '95%',
+    height: '95%',
+    bgcolor: 'background.paper',
+    border: '2px solid #CAC9C8',
+    boxShadow: '1px 1px 2px #CAC9C8',
+};
+
   useEffect(() => {
     setValue('warehousename', '')
-    setValue('address', '')
-    setValue('avatar', '')
+    setValue('address', location)
+    setValue('avatar', imageUrl)
     setValue('phonenumber', '')
-    // setValue('phoneNumber', '')
-  }, [isOpen])
+  }, [isOpen, imageUrl, location])
 
 
   // useEffect(() => {
@@ -88,13 +113,12 @@ function ModalCreateCollaborator(props: Props) {
 
   const onSubmit = async (data: any) => {
     console.log(data);
-
     try {
       const warehouseName = data.warehousename;
       // const address = data.address;
       const isNewAddress = true;
       const phonenumber = data.phonenumber;
-      const avatar = 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg';
+      const avatar = imageUrl;
       const res = await axios.post(`http://localhost:3000/warehouse/createWarehouse`, {
         warehouseName,
         phonenumber,
@@ -103,7 +127,7 @@ function ModalCreateCollaborator(props: Props) {
         isNewAddress
       });
       setIsOpen(!isOpen);
-      toast.success(`Create warehouse successfully`);
+      toast.success(`Tạo kho thành công`);
       console.log(res.data.warehouseCreated);
       // Alert.alert('Success', 'Item created successfully');
       } catch (error) {
@@ -141,8 +165,17 @@ function ModalCreateCollaborator(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Create Warehouse
+                Tạo kho
             </Typography>
+
+            <Grid container spacing={2} sx={{ mt: '20px'}}>
+                <Grid item xs={12} sm={9} >
+                  <Uploader setImageUrl={setImageUrl} imageUrl={imageUrl} imageUpdateUrl={imageUpdateUrl} {...register('avatar')}/>
+                </Grid>
+                <Grid item xs={12} sm={3} >
+                  <ImagePreview image={imageUrl} name="user-image"/>
+                </Grid>
+            </Grid>
 
             <TextField
               id="warehousename"
@@ -164,7 +197,7 @@ function ModalCreateCollaborator(props: Props) {
               sx={{ mt: '20px', width:'100%' }}
             />
 
-            <TextField
+            {/* <TextField
               id="address"
               label="Address"
               variant="outlined"
@@ -172,21 +205,41 @@ function ModalCreateCollaborator(props: Props) {
               error={!!errors.address}
               helperText={errors.address?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
-            />
+            /> */}
 
-            <TextField
+            {/* <TextField
               id="avatar"
               label="Avatar"
               variant="outlined"
               {...register('avatar')}
               error={!!errors.avatar}
               helperText={errors.avatar?.message || ''}
-              sx={{ mt: '20px', width:'100%' }}
-            />    
+              sx={{ mt: '20px'
+              , width:'100%' }}
+            />     */}
+
+          <Grid item xs={12} sx={{ mt: '20px' }}>
+              <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
+                  onClick={handleOpenMap}>
+                  Chọn vị trí
+              </Button>
+              <Modal
+                  open={openMap}
+                  onClose={handleCloseMap}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+              >
+                  <Box sx={style}>
+                      <MapSelectAddress setLocation={setLocation} handleClose={handleCloseMap} isUser {...register('address')}/>
+                  </Box>
+              </Modal>
+          </Grid>
             
+
+
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Cancel</Button>
-              <Button variant='contained' type="submit">Save</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen()}}>Hủy</Button>
+              <Button variant='contained' type="submit" >Tạo</Button>
             </Stack>
           </Box>
         </>
