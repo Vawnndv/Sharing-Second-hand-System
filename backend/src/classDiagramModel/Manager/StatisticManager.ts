@@ -1,6 +1,7 @@
 
 import { QueryResult } from 'pg';
 import pool from '../../config/DatabaseConfig'
+import { Warehouse } from '../Warehouse';
 
 const category = [
   "Quần áo",
@@ -286,22 +287,18 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticImportExportAdmin(type: string | undefined, warehouses: []): Promise<any[] | undefined>{
+  public static async statisticImportExportAdmin(type: string | undefined, warehouses: any): Promise<any[] | undefined>{
     const client = await pool.connect()
 
-    console.log(warehouses)
-    if(warehouses.length === 0){
-      return [0,0,0,0,0,0,0]
-    }
     try{
 
-      let queryWarehouseImport = ``
-      warehouses.map((warehouse: any, index: number) => {
-        queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
-        if(index < warehouses.length - 1){
-          queryWarehouseImport += `OR `
-        }
-      })
+      // let queryWarehouseImport = ``
+      // warehouses.map((warehouse: any, index: number) => {
+      //   queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
+      //   if(index < warehouses.length - 1){
+      //     queryWarehouseImport += `OR `
+      //   }
+      // })
       const queryImport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -312,17 +309,17 @@ export class StatisticManager {
       JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
       WHERE o.orderid IN (
         SELECT ic.orderid FROM "inputcard" ic
-        WHERE ${queryWarehouseImport}
+        WHERE ic.warehouseid = $2
       ) AND it.nametype = $1
       `
 
-      let queryWarehouseExport = ``
-      warehouses.map((warehouse: any, index: number) => {
-        queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
-        if(index < warehouses.length - 1){
-          queryWarehouseExport += `OR `
-        }
-      })
+      // let queryWarehouseExport = ``
+      // warehouses.map((warehouse: any, index: number) => {
+      //   queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
+      //   if(index < warehouses.length - 1){
+      //     queryWarehouseExport += `OR `
+      //   }
+      // })
       const queryExport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -333,29 +330,48 @@ export class StatisticManager {
       JOIN "item_type" it ON i.itemtypeid = it.itemtypeid 
       WHERE o.orderid IN (
         SELECT oc.orderid FROM "outputcard" oc
-        WHERE ${queryWarehouseExport}
+        WHERE oc.warehouseid = $2
       ) AND it.nametype = $1
       `
-    const results = []
+    const finalResults = []
     if(type === 'import'){
-      for(let i = 0; i < category.length; i+=1){
-        const result : QueryResult = await client.query(queryImport, [category[i]]);
-        results.push({
-          label: category[i],
-          quantity: result.rows[0].quantity
+      for(let i = 0; i < warehouses.length; i+=1){
+        let results = [];
+        for(let j = 0; j < category.length; j+=1){
+          const result : QueryResult = await client.query(queryImport, [category[j], warehouses[i].warehouseid]);
+          results.push({
+            label: category[j],
+            quantity: result.rows[0].quantity
+          })
+        }
+        finalResults.push({
+          warehousename: warehouses[i].warehousename,
+          data: {
+            results
+          }
         })
       }
+      
     }else{
-      for(let i = 0; i < category.length; i+=1){
-        const result : QueryResult = await client.query(queryExport, [category[i]]);
-        results.push({
-          label: category[i],
-          quantity: result.rows[0].quantity
+      for(let i = 0; i < warehouses.length; i+=1){
+        let results = [];
+        for(let j = 0; j < category.length; j+=1){
+          const result : QueryResult = await client.query(queryExport, [category[j], warehouses[i].warehouseid]);
+          results.push({
+            label: category[j],
+            quantity: result.rows[0].quantity
+          })
+        }
+        finalResults.push({
+          warehousename: warehouses[i].warehousename,
+          data: {
+            results
+          }
         })
       }
     }
 
-    return results
+    return finalResults
     }catch(error){
       console.log(error)
       return []
@@ -367,7 +383,6 @@ export class StatisticManager {
   public static async statisticInventoryAdmin(warehouses: []): Promise<any[] | undefined>{
     const client = await pool.connect()
 
-    console.log(warehouses)
     if(warehouses.length === 0){
       return [0,0,0,0,0,0,0]
     }

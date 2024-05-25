@@ -230,7 +230,6 @@ function Statistic() {
             }
             if(response){
                 setData(response.data.data);
-                console.log(response);
                 setIsLoading(false)
             }
         }
