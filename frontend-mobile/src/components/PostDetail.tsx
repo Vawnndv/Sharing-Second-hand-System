@@ -24,6 +24,7 @@ import ShowMapComponent from './ShowMapComponent';
 
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
+import postsAPI from '../apis/postApi';
 
 
 interface Post {
@@ -166,6 +167,26 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       Alert.alert('Thất bại', 'Bạn đã yêu cầu nhận món đồ này rồi!');
       return;
     }
+  };
+
+  const deletePostReceiver = async () => {
+    try {
+      setIsLoading(true);
+      const res = await postsAPI.HandlePost(
+        `/deletepostreceivers?postID=${postID}&receiverID=${auth.id}`,
+        '',
+        'delete'
+      );
+
+      setIsLoading(false);
+      navigation.goBack()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCancelReceive = () => {
+    deletePostReceiver()
   };
 
   const handleGiveForm = (receiveid: number, receivemethod: string, receivetypeid: number, warehouseid: number) => {
@@ -411,8 +432,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                     {/* Nút chỉ hiển thị khi isUserPost là false */}
                     {!isUserPost && (
                       <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                        
-                        <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Nhận</Text></TouchableOpacity>
+                        {
+                          postReceivers.some(postReceiver => postReceiver.receiverid === auth.id) ?
+                          <TouchableOpacity style={styles.button} onPress={handleCancelReceive} ><Text style={{color: 'white'}}>Hủy</Text></TouchableOpacity>
+                          :
+                          <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Nhận</Text></TouchableOpacity>
+                        }
                         
                       </View>
                     )}
