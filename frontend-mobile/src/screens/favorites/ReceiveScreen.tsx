@@ -1,12 +1,12 @@
 import { StyleSheet, View, ScrollView, Image } from 'react-native';
 import orderAPI from '../../apis/orderApi';
 import React, { useEffect, useState } from 'react';
-import CardOrderView from '../../components/OrderManagement/CardOrderView';
 import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
 import { LoadingModal } from '../../modals';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { useFocusEffect } from '@react-navigation/native';
+import CardPostView from '../../components/OrderManagement/CardPostView';
 
 interface Item {
   title: string;
@@ -15,10 +15,7 @@ interface Item {
   statusname: string;
   image: string;
   status: string;
-  createdat: string;
-  orderid: string;
-  statuscreatedat: string;
-  imgconfirmreceive:string;
+  postid: string;
 }
 
 export default function ReceiveScreen({ navigation, route }: any) {
@@ -28,22 +25,21 @@ export default function ReceiveScreen({ navigation, route }: any) {
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
-
    // Sử dụng useEffect để theo dõi tham số điều hướng
    useEffect(() => {
     if (route.params && route.params.reload) {
-        getOrderList();
+      getPostList();
     }
   }, [route.params]);
 
   useFocusEffect(
     React.useCallback(() => {
-      getOrderList()
+      getPostList()
       return () => {};
     }, [])
   );
 
-  const getOrderList = async () => {
+  const getPostList = async () => {
     try {
       setIsLoading(true);
       let location = await GetCurrentLocation();
@@ -77,7 +73,7 @@ export default function ReceiveScreen({ navigation, route }: any) {
             {/* Các component con */}
             {orderReceive.length !== 0 ? (
               orderReceive.map((item : Item, index) => (
-                  <CardOrderView
+                  <CardPostView
                       navigation={navigation}
                       key={index}
                       title={item.title}
@@ -86,11 +82,7 @@ export default function ReceiveScreen({ navigation, route }: any) {
                       statusname={item.statusname}
                       image={item.image}
                       status={item.status}
-                      createdat={item.createdat}
-                      orderid={item.orderid}
-                      statuscreatedat={item.statuscreatedat}
-                      isVisibleConfirm={true}
-                      imgconfirmreceive={item.imgconfirmreceive}
+                      postid={item.postid}
                   />
               ))
           ) : (
