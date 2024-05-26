@@ -114,10 +114,11 @@ export const createOrder = asyncHandle(async (req, res) => {
   const imgconfirmreceive = req.body.imgconfirmreceive;
   const givetype = req.body.givetype;
   const warehouseid = req.body.warehouseid;
+  const userreceiveid = req.body.userreceiveid;
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const orderCreated = await OrderManager.createOrder(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid);
+    const orderCreated = await OrderManager.createOrder(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid);
     res.status(200).json({ message: 'Create order successfully', orderCreated: orderCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi

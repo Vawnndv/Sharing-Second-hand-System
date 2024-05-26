@@ -2,6 +2,7 @@ import { Post } from '../Post';
 import pool from '../../config/DatabaseConfig';
 import { QueryResult } from 'pg';
 import { fail } from 'assert';
+import { WarehouseManager } from './WarehouseManager';
 
 interface FilterSearch {
   userid: string;
@@ -148,7 +149,6 @@ export class PostManager {
       // SELECT 
       //   u.userid,
       //   u.avatar, 
-      //   u.username, 
       //   CONCAT(u.firstname, ' ', u.lastname) AS name,
       //   p.description, 
       //   p.postid,
@@ -185,7 +185,6 @@ export class PostManager {
       // GROUP BY 
       //   u.userid,
       //   u.avatar, 
-      //   u.username, 
       //   u.firstname, 
       //   u.lastname, 
       //   p.description, 
@@ -466,7 +465,7 @@ export class PostManager {
 
       const warehouseList = await this.getListAddressByWarehouseID(warehouses);
 
-      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
+      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, false, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -545,23 +544,23 @@ export class PostManager {
     const client = await pool.connect();
     try {
       const result = await client.query(`
-        SELECT 
-            POSTS.*,
-            ORDERS.orderid,
-            ORDERS.givetype,
-            ORDERS.givetypeid,
-            ORDERS.warehouseid,
-            ADDRESS.address,
-            ADDRESS.longitude,
-            ADDRESS.latitude
-        FROM 
-            POSTS
-        INNER JOIN 
-            ADDRESS ON POSTS.addressid = ADDRESS.addressid
-        INNER JOIN 
-            ORDERS ON POSTS.postid = ORDERS.postid
-        WHERE 
-            POSTS.postid = $1;`,[postID]);
+      SELECT 
+        POSTS.*,
+        ADDRESS.address,
+        ADDRESS.longitude,
+        ADDRESS.latitude,
+        TRACE_STATUS.statusname,
+        GIVE_RECEIVETYPE.give_receivetype
+      FROM 
+          POSTS
+      INNER JOIN 
+          ADDRESS ON POSTS.addressid = ADDRESS.addressid
+      INNER JOIN
+        TRACE_STATUS ON TRACE_STATUS.statusid = POSTS.statusid
+      INNER JOIN
+        GIVE_RECEIVETYPE ON GIVE_RECEIVETYPE.give_receivetypeid = POSTS.givetypeid
+      WHERE 
+          POSTS.postid = $1;`,[postID]);
 
       if (result.rows.length === 0) {
         return null;
@@ -579,7 +578,7 @@ export class PostManager {
   public static async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, username, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
+      const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
       if (result.rows.length === 0) {
         return [];
       }
@@ -612,8 +611,10 @@ export class PostManager {
     }
   }
 
+  
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string): Promise<void> {
+
+  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, statusid: number, givetypeid: number, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
 
@@ -622,27 +623,69 @@ export class PostManager {
       VALUES ('${postLocation.address}', ${postLocation.latitude}, ${postLocation.longitude})
       RETURNING addressid;
     `
+
+    const querySelectAllWarehouse = `        
+    SELECT 
+      w.warehouseid,
+      w.addressid,
+      w.warehousename,
+      w.avatar,
+      w.phonenumber,
+      w.createdat,
+      a.address,
+      longitude,
+      latitude
+    FROM 
+      Warehouse w
+    INNER JOIN address a ON a.addressid = w.addressid `;
+
     const query = `
-        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid, iswarehousepost)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid, iswarehousepost, statusid, givetypeid, warehouseid)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
         RETURNING *;
       `;
-    
+  
     
     try {
-      if(isNewAddress){
-        const resultInsertAddress: QueryResult = await client.query(queryInsertAddress)
-        
-        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid, isWarehousePost];
-        const result: QueryResult = await client.query(query, values);
-        console.log('Posts inserted successfully:', result.rows[0]);
-        return result.rows[0];
-      }else{
-        const values : any = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost];
-        const result: QueryResult = await client.query(query, values);
-        console.log('Posts inserted successfully:', result.rows[0]);
-        return result.rows[0];
+      let values : any = null;
+      let warehouseSelected = null;
+
+      if(!warehouseid){
+        const allWarehouse : QueryResult = await client.query(querySelectAllWarehouse);
+        let closestDistance = Infinity;
+
+        console.log(allWarehouse)
+
+        for (let i = 0; i < allWarehouse.rows.length; i++) {
+          const warehouse = allWarehouse.rows[i];
+          console.log(warehouse);
+          const R = 6371; // Bán kính trái đất theo km
+          const dLat = (warehouse.latitude - postLocation.latitude) * Math.PI / 180;
+          const dLon = (warehouse.longitude - postLocation.longitude) * Math.PI / 180;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(postLocation.latitude * Math.PI / 180) * Math.cos(warehouse.latitude * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+          const distance = R * c;
+          
+          if (distance < closestDistance) {
+              closestDistance = distance;
+              warehouseSelected = warehouse.warehouseid; // Giả sử warehouse có thuộc tính warehouseId
+          }
+        }
       }
+      else{
+        warehouseSelected = warehouseid;
+      }
+      if(isNewAddress){
+        const resultInsertAddress: QueryResult = await client.query(queryInsertAddress);
+        values = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid, isWarehousePost, statusid, givetypeid, warehouseSelected];
+      }else{
+        values = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost, statusid, givetypeid, warehouseSelected];
+      }
+      const result: QueryResult = await client.query(query, values);
+      console.log('Posts inserted successfully:', result.rows[0]);
+      return result.rows[0];
       
     } catch (error) {
       console.error('Error inserting post:', error);

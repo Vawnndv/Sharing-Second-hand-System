@@ -41,7 +41,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
 
   const goToPostDetail = () => {
     navigation.navigate('ItemDetailScreen', {
-      postId: postID,
+      postID: postID,
     })
   }
 
@@ -75,9 +75,9 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
       </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={goToHomeScreen} style={styles.homeButton}>
+      {/* <TouchableOpacity onPress={goToHomeScreen} style={styles.homeButton}>
         <Text style={styles.textStyle}>Về trang chủ </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
     
   )
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: appSizes.android.default,
     fontFamily: fontFamilies.bold,   
-    textDecorationLine: 'underline'
+    // textDecorationLine: 'underline'
   },
 
   icon: {

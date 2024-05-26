@@ -343,11 +343,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                                         <View style={styles.userInfo}>
                                             <AvatarComponent
                                                 avatar={postReceiver?.avatar}
-                                                username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                                                username={ postReceiver?.firstname ? postReceiver?.firstname : ' '}
                                                 styles={styles.avatar}
                                             />
                                             <View style={styles.receiverInfo}>
-                                                <Text style={styles.username_receiver}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                                                <Text style={styles.username_receiver}>{postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
                                                 <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
                                             </View>
                                             {isUserPost && (

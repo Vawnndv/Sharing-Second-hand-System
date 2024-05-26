@@ -24,7 +24,22 @@ function PostAwaitForApproval({filterValue, warehousesID}: any) {
                 
                 const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
                     status: 'Chờ xét duyệt',
-                    page: page -1,
+                    page: page - 1,
+                    limit: LIMIT,
+                    distance: filterValue.distance,
+                    time: filterValue.time,
+                    sort: filterValue.sort,
+                    latitude: parseFloat(responseUser.data.latitude),
+                    longitude: parseFloat(responseUser.data.longitude),
+                    category: filterValue.category,
+                    warehouses: warehousesID,
+                      
+                })
+
+                
+                console.log({
+                    status: 'Chờ xét duyệt',
+                    page: page - 1,
                     limit: LIMIT,
                     distance: filterValue.distance,
                     time: filterValue.time,
@@ -35,7 +50,6 @@ function PostAwaitForApproval({filterValue, warehousesID}: any) {
                     warehouses: warehousesID
                       
                 })
-                console.log(responsePosts)
                 setPosts(responsePosts.allPosts)
                 setIsLoading(false)
             }catch(error){

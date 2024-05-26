@@ -99,6 +99,8 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   // const navigation: any = useNavigation();
 
+  const [post, setPost] = useState<any>(null);
+
   const [isLoading, setIsLoading] = useState(false);
 
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
@@ -165,7 +167,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     if(warehouseSeleted){
       setIsValidSubmit(true);
     }
-  })
+  },[warehouseSeleted])
 
 
 
@@ -176,12 +178,10 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       if(!validAllMethod){
         updatedErrorMessage.bringItemToWarehouseMethod = 'Vui lòng chọn phương thức mang đồ đến kho.';
         setErrorMessage(updatedErrorMessage);
-
       }
       else{
         updatedErrorMessage.bringItemToWarehouseMethod = '';
         setErrorMessage(updatedErrorMessage);
-
       }
     }
 
@@ -220,7 +220,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
     }
 
-    else if(isUserPost && bringItemToWarehouseMethodsDropDown){
+    if(isUserPost && bringItemToWarehouseMethodsDropDown){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
 
@@ -237,15 +237,14 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     }
     else{
       setValidAllMethod(false);
-
     }
-  },[selectedReceiveMethod, warehouseSeleted])
+  },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown, warehouseSeleted])
 
   useEffect( () => {
     if(      
       !errorMessage.bringItemToWarehouseMethod && 
       !errorMessage.receiveMethod && 
-      !errorMessage.warehouseSelected && 
+      !errorMessage.warehouseSelected &&
       validAllMethod) {
         setIsValidSubmit(true);
     }
@@ -253,11 +252,11 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         setIsValidSubmit(false);
       }
 
-  })
+  },[errorMessage, validAllMethod])
 
 
   useEffect(() => {
-    const fetchWarehouses = async () => {
+    const fetchAllData = async () => {
       try {
         setIsLoading(true);
         const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
@@ -352,6 +351,23 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         setIsLoading(false);
       }
 
+      try {
+        // console.log(postID);
+        setIsLoading(true);
+        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        // const res = await postsAPI.HandlePost(
+        //   `/${postID}`,
+        // );
+        if (!res) {
+          throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
+        }
+        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
+        setIsUserPost(res.data.postDetail.owner == auth.id);
+      } catch (error) {
+        console.error('Error fetching post details:', error);
+      }
+
       if(warehouseid !== 0 && warehouseid){
         try {
           setIsLoading(true);
@@ -376,7 +392,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         }
       }
     };
-    fetchWarehouses();
+    fetchAllData();
 }, [])
 
 
@@ -420,130 +436,100 @@ const handleReceive = async () => {
 
 const handleGive = async () =>{
 
+  let status = '';
+  let statusid = null;
+
   if(receivetype === 'Cho nhận trực tiếp'){
-    const orderid = order?.orderid;
-    const userreceiveid = receiveid;
-    const givetypeid = receivetypeid;
-    const givetype = receivetype;
-    
-    try{
-      const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-        orderid,
-        userreceiveid,
-        givetypeid,
-        givetype,
-      })
-    } catch(error){
-      Alert.alert('Error', 'Cho món đồ thất bại.');
-    }
-
-    try{
-      const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-        orderid: orderid,
-        newstatus: "Chờ người nhận lấy hàng",
-        statusid: "3",
-        
-      })
-      console.log(response.data);
-      Alert.alert('Thành công', 'Cho món đồ thành công');
-      navigation.navigate('ItemDetailScreen', {
-        postId: postID,
-      })
-
-    } catch(error){
-      Alert.alert('Error', 'Cho món đồ thất bại.');
-      setIsCompleted(false);
-    }
+    status = 'Chờ người nhận lấy hàng';
+    statusid = 3;
   }
 
   else{
-      const orderid = order?.orderid;
-      const userreceiveid = receiveid;
-      let givetypeid = receivetypeid;
-      let givetype = receivetype;
-      if(formData?.methodBringItemToWarehouse === 'Tự đem đến kho'){
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-            orderid,
-            userreceiveid,
-            givetypeid,
-            givetype,
-            warehouseid
-          })
+    if(formData?.methodBringItemToWarehouse === 'Tự đem đến kho'){
+      status = "Chờ người cho giao hàng";
+      statusid = 13;
+    }
+    else if(formData?.methodBringItemToWarehouse === 'Nhân viên kho sẽ đến lấy'){
+      status = "Chờ cộng tác viên lấy hàng",
+      statusid = 7
+    }
+  }
 
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-            orderid: orderid,
-            newstatus: "Chờ người cho giao hàng",
-            statusid: "13"
-          })
-          console.log('STATUS UPDATE',response.data);
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-        
-      }
-      
-      if(formData?.methodBringItemToWarehouse === 'Nhân viên kho sẽ đến lấy'){
-        try{
-          givetypeid = 5;
-          givetype = 'Cho nhận qua kho(kho đến lấy)';
-          const resUpdateOrderReceiver = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-            orderid,
-            userreceiveid,
-            givetypeid,
-            givetype,
-            warehouseid
-          })
+    const title = post.title;
+    const location = ' ';
+    const description = post.description;
+    const departure = post.location;
+    const time = new Date();
+    const itemid = post.itemid;
+    const qrcode = ' ';
+    const ordercode = ' ';
+    const usergiveid = post.owner;
+    const postid = post.postid;
+    const imgconfirm = ' ';
+    const locationgive = post.addressid;
+    let userreceiveid = receiveid;
+    let locationreceive = null;
+    let givetypeid : any = receivetypeid;
+    const imgconfirmreceive = ' ';
+    let givetype = receivetype;
+    let warehouseidPost = post.warehouseid;
 
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
+    if(receivetype !== 'Cho nhận trực tiếp'){
+      warehouseidPost = warehouseid;
+    }
 
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-            orderid: orderid,
-            newstatus: "Chờ cộng tác viên lấy hàng",
-            statusid: "7"
-          })
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-      }
+    // let warehouseid = null;
 
-      try{
-        const qrcode = ' ';
-        const usergiveid = postOwnerInfo?.owner;
-        const itemid = postOwnerInfo?.itemid;
-        const orderid = order?.orderid;
+    try{
+      const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+        title,
+        location,
+        description,
+        departure,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        status,
+        qrcode,
+        ordercode,
+        usergiveid,
+        postid,
+        imgconfirm,
+        locationgive,
+        locationreceive,
+        givetypeid,
+        imgconfirmreceive,
+        givetype,
+        warehouseid: warehouseidPost,
+        userreceiveid
+      });
 
-        const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
-          qrcode,
-          warehouseid,
-          orderid,
-          usergiveid,
-          itemid
-        })
+      console.log(response.data.orderCreated);
 
-        Alert.alert('Thành công', 'Cho món đồ thành công');
-        navigation.navigate('ItemDetailScreen', {
-          postId: postID,
-        })
-        // setIsCompleted(true);
-        // navigation.navigate('Home', {screen: 'HomeScreen'})
+      const orderID = response.data.orderCreated.orderid;    
+      // if(receivetype === )
 
+    const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+      status,
+      orderid: orderID,
+    });
 
-      } catch(error){
-        Alert.alert('Error', 'Tạo input card thất bại.');
-        // setIsCompleted(false);
-      }
+    Alert.alert('Thành công', 'Cho món đồ thành công.');
+    setIsCompleted(true);
+    navigation.navigate('Home', {screen: 'HomeScreen'})
+
+  } catch(error){
+    Alert.alert('Error', 'Cho món đồ thất bại.');
+      setIsCompleted(false);
+  }
+
+  // if(receivetype === 'Cho nhận trực tiếp'){
+  //   givetypeid = receivetypeid;
+  //   givetype = receivetype;
+  // }
+
+    if(receivetype !== 'Cho nhận trực tiếp')
+    {
+
     }
   }
   

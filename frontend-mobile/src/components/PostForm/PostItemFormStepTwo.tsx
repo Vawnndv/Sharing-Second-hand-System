@@ -405,7 +405,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             onBlur={() => {
               // handleValidate('', 'postaddress');
               handleBlur();
+              
             }}
+            selection={{start: 0, end: 0}}
             onChangeText={(text) =>{ 
               setFormData({ ...formData, postAddress: text });
               setErrorMessage({...errorMessage, postAddress: ''})

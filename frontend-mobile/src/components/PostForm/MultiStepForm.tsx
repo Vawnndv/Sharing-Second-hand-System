@@ -192,6 +192,22 @@ const MultiStepForm = () => {
       let address = '';
       let addressid = 0;
       let orderID = 0;
+      let statusid = 2;
+
+      let givetypeid = 1;
+      let warehouseid = null;
+      // let givetype = 'Cho nhận trực tiếp';
+      // if(formDataStepOne.methodsBringItemToWarehouse )
+      if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
+        givetypeid = 3;
+        if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
+          // locationreceive = formDataStepOne.warehouseAddressID;
+          givetypeid = 4;
+        }
+        else{
+          warehouseid = warehouseSelected.warehouseid;
+        }
+      }
   
       try {
         const name = formDataStepOne.itemName;
@@ -220,8 +236,26 @@ const MultiStepForm = () => {
         const timeend = new Date(formDataStepTwo.postEndDate);
         
         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        let response;
-        if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
+        let response : any = null;
+
+        if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống ứng dụng"){
+          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+            title,
+            location: locationTemp,
+            description,
+            owner,
+            time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            itemid,
+            timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
+            timeend: new Date(timeend).toISOString(), // Và timeend
+            isNewAddress: location.addressid ? false : true,
+            postLocation: location,
+            isWarehousePost: false,
+            statusid: statusid,
+            givetypeid: givetypeid,
+          });
+        }
+        else if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
           response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
@@ -233,7 +267,10 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: false,
             postLocation: warehouseSelected,
-            isWarehousePost: false
+            isWarehousePost: false,
+            statusid: statusid,
+            givetypeid: givetypeid,
+            warehouseid: warehouseid
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
@@ -248,122 +285,112 @@ const MultiStepForm = () => {
             timeend: new Date(timeend).toISOString(), // Và timeend
             isNewAddress: location.addressid ? false : true,
             postLocation: location,
-            isWarehousePost: false
+            isWarehousePost: false,
+            statusid: statusid,
+            givetypeid: givetypeid,
           });
-        }
-        else{
-          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
-            title,
-            location: locationTemp,
-            description,
-            owner,
-            time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-            itemid,
-            timestart: new Date(timestart).toISOString(), // Tương tự cho timestart
-            timeend: new Date(timeend).toISOString(), // Và timeend
-            isNewAddress: location.addressid ? false : true,
-            postLocation: location,
-            isWarehousePost: false
-          });
-        }
-              
-        console.log(response.data.postCreated);
+        }    
+
+        console.log(response.data.postCreated.postid);
+
         postID = response.data.postCreated.postid;
-        address = response.data.postCreated.address;
-        addressid = response.data.postCreated.addressid;
-      } catch (error) {
-        Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
-      }
-  
-      try {
-        const title = formDataStepTwo.postTitle;
-        const location = ' ';
-        const description = ' ';
-        const departure = address;
-        const time = new Date();
-        const itemid = itemID;
-        const status = 'Chờ xét duyệt';
-        const qrcode = ' ';
-        const ordercode = ' ';
-        const usergiveid = auth.id;
-        const postid = postID;
-        const imgconfirm = ' ';
-        const locationgive = addressid;
-        let locationreceive = null;
-        let givetypeid = 1;
-        const imgconfirmreceive = ' ';
-        let givetype = 'Cho nhận trực tiếp';
-        let warehouseid = null;
-        // let givetype = 'Cho nhận trực tiếp';
-        // if(formDataStepOne.methodsBringItemToWarehouse )
-        if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
-          givetype = 'Cho kho';
-          givetypeid = 3;
-          if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
-            // locationreceive = formDataStepOne.warehouseAddressID;
-            givetype = 'Cho kho (kho đến lấy)';
-            givetypeid = 4;
-          }
-          else{
-            warehouseid = warehouseSelected.warehouseid;
-          }
-        }
-  
-        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
-          title,
-          location,
-          description,
-          departure,
-          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-          itemid,
-          status,
-          qrcode,
-          ordercode,
-          usergiveid,
-          postid,
-          imgconfirm,
-          locationgive,
-          locationreceive,
-          givetypeid,
-          imgconfirmreceive,
-          givetype,
-          warehouseid
-  
-        });       
-        // console.log(response.data.orderCreated);
-        orderID = response.data.orderCreated.orderid;
-        // Alert.alert('Success', 'Item, Post, Order created successfully');
-      } catch (error) {
-        console.error('Error creating order:', error);
-        Alert.alert('Error', 'Failed to create Item, Post, Order. Please try again later.');
-        setIsCompleted(false);
-      }
-  
-      try {
-        const currentstatus = 'Chờ xét duyệt';
-        const orderid = orderID;
-        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-        const response = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
-          currentstatus,
-          orderid,
-        });
-        console.log(response.data.traceCreated)
-        // Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+        // address = response.data.postCreated.address;
+        // addressid = response.data.postCreated.addressid;
+
         setCurrentStep(1);
         setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
         setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
         navigation.navigate('ThankYouScreen', {
           title: 'Gửi bài viết thành công!!',
-          postID: postID,
+          postID: response.data.postCreated.postid,
           content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
         })
-        // navigation.goBack();
+
       } catch (error) {
-        console.error('Error creating Trace:', error);
-        Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
-        setIsCompleted(false);
+        Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
       }
+  
+      // try {
+      //   const title = formDataStepTwo.postTitle;
+      //   const location = ' ';
+      //   const description = ' ';
+      //   const departure = address;
+      //   const time = new Date();
+      //   const itemid = itemID;
+      //   const status = 'Chờ xét duyệt';
+      //   const qrcode = ' ';
+      //   const ordercode = ' ';
+      //   const usergiveid = auth.id;
+      //   const postid = postID;
+      //   const imgconfirm = ' ';
+      //   const locationgive = addressid;
+      //   let locationreceive = null;
+      //   let givetypeid = 1;
+      //   const imgconfirmreceive = ' ';
+      //   let givetype = 'Cho nhận trực tiếp';
+      //   let warehouseid = null;
+      //   // let givetype = 'Cho nhận trực tiếp';
+      //   // if(formDataStepOne.methodsBringItemToWarehouse )
+      //   if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
+      //     givetype = 'Cho kho';
+      //     givetypeid = 3;
+      //     if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
+      //       // locationreceive = formDataStepOne.warehouseAddressID;
+      //       givetype = 'Cho kho (kho đến lấy)';
+      //       givetypeid = 4;
+      //     }
+      //     else{
+      //       warehouseid = warehouseSelected.warehouseid;
+      //     }
+      //   }
+  
+      //   // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      //   const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+      //     title,
+      //     location,
+      //     description,
+      //     departure,
+      //     time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+      //     itemid,
+      //     status,
+      //     qrcode,
+      //     ordercode,
+      //     usergiveid,
+      //     postid,
+      //     imgconfirm,
+      //     locationgive,
+      //     locationreceive,
+      //     givetypeid,
+      //     imgconfirmreceive,
+      //     givetype,
+      //     warehouseid
+      //   });       
+      //   // console.log(response.data.orderCreated);
+      //   orderID = response.data.orderCreated.orderid;
+      //   // Alert.alert('Success', 'Item, Post, Order created successfully');
+      // } catch (error) {
+      //   console.error('Error creating order:', error);
+      //   Alert.alert('Error', 'Failed to create Item, Post, Order. Please try again later.');
+      //   setIsCompleted(false);
+      // }
+  
+      // try {
+      //   const currentstatus = 'Chờ xét duyệt';
+      //   const orderid = orderID;
+      //   // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      //   const response = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+      //     currentstatus,
+      //     orderid,
+      //   });
+      //   console.log(response.data.traceCreated)
+      //   // Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
+
+        // navigation.goBack();
+      // } catch (error) {
+      //   console.error('Error creating Trace:', error);
+      //   Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
+      //   setIsCompleted(false);
+      // }
   
       try{
         formDataStepOne.itemPhotos.map(async (image) => {
