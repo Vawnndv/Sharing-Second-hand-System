@@ -140,10 +140,10 @@ export class UserManager {
 
 
   
-  public static async totalGiveAndReceiveOrder(userid: number): Promise<any> {
+  public static async totalGiveAndReceiveOrder(userid: string): Promise<any> {
+    console.log(userid)
     const client = await pool.connect()
     const query = 
-    // 'SELECT COUNT(*) FROM users' + whereClause;
       `SELECT
       (SELECT COUNT(*) FROM ORDERS WHERE usergiveid = ${userid} AND status LIKE 'Hoàn tất') AS GiveCount,
       (SELECT COUNT(*) FROM ORDERS WHERE userreceiveid = ${userid} AND status LIKE 'Hoàn tất') AS ReceiveCount`;

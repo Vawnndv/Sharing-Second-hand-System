@@ -416,7 +416,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname,
         gr.give_receivetype,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
@@ -427,13 +427,13 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-      LEFT JOIN orders od ON od.postid = po.postid
-      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = od.givetypeid
+	  LEFT JOIN trace_status ts ON po.statusid = ts.statusid
+      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
 
-	    WHERE (od.status LIKE '%${status}%')
+	  WHERE (ts.statusname LIKE '${status}')
       GROUP BY
           us.userid,
           us.firstname,
@@ -449,7 +449,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           gr.give_receivetype
       ORDER BY po.createdat DESC
       LIMIT ${limit}
@@ -883,11 +883,11 @@ export class PostManager {
       }
     }
 
-
-    public static async updatePostStatus (postid: string, statusid: string) : Promise<any> {
-
+    public static async updatePostStatus (postid: number, statusid: number) : Promise<any> {
       const client = await pool.connect()
-  
+      console.log('POSTID: ', postid);
+      console.log('POSTID: ', statusid);
+
       try{
         const query = `
           UPDATE posts
@@ -897,7 +897,7 @@ export class PostManager {
         `
   
         const resultQueryPost: QueryResult = await client.query(query)
-        if(resultQueryPost.rows[0].status != status){
+        if(resultQueryPost.rows[0].statusid !== statusid){
           return false;
         }
         return resultQueryPost;

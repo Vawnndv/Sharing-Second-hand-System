@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Axios from '../../../redux/APIs/Axios';
 import Map from '../../../components/Map/map';
 import Carousel from 'react-material-ui-carousel';
@@ -56,6 +56,7 @@ function ViewPostDetail() {
     const {postid}= useParams();
     const userLogin = useSelector((state: any) => state.userLogin);
 
+    const navigate = useNavigate();
 
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
     const [postReceivers, setPostReceivers] = useState([]);
@@ -148,7 +149,8 @@ function ViewPostDetail() {
                     postid: post.postid,
                     statusid: 12,
                 })
-                toast.success(`Post apporved`);            
+                toast.success(`Post apporved`);      
+                navigate(-1);
             } catch (error) {
                 console.log(error);
             }
@@ -216,6 +218,8 @@ function ViewPostDetail() {
                         statusid: 7,
                     })
                     toast.success(`Post apporved`);            
+                    navigate(-1);
+
                 } catch (error) {
                     console.log(error);
                 }
@@ -228,12 +232,14 @@ function ViewPostDetail() {
                         postid: post.postid,
                         statusid: 13,
                     })
-                    toast.success(`Post apporved`);            
+                    toast.success(`Post apporved`);
+                    navigate(-1);
+
                 } catch (error) {
                     console.log(error);
                 }
             }
-                        // try {
+            // try {
             //     if(post.givetype === 'Cho kho'){
             //         const currentstatus = 'Chờ người cho giao hàng';
             //         const orderid = orderID;
@@ -282,7 +288,9 @@ function ViewPostDetail() {
                 postid: post.postid,
                 statusid: 6,
             })
-            toast.success('Post canceled successfully!')
+            toast.success('Post canceled successfully!');
+            navigate(-1);
+
         } catch (error) {
             console.log(error);
         }
@@ -301,31 +309,33 @@ function ViewPostDetail() {
                     itemImages && 
                     <ShowImages images={itemImages}/>
                 }
-                <Stack
-                    flexDirection='row'
-                    justifyContent='flex-end'
-                    alignItems='center'
-                    gap={2}
-                    p={2}
-                    sx={{backgroundColor: '#F5F5F5'}}>
-                        <Stack
-                            flexDirection='row'
-                            justifyContent='flex-end'
-                            alignItems='center'
-                            gap={1}>
-                                <VolunteerActivismIcon sx={{width: 40, height: 40}} color='success'/>
-                                <Typography variant='body2'>Người nhận: 3</Typography>
-                        </Stack>
-    
-                        <Stack
-                            flexDirection='row'
-                            justifyContent='flex-end'
-                            alignItems='center'
-                            gap={1}>
-                                <FavoriteBorderIcon sx={{width: 40, height: 40}} color='error'/>
-                                <Typography variant='body2'>Thích: 3</Typography>
-                        </Stack>
-                </Stack>
+                {postReceivers && post && post.statusname !== 'Chờ xét duyệt' &&
+                    <Stack
+                        flexDirection='row'
+                        justifyContent='flex-end'
+                        alignItems='center'
+                        gap={2}
+                        p={2}
+                        sx={{backgroundColor: '#F5F5F5'}}>
+                            <Stack
+                                flexDirection='row'
+                                justifyContent='flex-end'
+                                alignItems='center'
+                                gap={1}>
+                                    <VolunteerActivismIcon sx={{width: 40, height: 40}} color='success'/>
+                                    <Typography variant='body2'>Người nhận: {postReceivers.length}</Typography>
+                            </Stack>
+        
+                            <Stack
+                                flexDirection='row'
+                                justifyContent='flex-end'
+                                alignItems='center'
+                                gap={1}>
+                                    <FavoriteBorderIcon sx={{width: 40, height: 40}} color='error'/>
+                                    <Typography variant='body2'>Thích: 3</Typography>
+                            </Stack>
+                    </Stack>
+                }
                 {
                     post &&
                     <Stack
@@ -375,7 +385,12 @@ function ViewPostDetail() {
 
                             <Stack>
                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>Phương thức đăng bài</Typography>
-                                <Typography variant='body2' component='div'>{post.givetype}</Typography>
+                                <Typography variant='body2' component='div'>{post.give_receivetype}</Typography>
+                            </Stack>
+
+                            <Stack>
+                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Trạng thái</Typography>
+                                <Typography variant='body2' component='div'>{post.statusname}</Typography>
                             </Stack>
 
                             <Stack>
@@ -397,7 +412,7 @@ function ViewPostDetail() {
                     <Map lat={parseFloat(post.latitude)} long={parseFloat(post.longitude)} address={post.address}/>
                 }
                 {
-                    postReceivers && 
+                    post && post.statusname !== 'Chờ xét duyệt' && 
                     <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
                         <Typography variant='h6' sx={{fontWeigth: 'bold', width: '90%', mb: 2, mt: 2}}>Danh sách người xin</Typography>
                         <Stack
@@ -443,7 +458,6 @@ function ViewPostDetail() {
                                                 </Card>
                                                 
                                             </Grid>
-                                            
                                         )
                                     })
                                 }
@@ -460,21 +474,24 @@ function ViewPostDetail() {
                     gap={2}
                     m={2}>
                     
-                    <Button
-                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                        onClick={approvePost}>
-                        <CheckCircleOutlineOutlinedIcon color='success'/>
-                        <Typography variant='inherit' color='success'>Duyệt</Typography>
-                    </Button>
-                    
 
+                    {post && post.statusname === 'Chờ xét duyệt' &&
+                        <Button
+                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                            onClick={approvePost}>
+                            <CheckCircleOutlineOutlinedIcon color='success'/>
+                            <Typography variant='inherit' color='success'>Duyệt</Typography>
+                        </Button>
+                    }
                     
-                    <Button
-                        sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                        onClick={declinePost}>
-                        <RemoveCircleIcon color='error'/>
-                        <Typography variant='inherit' color='error'>Xóa</Typography>
-                    </Button>
+                    {post && post.statusname !== 'Hủy' &&
+                        <Button
+                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                            onClick={declinePost}>
+                            <RemoveCircleIcon color='error'/>
+                            <Typography variant='inherit' color='error'>Xóa</Typography>
+                        </Button>
+                    }
                     
                 </Stack>
             </div>
