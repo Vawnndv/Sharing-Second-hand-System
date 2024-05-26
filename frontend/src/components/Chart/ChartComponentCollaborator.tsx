@@ -22,7 +22,7 @@ const colorArrayBorder = [
   'rgb(201, 203, 207)'
 ]
 
-function ChartComponent({data, title, typeChart}: any) {
+function ChartComponentCollaborator({data, title, typeChart}: any) {
   const userLogin = useSelector((state: any) => state.userLogin);
   const chartRef: any = useRef(null);
   console.log(data)
@@ -32,8 +32,8 @@ function ChartComponent({data, title, typeChart}: any) {
     const chartInstance = new Chart(ctx, {
       type: typeChart,
       data: {
-        labels: userLogin.userInfo.roleID === 2 ? data.map((row: any) => row.label) : data[0].data.results.map((row: any) => row.label),
-        datasets: userLogin.userInfo.roleID === 2 ? 
+        labels: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập') ? data.map((row: any) => row.label) : data[0].data.results.map((row: any) => row.label),
+        datasets: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập') ? 
         [
           {
             label: title,
@@ -122,4 +122,4 @@ function ChartComponent({data, title, typeChart}: any) {
   );
 }
 
-export default ChartComponent;
+export default ChartComponentCollaborator;

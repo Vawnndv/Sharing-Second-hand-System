@@ -129,7 +129,7 @@ export default function Header({setIndex}: any) {
       >
         <RiLogoutCircleLine />
         <Typography style={{ marginLeft: '4px' }}>
-          Đăng suất
+          Đăng xuất
         </Typography>
       </MenuItem>
     </Menu>

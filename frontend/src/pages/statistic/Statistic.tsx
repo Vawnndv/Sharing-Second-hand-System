@@ -1,15 +1,28 @@
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { Autocomplete, Box, Button, Checkbox, FormControl, MenuItem, Modal, Select, Stack, Tab, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Checkbox, FormControl, MenuItem, Modal, Radio, Select, Stack, Tab, TextField, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
 import React, { useEffect, useState } from 'react';
-import ChartComponent from '../../components/Chart/ChartComponent';
+import ChartComponent from '../../components/Chart/ChartComponentCollaborator';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import MapSelectWarehouses from '../../components/Map/MapSelectWarehouses';
+import dayjs, { Dayjs } from 'dayjs';
+import DatePicker from '../../components/DatePicker';
+import ChartComponentFollowTime from '../../components/Chart/ChartComponentFollowTime';
+import ChartComponentFollowTimeCollaborator from '../../components/Chart/ChartComponentFollowTimeCollaborator';
 // import MapSelectAddress from '../../components/Map/MapSelectAddress';
+const category = [
+    "Quần áo",
+    "Giày dép",
+    "Đồ nội thất",
+    "Công cụ",
+    "Dụng cụ học tập",
+    "Thể thao",
+    "Khác"
+  ]
 
 function ChartTypeComponent ({typeChart, setTypeChart}: any) {
     return (
@@ -62,6 +75,38 @@ function SelectWarehouse({warehouses, warehousesSelected, handleSelectWarehouses
     );
 }
 
+function SelectCategory({categoryIndex, handleSelectCategory}: any) {
+    // Danh sách các kho
+
+  
+    return (
+      <Box sx={{ width: 300, mb: 2 }}>
+        <Autocomplete
+          sx={{height: '50px'}}
+          disablePortal
+          multiple
+          options={category}
+          disableCloseOnSelect
+          renderOption={(props, option: any) => (
+            <Button key={option} style={{cursor: 'pointer', width: '100%', display: 'flex', justifyContent: 'flex-start'}}
+                onClick={() => handleSelectCategory(category.findIndex((item: string) => item === option))}>
+              <Radio checked={option === category[categoryIndex]} />
+              {option}
+            </Button>
+          )}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              name="Loại đồ"
+              placeholder="Loại đồ"
+            />
+          )}
+        />
+      </Box>
+    );
+}
+
 const timeArr = [
     {
         value: 1,
@@ -98,8 +143,16 @@ function Statistic() {
     const userLogin = useSelector((state: any) => state.userLogin);
 
     const [tabValue, setTabValue] = useState('Lượng sản phẩm vào/ra kho')
+    const [tabImportExportValue, setTabImportExportValue] = useState('Thống kê theo loại');
+
+    const today = dayjs();
+    const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs('2024-03-01'), today]);
+    console.log(date)
     const handleChange = (event: any, newValue: any) => {
         setTabValue(newValue);
+    };
+    const handleChangeTabImportExport = (event: any, newValue: any) => {
+        setTabImportExportValue(newValue);
     };
 
     const [typeChart, setTypeChart] = useState('bar')
@@ -120,6 +173,8 @@ function Statistic() {
     
     const [warehousesSelected, setWarehousesSelected] = useState<boolean[]>([])
 
+    const [categoryIndex, setCategoryIndex] = useState<number>(0);
+
     const [apply, setApply] = useState(false)
 
     const handleSelectWarehouses = (id: number) => {
@@ -128,6 +183,10 @@ function Statistic() {
         const indexSelect = warehouses.findIndex((warehouse: any) => warehouse.warehouseid === id)
         newWarehousesSelected[indexSelect] = !newWarehousesSelected[indexSelect]
         setWarehousesSelected(newWarehousesSelected)
+    }
+
+    const handleSelectCategory = (index: number) => {
+        setCategoryIndex(index)
     }
 
     useEffect(() => {
@@ -143,7 +202,6 @@ function Statistic() {
                 setWarehousesSelected(Array.from({length: tempWarehouses.length}, () => true))
                 setWarehouses(tempWarehouses)
                 setIsLoading(false)
-                console.log('fetchDataWarehouses')
             } catch (error) {
                 console.log(error)
             }
@@ -167,7 +225,12 @@ function Statistic() {
             else if(tabValue === "Lượng sản phẩm vào/ra kho"){
                 try{
                     setIsLoading(true)
-                    response = await axios.get(`http://localhost:3000/statistic/statisticImportExport?userID=${userLogin.userInfo.id}&type=${typeItemInOut}`)
+                    response = await axios.post(`http://localhost:3000/statistic/statisticImportExport`,{
+                        userID: userLogin.userInfo.id,
+                        type: typeItemInOut,
+                        timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                        timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`,
+                    })
                 } catch(error){
                     console.log(error)
                 }                
@@ -205,10 +268,23 @@ function Statistic() {
                             listWarehousesSelected.push(warehouses[i])
                         }
                     }
-                    response = await axios.post(`http://localhost:3000/statistic/statisticImportExportAdmin`,{
-                        type: typeItemInOut,
-                        warehouses: listWarehousesSelected
-                    })
+                    if(tabImportExportValue === 'Thống kê theo loại'){
+                        response = await axios.post(`http://localhost:3000/statistic/statisticImportExportAdmin`,{
+                            type: typeItemInOut,
+                            warehouses: listWarehousesSelected,
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`,
+                        })
+                    }else{
+                        response = await axios.post(`http://localhost:3000/statistic/statisticImportExportFollowTimeAdmin`,{
+                            type: typeItemInOut,
+                            warehouses: listWarehousesSelected,
+                            category: category[categoryIndex],
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`,
+                        })
+                    }
+                    
                 } catch(error){
                     console.log(error)
                 }                
@@ -231,6 +307,7 @@ function Statistic() {
             if(response){
                 setData(response.data.data);
                 setIsLoading(false)
+                console.log(response.data)
             }
         }
 
@@ -240,9 +317,7 @@ function Statistic() {
             fetchDataAdmin()
         }
         
-        console.log("tabValue", tabValue)
-        console.log("typeItemInOut", typeItemInOut)
-    }, [tabValue, typeItemInOut, timeUserAccess,apply, warehouses])
+    }, [tabValue, tabImportExportValue, typeItemInOut, timeUserAccess,apply, warehouses])
 
     const currentDate = new Date();
     // Ngày trong quá khứ (ví dụ: 1 tháng trước)
@@ -313,53 +388,165 @@ function Statistic() {
                         sx={{display: 'flex', flexDirection: 'column', ml: 4}}>
 
                             {
-                                userLogin.userInfo.roleID === 3 &&
-                                <Stack
-                                    flexDirection='row'>
-                                    <SelectWarehouse warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
-                                    
-                                    <div>
-                                        <Button sx={{height: '55px', ml: 1}} variant="outlined" endIcon={<TouchAppOutlinedIcon />}
-                                            onClick={handleOpen}>
-                                            Bản đồ
+                                userLogin.userInfo.roleID === 3 ?
+                                <TabContext value={tabImportExportValue}>
+                                    <Box sx={{ borderBottom: 1, borderColor: 'divider', ml: 2 }}>
+                                        <TabList onChange={handleChangeTabImportExport} aria-label="lab API tabs example">
+                                        <Tab label="Thống kê theo loại" value="Thống kê theo loại" />
+                                        <Tab label="Thống kê theo thời gian" value="Thống kê theo thời gian" />
+                                        </TabList>
+                                    </Box>
+                                    <TabPanel value='Thống kê theo loại'>
+                                        <Stack
+                                            flexDirection='row'>
+                                            <SelectWarehouse warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
+                                            
+                                            <div>
+                                                <Button sx={{height: '55px', ml: 1}} variant="outlined" endIcon={<TouchAppOutlinedIcon />}
+                                                    onClick={handleOpen}>
+                                                    Bản đồ
+                                                </Button>
+                                                <Modal
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    aria-labelledby="modal-modal-title"
+                                                    aria-describedby="modal-modal-description"
+                                                >
+                                                    <Box sx={style}>
+                                                        <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
+                                                        {/* <MapSelectAddress setLocation={setLocation}/> */}
+                                                    </Box>
+                                                </Modal>
+                                            </div>
+                                            <Button sx={{height: '55px', ml: 1, backgroundColor: '#DCFFF0'}} variant="outlined"
+                                                onClick={() => setApply(!apply)}>
+                                                Áp dụng
+                                            </Button>
+                                        </Stack>
+
+                                        <Stack
+                                            flexDirection='row'>
+                                            <Stack sx={{mb: 1}}>
+                                                <DatePicker date={date} setDate={setDate}/>
+                                            </Stack>
+                                            
+                                        </Stack>
+                                        
+                                        <FormControl
+                                            sx={{width: '200px'}}>
+                                            <Select
+                                                labelId="dropdown-label"
+                                                id="dropdown"
+                                                value={typeItemInOut}
+                                                onChange={handleChangeItemInOut}
+                                            >
+                                                <MenuItem value="import">Vào kho</MenuItem>
+                                                <MenuItem value="export">Ra kho</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        <Stack
+                                            flexDirection='row'>
+                                            <ChartComponent data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
+                                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                        </Stack>
+                                    </TabPanel>
+
+                                    <TabPanel value='Thống kê theo thời gian'>
+                                        <Stack
+                                            flexDirection='row'>
+                                            
+                                            <SelectCategory categoryIndex={categoryIndex} handleSelectCategory={handleSelectCategory}/>
+                                            <Stack sx={{ ml: 1, mt: -1}}>
+                                                <DatePicker date={date} setDate={setDate}/>
+                                            </Stack>
+                                            
+                                        </Stack>
+                                        <Stack
+                                            flexDirection='row'>
+                                            <SelectWarehouse warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
+                                            
+                                            <div>
+                                                <Button sx={{height: '55px', ml: 1}} variant="outlined" endIcon={<TouchAppOutlinedIcon />}
+                                                    onClick={handleOpen}>
+                                                    Bản đồ
+                                                </Button>
+                                                <Modal
+                                                    open={open}
+                                                    onClose={handleClose}
+                                                    aria-labelledby="modal-modal-title"
+                                                    aria-describedby="modal-modal-description"
+                                                >
+                                                    <Box sx={style}>
+                                                        <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
+                                                        {/* <MapSelectAddress setLocation={setLocation}/> */}
+                                                    </Box>
+                                                </Modal>
+                                            </div>
+                                            <Button sx={{height: '55px', ml: 1, backgroundColor: '#DCFFF0'}} variant="outlined"
+                                                onClick={() => setApply(!apply)}>
+                                                Áp dụng
+                                            </Button>
+                                        </Stack>
+
+                                        <FormControl
+                                            sx={{width: '200px'}}>
+                                            <Select
+                                                labelId="dropdown-label"
+                                                id="dropdown"
+                                                value={typeItemInOut}
+                                                onChange={handleChangeItemInOut}
+                                            >
+                                                <MenuItem value="import">Vào kho</MenuItem>
+                                                <MenuItem value="export">Ra kho</MenuItem>
+                                            </Select>
+                                        </FormControl>
+
+                                        <Stack
+                                            flexDirection='row'>
+                                            <ChartComponentFollowTime data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
+                                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                        </Stack>
+                                    </TabPanel>
+                                </TabContext>
+
+                                :
+
+                                <TabContext value={tabImportExportValue}>
+
+                                    <Stack
+                                        flexDirection='row'>
+                                        <Stack sx={{mb: 1}}>
+                                            <DatePicker date={date} setDate={setDate}/>
+                                        </Stack>
+                                        <Button sx={{height: '55px', ml: 1, backgroundColor: '#DCFFF0', mt: 1}} variant="outlined"
+                                            onClick={() => setApply(!apply)}>
+                                            Áp dụng
                                         </Button>
-                                        <Modal
-                                            open={open}
-                                            onClose={handleClose}
-                                            aria-labelledby="modal-modal-title"
-                                            aria-describedby="modal-modal-description"
+                                        
+                                    </Stack>
+                                    
+                                    <FormControl
+                                        sx={{width: '200px'}}>
+                                        <Select
+                                            labelId="dropdown-label"
+                                            id="dropdown"
+                                            value={typeItemInOut}
+                                            onChange={handleChangeItemInOut}
                                         >
-                                            <Box sx={style}>
-                                                <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/>
-                                                {/* <MapSelectAddress setLocation={setLocation}/> */}
-                                            </Box>
-                                        </Modal>
-                                    </div>
-                                    <Button sx={{height: '55px', ml: 1}} variant="outlined"
-                                        onClick={() => setApply(!apply)}>
-                                        Áp dụng
-                                    </Button>
-                                </Stack>
-                                
+                                            <MenuItem value="import">Vào kho</MenuItem>
+                                            <MenuItem value="export">Ra kho</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                    <Stack
+                                        flexDirection='row'>
+                                        <ChartComponentFollowTimeCollaborator data={data} typeChart={typeChart}/>
+                                        <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                    </Stack>
+                                </TabContext>
                             }
     
-                        <FormControl
-                        sx={{width: '200px', ml: 4}}>
-                            <Select
-                                labelId="dropdown-label"
-                                id="dropdown"
-                                value={typeItemInOut}
-                                onChange={handleChangeItemInOut}
-                            >
-                                <MenuItem value="import">Vào kho</MenuItem>
-                                <MenuItem value="export">Ra kho</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <Stack
-                            flexDirection='row'>
-                            <ChartComponent data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
-                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
-                        </Stack>
+                        
+                        
                     </TabPanel>
                     <TabPanel value="Lượng hàng tồn kho"
                         sx={{display: 'flex', flexDirection: 'column', ml: 4}}>
