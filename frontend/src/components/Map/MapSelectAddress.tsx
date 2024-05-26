@@ -137,7 +137,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
   }, [debouncedSearch])
 
   const moveCameraToCoordinate = (locationTarget: any) => {
-    console.log('moveCameraToCoordinate',locationTarget)
     setCenter({
       lat: locationTarget.latitude,
       lng: locationTarget.longitude, 
@@ -151,7 +150,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
           longitude: lon, 
           address: display_name
       }
-      console.log('handleClickLocation',locationTarget)
       setLocationSelected(locationTarget)
       setInputSearch(display_name)
       moveCameraToCoordinate(locationTarget)
@@ -161,13 +159,11 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
 
   const getCenter = () => {
     const center = map.getCenter();
-    console.log('Vị trí giữa của bản đồ:', center.lat(), center.lng());
     return center
   };
 
   const handleConfirmAddress = async () => {
     const center = getCenter()
-    console.log('handleConfirmAddress')
     if(inputSearch === ''){
       // eslint-disable-next-line no-alert
       alert('XIn vui lòng nhập địa chỉ của bạn vào thanh tìm kiếm!')
@@ -180,10 +176,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
       })
       handleClose()
       try {
-        console.log(userLogin.userInfo.id,
-          center.lat(),
-          center.lng(),
-          inputSearch)
+      
         if(isUser === true) {
           const response: any = await Axios.post(`map/set_user_location`,{
             userID: userLogin.userInfo.id,
@@ -211,7 +204,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
     const fetchHomeLocation = async () => {
       try {
         const response = await Axios.get(`user/get-user-address?userId=${userLogin.userInfo.id}`)
-        console.log(response)
         setHomeLocation({
             address: response.data.address,
             latitude: parseFloat(response.data.latitude),

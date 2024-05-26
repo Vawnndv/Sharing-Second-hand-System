@@ -175,7 +175,6 @@ export class OrderManager {
         for(let i = 1; i < listCategory.length; i++){
           listCategoryQuery += ` OR it.nametype = '${listCategory[i]}'`
         }
-        console.log(listCategoryQuery)
         
         categoryQuery = `AND EXISTS (
           SELECT it.nametype
@@ -209,14 +208,13 @@ export class OrderManager {
         WHERE addressid = $1
       `
 
-      console.log(ordersQuery)
       const ordersResult: QueryResult = await client.query(ordersQuery, values);
       
       const ordersRow = ordersResult.rows;
       let result: any = []
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
-        console.log(addressReceiveDB)
+
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
         
@@ -432,7 +430,6 @@ export class OrderManager {
 
       let result: any = []
   
-      console.log(ordersRow);
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
@@ -565,7 +562,7 @@ export class OrderManager {
     `
 
     let status = (collaboratorReceiveID === null ? 'Chờ cộng tác viên lấy hàng' : 'Hàng đang được đến lấy')
-    console.log(status)
+
 
     let query = `
       UPDATE "orders"
@@ -577,7 +574,7 @@ export class OrderManager {
 
     try {
       const resultQueryOrder: QueryResult = await client.query(queryGetOrder)
-      console.log(resultQueryOrder.rows[0])
+
       if(resultQueryOrder.rows[0].collaboratorreceiveid !== null && resultQueryOrder.rows[0].collaboratorreceiveid != collaboratorReceiveID){
         return false
       }
@@ -809,7 +806,7 @@ export class OrderManager {
   };
 
   public static async updateCompleteOrder (orderID: string, url: string) : Promise<boolean> {
-    console.log('updateCompleteOrder')
+
     const client = await pool.connect()
 
     try{
@@ -883,7 +880,7 @@ export class OrderManager {
   
   public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
     const client = await pool.connect()
-    console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
+
     try{
       const query = `
         UPDATE "orders"

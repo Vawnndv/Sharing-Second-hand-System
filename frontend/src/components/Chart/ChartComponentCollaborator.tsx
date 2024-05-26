@@ -25,7 +25,6 @@ const colorArrayBorder = [
 function ChartComponentCollaborator({data, title, typeChart}: any) {
   const userLogin = useSelector((state: any) => state.userLogin);
   const chartRef: any = useRef(null);
-  console.log(data)
 
   useEffect(() => {
     const ctx = chartRef.current.getContext('2d');

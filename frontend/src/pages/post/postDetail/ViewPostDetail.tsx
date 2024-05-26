@@ -142,172 +142,147 @@ function ViewPostDetail() {
 
     
     const approvePost = async () => {
-
         if(post.givetype !== "Cho kho" && post.givetype !== "Cho kho (kho đến lấy)"){
             try{
-                const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
-                    orderid: post.orderid,
-                    newstatus: "Đã duyệt",
-                    statusid: "12",
+                const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                    postid: post.postid,
+                    statusid: 12,
                 })
                 toast.success(`Post apporved`);            
             } catch (error) {
                 console.log(error);
             }
         }
-        else{
-            let orderID = -1;
-            let warehouseIDOfCollaborator = -1;
-            try{
-                const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
-                    orderid: post.orderid,
-                    newstatus: "Hoàn tất ",
-                    statusid: "5",
-                })
-            } catch (error) {
-                console.log(error);
-            }
+        else if (post.givetype === 'Cho kho (kho đến lấy)') {
+            // let orderID = -1;
+            // let warehouseIDOfCollaborator = -1;
+            // try{
+            //     const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
+            //         orderid: post.orderid,
+            //         newstatus: "Hoàn tất ",
+            //         statusid: "5",
+            //     })
+            // }
+            // catch (error) {
+            //     console.log(error);
+            // }
 
-            try{
-                const res = await axios.post(`http://localhost:3000/posts/createPost`, {
-                    title: post.title,
-                    location: post.location,
-                    description: post.description,
-                    owner: userLogin.userInfo.id,
-                    time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                    itemid: post.itemid,
-                    timestart: new Date(post.timestart).toISOString(), // Tương tự cho timestart
-                    timeend: new Date(post.timeend).toISOString(), // Và timeend
-                    isNewAddress: false,
-                    postLocation: post,
-                    isWarehousePost: true,
-                });
-            }
-            catch (error) {
-                console.log(error);
-            }
+            // try{
+            //     const res = await axios.post(`http://localhost:3000/posts/createPost`, {
+            //         title: post.title,
+            //         location: post.location,
+            //         description: post.description,
+            //         owner: userLogin.userInfo.id,
+            //         time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            //         itemid: post.itemid,
+            //         timestart: new Date(post.timestart).toISOString(), // Tương tự cho timestart
+            //         timeend: new Date(post.timeend).toISOString(), // Và timeend
+            //         isNewAddress: false,
+            //         postLocation: post,
+            //         isWarehousePost: true,
+            //     });
+            // }
+            // catch (error) {
+            //     console.log(error);
+            // }
 
-            try{
-                if(post.givetype === 'Cho kho (kho đến lấy)'){
-                    const time = new Date();
-                    const response = await axios.post(`http://localhost:3000/order/createOrder`, {
-                        title: post.title,
-                        location: '',
-                        description: post.description,
-                        departure: '',
-                        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                        itemid: post.itemid,
-                        status: '',
-                        qrcode: '',
-                        ordercode: '',
-                        usergiveid: userLogin.userInfo.id,
+            
+                    // const time = new Date();
+                    // const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                    //     title: post.title,
+                    //     location: '',
+                    //     description: post.description,
+                    //     departure: '',
+                    //     time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                    //     itemid: post.itemid,
+                    //     status: '',
+                    //     qrcode: '',
+                    //     ordercode: '',
+                    //     usergiveid: userLogin.userInfo.id,
+                    //     postid: post.postid,
+                    //     imgconfirm: '',
+                    //     locationgive: post.addressid,
+                    //     locationreceive: null,
+                    //     givetypeid: post.givetypeid,
+                    //     imgconfirmreceive: '',
+                    //     givetype: post.givetype,
+                    //     warehouseid: post.warehouseid
+                    // }); 
+                    // orderID = response.data.orderCreated.orderid;
+
+                try{
+                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                         postid: post.postid,
-                        imgconfirm: '',
-                        locationgive: post.addressid,
-                        locationreceive: null,
-                        givetypeid: post.givetypeid,
-                        imgconfirmreceive: '',
-                        givetype: post.givetype,
-                        warehouseid: post.warehouseid
-                    }); 
-                    orderID = response.data.orderCreated.orderid;
+                        statusid: 7,
+                    })
+                    toast.success(`Post apporved`);            
+                } catch (error) {
+                    console.log(error);
                 }
+            }
 
-                else{
+            else{
 
-                    try {
-                        const res = await axios.get(`http://localhost:3000/collaborator/getWarehouseAddress/${userLogin.userInfo.id}`)
-                
-                        if (!res) {
-                          throw new Error('Failed to fetch warehouse address of collaborator'); // Xử lý lỗi nếu request không thành công
-                        }
-                        warehouseIDOfCollaborator = res.data.warehouseInfo.addressid
-                
-                      } catch (error) {
-                        console.error('Error fetching warehouses:', error);
-                    }
-
-                    const time = new Date();
-                    const response = await axios.post(`http://localhost:3000/order/createOrder`, {
-                        title: post.title,
-                        location: '',
-                        description: post.description,
-                        departure: '',
-                        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                        itemid: post.itemid,
-                        status: '',
-                        qrcode: '',
-                        ordercode: '',
-                        usergiveid: userLogin.userInfo.id,
+                try{
+                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                         postid: post.postid,
-                        imgconfirm: '',
-                        locationgive: post.addressid,
-                        locationreceive: warehouseIDOfCollaborator,
-                        givetypeid: post.givetypeid,
-                        imgconfirmreceive: '',
-                        givetype: post.givetype,
-                        warehouseid: post.warehouseid
-                    }); 
-                    orderID = response.data.orderCreated.orderid;
+                        statusid: 13,
+                    })
+                    toast.success(`Post apporved`);            
+                } catch (error) {
+                    console.log(error);
                 }
             }
-            catch (error) {
-                console.log(error);
-            }
-        
-            try {
-                if(post.givetype === 'Cho kho'){
-                    const currentstatus = 'Chờ người cho giao hàng';
-                    const orderid = orderID;
-                    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-                    const response = await axios.post(`http://localhost:3000/order/createTrace`, {
-                    currentstatus,
-                    orderid,
-                    });
-                }
+                        // try {
+            //     if(post.givetype === 'Cho kho'){
+            //         const currentstatus = 'Chờ người cho giao hàng';
+            //         const orderid = orderID;
+            //         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+            //         const response = await axios.post(`http://localhost:3000/order/createTrace`, {
+            //         currentstatus,
+            //         orderid,
+            //         });
+            //     }
 
-                if(post.givetype === 'Cho kho (kho đến lấy)'){
-                    const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                    const orderid = orderID;
-                    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-                    const response = await axios.post(`http://localhost:3000/order/createTrace`, {
-                    currentstatus,
-                    orderid,
-                    });
-                }
+            //     if(post.givetype === 'Cho kho (kho đến lấy)'){
+            //         const currentstatus = 'Chờ cộng tác viên lấy hàng';
+            //         const orderid = orderID;
+            //         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+            //         const response = await axios.post(`http://localhost:3000/order/createTrace`, {
+            //         currentstatus,
+            //         orderid,
+            //         });
+            //     }
 
-            try{
-                const response = await axios.post(`http://localhost:3000/card/createInputCard`, {
-                    itemid: post.itemid,
-                    qrcode: '',
-                    usergiveid: userLogin.userInfo.id,
-                    warehouseid: '19',          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
-                    orderid: orderID
-                }); 
-                orderID = response.data.orderCreated.orderid;
-            }
-            catch (error) {
-                console.log(error);
-            }
+            // try{
+            //     const response = await axios.post(`http://localhost:3000/card/createInputCard`, {
+            //         itemid: post.itemid,
+            //         qrcode: '',
+            //         usergiveid: userLogin.userInfo.id,
+            //         warehouseid: '19',          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
+            //         orderid: orderID
+            //     }); 
+            //     orderID = response.data.orderCreated.orderid;
+            // }
+            // catch (error) {
+            //     console.log(error);
+            // }
 
-            toast.success('Post approved, repost successfully!')
-            } catch (error) {
-                console.log(error);
-            }
-        }
+            // toast.success('Post approved, repost successfully!')
+            // } catch (error) {
+            //     console.log(error);
+            // }
         
     }
-        
+            
 
     const declinePost = async () => {
         try{
-            const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
-                orderid: post.orderid,
-                newstatus: "Hủy ",
-                statusid: "6",
+            const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                postid: post.postid,
+                statusid: 6,
             })
             toast.success('Post canceled successfully!')
-
         } catch (error) {
             console.log(error);
         }

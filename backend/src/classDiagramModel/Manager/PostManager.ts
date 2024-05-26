@@ -82,7 +82,6 @@ function filterSearch(distance: string, time: string, category: string[], wareho
 
       let isValidWarehouse: boolean = isCoordinateInWarehouseList(item.longitude, item.latitude, warehouseList) || !isFilterWarehouse;
 
-      console.log(isValidDistance , isValidTime , isValidCategory, isValidWarehouse, 'Check Filter')
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory && isValidWarehouse;
   });
@@ -232,8 +231,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = false AND od.givetypeid != 3 AND od.givetypeid != 4 AND od.userreceiveid is null
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
+      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 2 OR po.statusid = 12)
       GROUP BY
           us.userid,
           us.firstname,
@@ -582,7 +580,6 @@ export class PostManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
       }
       catch (error) {
@@ -654,11 +651,11 @@ export class PostManager {
         const allWarehouse : QueryResult = await client.query(querySelectAllWarehouse);
         let closestDistance = Infinity;
 
-        console.log(allWarehouse)
+   
 
         for (let i = 0; i < allWarehouse.rows.length; i++) {
           const warehouse = allWarehouse.rows[i];
-          console.log(warehouse);
+   
           const R = 6371; // Bán kính trái đất theo km
           const dLat = (warehouse.latitude - postLocation.latitude) * Math.PI / 180;
           const dLon = (warehouse.longitude - postLocation.longitude) * Math.PI / 180;
@@ -883,6 +880,32 @@ export class PostManager {
         throw error; // Ném lỗi để controller có thể xử lý
       } finally {
         client.release(); // Release client sau khi sử dụng
+      }
+    }
+
+
+    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+
+      const client = await pool.connect()
+  
+      try{
+        const query = `
+          UPDATE posts
+          SET statusid = '${statusid}'
+          WHERE postid = '${postid}'
+          RETURNING *
+        `
+  
+        const resultQueryPost: QueryResult = await client.query(query)
+        if(resultQueryPost.rows[0].status != status){
+          return false;
+        }
+        return resultQueryPost;
+      }catch(error){
+        console.log(error)
+        return false
+      }finally{
+        client.release()
       }
     }
 
