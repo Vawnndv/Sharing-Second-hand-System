@@ -335,21 +335,21 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         setIsLoading(false);
       }
 
-      try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
-        if (!res) {
-          throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
-        }
-        setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
-      } catch (error) {
-        console.error('Error fetching order:', error);
-      } finally {
-        setIsLoading(false);
-      }
+      // try {
+      //   setIsLoading(true);
+      //   const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
+      //   // const res = await postsAPI.HandlePost(
+      //   //   `/${postID}`,
+      //   // );
+      //   if (!res) {
+      //     throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
+      //   }
+      //   setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
+      // } catch (error) {
+      //   console.error('Error fetching order:', error);
+      // } finally {
+      //   setIsLoading(false);
+      // }
 
       try {
         // console.log(postID);
@@ -364,6 +364,8 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
         // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
         setIsUserPost(res.data.postDetail.owner == auth.id);
+        setIsLoading(false);
+
       } catch (error) {
         console.error('Error fetching post details:', error);
       }
@@ -438,6 +440,7 @@ const handleGive = async () =>{
 
   let status = '';
   let statusid = null;
+  let orderID = null;
 
   if(receivetype === 'Cho nhận trực tiếp'){
     status = 'Chờ người nhận lấy hàng';
@@ -505,7 +508,7 @@ const handleGive = async () =>{
 
       console.log(response.data.orderCreated);
 
-      const orderID = response.data.orderCreated.orderid;    
+      orderID = response.data.orderCreated.orderid;    
       // if(receivetype === )
 
     const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
@@ -527,9 +530,15 @@ const handleGive = async () =>{
   //   givetype = receivetype;
   // }
 
-    if(receivetype !== 'Cho nhận trực tiếp')
+    if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
     {
-
+      const responseTrace = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+        qrcode: '',
+        warehouseid: warehouseid,
+        usergiveid: auth.id,
+        orderid: orderID,
+        itemid: post.itemid
+      });
     }
   }
   

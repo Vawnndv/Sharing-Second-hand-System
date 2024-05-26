@@ -231,8 +231,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = false AND od.givetypeid != 3 AND od.givetypeid != 4 AND od.userreceiveid is null
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
+      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 2 OR po.statusid = 12)
       GROUP BY
           us.userid,
           us.firstname,
@@ -881,6 +880,32 @@ export class PostManager {
         throw error; // Ném lỗi để controller có thể xử lý
       } finally {
         client.release(); // Release client sau khi sử dụng
+      }
+    }
+
+
+    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+
+      const client = await pool.connect()
+  
+      try{
+        const query = `
+          UPDATE posts
+          SET statusid = '${statusid}'
+          WHERE postid = '${postid}'
+          RETURNING *
+        `
+  
+        const resultQueryPost: QueryResult = await client.query(query)
+        if(resultQueryPost.rows[0].status != status){
+          return false;
+        }
+        return resultQueryPost;
+      }catch(error){
+        console.log(error)
+        return false
+      }finally{
+        client.release()
       }
     }
 
