@@ -21,7 +21,7 @@ const ViewPostManagement = ({navigation, route}: any) => {
         `/update-post-status`,
         {
           postid: postid,
-          status: statusOrder.CANCELED.statusid
+          statusid: statusOrder.CANCELED.statusid
         },
         'post'
       );
