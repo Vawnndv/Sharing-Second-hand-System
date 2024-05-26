@@ -41,7 +41,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
 
   const goToPostDetail = () => {
     navigation.navigate('ItemDetailScreen', {
-      postId: postID,
+      postID: postID,
     })
   }
 
