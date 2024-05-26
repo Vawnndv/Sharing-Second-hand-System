@@ -26,15 +26,9 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
 
   const LIMIT = 5;
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Thực hiện các hành động cần thiết khi màn hình được focus
-      console.log('Home Screen Reloaded:');
-      setRefresh(prevRefresh => !prevRefresh);
-      console.log(refresh)
-    });
-    return unsubscribe;
-  }, [navigation]);
+  const handleRefresh = () => {
+    setRefresh(prevRefresh => !prevRefresh);
+  }
 
   useEffect(() => {
     setData([]);
@@ -117,7 +111,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
       />
     </View>
   ) : (
-    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
+    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} handleRefresh={handleRefresh}/>
   )
 }
 

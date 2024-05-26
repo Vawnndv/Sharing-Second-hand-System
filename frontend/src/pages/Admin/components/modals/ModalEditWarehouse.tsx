@@ -119,7 +119,6 @@ function ModalEditWarehouse(props: Props) {
         isNewAddress,
         warehouseid,
       });
-      console.log(res.data);
 
       toast.success(`Update warehouse info successfully`);
       setIsOpen(!isOpen);

@@ -51,7 +51,6 @@ function Users() {
 
   // useEffect
   useEffect(() => {
-    console.log(filterModel)
     getTotalUser();
   }, [filterModel])
 
@@ -63,7 +62,6 @@ function Users() {
       toast.error(isError || deleteError)
       dispatch({ type: isError ? 'GET_ALL_USERS_RESET' : 'DELETE_USER_RESET' })
     }
-    console.log(pageState)
   }, [pageState, sortModel, filterModel, isSuccess])
   
   // delete user handler

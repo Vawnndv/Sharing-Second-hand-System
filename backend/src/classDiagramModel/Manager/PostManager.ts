@@ -82,7 +82,6 @@ function filterSearch(distance: string, time: string, category: string[], wareho
 
       let isValidWarehouse: boolean = isCoordinateInWarehouseList(item.longitude, item.latitude, warehouseList) || !isFilterWarehouse;
 
-      console.log(isValidDistance , isValidTime , isValidCategory, isValidWarehouse, 'Check Filter')
       // Kết hợp tất cả các điều kiện
       return isValidDistance && isValidTime && isValidCategory && isValidWarehouse;
   });
@@ -582,7 +581,6 @@ export class PostManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
       }
       catch (error) {
@@ -654,11 +652,11 @@ export class PostManager {
         const allWarehouse : QueryResult = await client.query(querySelectAllWarehouse);
         let closestDistance = Infinity;
 
-        console.log(allWarehouse)
+   
 
         for (let i = 0; i < allWarehouse.rows.length; i++) {
           const warehouse = allWarehouse.rows[i];
-          console.log(warehouse);
+   
           const R = 6371; // Bán kính trái đất theo km
           const dLat = (warehouse.latitude - postLocation.latitude) * Math.PI / 180;
           const dLon = (warehouse.longitude - postLocation.longitude) * Math.PI / 180;

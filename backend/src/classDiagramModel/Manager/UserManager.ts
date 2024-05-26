@@ -75,7 +75,7 @@ export class UserManager {
   public static async getAllUsers(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
     const client = await pool.connect()
   
-    console.log(whereClause, '111111111111');
+
     const query = `SELECT 
     u.userid,
     u.dateofbirth AS dob, 
@@ -181,7 +181,7 @@ export class UserManager {
 
   public static async adminDeleteUser(userid: string): Promise<any> {
     const client = await pool.connect();
-    console.log(userid);
+
 
     const query = `
       UPDATE "User"

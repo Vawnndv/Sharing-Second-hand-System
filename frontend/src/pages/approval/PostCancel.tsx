@@ -20,7 +20,6 @@ function PostCancel({filterValue, warehousesID}: any) {
             try{
                 setIsLoading(true)
                 const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
-                console.log(responseUser)
                 
                 const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
                     status: 'Hủy',
@@ -35,7 +34,6 @@ function PostCancel({filterValue, warehousesID}: any) {
                     warehouses: warehousesID
                       
                 })
-                console.log(responsePosts)
                 setPosts(responsePosts.allPosts)
                 setIsLoading(false)
             }catch(error){

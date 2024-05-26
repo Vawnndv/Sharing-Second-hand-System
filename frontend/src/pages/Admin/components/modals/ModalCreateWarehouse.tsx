@@ -112,7 +112,6 @@ function ModalCreateCollaborator(props: Props) {
   // }, [isSuccess, isError, dispatch, setIsOpen])
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     try {
       const warehouseName = data.warehousename;
       // const address = data.address;
@@ -128,7 +127,6 @@ function ModalCreateCollaborator(props: Props) {
       });
       setIsOpen(!isOpen);
       toast.success(`Tạo kho thành công`);
-      console.log(res.data.warehouseCreated);
       // Alert.alert('Success', 'Item created successfully');
       } catch (error) {
         console.log(error);

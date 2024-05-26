@@ -59,7 +59,6 @@ function Uploader(props: Props) {
 
                   // Xử lý phản hồi từ server nếu cần
                   const data = await serverResponse.json();
-                  console.log('Server response:', data);
                   
                   resolve(data);
               } catch (error) {
@@ -84,7 +83,6 @@ function Uploader(props: Props) {
         // await deleteImageService(imageUrl);
       }
     }
-    console.log(file);
     // const data = await uploadImageService(file, setLoading);
     try {
       setLoading(true)

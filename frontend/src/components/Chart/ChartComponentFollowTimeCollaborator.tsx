@@ -23,7 +23,6 @@ const colorArrayBorder = [
 
 function ChartComponentFollowTimeCollaborator({data, typeChart}: any) {
   const chartRef: any = useRef(null);
-  console.log(data)
 
   useEffect(() => {
     const ctx = chartRef.current.getContext('2d');

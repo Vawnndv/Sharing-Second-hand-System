@@ -6,7 +6,7 @@ export const getItemDetails = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
   try {
     const itemDetails = await ItemManager.viewDetailsItem(itemID);
-    console.log(itemDetails);
+   
     if (itemDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Item founded', item: itemDetails });
@@ -24,10 +24,10 @@ export const getItemDetails = asyncHandle(async (req, res) => {
 
 export const getItemImages = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
-  console.log(itemID);
+ 
   try {
     const itemImages = await ItemManager.viewItemImages(itemID);
-    console.log(itemImages);
+
     if (itemImages) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Item images founded', itemImages: itemImages });

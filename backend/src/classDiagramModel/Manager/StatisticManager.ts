@@ -166,7 +166,7 @@ export class StatisticManager {
         })
         for(let j = 1; j < maxDay ; j+=1){
           currentDateBrow = currentDateBrow.add(daySeparate, 'day')
-          console.log(currentDateBrow)
+   
           const result : QueryResult = await client.query(queryImport, [category[i], `${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`]);
           results.push({
             label: currentDateBrow.format('MMMM DD, YYYY'),
@@ -197,7 +197,7 @@ export class StatisticManager {
         })
         for(let j = 1; j < maxDay ; j+=1){
           currentDateBrow = currentDateBrow.add(daySeparate, 'day')
-          console.log(currentDateBrow)
+   
           const result : QueryResult = await client.query(queryExport, [category[i], `${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`]);
           results.push({
             label: currentDateBrow.format('MMMM DD, YYYY'),
@@ -540,7 +540,7 @@ export class StatisticManager {
         })
         for(let j = 1; j < maxDay ; j+=1){
           currentDateBrow = currentDateBrow.add(daySeparate, 'day')
-          console.log(currentDateBrow)
+       
           const result : QueryResult = await client.query(queryImport, [category, warehouses[i].warehouseid, `${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`]);
           results.push({
             label: currentDateBrow.format('MMMM DD, YYYY'),

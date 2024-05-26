@@ -64,7 +64,6 @@ export class CollaboratorManager extends UserManager {
       FROM public."User" u
       WHERE u.roleid = 2 AND u.email is not null` + whereClause;
 
-      console.log(query)
     try {
       const result = await client.query(query);
       if (result.rows.length === 0) {
@@ -104,7 +103,7 @@ export class CollaboratorManager extends UserManager {
 
   public static async adminDeleteCollaborator(userid: string): Promise<any> {
     const client = await pool.connect();
-    console.log(userid);
+
 
     const query = `
       UPDATE "User"

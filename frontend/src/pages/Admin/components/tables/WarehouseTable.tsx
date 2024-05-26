@@ -57,9 +57,8 @@ function WarehouseTable(props: Props) {
   }
 
   useEffect(() => {
-  console.log(warehouses);
+  (warehouses);
     setData(warehouses);
-  console.log(data);
   }, [warehouses]);
   
   const handleRowSelection = (newSelectionModel: any) => {

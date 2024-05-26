@@ -56,7 +56,6 @@ function Collaborators() {
       const res: any = await getWarehouseNameList();
       setWarehouseNameList(res.warehouseList);
     //   setWarehouseNameList(res.warehouseList);
-        console.log(warehouseNameList)
 
     } catch (error: unknown) {
       console.log(error)

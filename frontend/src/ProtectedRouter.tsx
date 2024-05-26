@@ -11,7 +11,6 @@ function ProtectedRouter() {
 // admin router protection
 function AdminProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
-    console.log(userInfo)
 
     return userInfo?.accessToken ? (
         userInfo?.roleID === 3 ? (

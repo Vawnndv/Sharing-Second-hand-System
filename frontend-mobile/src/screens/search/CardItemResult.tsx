@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator  } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, RefreshControl  } from 'react-native';
 import { Clock, Heart, Message } from 'iconsax-react-native'
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../components';
@@ -37,9 +37,10 @@ interface Props {
   handleEndReached: () => void;
   setData?: (newData: any[]) => void;
   isRefresh?: boolean;
+  handleRefresh?: any
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh, handleRefresh }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
@@ -47,6 +48,19 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
 
   const [likeNumber, setLikeNumber] = useState<number[]>([]);
   const [likesPosts, setLikePosts] = useState<number[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    // Giả sử bạn load lại dữ liệu từ API
+    setTimeout(() => {
+      // Ví dụ này chỉ là load lại dữ liệu cũ, bạn có thể thay thế bằng API call
+      handleRefresh()
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   // useEffect(() => {
   //   getUserLikePosts();
@@ -190,6 +204,9 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
       onEndReached={handleEndReached} // Khi người dùng kéo xuống cuối cùng
       onEndReachedThreshold={0.1} // Kích hoạt khi còn 10% phía dưới còn lại của danh sách
       ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null} // Hiển thị indicator khi đang tải dữ liệu
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     />
   )
 }
