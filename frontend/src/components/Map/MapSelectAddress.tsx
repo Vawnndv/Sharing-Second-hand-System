@@ -175,23 +175,23 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
         address: inputSearch
       })
       handleClose()
-      try {
+      // try {
       
-        if(isUser === true) {
-          const response: any = await Axios.post(`map/set_user_location`,{
-            userID: userLogin.userInfo.id,
-            latitude: center.lat(),
-            longitude: center.lng(),
-            address: inputSearch
-          })
-        } else{
-          // set warehouse address here
-        }
+      //   if(isUser === true) {
+      //     // const response: any = await Axios.post(`map/set_user_location`,{
+      //     //   userID: userLogin.userInfo.id,
+      //     //   latitude: center.lat(),
+      //     //   longitude: center.lng(),
+      //     //   address: inputSearch
+      //     // })
+      //   } else{
+      //     // set warehouse address here
+      //   }
         
         
-      } catch (error) {
-        console.log(error) 
-      }
+      // } catch (error) {
+      //   console.log(error) 
+      // }
       
       // eslint-disable-next-line no-alert
       alert('Cập nhật vị trí thành công!')
