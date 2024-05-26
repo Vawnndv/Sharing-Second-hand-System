@@ -1,5 +1,4 @@
 export interface ProfileModel {
-  username: string;
   avatar: string;
   email: string;
   address: string;
@@ -7,5 +6,7 @@ export interface ProfileModel {
   lastname: string;
   updateAt: string;
   phonenumber: string;
-  dob?: string;
+  dob: string;
+  giveCount: string;
+  receiveCount: string;
 }

@@ -16,14 +16,17 @@ import { globalStyles } from '../../styles/globalStyles';
 import userAPI from '../../apis/userApi';
 import { useDispatch } from 'react-redux';
 import { updateAuth } from '../../redux/reducers/authReducers';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import moment from 'moment';
 
-const initValue = {
+const initValueError = {
   email: '',
   firstname: '',
   lastname: '',
   phone: '',
   address: '',
-  confirmPassword: '',
+  dob: '',
 };
 
 
@@ -37,13 +40,15 @@ const EditProfileScreen = ({navigation, route}: any) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
-  const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber});
+  const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber, dob: ''});
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
+  const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValueError);
   const [errorRegister, setErrorRegister] = useState('');
   const [isDisable, setIsDisable] = useState(true);
   const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
+  const [date, setDate] = useState<Date | null>(null);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
   useEffect(() => {
     if (
@@ -90,6 +95,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
           lastname: values.lastname,
           phonenumber: values.phonenumber,
           avatar: url ?? profile.avatar,
+          dob: values.dob,
         }
         , 'post');
       console.log(res, 'abcdddddd');
@@ -100,7 +106,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
       })
       setIsDisable(true);
       setErrorRegister('');
-      setErrorMessage(initValue);
+      setErrorMessage(initValueError);
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErrorRegister(error.message);
@@ -112,7 +118,6 @@ const EditProfileScreen = ({navigation, route}: any) => {
     }
   };
 
-
   const removeImage = async () => {
     try {
       setModalVisible(false);
@@ -120,6 +125,25 @@ const EditProfileScreen = ({navigation, route}: any) => {
       alert(message);
       setModalVisible(false);
     }
+  };
+
+  const onChangeDate = (event: any, selectedDate: Date | undefined) => {
+    setDatePickerVisibility(Platform.OS === 'ios');
+    if (event.type === 'dismissed') {
+      // If the picker was dismissed, set date to ''
+      setDate(null);
+      setValues({ ...values, dob: '' });
+      setErrorMessage({...errorMessage, dob: 'Vui lòng chọn ngày sinh của bạn'});
+    } else {
+      const currentDate = selectedDate ? selectedDate : date;
+      setDate(currentDate);
+      setValues({ ...values, dob: currentDate ? moment(currentDate).format('YYYY-MM-DD') : '' }); // Update formData
+      setErrorMessage({ ...errorMessage, dob: '' });
+    }
+  };
+
+  const showdatePicker = () => {
+    setDatePickerVisibility(true);
   };
 
   return (
@@ -189,6 +213,30 @@ const EditProfileScreen = ({navigation, route}: any) => {
             onEnd={() => formValidator('address')}
             error={errorMessage['address']}
           /> */}
+
+      <TouchableOpacity onPress={showdatePicker}>
+        <InputComponent
+          value={values.dob ? moment(values.dob).format('DD-MM-YYYY') : ''}
+          placeholder="Ngày kết thúc"
+          onChange={val => handleChangeValue('', val)}
+          editable={false}
+          affix={<Fontisto name="date" size={22} color={appColors.gray} />}
+          onEnd={() => formValidator('dob')}
+          error={errorMessage['dob']}
+        />    
+      </TouchableOpacity>
+          {isDatePickerVisible && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date ? date : new Date()}
+              mode="date"
+              is24Hour={true}
+              display="default"
+              // minimumDate={mindate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
+              // maximumDate={moment(startDate).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+              onChange={onChangeDate}
+            />
+          )}
         </SectionComponent>
         <SpaceComponent height={16} />
         {errorRegister ? (
@@ -211,5 +259,6 @@ const EditProfileScreen = ({navigation, route}: any) => {
     </>
   )
 }
+
 
 export default EditProfileScreen

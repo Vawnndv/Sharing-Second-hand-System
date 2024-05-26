@@ -98,7 +98,7 @@ export class Account {
   public static async findUserById(userId: string): Promise<any> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT * FROM "User" WHERE userid = $1', [userId]);
+      const result = await client.query('SELECT *, a.address FROM "User" u LEFT JOIN address a ON u.addressid = a.addressid WHERE u.userid = $1', [userId]);
       if (result.rows.length === 0) {
         return null;
       }

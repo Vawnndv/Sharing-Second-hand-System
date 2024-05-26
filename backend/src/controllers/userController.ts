@@ -10,6 +10,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
     const user = await Account.findUserById(userId);
+    const countNumber = await UserManager.totalGiveAndReceiveOrder(userId);
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
@@ -22,6 +23,9 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
         phonenumber: user.phonenumber ?? '',
         username: user.username ?? '',
         avatar: user.avatar ?? '',
+        address: user.address ?? '',
+        giveCount: countNumber.givecount ?? 0,
+        receiveCount: countNumber.receivecount ?? 0,
       },
     });
   } else {
