@@ -1171,34 +1171,39 @@ export class OrderManager {
       po.Title, 
       adg.address AS Location, 
       po.CreatedAt,
-      i.Path AS Image, 
+      (
+        SELECT i.Path
+        FROM Image i
+        WHERE i.ItemID = po.ItemID
+        ORDER BY i.CreatedAt ASC -- or any other criteria to pick the first image
+        LIMIT 1
+      ) AS Image, 
       ts.StatusName,
       adg.Longitude AS LongitudeGive,
       adg.Latitude AS LatitudeGive,
       itt.NameType,
       grt.Give_receivetype AS givetype
     FROM 
-        Posts po
+      Posts po
     LEFT JOIN 
-        Image i ON po.ItemID = i.ItemID
-    LEFT JOIN 
-        Address adg ON adg.AddressID = po.AddressID
+      Address adg ON adg.AddressID = po.AddressID
     LEFT JOIN
-        Item it ON it.ItemID = po.ItemID
+      Item it ON it.ItemID = po.ItemID
     LEFT JOIN 
-        Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+      Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
     LEFT JOIN 
-        Postreceiver por ON po.PostID = por.PostID
+      Postreceiver por ON po.PostID = por.PostID
     LEFT JOIN 
-            Trace_Status ts ON po.StatusID = ts.StatusID
+      Trace_Status ts ON po.StatusID = ts.StatusID
     LEFT JOIN
-        Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
+      Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
     JOIN 
-        postreceiver pr ON pr.postid = po.postid
+      postreceiver pr ON pr.postid = po.postid
     WHERE 
       pr.receiverid = $1 AND ts.StatusName = 'Đã duyệt'
     ORDER BY
-        po.Createdat DESC
+      po.CreatedAt DESC;
+
     `
     const values : any = [userID];
     

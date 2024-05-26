@@ -6,7 +6,7 @@ import { LoadingModal } from '../../modals';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { useFocusEffect } from '@react-navigation/native';
-import CardPostView from '../../components/OrderManagement/CardPostView';
+import CardPostView from '../posts/CardPostView';
 
 interface Item {
   title: string;
