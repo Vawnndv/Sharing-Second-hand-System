@@ -175,7 +175,6 @@ export class OrderManager {
         for(let i = 1; i < listCategory.length; i++){
           listCategoryQuery += ` OR it.nametype = '${listCategory[i]}'`
         }
-        console.log(listCategoryQuery)
         
         categoryQuery = `AND EXISTS (
           SELECT it.nametype
@@ -209,14 +208,13 @@ export class OrderManager {
         WHERE addressid = $1
       `
 
-      console.log(ordersQuery)
       const ordersResult: QueryResult = await client.query(ordersQuery, values);
       
       const ordersRow = ordersResult.rows;
       let result: any = []
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
-        console.log(addressReceiveDB)
+
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
         
@@ -432,7 +430,6 @@ export class OrderManager {
 
       let result: any = []
   
-      console.log(ordersRow);
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
@@ -565,7 +562,7 @@ export class OrderManager {
     `
 
     let status = (collaboratorReceiveID === null ? 'Chờ cộng tác viên lấy hàng' : 'Hàng đang được đến lấy')
-    console.log(status)
+
 
     let query = `
       UPDATE "orders"
@@ -577,7 +574,7 @@ export class OrderManager {
 
     try {
       const resultQueryOrder: QueryResult = await client.query(queryGetOrder)
-      console.log(resultQueryOrder.rows[0])
+
       if(resultQueryOrder.rows[0].collaboratorreceiveid !== null && resultQueryOrder.rows[0].collaboratorreceiveid != collaboratorReceiveID){
         return false
       }
@@ -809,7 +806,7 @@ export class OrderManager {
   };
 
   public static async updateCompleteOrder (orderID: string, url: string) : Promise<boolean> {
-    console.log('updateCompleteOrder')
+
     const client = await pool.connect()
 
     try{
@@ -883,7 +880,7 @@ export class OrderManager {
   
   public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
     const client = await pool.connect()
-    console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
+
     try{
       const query = `
         UPDATE "orders"
@@ -1169,66 +1166,44 @@ export class OrderManager {
 
     const client = await pool.connect();
     let query = `
-      SELECT *,
-      CASE
-          WHEN UserReceiveID IS NULL THEN false
-          ELSE true
-      END AS isReciever
-      FROM (
-      SELECT *,
-              ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-      FROM (
-          SELECT 
-              po.Title, 
-              adg.address AS Location, 
-              o.Status,
-              o.CreatedAt,
-              i.Path AS Image, 
-              o.OrderID,
-              ts.StatusName,
-              th.Time AS StatusCreatedAt,
-              o.GiveType,
-              adg.Longitude AS LongitudeGive,
-              adg.Latitude AS LatitudeGive,
-              adr.Longitude AS LongitudeReceive,
-              adr.Latitude AS LatitudeReceive,
-              itt.NameType,
-              o.imgconfirmreceive,
-              o.UserReceiveID AS UserReceiveID
-          FROM 
-              Orders o
-          JOIN 
-              Image i ON o.ItemID = i.ItemID
-          JOIN 
-              Trace t ON o.OrderID = t.OrderID
-          JOIN 
-              Trace_History th ON t.TraceID = th.TraceID
-          JOIN 
-              Trace_Status ts ON th.StatusID = ts.StatusID
-          JOIN 
-              Address adg ON adg.AddressID = o.LocationGive
-          JOIN 
-              Address adr ON adr.AddressID = o.LocationReceive
-          JOIN 
-              Posts po ON po.PostID = o.PostID
-          JOIN 
-              Item it ON it.ItemID = po.ItemID
-          JOIN 
-              Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-          LEFT JOIN 
-              Postreceiver por ON po.PostID = por.PostID
-          WHERE 
-              {placeholder}
-          ORDER BY
-              th.Time DESC
-      ) AS oo
-      ) AS ranked_orders
-      WHERE row_num = 1;
+    SELECT
+      po.postid,
+      po.Title, 
+      adg.address AS Location, 
+      po.CreatedAt,
+      i.Path AS Image, 
+      ts.StatusName,
+      adg.Longitude AS LongitudeGive,
+      adg.Latitude AS LatitudeGive,
+      itt.NameType,
+      grt.Give_receivetype AS givetype
+    FROM 
+        Posts po
+    LEFT JOIN 
+        Image i ON po.ItemID = i.ItemID
+    LEFT JOIN 
+        Address adg ON adg.AddressID = po.AddressID
+    LEFT JOIN
+        Item it ON it.ItemID = po.ItemID
+    LEFT JOIN 
+        Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN 
+        Postreceiver por ON po.PostID = por.PostID
+    LEFT JOIN 
+            Trace_Status ts ON po.StatusID = ts.StatusID
+    LEFT JOIN
+        Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
+    JOIN 
+        postreceiver pr ON pr.postid = po.postid
+    WHERE 
+      pr.receiverid = $1 AND ts.StatusName = 'Đã duyệt'
+    ORDER BY
+        po.Createdat DESC
     `
     const values : any = [userID];
     
     try {
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1 OR por.receiverid = $1) AND (ts.StatusName = 'Đã duyệt' OR ts.StatusName = 'Chờ xét duyệt')`), values);
+      const resultReceive: QueryResult = await client.query(query, values);
       return resultReceive.rows
     } catch (error) {
       console.error('Error get orders:', error);

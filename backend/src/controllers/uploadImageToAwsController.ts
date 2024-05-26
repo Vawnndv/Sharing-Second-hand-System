@@ -19,8 +19,6 @@ AWS.config.update({
 
 export const uploadImage = async (req: Request, res: Response) => {
   try {
-    const file = req.file;
-    console.log(file);
 
     // const params = {
     //   Bucket: bucket,

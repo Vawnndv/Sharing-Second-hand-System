@@ -35,8 +35,7 @@ export const getOrderDetailsCollaborator = async (req: Request, res: Response) =
   const orderID = typeof req.query.orderID === 'string' ? req.query.orderID : undefined;
   try {
     const orders = await OrderManager.showOrderDetails(orderID);
-    console.log(orders[0]);
-    console.log(orders[0].addressGive);
+
     res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
     console.error(error);
@@ -101,7 +100,7 @@ export const updatePinOrder = async (req: Request, res: Response) => {
   const collaboratorReceiveID = req.body.collaboratorReceiveID;
   try {
     const response = await OrderManager.pinOrder(orderID, collaboratorReceiveID);
-    console.log(response);
+
     res.status(201).json({ message: 'Update status order successfully', statusPin: response });
   } catch (error) {
     console.error(error);

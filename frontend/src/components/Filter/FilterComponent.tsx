@@ -39,13 +39,11 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
         const tempCategories = [...categories]
         tempCategories[index] = !tempCategories[index]
         setCategories(tempCategories)
-        console.log(categories)
     }
 
     useEffect(() => {
         // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
         const { distance: filterDistance, time: filterTime, category: filterCategory, sort: filterSort } = filterValue;
-        console.log(filterValue)
         setDistanceSelect(filterDistance)
         setTimeSelect(filterTime)
         setSortSelect(filterSort)
@@ -71,12 +69,7 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
             category: newCategories,
             sort: sortSelect
         })
-        console.log({
-            distance: distanceSelect,
-            time: timeSelect,
-            category: newCategories,
-            sort: sortSelect
-        })
+
     }
     return ( 
         <Stack

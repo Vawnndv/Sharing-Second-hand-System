@@ -36,7 +36,7 @@ const getJsonWebToken = async (email: string, id: number) => {
     expiresIn: '7d',
   });
 
-  console.log(token);
+
 
   return token;
 };
@@ -172,7 +172,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
-  console.log(req.body);
+
   const { email } = req.body;
 
   const randomPassword = Math.round(100000 + Math.random() * 99000);

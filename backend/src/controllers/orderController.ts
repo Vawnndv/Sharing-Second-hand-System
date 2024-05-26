@@ -185,7 +185,7 @@ export const updateTraceStatus = asyncHandle(async (req, res) => {
 
 export const getOrderByPostID = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);
-  console.log(postID);
+ 
   try {
     const order = await OrderManager.getOrderByPostID(postID);
     if (order) {

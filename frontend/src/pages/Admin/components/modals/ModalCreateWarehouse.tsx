@@ -44,12 +44,14 @@ interface WarehouseLocation {
   addressid?: number;
 }
 
+
+
 function ModalCreateCollaborator(props: Props) {
   const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel} = props;
   const [imageUrl, setImageUrl] = useState<any>('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState<any>(null);
   const [openMap, setOpenMap] = useState(false);
-  const [location, setLocation] = useState<any>('')
+  const [location, setLocation] = useState<any>({address: ''})
 
   const dispatch: AppDispatch = useAppDispatch();
   
@@ -89,14 +91,23 @@ function ModalCreateCollaborator(props: Props) {
     boxShadow: '1px 1px 2px #CAC9C8',
 };
 
+  // useEffect(() => {
+  //   setValue('warehousename', '')
+  //   setValue('address', location.address)
+  //   setValue('avatar', imageUrl)
+  //   setValue('phonenumber', '')
+  // }, [isOpen, imageUrl, location])
+
+
   useEffect(() => {
-    setValue('warehousename', '')
-    setValue('address', location)
+    setValue('address', location.address)
+  }, [location])
+
+  
+  useEffect(() => {
+    setValue('address', location.address)
     setValue('avatar', imageUrl)
-    setValue('phonenumber', '')
-  }, [isOpen, imageUrl, location])
-
-
+  }, [imageUrl])
   // useEffect(() => {
   //   if (isSuccess) {
   //     dispatch(getAllCollaboratorsAction(0, pageState.pageSize, filterModel, sortModel))
@@ -112,7 +123,6 @@ function ModalCreateCollaborator(props: Props) {
   // }, [isSuccess, isError, dispatch, setIsOpen])
 
   const onSubmit = async (data: any) => {
-    console.log(data);
     try {
       const warehouseName = data.warehousename;
       // const address = data.address;
@@ -123,18 +133,17 @@ function ModalCreateCollaborator(props: Props) {
         warehouseName,
         phonenumber,
         avatar,
-        warehouseLocation,
+        warehouseLocation: location,
         isNewAddress
       });
       setIsOpen(!isOpen);
       toast.success(`Tạo kho thành công`);
-      console.log(res.data.warehouseCreated);
       // Alert.alert('Success', 'Item created successfully');
       } catch (error) {
         console.log(error);
       }
   }
-
+  console.log(location.address)
   return (
       <Modal
         open={isOpen}
@@ -197,15 +206,20 @@ function ModalCreateCollaborator(props: Props) {
               sx={{ mt: '20px', width:'100%' }}
             />
 
-            {/* <TextField
-              id="address"
-              label="Address"
-              variant="outlined"
-              {...register('address')}
-              error={!!errors.address}
-              helperText={errors.address?.message || ''}
-              sx={{ mt: '20px', width:'100%' }}
-            /> */}
+            {
+              location && 
+              <TextField
+                value={location.address}
+                id="address"
+                label="Address"
+                variant="outlined"
+                {...register('address')}
+                error={!!errors.address}
+                helperText={errors.address?.message || ''}
+                sx={{ mt: '20px', width:'100%' }}
+              />
+            }
+            
 
             {/* <TextField
               id="avatar"
@@ -221,7 +235,7 @@ function ModalCreateCollaborator(props: Props) {
           <Grid item xs={12} sx={{ mt: '20px' }}>
               <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
                   onClick={handleOpenMap}>
-                  Chọn vị trí
+                  Chọn vị trí kho
               </Button>
               <Modal
                   open={openMap}

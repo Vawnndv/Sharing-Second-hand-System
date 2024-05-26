@@ -8,11 +8,8 @@ import { UserManager } from '../classDiagramModel/Manager/UserManager';
 
 export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
-  console.log(userId, 'userid');
   if (typeof userId === 'string' && userId) {
-    console.log(userId, 'userid4');
     const user = await Account.findUserById(userId);
-    console.log(userId, '123');
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
@@ -34,9 +31,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
-  console.log(req.body);
   const { email, oldPassword, newPassword } = req.body;
-  console.log(req.body);
   const user = await Account.findUserByEmail(email);
   
   if (user) {
@@ -74,7 +69,6 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 
 
 export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
-  console.log(req.body);
   const { email, firstname, lastname, phonenumber, avatar, accessToken, dob } = req.body;
 
   const user = await Account.findUserByEmail(email);
@@ -124,7 +118,6 @@ export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) 
 
 export const setUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
   const { userId, postId } = req.body;
-  console.log(req.body);
   if (postId && postId) {
     const likePosts = await Account.setUserLikePostsById(userId, postId);
 
@@ -194,14 +187,12 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
 
 export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-  console.log(filterModel);
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {
     whereClause = ' AND ';
     for (const filter of filterModel.items) {
       if (filter.operator === 'is' && filter.value) {
-        console.log(filter.value, 'filter');
         whereClause += `u.${filter.field} is ${filter.value} OR `;
       } else if (filter.operator === 'contains') {
         // Add filtering conditions based on filter object properties
@@ -248,7 +239,6 @@ export const getTotalUser = asyncHandle(async (req: Request, res: Response) => {
     whereClause = ' AND ';
     for (const filter of filterModel.items) {
       if (filter.operator === 'is' && filter.value) {
-        console.log(filter.value, 'filter');
         whereClause += `u.${filter.field} is ${filter.value} OR `;
       } else if (filter.operator === 'contains') {
         // Add filtering conditions based on filter object properties
@@ -286,7 +276,6 @@ export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => 
 export const adminDeleteUser = asyncHandle(async (req: Request, res: Response) => {
   const { id } = req.params;
   const ids = id.split(',');
-  console.log(ids);
   for (const userId of ids) {
     // find user in DB
     const user = await Account.findUserById(userId);

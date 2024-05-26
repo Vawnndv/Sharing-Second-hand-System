@@ -48,7 +48,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -65,7 +64,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);

@@ -70,7 +70,6 @@ export const TakePhoto = async (permission: boolean, setImage: any, setModalVisi
                 name: new Date().getTime(),
                 type: result.assets[0].mimeType,
             }
-            console.log(finalResult)
             setImage(finalResult)
             setModalVisible(false);
             // setImage(result.assets[0])
@@ -137,7 +136,6 @@ export const UploadImageToAws3 = async (file: any) => {
         // Xử lý phản hồi từ server nếu cần
         const data = await serverResponse.json();
 
-        console.log('Server response:', data);
         return data;
     } catch (error) {
         console.error('Error uploading file:', error);

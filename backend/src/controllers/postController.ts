@@ -4,9 +4,9 @@ import asyncHandle from 'express-async-handler';
 export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
   const { limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
 
-  console.log(req.query);
+
   const allPosts = await PostManager.getAllPostsFromUserPost(limit, page, distance, time, category, sort, latitude, longitude, warehouses);
-  console.log(allPosts);
+  
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
@@ -17,7 +17,7 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
 export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
   const { limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
 
-  console.log(req.query);
+  
   const allPosts = await PostManager.getAllPostFromWarehouse(limit, page, distance, time, category, sort, latitude, longitude, warehouses);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
@@ -32,7 +32,7 @@ export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
 export const getAllPostByStatus  = asyncHandle(async (req, res) => {
   const { status, limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
 
-  console.log(req.query);
+
   const allPosts = await PostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
@@ -68,7 +68,7 @@ export const getPostDetails = asyncHandle(async (req, res) => {
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postDetails = await PostManager.viewDetailsPost(postID);
-    console.log(postDetails);
+
     if (postDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Get post successfully', postDetail: postDetails });
@@ -88,7 +88,7 @@ export const getPostOwnerInfo = asyncHandle(async (req, res) => {
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postOwnerInfos = await PostManager.viewPostOwnerInfo(postID);
-    console.log(postOwnerInfos);
+
     if (postOwnerInfos) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Get post owner successfully', postOwnerInfos: postOwnerInfos });
@@ -105,11 +105,11 @@ export const getPostOwnerInfo = asyncHandle(async (req, res) => {
 
 export const getPostReceivers = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);
-  console.log(postID);
+
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postReceivers = await PostManager.viewPostReceivers(postID);
-    console.log(postReceivers);
+
     res.status(200).json({ message: 'Get post receiver successfully', postReceivers: postReceivers });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -134,7 +134,7 @@ export const createPost = asyncHandle(async (req, res) => {
   const givetypeid = req.body.givetypeid;
   const warehouseid = req.body.warehouseid;
 
-  console.log(req.body);
+
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
@@ -184,11 +184,10 @@ export const getUserLikePosts = asyncHandle(async (req, res) => {
   const limit : any = req.query.limit;
   const page : any = req.query.page;
 
-  console.log(userId);
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const allPosts = await PostManager.getUserLikePosts(limit, page, userId);
-    console.log(allPosts);
+  
     res.status(200).json({ message: 'Lấy danh sách bài đăng yêu thích thành công', allPosts });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -201,7 +200,7 @@ export const getUserLikePosts = asyncHandle(async (req, res) => {
 export const deletePostReceivers = asyncHandle(async (req, res) => {
   const postID: any = req.query.postID;
   const receiverID: any = req.query.receiverID;
-  console.log(postID);
+ 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const postReceivers = await PostManager.deletePostReceivers(postID, receiverID);
