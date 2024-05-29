@@ -215,15 +215,28 @@ export const deletePostReceivers = asyncHandle(async (req, res) => {
 
 export const  updatePostStatus = asyncHandle(async (req, res) => {
   const postid: any = req.body.postid;
-  const status: any = req.body.status;
+  const statusid: any = req.body.statusid;
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postUpdated = await PostManager.updatePostStatus(postid, status);
+    const postUpdated = await PostManager.updatePostStatus(postid, statusid);
     if (postUpdated)
       res.status(200).json({ message: 'Post Updated Sucessfully', postUpdated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
     console.error('Error when update post:', error);
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+export const getAllPostByUserId = asyncHandle(async (req, res) => {
+  const { userID } = req.body;
+
+
+  const data = await PostManager.getAllPostByUserId(userID);
+  
+  if (data) {
+    res.status(200).json({ message: 'Get all posts successfully', data });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
   }
 });

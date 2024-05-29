@@ -416,7 +416,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname,
         gr.give_receivetype,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
@@ -427,13 +427,13 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-      LEFT JOIN orders od ON od.postid = po.postid
-      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = od.givetypeid
+	  LEFT JOIN trace_status ts ON po.statusid = ts.statusid
+      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
 
-	    WHERE (od.status LIKE '%${status}%')
+	  WHERE (ts.statusname LIKE '${status}')
       GROUP BY
           us.userid,
           us.firstname,
@@ -449,7 +449,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           gr.give_receivetype
       ORDER BY po.createdat DESC
       LIMIT ${limit}
@@ -1062,29 +1062,79 @@ export class PostManager {
     }
 
 
-  public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
 
-    const client = await pool.connect()
-
-    try{
-      const query = `
-        UPDATE posts
-        SET statusid = '${statusid}'
-        WHERE postid = '${postid}'
-        RETURNING *
-      `
-
-      const resultQueryPost: QueryResult = await client.query(query)
-      if(resultQueryPost.rows[0].status != status){
-        return false;
+      const client = await pool.connect()
+  
+      try{
+        const query = `
+          UPDATE posts
+          SET statusid = '${statusid}'
+          WHERE postid = '${postid}'
+          RETURNING *
+        `
+  
+        const resultQueryPost: QueryResult = await client.query(query)
+        if(resultQueryPost.rows[0].status !== status){
+          return false;
+        }
+        return resultQueryPost;
+      }catch(error){
+        console.log(error)
+        return false
+      }finally{
+        client.release()
       }
-      return resultQueryPost;
-    }catch(error){
-      console.log(error)
-      return false
-    }finally{
-      client.release()
     }
-  }
+
+    public static async getAllPostByUserId(userID: string[]): Promise<any> {
+      const client = await pool.connect();
+      try {
+        let query = `
+        SELECT
+        po.postid,
+        po.Title, 
+        adg.address AS Location, 
+        po.CreatedAt,
+        (
+          SELECT i.Path 
+          FROM Image i 
+          WHERE i.ItemID = po.ItemID 
+          ORDER BY i.CreatedAt ASC -- Adjust this line based on how you determine the "first" image
+          LIMIT 1
+        ) AS Image, 
+        ts.StatusName,
+        adg.Longitude AS LongitudeGive,
+        adg.Latitude AS LatitudeGive,
+        itt.NameType,
+        grt.Give_receivetype AS givetype
+      FROM 
+        Posts po
+      LEFT JOIN 
+        Address adg ON adg.AddressID = po.AddressID
+      LEFT JOIN
+        Item it ON it.ItemID = po.ItemID
+      LEFT JOIN 
+        Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+      LEFT JOIN 
+        Postreceiver por ON po.PostID = por.PostID
+      LEFT JOIN 
+        Trace_Status ts ON po.StatusID = ts.StatusID
+      LEFT JOIN
+        Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
+      WHERE 
+        po.owner = $1
+      ORDER BY
+        po.CreatedAt DESC;
+        `
+        const result: QueryResult = await client.query(query, [userID]);
+        return result.rows; 
+      } catch (error) {
+        console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+        throw error;
+      } finally {
+        client.release();
+      }
+    }
 
 }

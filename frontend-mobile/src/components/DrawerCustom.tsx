@@ -26,6 +26,11 @@ const DrawerCustom = ({navigation}: any) => {
       
     },
     {
+      key: 'MyPost',
+      title: 'Bài đăng',
+      icon: <AntDesign name="filetext1" size={size} color={color} />,
+    },
+    {
       key: 'MyOrder',
       title: 'Đơn hàng của bạn',
       icon: <AntDesign name="shoppingcart" size={size} color={color} />,

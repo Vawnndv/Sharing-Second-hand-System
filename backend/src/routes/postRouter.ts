@@ -1,8 +1,9 @@
 import express from 'express';
-import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus } from '../controllers/postController';
+import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus, getAllPostByUserId } from '../controllers/postController';
 
 const router = express.Router();
 
+router.post('/getAllPostByUserId', getAllPostByUserId);
 router.delete('/deletepostreceivers', deletePostReceivers);
 router.post('/user-post', getAllPostFromUserPost);
 router.post('/warehouse', getAllPostFromWarehouse);
