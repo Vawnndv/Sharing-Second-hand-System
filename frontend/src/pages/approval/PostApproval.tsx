@@ -9,10 +9,11 @@ import { useEffect, useState } from "react";
 import FilterModal from "../../modal/FilterModal/FilterModal";
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
-import PostApproved from "./PostApproved";
+import PostJustApproved from "./PostJustApproved";
 import PostAwaitForApproval from "./PostAwaitForApproval";
-import PostCancel from "./PostCancel";
+import PostJustCanceled from "./PostJustCanceled";
 import Axios from "../../redux/APIs/Axios";
+import PostWaitForPost from "./PostWaitForPost";
 
 const category = [
   "Quần áo",
@@ -95,18 +96,22 @@ function PostApproval() {
               }}
             >
               <Tab label="Đang chờ xét duyệt" value="1" sx={{paddingX: 3}}/>
-              <Tab label="Đã duyệt" value="2" sx={{paddingX: 3}} />
-              <Tab label="Đã hủy" value="3" sx={{paddingX: 3}} />
+              <Tab label="Vừa duyệt" value="2" sx={{paddingX: 3}} />
+              <Tab label="Vừa hủy" value="3" sx={{paddingX: 3}} />
+              <Tab label="Chờ được đăng" value="4" sx={{paddingX: 3}} />
             </TabList>
           </Box>
           <TabPanel value="1">
             <PostAwaitForApproval filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
           <TabPanel value="2">
-            <PostApproved filterValue={filterValue} warehousesID={warehousesID}/>
+            <PostJustApproved filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
           <TabPanel value="3">
-            <PostCancel filterValue={filterValue} warehousesID={warehousesID}/>
+            <PostJustCanceled filterValue={filterValue} warehousesID={warehousesID}/>
+          </TabPanel>
+          <TabPanel value="4">
+            <PostWaitForPost filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
         </TabContext>
 

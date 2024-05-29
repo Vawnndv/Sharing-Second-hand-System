@@ -402,7 +402,7 @@ export class PostManager {
   public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
-      const postsQuery = `
+      let postsQuery = `
       SELECT DISTINCT
         us.userid,
         CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
@@ -455,6 +455,184 @@ export class PostManager {
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
       `;
+
+      if(status === 'Vừa duyệt'){
+        postsQuery = `
+          SELECT DISTINCT
+          us.userid,
+          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          itt.nametype,
+          ts.statusname,
+          gr.give_receivetype,
+      po.updatedat,
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        FROM Posts AS po
+      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
+        LEFT JOIN "User" us ON po.owner = us.UserID
+        LEFT JOIN Address ad ON po.addressid = ad.addressid
+        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
+        LEFT JOIN item it ON it.itemid = po.itemid
+        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+        LEFT JOIN "like_post" lp ON po.postid = lp.postid
+        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
+        LEFT JOIN (
+            SELECT DISTINCT ON (itemid) * FROM Image
+        ) img ON img.itemid = po.itemid
+
+        WHERE (ts.statusname LIKE 'Đã duyệt')
+      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+      AND current_timestamp >= po.approvedate::timestamp
+        GROUP BY
+            us.userid,
+            us.firstname,
+            us.lastname,
+            us.avatar,
+            po.postid,
+            po.title,
+            po.description,
+            po.createdat,
+            ad.address,
+            ad.longitude,
+            ad.latitude,
+            img.path,
+            wh.warehousename,
+            itt.nametype,
+            gr.give_receivetype,
+        ts.statusname,
+        po.updatedat
+        ORDER BY po.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
+          `
+      }
+      if(status === 'Vừa hủy'){
+        postsQuery = `
+          SELECT DISTINCT
+          us.userid,
+          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          itt.nametype,
+          ts.statusname,
+          gr.give_receivetype,
+      po.updatedat,
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        FROM Posts AS po
+      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
+        LEFT JOIN "User" us ON po.owner = us.UserID
+        LEFT JOIN Address ad ON po.addressid = ad.addressid
+        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
+        LEFT JOIN item it ON it.itemid = po.itemid
+        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+        LEFT JOIN "like_post" lp ON po.postid = lp.postid
+        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
+        LEFT JOIN (
+            SELECT DISTINCT ON (itemid) * FROM Image
+        ) img ON img.itemid = po.itemid
+
+        WHERE (ts.statusname LIKE 'Đã hủy')
+      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+      AND current_timestamp >= po.approvedate::timestamp
+        GROUP BY
+            us.userid,
+            us.firstname,
+            us.lastname,
+            us.avatar,
+            po.postid,
+            po.title,
+            po.description,
+            po.createdat,
+            ad.address,
+            ad.longitude,
+            ad.latitude,
+            img.path,
+            wh.warehousename,
+            itt.nametype,
+            gr.give_receivetype,
+        ts.statusname,
+        po.updatedat
+        ORDER BY po.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
+          `
+      }
+      if(status === 'Chờ được đăng'){
+        postsQuery = `
+          SELECT DISTINCT
+          us.userid,
+          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          itt.nametype,
+          ts.statusname,
+          gr.give_receivetype,
+      po.updatedat,
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        FROM Posts AS po
+      LEFT JOIN "orders" od ON od.postid = po.postid
+      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
+        LEFT JOIN "User" us ON po.owner = us.UserID
+        LEFT JOIN Address ad ON po.addressid = ad.addressid
+        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
+        LEFT JOIN item it ON it.itemid = po.itemid
+        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+        LEFT JOIN "like_post" lp ON po.postid = lp.postid
+        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
+        LEFT JOIN (
+            SELECT DISTINCT ON (itemid) * FROM Image
+        ) img ON img.itemid = po.itemid
+
+        WHERE (od.status LIKE 'Hàng đã nhập kho')
+      AND (od.givetypeid=3 OR od.givetypeid=4 )
+        GROUP BY
+            us.userid,
+            us.firstname,
+            us.lastname,
+            us.avatar,
+            po.postid,
+            po.title,
+            po.description,
+            po.createdat,
+            ad.address,
+            ad.longitude,
+            ad.latitude,
+            img.path,
+            wh.warehousename,
+            itt.nametype,
+            gr.give_receivetype,
+        ts.statusname,
+        po.updatedat
+        ORDER BY po.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
+          `
+      }
 
       const result: QueryResult = await client.query(postsQuery);
       if (result.rows.length === 0) {
@@ -884,29 +1062,29 @@ export class PostManager {
     }
 
 
-    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+  public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
 
-      const client = await pool.connect()
-  
-      try{
-        const query = `
-          UPDATE posts
-          SET statusid = '${statusid}'
-          WHERE postid = '${postid}'
-          RETURNING *
-        `
-  
-        const resultQueryPost: QueryResult = await client.query(query)
-        if(resultQueryPost.rows[0].status != status){
-          return false;
-        }
-        return resultQueryPost;
-      }catch(error){
-        console.log(error)
-        return false
-      }finally{
-        client.release()
+    const client = await pool.connect()
+
+    try{
+      const query = `
+        UPDATE posts
+        SET statusid = '${statusid}'
+        WHERE postid = '${postid}'
+        RETURNING *
+      `
+
+      const resultQueryPost: QueryResult = await client.query(query)
+      if(resultQueryPost.rows[0].status != status){
+        return false;
       }
+      return resultQueryPost;
+    }catch(error){
+      console.log(error)
+      return false
+    }finally{
+      client.release()
     }
+  }
 
 }
