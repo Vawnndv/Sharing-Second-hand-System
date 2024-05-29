@@ -17,16 +17,66 @@ import Groups2Icon from '@mui/icons-material/Groups2';
 import './styles.scss'
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 // import { handleClickMenu } from '../redux/actions/menuActions';
 
-function Menu({index, setIndex}: any) {
+function Menu({index, setIndex, indexAdmin, setIndexAdmin}: any) {
     // const [isShowMenu, setIsShowMenu] = useState(false)
     const isOpenMenu = useSelector((state: RootState) => state.handleClickMenu)
 
     const navigate = useNavigate()
 
     const userLogin = useSelector((state: any) => state.userLogin);
+
+    const location = useLocation();
+
+    useEffect(() => {
+        switch (location.pathname) {
+            case '/':
+                setIndex(0);
+                break;
+            case '/statistic':
+                setIndex(1);
+                setIndexAdmin(0)
+                break;
+            case '/order':
+                setIndex(2);
+                break;
+            case '/history':
+                setIndex(3);
+                break;
+            case '/posts':
+                setIndex(4);
+                break;
+            case '/approval':
+                setIndex(5);
+                break;
+            case '/inventory':
+                setIndex(6);
+                break;
+            case '/report':
+                setIndex(7);
+                break;
+            case '/chat':
+                setIndex(8);
+                setIndexAdmin(4)
+                break;
+            case '/collaborators':
+                setIndexAdmin(1);
+                break;
+            case '/warehouse':
+                setIndexAdmin(2)
+                break;
+            case '/users':
+                setIndexAdmin(3);
+                break;
+            default:
+                setIndex(-1);
+                setIndexAdmin(-1)
+                break;
+        }
+    }, [location.pathname, index]);
 
     return ( 
         <div>
@@ -192,9 +242,9 @@ function Menu({index, setIndex}: any) {
                         direction="row" 
                         alignItems="center" 
                         spacing={0} 
-                        className={index === 0 ? 'tabSelected' : 'tab'} 
+                        className={indexAdmin === 0 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(0); navigate('/statistic')}}
+                        onClick={() => {setIndexAdmin(0); navigate('/statistic')}}
                         >
                         <StackedLineChartIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
@@ -207,9 +257,9 @@ function Menu({index, setIndex}: any) {
                         direction="row" 
                         alignItems="center" 
                         spacing={1} 
-                        className={index === 1 ? 'tabSelected' : 'tab'} 
+                        className={indexAdmin === 1 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(1); navigate('/collaborators')}}
+                        onClick={() => {setIndexAdmin(1); navigate('/collaborators')}}
                         >
                         <Groups2Icon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
@@ -221,9 +271,9 @@ function Menu({index, setIndex}: any) {
                         direction="row" 
                         alignItems="center" 
                         spacing={1} 
-                        className={index === 2 ? 'tabSelected' : 'tab'} 
+                        className={indexAdmin === 2 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(2); navigate('/warehouse')}}
+                        onClick={() => {setIndexAdmin(2); navigate('/warehouse')}}
                         >
                         <WarehouseIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
@@ -236,9 +286,9 @@ function Menu({index, setIndex}: any) {
                         direction="row" 
                         alignItems="center" 
                         spacing={1} 
-                        className={index === 3 ? 'tabSelected' : 'tab'} 
+                        className={indexAdmin === 3 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(3); navigate('/users')}}
+                        onClick={() => {setIndexAdmin(3); navigate('/users')}}
                         >
                         <ManageAccountsIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
@@ -250,9 +300,9 @@ function Menu({index, setIndex}: any) {
                         direction="row" 
                         alignItems="center" 
                         spacing={1} 
-                        className={index === 4 ? 'tabSelected' : 'tab'} 
+                        className={indexAdmin === 4 ? 'tabSelected' : 'tab'} 
                         component='div'
-                        onClick={() => {setIndex(4); navigate('/chat')}}
+                        onClick={() => {setIndexAdmin(4); navigate('/chat')}}
                         >
                         <ContactPageIcon className='icon'/>
                         <Typography variant="body1" component="h2" className='text'>
