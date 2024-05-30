@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Backdrop, Box, Button, FormControl, Grid, InputLabel, MenuItem, Modal, Select, Stack, TextField, Typography } from '@mui/material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useSelector } from 'react-redux'
@@ -13,6 +13,11 @@ import { EditUserInfoValidation, EditWarehouseInfoValidation } from '../../../..
 import Loader from '../../../../components/notification/Loader'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import MapSelectAddress from '../../../../components/Map/MapSelectAddress';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Uploader from '../../../../components/Uploader/Uploader'
+import ImagePreview from '../../../../components/ImagePreview/ImagePreview'
+
 
 
 const styleModalEditCollaborator = {
@@ -50,20 +55,25 @@ interface WarehouseLocation {
 
 function ModalEditWarehouse(props: Props) {
   const { isOpen, handleOpen, setWarehouseRow, warehouseRow, setIsOpen, pageState, sortModel, filterModel, isEdit, setIsEdit} = props;
+  const [imageUrl, setImageUrl] = useState<any>('');
+  const [imageUpdateUrl, setImageUpdateUrl] = useState<any>(null);
+  const [openMap, setOpenMap] = useState(false);
+  const [location, setLocation] = useState<any>({address: ''});
+
 
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   const { isLoading, isError: editError, isSuccess: editSuccess } = useSelector(
     (state: RootState) => state.adminEditCollaborator
   )
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const warehouseLocation: WarehouseLocation = {
-    address: "123 Main St, Anytown, AN",
-    longitude: 123.4567,
-    latitude: 312.219,
-    addressid: 14
-};
+//   const warehouseLocation: WarehouseLocation = {
+//     address: "123 Main St, Anytown, AN",
+//     longitude: 123.4567,
+//     latitude: 312.219,
+//     addressid: 14
+// };
 
 
   const {
@@ -74,17 +84,34 @@ function ModalEditWarehouse(props: Props) {
   } = useForm({
     mode: "onChange",
     resolver: yupResolver(EditWarehouseInfoValidation)
-  })
+  });
+
+  
+  const handleOpenMap = () => setOpenMap(true);
+  const handleCloseMap = () => setOpenMap(false);
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '95%',
+    height: '95%',
+    bgcolor: 'background.paper',
+    border: '2px solid #CAC9C8',
+    boxShadow: '1px 1px 2px #CAC9C8',
+};
+
 
   useEffect(() => {
     if (warehouseRow) {
-      setValue('warehousename', warehouseRow?.warehousename)
-      setValue('phonenumber', warehouseRow?.phonenumber)
-      setValue('address', warehouseRow?.address)
-      setValue('avatar', warehouseRow?.avatar)
-      setValue('warehouseid', warehouseRow?.warehouseid)
+      setValue('warehousename', warehouseRow?.warehousename);
+      setValue('phonenumber', warehouseRow?.phonenumber);
+      setValue('address', location?.address || warehouseRow?.address);
+      setValue('avatar', imageUrl || warehouseRow.avatar);
+      setValue('warehouseid', warehouseRow?.warehouseid);
     }
-  }, [warehouseRow, setValue])
+  }, [warehouseRow, setValue, isOpen, location, imageUrl])
 
   useEffect(() => {
     if (editSuccess) {
@@ -105,12 +132,17 @@ function ModalEditWarehouse(props: Props) {
       const warehouseName = data.warehousename;
       // const address = data.address;
       let isNewAddress = false;
-      if(data.address !== warehouseRow?.address){
+      let warehouseLocation : any = {address: warehouseRow.address, longitude: warehouseRow.longitude, latitude: warehouseRow.latitude, warehouseid: warehouseRow.warehouseid};
+      if(data.address !== warehouseRow?.address && location){
         isNewAddress = true;
+        warehouseLocation = location;
       }
       const warehouseid = data.warehouseid;
       const phonenumber = data.phonenumber;
-      const avatar = 'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau.jpeg';
+      let avatar = warehouseRow.avatar;
+      if(imageUrl){
+        avatar = imageUrl;
+      }
       const res = await axios.post(`http://localhost:3000/warehouse/updateWarehouse`, {
         phonenumber,
         warehouseName,
@@ -155,6 +187,18 @@ function ModalEditWarehouse(props: Props) {
                 Edit Warehouse
             </Typography>
 
+            
+            {warehouseRow &&
+            <Grid container spacing={2} sx={{ mt: '20px'}}>
+                <Grid item xs={12} sm={9} >
+                  <Uploader setImageUrl={setImageUrl} imageUrl={imageUrl} imageUpdateUrl={imageUpdateUrl} {...register('avatar')}/>
+                </Grid>
+                <Grid item xs={12} sm={3} >
+                  <ImagePreview image={imageUrl || warehouseRow.avatar} name="user-image"/>
+                </Grid>
+            </Grid>
+            }
+
             <TextField
               id="warehousename"
               label="Warehouse Name"
@@ -187,24 +231,29 @@ function ModalEditWarehouse(props: Props) {
               error={!!errors.address}
               helperText={errors.address?.message || ''}
               sx={{ mt: '20px', width:'100%' }}
+              inputProps={{readOnly: true}}
+              
             />
 
-
-            <TextField
-              id="avatar"
-              label="Avatar"
-              variant="outlined"
-              disabled={!isEdit}
-              {...register('avatar')}
-              error={!!errors.avatar}
-              helperText={errors.avatar?.message || ''}
-              sx={{ mt: '20px', width:'100%' }}
-            />
-
-  
+            <Grid item xs={12} sx={{ mt: '20px' }}>
+              <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
+                  onClick={handleOpenMap}>
+                  Cập nhật vị trí kho
+              </Button>
+              <Modal
+                  open={openMap}
+                  onClose={handleCloseMap}
+                  aria-labelledby="modal-modal-title"
+                  aria-describedby="modal-modal-description"
+              >
+                  <Box sx={style}>
+                      <MapSelectAddress setLocation={setLocation} handleClose={handleCloseMap} isUser {...register('address')}/>
+                  </Box>
+              </Modal>
+            </Grid>  
 
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null)}}>Cancel</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null); setIsEdit(true); setLocation({address: ''}); setImageUrl('')}}>Cancel</Button>
               {!isEdit && (
                 <Button variant='contained' onClick={() => setIsEdit(true)}>Edit</Button>
               )}

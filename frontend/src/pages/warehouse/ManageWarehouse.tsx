@@ -24,6 +24,7 @@ interface Warehouse {
 export default function ManageWarehouse() {
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
 
+
   const dispatch: AppDispatch = useAppDispatch();
 
   const [selectionModel, setSelectionModel] = useState([])

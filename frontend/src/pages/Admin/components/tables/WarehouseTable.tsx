@@ -57,8 +57,9 @@ function WarehouseTable(props: Props) {
   }
 
   useEffect(() => {
-  (warehouses);
+  if(warehouses){
     setData(warehouses);
+  }
   }, [warehouses]);
   
   const handleRowSelection = (newSelectionModel: any) => {
@@ -192,14 +193,14 @@ function WarehouseTable(props: Props) {
             component='h3'
             sx={{ textAlign: 'center', mt: 3, mb: 3 }}
           >
-                Manage Warehouse
+                Quản lý kho
           </Typography>
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             {/* <Button startIcon={<Delete/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={deleteSelectedHandler} disabled={selectionModel.length === 0}>
                 Delete selected rows
             </Button> */}
             <Button startIcon={<Add/>} sx={{ ml: 2 }} variant="contained" color="primary" onClick={handleOpenModalCreate}>
-                Create 
+                Thêm 
             </Button>
           </Box>
 
