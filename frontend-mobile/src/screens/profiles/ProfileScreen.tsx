@@ -1,15 +1,15 @@
+import { Fontisto, SimpleLineIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import userAPI from '../../apis/userApi'
+import { AvatarComponent, ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import { appColors } from '../../constants/appColors'
+import { ProfileModel } from '../../models/ProfileModel'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
-import { appColors } from '../../constants/appColors'
-import userAPI from '../../apis/userApi'
-import { ProfileModel } from '../../models/ProfileModel'
-import { Avatar } from 'react-native-paper'
-import { FontAwesome, Fontisto } from '@expo/vector-icons'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +17,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   const [profileId, setProfileId] = useState('');
 
   const dispatch = useDispatch();
+  const {id} = route.params;
 
   const auth = useSelector(authSelector);
   
@@ -28,7 +29,6 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (route.params) {
-      const {id} = route.params;
       setProfileId(id);
 
       if (route.params.isUpdated) {
@@ -91,7 +91,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={`20`}
+                  text={profile.giveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />
@@ -107,7 +107,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={`10`}
+                  text={profile.receiveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />
@@ -118,18 +118,9 @@ const ProfileScreen = ({navigation, route}: any) => {
           {/* <SpaceComponent height={21} /> */}
           <SectionComponent>
             <View style={styles.container}>
-              <View style={styles.infoContainer}>
+            <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="phone" size={24} color="black" />
-                </View>
-                <View style={styles.textContainer}>
-                  <TextComponent text={profile.phonenumber}/>
-                </View>
-              </View>
-              <View style={styles.separator} />
-              <View style={styles.infoContainer}>
-                <View style={styles.iconContainer}>
-                  <FontAwesome name="envelope" size={24} color="black" />
+                  <Fontisto name="email" size={24} color={appColors.gray} />
                 </View>
                 <View style={styles.textContainer}>
                   <TextComponent text={profile.email}/>
@@ -138,52 +129,73 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={styles.separator} />
               <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="birthday-cake" size={24} color="black" />
+                  <SimpleLineIcons name="phone" size={24} color={appColors.gray} />
                 </View>
                 <View style={styles.textContainer}>
-                  <TextComponent text={profile.dob}/>
+                  <TextComponent text={profile.phonenumber}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <Fontisto name="date" size={24} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.dob ? moment(profile.dob).format('DD-MM-YYYY') : ''}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <SimpleLineIcons name="location-pin" size={26} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.address}/>
                 </View>
               </View>
               <View style={styles.separator} />
             </View>
           </SectionComponent>
-          <SpaceComponent height={20} />
-          <RowComponent justify='center'>
-            <SectionComponent>
-              <ButtonComponent
-                styles={{
-                  borderWidth: 1,
-                  borderColor: appColors.primary,
-                  backgroundColor: appColors.white,
-                }}
-                text="Edit profile"
-                onPress={() =>
-                  navigation.navigate('EditProfileScreen', {
-                    profile,
-                  })
-                }
-                textColor={appColors.primary}
-                type="primary"
-              />
-
-              {
-                auth.roleID !== 1 &&
-                <ButtonComponent
-                  styles={{
-                    borderWidth: 1,
-                    borderColor: appColors.white,
-                    backgroundColor: appColors.gray,
-                  }}
-                  text="Log out"
-                  onPress={() =>
-                    handleLogout()
+          {
+            id === auth.id && (
+              <RowComponent justify='center'>
+                <SectionComponent>
+                  <ButtonComponent
+                    styles={{
+                      borderWidth: 1,
+                      borderColor: appColors.primary,
+                      backgroundColor: appColors.white,
+                    }}
+                    text="Edit profile"
+                    onPress={() =>
+                      navigation.navigate('EditProfileScreen', {
+                        profile,
+                      })
+                    }
+                    textColor={appColors.primary}
+                    type="primary"
+                  />
+    
+                  {
+                    auth.roleID !== 1 &&
+                    <ButtonComponent
+                      styles={{
+                        borderWidth: 1,
+                        borderColor: appColors.white,
+                        backgroundColor: appColors.gray,
+                      }}
+                      text="Log out"
+                      onPress={() =>
+                        handleLogout()
+                      }
+                      textColor={appColors.white}
+                      type="primary"
+                    />
                   }
-                  textColor={appColors.white}
-                  type="primary"
-                />
-              }
-            </SectionComponent>
-          </RowComponent>
+                </SectionComponent>
+              </RowComponent>
+            )
+          }
         </>
       )}
     </ContainerComponent>

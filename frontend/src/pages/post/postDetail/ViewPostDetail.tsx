@@ -353,7 +353,7 @@ function ViewPostDetail() {
                             flexDirection='column'
                             justifyContent='flex-start'
                             gap={3}
-                            style={{width: '90%'}}>
+                            style={{width: '95%'}}>
 
                             {/*  profile */}
                             <Stack

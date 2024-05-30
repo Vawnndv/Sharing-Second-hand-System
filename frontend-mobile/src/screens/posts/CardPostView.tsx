@@ -10,15 +10,29 @@ import { appColors } from '../../constants/appColors';
 
 const {width, height} = Dimensions.get("window");
 
-export default function CardPostView ({ navigation, title, location, givetype, statusname, image, postid}: any) {
-  // const [isModalVisible, setIsModalVisible] = useState(false);
+export default function CardPostView ({ navigation, title, location, givetype, statusname, image, postid, isNavigatePostManager}: any) {
+
+  const handleNavigate = () => {
+    if (isNavigatePostManager) {
+      navigation.navigate('ViewPostManagement', {
+        title: title,
+        location: location,
+        givetype: givetype,
+        statusname: statusname,
+        image: image,
+        postid : postid,
+      })
+    } else {
+      navigation.navigate('ItemDetailScreen', {
+        postId : postid,
+      })
+    }
+  }
 
   return (
     <View>
       <TouchableOpacity
-        onPress={() => navigation.navigate('ItemDetailScreen', {
-          postId : postid,
-        })}
+        onPress={() => handleNavigate()}
       >
         <View style={styles.card}>
             <View style={styles.content}>

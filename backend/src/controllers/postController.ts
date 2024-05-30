@@ -227,3 +227,16 @@ export const  updatePostStatus = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+export const getAllPostByUserId = asyncHandle(async (req, res) => {
+  const { userID } = req.body;
+
+
+  const data = await PostManager.getAllPostByUserId(userID);
+  
+  if (data) {
+    res.status(200).json({ message: 'Get all posts successfully', data });
+  } else {
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});

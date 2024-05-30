@@ -6,7 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import OrderCard from '../order/OrderCard';
 import { useSelector } from 'react-redux';
 
-function PostAwaitForApproval({filterValue, warehousesID}: any) {
+function PostJustCanceled({filterValue, warehousesID}: any) {
     
     const userLogin = useSelector((state: any) => state.userLogin);
 
@@ -22,23 +22,8 @@ function PostAwaitForApproval({filterValue, warehousesID}: any) {
                 const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
                 
                 const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
-                    status: 'Chờ xét duyệt',
-                    page: page - 1,
-                    limit: LIMIT,
-                    distance: filterValue.distance,
-                    time: filterValue.time,
-                    sort: filterValue.sort,
-                    latitude: parseFloat(responseUser.data.latitude),
-                    longitude: parseFloat(responseUser.data.longitude),
-                    category: filterValue.category,
-                    warehouses: warehousesID,
-                      
-                })
-
-                
-                console.log({
-                    status: 'Chờ xét duyệt',
-                    page: page - 1,
+                    status: 'Vừa hủy',
+                    page: page -1,
                     limit: LIMIT,
                     distance: filterValue.distance,
                     time: filterValue.time,
@@ -63,13 +48,28 @@ function PostAwaitForApproval({filterValue, warehousesID}: any) {
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
       };
+    const isEmpty = () => {
+        console.log(posts)
+        if(posts === null || posts.length === 0){
+            console.log(false)
+            return false
+        }
+        return true
+    }
 
     return ( 
-        <div style={{ minHeight: '90vh'}}>
+        <div>
             {
                 !isLoading ? 
                 <>
-                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    {
+                        
+                        !isEmpty() &&  
+                        <img src='https://i.pinimg.com/564x/9a/7c/58/9a7c58b1532f43d69be0dcaec9130495.jpg' alt='img not found'
+                            style={{width: '90%', height: '100%'}}/>
+                    }
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}
+                    sx={{ minHeight: '80vh'}}>
                         { posts !== null && 
                             posts.map((post: any, index: number) => (
                             <Grid xs={12} sm={4} md={4} key={index}>
@@ -94,4 +94,4 @@ function PostAwaitForApproval({filterValue, warehousesID}: any) {
      );
 }
 
-export default PostAwaitForApproval;
+export default PostJustCanceled;

@@ -19,7 +19,7 @@ function Footer() {
         {/* Part 1: Name */}
         <Typography component="h1" sx={{ fontSize: '50px', textAlign: 'center' }}
           className='text'>
-          Sharing Secondhand System
+          ReTreasure
         </Typography>
 
         <Grid container spacing={2} sx={{ px: 4, py: 2, mx: 9 }}>
