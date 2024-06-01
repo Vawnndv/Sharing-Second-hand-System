@@ -13,6 +13,7 @@ import axios from 'axios';
 import Axios from '../../redux/APIs/Axios';
 import { useSelector } from 'react-redux';
 import home from '../../assets/home.png'
+import  './styles.scss'
 
 // const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
 // const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
@@ -51,38 +52,44 @@ function SuggestComponent({suggests, handleClickLocation}: any) {
         overflow: 'auto',
         maxHeight: '600px',
         backgroundColor: 'white',
-        borderRadius: 2
+        borderRadius: 2,
+        zIndex: 2
       }}>
       {
         suggests.map((location: any, index: number) => {
           return (
-            <Button type='button' key={index}
-              sx={{
-                justifyContent: 'flex-start',
-                alignItems: 'flex-start',
-                // zIndex: 1
-              }}
-              onMouseDown={ () => handleClickLocation(parseFloat(location.lat), parseFloat(location.lon), location.display_name)}
-              >
+            <Stack key={index}>
               <Stack
-                direction='column'
+                className='autocompleteComponent'
                 sx={{
-                  px: 2, py: 1
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                  px: 3,
+                  py: 2
+                  // zIndex: 1
                 }}
-                component='div'
-                // onClick={ () => handleClick()}
+                onMouseDown={ () => handleClickLocation(parseFloat(location.lat), parseFloat(location.lon), location.display_name)}
                 >
                 <Stack
-                  flexDirection='column'>
-                    <Typography variant='body1' sx={{fontWeight: 'bold'}}>{location.name}</Typography>
-                    <Typography variant='body2'>{location.display_name}</Typography>
+                  direction='column'
+                  component='div'
+                  // onClick={ () => handleClick()}
+                  >
+                  <Stack
+                    flexDirection='column'>
+                      <Typography variant='body1' sx={{fontWeight: 'bold'}}>{location.name}</Typography>
+                      <Typography variant='body2'>{location.display_name}</Typography>
+                  </Stack>
+                  
                 </Stack>
+                  
+              </Stack>
                 {
                   (index < (suggests.length - 1)) &&
-                  <Stack component='div' sx={{width: '100%', height: '2px', backgroundColor: 'black', mt: 1}} />
+                  <Stack component='div' sx={{width: '100%', height: '2px', backgroundColor: 'black'}} />
                 }
-              </Stack>
-            </Button>
+            </Stack>
+            
             
             
           )
@@ -273,7 +280,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
             p: 2,
             borderRadius: 30,
             backgroundColor: '#FAF5FF',
-            border: '1px solid #C89FE7',
+            border: '1px solid #441672',
             boxShadow: '1px 1px 10px #F4F4F4'
            }}>
             <SearchIcon />
@@ -291,7 +298,8 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
           transform: 'translate(-50%, -50%)',
           px: 4,
           py: 2,
-          borderRadius: 20
+          borderRadius: 20,
+          zIndex: 0
         }}
           onClick={() => handleConfirmAddress()}>
           <Typography variant='body1'>Xác nhận vị trí</Typography>
@@ -305,7 +313,8 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
             transform: 'translate(-50%, -100%)',
             width: 50,
             height: 50,
-            color: '#441672'
+            color: '#441672',
+            zIndex: 1
           }}/>
       </GoogleMap>
 
