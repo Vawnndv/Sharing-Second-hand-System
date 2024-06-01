@@ -6,7 +6,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ViewOrders from '../ViewOrders';
 
-export default function OutOfWarehouse() {
+export default function OutOfWarehouse({filterValue}:any) {
   const [value, setValue] = React.useState('1');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -33,13 +33,13 @@ export default function OutOfWarehouse() {
           </TabList>
         </Box>
         <TabPanel value="1">
-          <ViewOrders locationOfItem={2} status={1} />
+          <ViewOrders filterValue={filterValue} locationOfItem={2} status={1} />
         </TabPanel>
         <TabPanel value="2">
-          <ViewOrders locationOfItem={2} status={2} />
+          <ViewOrders filterValue={filterValue} locationOfItem={2} status={2} />
         </TabPanel>
         <TabPanel value="3">
-          <ViewOrders locationOfItem={2} status={3} />
+          <ViewOrders filterValue={filterValue} locationOfItem={2} status={3} />
         </TabPanel>
       </TabContext>
     </Box>

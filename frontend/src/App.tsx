@@ -9,7 +9,6 @@ import Profile from './pages/auth/Profile/Profile';
 import ToastContainer from './components/notification/ToastContainer';
 import Order from './pages/order/OrderStatus/Order';
 import ViewDetailOrder from './pages/order/Viewdetail/ViewDetailOrder';
-import History from './pages/order/History/History';
 import ChatScreen from './pages/chat/ChatScreen';
 import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
@@ -40,11 +39,11 @@ export function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
           <Route path="/order/:orderid" element={<ViewDetailOrder />} />
-          <Route path="/history" element={<History />} />
           <Route path="/chat" element={<ChatScreen />} />
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+          <Route path="/inventory/:orderid/:typeCard" element={<ViewInventoryDetail />} />
           <Route path="/statistic" element={<Statistic />} />
           <Route path="/approval" element={<PostApproval />} />
           <Route path="/post/:postid" element={<ViewPostDetail />} />

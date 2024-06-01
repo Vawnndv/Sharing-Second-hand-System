@@ -212,9 +212,9 @@ export const getOrderListReceive = async (req: Request, res: Response) => {
 };
 
 export const getOrderListByStatus = async (req: Request, res: Response) => {
-  const { userid, status, method, limit, page, isOverdue } = req.body;
+  const { userid, status, method, limit, page, isOverdue, filterValue } = req.body;
   try {
-    const orderList = await  OrderManager.getOrderListByStatus(userid, status, method, limit, page, isOverdue);
+    const orderList = await  OrderManager.getOrderListByStatus(userid, status, method, limit, page, isOverdue, filterValue);
     res.status(200).json({ message: 'Get orders list success:', data: orderList });
   } catch (error) {
     console.error(error);

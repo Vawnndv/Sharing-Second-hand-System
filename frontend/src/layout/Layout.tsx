@@ -11,17 +11,13 @@ function Layout() {
     return ( 
         <>
             <Header setIndex={setIndex}/>
-
             <Stack direction='row'>
                 <Menu index={index} setIndex={setIndex} indexAdmin={indexAdmin} setIndexAdmin={setIndexAdmin}/>
                 <div className='outletAndFooter' style={{display: 'flex', flexDirection: 'column'}}>
                     <Outlet/>
                     <Footer/>
                 </div>
-                
             </Stack>
-            
-            
         </>
      );
 }

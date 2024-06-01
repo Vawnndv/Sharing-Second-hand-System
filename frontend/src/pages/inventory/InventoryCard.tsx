@@ -10,10 +10,13 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import img from '../../assets/item.png';
 import { useNavigate } from 'react-router-dom';
 
-function InventoryCard({data}: any) {
+function InventoryCard({typeCard, data}: any) {
   const navigate = useNavigate();
   const handleCardClick = () => {
-    navigate(`/inventory/${data?.orderID}`);
+    if(typeCard === "outputcard")
+      navigate(`/inventory/${data?.orderID}/outputcard`)
+    else
+      navigate(`/inventory/${data?.orderID}`)
   };
 
   return (

@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { Grid, CircularProgress } from '@mui/material';
 import InventoryCard from './InventoryCard';
 import { getOrdersCollaborator } from '../../redux/services/inventoryServices';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
-const userID = '30'
 const categoryQuery = 'Tất cả'
 const category = [
   "Quần áo",
@@ -17,21 +18,24 @@ const category = [
   "Khác"
 ]
 
-function ViewInventoryList({typeCard, status} : any) {
+function ViewInventoryList({searchQuery, filterValue, typeCard, status} : any) {
   const [inventoryList, setInventoryList] = useState([]);
   const [tab, setTab] = useState<any>(null)
   const [loading, setLoading] = useState(true);
-  const [filterValue, setFilterValue] = useState({
-    distance: 'Tất cả',
-    time: 'Tất cả',
-    // eslint-disable-next-line object-shorthand
-    category: category,
-    sort: 'Mới nhất'
-})
+
+  const { userInfo } = useSelector(
+    (state: RootState) => state.userLogin
+  );
+
+  const userID = userInfo?.id
   
   const fetchInventoryList = async () => {
+    if (userID === undefined)
+      return
+
     try {
-      const response = await getOrdersCollaborator(userID, tab, filterValue, categoryQuery);
+      setLoading(true);
+      const response = await getOrdersCollaborator(userID, tab, filterValue, categoryQuery, searchQuery, "inputcard");
       setInventoryList(response.orders);
       setLoading(false); // Set loading state to false after fetching data
     } catch (error) {
@@ -41,8 +45,7 @@ function ViewInventoryList({typeCard, status} : any) {
   };
   useEffect(() => {
     fetchInventoryList();
-    console.log('HELo')
-  }, [tab]);
+  }, [tab, searchQuery]);
 
   useEffect(() => {
     if (status === 1) {

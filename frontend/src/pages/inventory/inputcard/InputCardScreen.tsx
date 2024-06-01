@@ -6,7 +6,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ViewInventoryList from '../ViewInventoryList';
 
-function InputCardScreen() {
+function InputCardScreen({searchQuery, filterValue}:any) {
   const [value, setValue] = React.useState('1');
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -33,13 +33,13 @@ function InputCardScreen() {
           </TabList>
         </Box>
         <TabPanel value="1">
-          <ViewInventoryList typeCard={1} status={1} />
+          <ViewInventoryList searchQuery={searchQuery} filterValue={filterValue} typeCard={1} status={1} />
         </TabPanel>
         <TabPanel value="2">
-          <ViewInventoryList typeCard={1} status={2} />
+          <ViewInventoryList searchQuery={searchQuery} filterValue={filterValue} typeCard={1} status={2} />
         </TabPanel>
           <TabPanel value="3">
-          <ViewInventoryList typeCard={1} status={3} />
+          <ViewInventoryList searchQuery={searchQuery} filterValue={filterValue} typeCard={1} status={3} />
         </TabPanel>
       </TabContext>
     </Box>

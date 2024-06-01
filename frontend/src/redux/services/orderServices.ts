@@ -1,14 +1,15 @@
 import Axios from '../APIs/Axios';
 
 // Get Order API call
-const getOrderListByStatus = async (userid: string, status: string[], method: string[], limit: number, page: number, isOverdue: boolean): Promise<any>  => {
+const getOrderListByStatus = async (userid: string, status: string[], method: string[], limit: number, page: number, isOverdue: boolean,  filterValue: any): Promise<any>  => {
   const { data } = await Axios.post(`/order/listOrders`, {
     userid,
     status,
     method,
     limit,
     page,
-    isOverdue
+    isOverdue,
+    filterValue
   })
 
   return {

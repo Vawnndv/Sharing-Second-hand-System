@@ -9,8 +9,10 @@ export const getOrdersCollaborator = async (req: Request, res: Response) => {
   const time = typeof req.query.time === 'string' ? req.query.time : undefined;
   const category = typeof req.query.category === 'string' ? req.query.category : undefined;
   const sort = typeof req.query.sort === 'string' ? req.query.sort : undefined;
+  const search = typeof req.query.search === 'string' ? req.query.search : undefined;
+  const typeCard = typeof req.query.typeCard === 'string' ? req.query.typeCard : undefined;
   try {
-    const orders = await OrderManager.showOrders(userID, type, distance, time, category, sort);
+    const orders = await OrderManager.showOrders(userID, type, distance, time, category, sort, search, typeCard);
         
     res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
@@ -33,8 +35,9 @@ export const getOrdersReceivingCollaborator = async (req: Request, res: Response
   
 export const getOrderDetailsCollaborator = async (req: Request, res: Response) => {
   const orderID = typeof req.query.orderID === 'string' ? req.query.orderID : undefined;
+  const typeCard = typeof req.query.typeCard === 'string' ? req.query.typeCard : undefined;
   try {
-    const orders = await OrderManager.showOrderDetails(orderID);
+    const orders = await OrderManager.showOrderDetails(orderID, typeCard);
 
     res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {

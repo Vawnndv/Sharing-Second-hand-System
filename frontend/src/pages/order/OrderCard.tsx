@@ -43,7 +43,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete}: any) 
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 
                   {
-                    order.username!== undefined ? 
+                    order.username === undefined ? 
                     <Typography fontWeight="bold" variant="body1" color="initial">{order.username ? order.username : `${order.firstname} ${order.lastname}`}</Typography>
                     :
                     <Typography fontWeight="bold" variant="body1" color="initial">{order.name ? order.name : `${order.name}`}</Typography>

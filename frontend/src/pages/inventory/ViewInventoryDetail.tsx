@@ -10,14 +10,13 @@ import deliveryTruck from '../../assets/delivery-truck.png'
 import { formatDateTime } from '../../utils/FormatDateTime';
 
 function ViewInventoryDetail() {
-  const { orderid } = useParams();
+  const { orderid, typeCard } = useParams();
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchOrderDetail= async () => {
     try {
-      const response = await getOrderDetailsCollaborator(orderid);
-      console.log(response.orders[0])
+      const response = await getOrderDetailsCollaborator(orderid, typeCard);
       setOrder(response.orders[0]);
       setLoading(false); // Set loading state to false after fetching data
     } catch (error) {

@@ -12,6 +12,7 @@ import { PostManager } from './PostManager';
 import { Post } from '../Post';
 import { Address } from '../Address';
 import { statusOrder } from '../../utils/statusOrder';
+import { CardManager } from './CardManager';
 
 
 interface FilterOrder {
@@ -145,7 +146,7 @@ export class OrderManager {
     return true;
   }
 
-  public static async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any): Promise<Order[]> {
+  public static async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any, search:any, typeCard: any): Promise<Order[]> {
     // code here
     const client = await pool.connect();
 
@@ -157,6 +158,9 @@ export class OrderManager {
           AND o.status != 'Hàng đang được đến lấy'
           AND o.collaboratorreceiveid IS NOT NULL
         `
+      }
+      if(typeCard === "outputcard"){
+        queryType = ''
       }
       let queryTime =``
       if(parseInt(time) !== -1){
@@ -186,12 +190,18 @@ export class OrderManager {
           ) AND it.nametype = ${listCategoryQuery}
         )` 
       }
+
+      const searchQuery = search ? `
+        AND o.orderid = ${search}
+      ` :
+      ''
+      
       const ordersQuery = `
             SELECT o.*, p.timestart, p.timeend
             FROM "orders" o
             JOIN "posts" p ON o.postid = p.postid
             WHERE o.orderid IN (
-              SELECT ic.orderid FROM "inputcard" ic
+              SELECT ic.orderid FROM  ${typeCard === "inputcard" ? "inputcard" : "outputcard"} ic
               WHERE ic.warehouseid = (
                 SELECT w.warehouseid FROM "workat" w
                 WHERE $1 = w.userid
@@ -200,6 +210,7 @@ export class OrderManager {
             `+queryType+`
             `+queryTime+`
             `+categoryQuery+`
+            `+searchQuery+`
             ORDER BY o.createdat DESC
           `;
 
@@ -207,7 +218,6 @@ export class OrderManager {
         SELECT * FROM "address"
         WHERE addressid = $1
       `
-
       const ordersResult: QueryResult = await client.query(ordersQuery, values);
       
       const ordersRow = ordersResult.rows;
@@ -482,7 +492,7 @@ export class OrderManager {
     }
   }
 
-  public static async showOrderDetails(orderID: string | undefined): Promise<any | null> {
+  public static async showOrderDetails(orderID: string | undefined, typeCard: string | undefined): Promise<any | null> {
     // code here
     const client = await pool.connect();
 
@@ -497,7 +507,7 @@ export class OrderManager {
       const ordersRow = ordersResult.rows[0];
   
       const giver: User | undefined = await UserManager.getUser(ordersRow.usergiveid);
-      const receive: User | undefined = await UserManager.getUser(ordersRow.collaboratorreceiveid);
+      const receive: User | undefined = await UserManager.getUser(typeCard === "outputcard" && (ordersRow.givetypeid === 2 || ordersRow.givetypeid === 5) ? ordersRow.userreceiveid : ordersRow.collaboratorreceiveid);
       const item: Item | null = await ItemManager.viewDetailsItem(ordersRow.itemid);
       const post: Post | null = await PostManager.getDetailsPost(ordersRow.postid);
 
@@ -541,7 +551,7 @@ export class OrderManager {
       return [{
         order: order,
         image: path.rows[0].path,
-        imgConfirm: ordersRow.imgconfirm
+        imgConfirm: ordersRow.imgconfirm === ' ' ? ordersRow.imgconfirmreceive : ordersRow.imgconfirm
       }];
 
     }catch (error) {
@@ -819,7 +829,6 @@ export class OrderManager {
 
   public static async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
     const client = await pool.connect()
-    console.log('QUERY', orderid, imgconfirmreceive)
     try{
       const query = `
         UPDATE "orders"
@@ -828,6 +837,23 @@ export class OrderManager {
       `
       const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
       const res = await this.updateStatusOfOrder(orderid, statusOrder.COMPLETED.statusid)
+
+      // Create output card
+      const queryOrder = `
+      SELECT 
+        o.giveTypeid,
+        o.Warehouseid,
+        o.userreceiveid,
+        po.itemid
+      FROM Orders o
+      LEFT JOIN Posts po ON po.postid = o.postid
+      WHERE o.orderid = $1
+      `
+      const resultOrder: QueryResult = await client.query(queryOrder, [orderid])
+
+      if (resultOrder.rows[0].givetypeid == 2 || resultOrder.rows[0].givetypeid == 3 || resultOrder.rows[0].givetypeid == 4 || resultOrder.rows[0].givetypeid == 5)
+        await CardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
+
       return true;
     }catch(error){
       console.log(error)
@@ -1177,7 +1203,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean): Promise<any> {
+  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean, filterValue: any): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -1191,6 +1217,13 @@ export class OrderManager {
         po.description,
         o.orderid,
         o.status,
+        adg.Longitude AS LongitudeGive,
+        adg.Latitude AS LatitudeGive,
+        adr.Longitude AS LongitudeReceive,
+        adr.Latitude AS LatitudeReceive,
+        o.CreatedAt,
+        itt.NameType,
+        o.CreatedAt AS StatusCreatedAt,
         MIN(img.path) AS path
     FROM
         Orders o
@@ -1199,13 +1232,16 @@ export class OrderManager {
     LEFT JOIN Item it ON it.itemid = po.itemid
     LEFT JOIN Image img ON img.itemid = it.itemid
     LEFT JOIN Address ad ON ad.addressid = po.addressid
-    LEFT JOIN Workat w ON u.userid = w.userid
+    LEFT JOIN Address adg ON adg.AddressID = o.LocationGive
+    LEFT JOIN Address adr ON adr.AddressID = o.LocationReceive
+		LEFT JOIN Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN Workat w ON w.userid = ${userID}
     LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
-    ${isOverdue === true ? 'WHERE po.timeend < CURRENT_TIMESTAMP' : ''}
-    --    AND w.userid = ${userID} -- Kiểm tra userID của bảng Workat
-    --    {placeholder1}
-    --    {placeholder1}
-    --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
+    WHERE
+      wh.warehouseid = o.warehouseid
+      {placeholder1}
+      {placeholder2}
+    ${isOverdue === true ? 'AND po.timeend < CURRENT_TIMESTAMP' : ''}
     GROUP BY
         u.avatar,
         u.firstname,
@@ -1215,39 +1251,28 @@ export class OrderManager {
         po.createdat,
         po.description,
         o.orderid,
-        o.status
-    LIMIT ${limit}
-        OFFSET ${page} * ${limit};
-    `;
-    // Truy vấn để lấy tổng số lượng item
-    const countQuery = `
-    SELECT COUNT(*) AS total_items
-    FROM Orders o
-    LEFT JOIN Posts po ON po.postid = o.postid
-    LEFT JOIN "User" u ON po.owner = u.userid
-    LEFT JOIN Item it ON it.itemid = po.itemid
-    -- LEFT JOIN Image img ON img.itemid = it.itemid
-    LEFT JOIN Address ad ON ad.addressid = po.addressid
-    LEFT JOIN Workat w ON u.userid = w.userid
-    LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
-      ${isOverdue === true ? 'WHERE po.timeend < CURRENT_TIMESTAMP' : ''}
-    --    AND w.userid = ${userID} -- Kiểm tra userID của bảng Workat
-    --    {placeholder1}
-    --    {placeholder1}
-    --     AND wh.addressid = po.addressid -- So sánh addressid của bảng Warehouse với addressid của bảng Posts
+        o.status,
+        adg.Longitude,
+        adg.Latitude,
+        adr.Longitude,
+        adr.Latitude,
+        o.CreatedAt,
+        itt.NameType
     `;
     
-    // console.log("A   ", buildStatusQuery(status, QueryType.Status), '  |  ', buildStatusQuery(method, QueryType.Method));
     try {
-        // Thực hiện truy vấn để lấy tổng số lượng item
-        const countResult = await client.query(countQuery);
-        const totalItems = countResult.rows[0].total_items;
-
         // Thực hiện truy vấn chính để lấy dữ liệu theo phân trang
-        const result = await client.query(query);
+        const result = await client.query(query
+          .replace('{placeholder1}', buildStatusQuery(status, QueryType.Status))
+          .replace('{placeholder2}', buildStatusQuery(method, QueryType.Method))
+        );
+
+        const resultAfterFilter = filterOrders(filterValue.distance, filterValue.time, filterValue.category, filterValue.sort, filterValue.latitude, filterValue.longitude, false, result.rows)
+        
+        const totalItems = resultAfterFilter.length;
 
         // Trả về cả dữ liệu và tổng số lượng item trong một đối tượng
-        return { orders: result.rows, totalItems: totalItems };
+        return { orders: resultAfterFilter.slice(parseInt(page) * parseInt(limit), parseInt(page) * parseInt(limit) + parseInt(limit)), totalItems: totalItems };
     } catch (error) {
         console.error('Error get orders:', error);
     } finally {

@@ -17,21 +17,15 @@ const category = [
   "Khác"
 ]
 
-function OutputCardScreen() {
+function OutputCardScreen({searchQuery, filterValue}: any) {
   const [inventoryList, setInventoryList] = useState([]);
   const [tab, setTab] = useState('Hàng đang được đến lấy')
   const [loading, setLoading] = useState(true);
-  const [filterValue, setFilterValue] = useState({
-    distance: 'Tất cả',
-    time: 'Tất cả',
-    // eslint-disable-next-line object-shorthand
-    category: category,
-    sort: 'Mới nhất'
-})
   
   const fetchInventoryList = async () => {
     try {
-      const response = await getOrdersCollaborator(userID, tab, filterValue, categoryQuery);
+      setLoading(true)
+      const response = await getOrdersCollaborator(userID, tab, filterValue, categoryQuery, searchQuery, "outputcard");
       setInventoryList(response.orders);
       setLoading(false); // Set loading state to false after fetching data
     } catch (error) {
@@ -40,7 +34,6 @@ function OutputCardScreen() {
     }
   };
   useEffect(() => {
-
     fetchInventoryList();
   }, []);
 
@@ -55,7 +48,7 @@ function OutputCardScreen() {
         // Render mỗi mục trong inventoryList vào component InventoryCard
         inventoryList.map((item, index) => (
           <Grid item key={index} xs={12}>
-            <InventoryCard data={item} />
+            <InventoryCard typeCard="outputcard" data={item} />
           </Grid>
         ))
       )}
