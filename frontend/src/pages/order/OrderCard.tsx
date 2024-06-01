@@ -3,20 +3,20 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, CardActionArea, Stack } from '@mui/material';
+import { Avatar, Box, CardActionArea,  } from '@mui/material';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useNavigate } from 'react-router-dom';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+// import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+// import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
-export default function OrderCard({order, isPost, canApproval, canDelete}: any) {
+export default function OrderCard({order, isPost, canApproval, canDelete, isWaitForPost}: any) {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
     if(isPost){
-      navigate(`/post/${order.postid}`);
+      navigate(`/post/${order.postid}`, { state: {canApproval, canDelete, isWaitForPost}});
     }else{
       navigate(`/order/${order.orderid}`);
     }
@@ -82,7 +82,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete}: any) 
           alt="img"
         />
       </CardActionArea>
-      <Stack
+      {/* <Stack
         direction="row"
         justifyContent='flex-end'
         alignItems='center'>
@@ -109,7 +109,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete}: any) 
               <Typography variant='inherit' color='error'>Xóa</Typography>
           </Stack>
         }
-      </Stack>
+      </Stack> */}
       
     </Card>
   );

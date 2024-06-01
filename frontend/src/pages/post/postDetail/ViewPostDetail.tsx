@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-key */
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Axios from '../../../redux/APIs/Axios';
 import Map from '../../../components/Map/map';
 import Carousel from 'react-material-ui-carousel';
@@ -12,6 +12,8 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import PostAddIcon from '@mui/icons-material/PostAdd';
+import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import { format } from 'date-fns';
 import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
@@ -19,7 +21,7 @@ import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 
 function ShowImages({ images }: any) {
-
+    
     return (
         <Carousel
               animation="slide"
@@ -53,6 +55,10 @@ function ShowImages({ images }: any) {
 }
 
 function ViewPostDetail() {
+    const location = useLocation();
+    const postState: any = location.state || {}; // Phòng trường hợp state không tồn tại
+    console.log(postState)
+
     const {postid}= useParams();
     const userLogin = useSelector((state: any) => state.userLogin);
 
@@ -296,6 +302,14 @@ function ViewPostDetail() {
         }
 
     }
+
+    const handleClickEdit = () => {
+        navigate(`/post/edit/${postid}`)
+    }
+
+    const handleClickPost = () => {
+        console.log('post')
+    }
     
     // console.log(evenlySpacedDates);
     return ( 
@@ -475,7 +489,7 @@ function ViewPostDetail() {
                     m={2}>
                     
 
-                    {post && post.statusname === 'Chờ xét duyệt' &&
+                    {post && postState.canApproval&&
                         <Button
                             sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
                             onClick={approvePost}>
@@ -484,12 +498,30 @@ function ViewPostDetail() {
                         </Button>
                     }
                     
-                    {post && post.statusname !== 'Hủy' &&
+                    {post && postState.canDelete &&
                         <Button
                             sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
                             onClick={declinePost}>
                             <RemoveCircleIcon color='error'/>
                             <Typography variant='inherit' color='error'>Xóa</Typography>
+                        </Button>
+                    }
+
+                    {post && postState.isWaitForPost &&
+                        <Button
+                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                            onClick={handleClickEdit}>
+                            <ModeEditOutlineIcon color='secondary'/>
+                            <Typography variant='inherit' color='secondary'>Chỉnh sửa</Typography>
+                        </Button>
+                    }
+
+                    {post && postState.isWaitForPost &&
+                        <Button
+                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                            onClick={handleClickPost}>
+                            <PostAddIcon color='success'/>
+                            <Typography variant='inherit' color='success'>Đăng bài</Typography>
                         </Button>
                     }
                     
