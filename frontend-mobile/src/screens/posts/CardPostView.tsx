@@ -1,33 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Modal, Dimensions, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import IconA from 'react-native-vector-icons/AntDesign';
-import { Pressable } from 'react-native';
-import ViewDetailOrder from '../../modals/ViewDetailOrder';
-import { fontFamilies } from '../../constants/fontFamilies';
-import { SimpleLineIcons } from '@expo/vector-icons'
-import { appColors } from '../../constants/appColors';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Modal,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import IconA from "react-native-vector-icons/AntDesign";
+import { Pressable } from "react-native";
+import ViewDetailOrder from "../../modals/ViewDetailOrder";
+import { fontFamilies } from "../../constants/fontFamilies";
+import { SimpleLineIcons } from "@expo/vector-icons";
+import { appColors } from "../../constants/appColors";
 
-const {width, height} = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
-export default function CardPostView ({ navigation, title, location, givetype, statusname, image, postid, isNavigatePostManager}: any) {
-
+export default function CardPostView({
+  navigation,
+  title,
+  location,
+  givetype,
+  statusname,
+  image,
+  postid,
+  isNavigatePostManager,
+}: any) {
   const handleNavigate = () => {
     if (isNavigatePostManager) {
-      navigation.navigate('ViewPostManagement', {
+      navigation.navigate("ViewPostManagement", {
         title: title,
         location: location,
         givetype: givetype,
         statusname: statusname,
         image: image,
-        postid : postid,
-      })
+        postid: postid,
+      });
     } else {
-      navigation.navigate('ItemDetailScreen', {
-        postId : postid,
-      })
+      navigation.navigate("ItemDetailScreen", {
+        postId: postid,
+      });
     }
-  }
+  };
 
   return (
     <View>
@@ -35,67 +51,86 @@ export default function CardPostView ({ navigation, title, location, givetype, s
         onPress={() => handleNavigate()}
       >
         <View style={styles.card}>
-            <View style={styles.content}>
-              <Image
-                  source={{ uri: image }} 
-                  style={styles.image} 
-                  resizeMode="contain"
-              />
-
-              <View style={styles.infomation}>
-                  <Text style={{ fontWeight: 'bold', fontFamily: fontFamilies.bold, width: width - 150 }}>{title}</Text>
-                  <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
-                      <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
-                      <Text style={{ paddingLeft: 10, width: width - 150 }}>{location}</Text>
-                  </View>
-
-                  <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <Text style={{ fontWeight: 'bold' }}> Phương thức: </Text>
-                      <Text> {givetype} </Text>
-                  </View>
+          <View style={styles.content}>
+            <Image source={{ uri: image }} style={styles.image} resizeMode="cover" />
+            <View style={styles.information}>
+              <Text style={styles.title}>{title}</Text>
+              <View style={styles.locationContainer}>
+                <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
+                <Text style={styles.location}>{location}</Text>
               </View>
+              <View style={styles.methodContainer}>
+                <Text style={styles.boldText}>Phương thức: </Text>
+                <Text>{givetype}</Text>
+              </View>
+              <Text style={styles.statusText}>{statusname}</Text>
             </View>
-
-            <Text style={{ textAlign: 'right', color: 'red', marginBottom: 10, marginRight: 10}}> {statusname} </Text>
+          </View>
         </View>
       </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    height: 130, // hoặc bất kỳ chiều cao nào bạn muốn
+    backgroundColor: "#fff",
     marginVertical: 10,
-    marginHorizontal: '2%',
-    width: '96%',
-    shadowColor: '#000',
+    marginHorizontal: "2%",
+    width: "96%",
+    shadowColor: "#000",
     shadowOpacity: 0.3,
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
     elevation: 5,
     borderRadius: 10,
   },
   content: {
-    marginVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   image: {
-    width: 90,
-    height: 90,
-    objectFit: 'cover',
-    borderRadius: 5,
-    marginHorizontal: 5
+    width: 120,
+    height: 130,
+    borderBottomLeftRadius: 10,
+    borderTopLeftRadius: 10,
   },
-  infomation: {
-    width: width - 90,
-    flexDirection: 'row',
+  information: {
+    flex: 1,
+    paddingHorizontal: 10,
+  },
+  title: {
+    fontWeight: "bold",
+    fontFamily: fontFamilies.bold,
+    flexShrink: 1,
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingLeft: 10
-  }
+  },
+  locationContainer: {
+    paddingTop: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: 'wrap',
+  },
+  location: {
+    paddingLeft: 10,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+  },
+  methodContainer: {
+    paddingTop: 2,
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: 'wrap',
+  },
+  boldText: {
+    fontWeight: "bold",
+  },
+  statusText: {
+    textAlign: "right",
+    color: "red",
+    marginBottom: 10,
+    marginRight: 10,
+    flexWrap: 'wrap',
+  },
 });
