@@ -166,6 +166,19 @@ export default function MapSettingAddress({navigation, route}: any) {
         }
         return null;
     };
+
+    const getAddressFromLatLng = async (lat: any, lng: any) => {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+        const data = await response.json();
+        if (data && data.display_name) {
+          return data.display_name
+          
+          // setAddress(data.display_name);
+          console.log(data.display_name);
+        } else {
+          console.log('No results found');
+        }
+      };
     
     const handleGetCenterMyLocation = async () => {
         const center = await getCenterCoordinates();
@@ -173,15 +186,16 @@ export default function MapSettingAddress({navigation, route}: any) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
-            if(inputSearch !== ''){
-            // console.log('Center coordinates:', center);
+            
             try {
                 setIsLoading(true)
+                const address = await getAddressFromLatLng(center.latitude, center.longitude)
+                console.log(address)
                 const response: any = await axios.post(`${appInfo.BASE_URL}/map/set_user_location`,{
                     userID: auth.id,
                     latitude: center.latitude,
                     longitude: center.longitude,
-                    address: inputSearch
+                    address: address
                 })
                 setIsLoading(true)
                 Alert.alert('Thông báo', 'Xác nhận vị trí thành công!')
@@ -190,11 +204,10 @@ export default function MapSettingAddress({navigation, route}: any) {
                 console.error(error)
             }
             
-            }else{
-            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
-            }
+            
         }
     };
+    
 
     const handleGetCenterGiveLocation = async () => {
         const center = await getCenterCoordinates();
@@ -203,14 +216,14 @@ export default function MapSettingAddress({navigation, route}: any) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
-            if(inputSearch !== ''){
-            // console.log('Center coordinates:', center);
+            
             try {
                 setIsLoading(true)
+                const address = await getAddressFromLatLng(center.latitude, center.longitude)
                 setOriginalLocation({
                     latitude: center.latitude,
                     longitude: center.longitude,
-                    address: inputSearch
+                    address: address
                 })
                 setIsLoading(true)
                 Alert.alert('Thông báo', 'Xác nhận vị trí cho thành công!')
@@ -220,9 +233,7 @@ export default function MapSettingAddress({navigation, route}: any) {
                 console.error(error)
             }
             
-            }else{
-            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
-            }
+            
         }
     }
 

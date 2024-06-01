@@ -23,6 +23,7 @@ import Collaborators from './pages/Admin/collaborations/Collaborations';
 import MapSelectWarehouses from './components/Map/MapSelectWarehouses';
 import ManageWarehouse from './pages/warehouse/ManageWarehouse';
 import PostApproval from './pages/approval/PostApproval';
+import EditPost from './pages/post/editPost/editPost';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -48,6 +49,7 @@ export function App() {
           <Route path="/statistic" element={<Statistic />} />
           <Route path="/approval" element={<PostApproval />} />
           <Route path="/post/:postid" element={<ViewPostDetail />} />
+          <Route path="/post/edit/:postid" element={<EditPost />} />
         </Route>
         <Route element={<AdminProtectedRouter />}>
           <Route path="/users" element={<Users />} />

@@ -16,8 +16,8 @@ import home from '../../assets/home.png'
 import  './styles.scss'
 
 // const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
-// const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
-const API_KEY = 'AIzaSyBW-S8iBG0D-d2QahuXvJbtvkUOpy2A8OY'
+const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
+// const API_KEY = 'AIzaSyBW-S8iBG0D-d2QahuXvJbtvkUOpy2A8OY'
 
 const getUrlRequest = (query: string) => {
   return `https://nominatim.openstreetmap.org/search?q=${query}&format=json`
@@ -164,23 +164,38 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
       
   }
 
+  const getAddressFromLatLng = async (lat: any, lng: any) => {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+    const data = await response.json();
+    if (data && data.display_name) {
+      setLocation({
+        latitude: lat,
+        longitude: lng,
+        address: data.display_name
+      })
+      // setAddress(data.display_name);
+      console.log(data.display_name);
+    } else {
+      console.log('No results found');
+    }
+  };
+
   const getCenter = () => {
     const center = map.getCenter();
+    // console.log(center)
     return center
   };
 
   const handleConfirmAddress = async () => {
     const center = getCenter()
-    if(inputSearch === ''){
-      // eslint-disable-next-line no-alert
-      alert('XIn vui lòng nhập địa chỉ của bạn vào thanh tìm kiếm!')
-    }
-    else{
-      setLocation({
-        latitude: center.lat(),
-        longitude: center.lng(),
-        address: inputSearch
-      })
+
+
+      // setLocation({
+      //   latitude: center.lat(),
+      //   longitude: center.lng(),
+      //   address: inputSearch
+      // })
+      getAddressFromLatLng(center.lat(), center.lng())
       handleClose()
       // try {
       
@@ -203,7 +218,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
       // eslint-disable-next-line no-alert
       alert('Cập nhật vị trí thành công!')
       
-    }
+    
     
   }
 

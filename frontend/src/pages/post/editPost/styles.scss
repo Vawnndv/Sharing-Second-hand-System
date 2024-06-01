@@ -1,0 +1,27 @@
+.paperImage {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    .iconImage{
+        transition: all 0.2s ease;
+        cursor: pointer;
+        font-size: 70px;
+    }
+}
+
+.paperImage:hover {
+    background-color: rgb(238, 236, 243);
+    .iconImage{
+        font-size: 90px;
+        color: rgb(92, 92, 92)
+    }
+}
+
+// .iconImage {
+//     width: 80px;
+//     transition: all 0.2s ease;
+//     cursor: pointer;
+// }
+
+// .iconImage:hover {
+//     width: 100px;
+// }

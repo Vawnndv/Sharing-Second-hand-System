@@ -72,7 +72,7 @@ function PostWaitForPost({filterValue, warehousesID}: any) {
                         { posts !== null && 
                             posts.map((post: any, index: number) => (
                             <Grid xs={12} sm={4} md={4} key={index}>
-                                <OrderCard order={post} isPost canApproval canDelete/>
+                                <OrderCard order={post} isPost isWaitForPost/>
                             </Grid>
                         ))}
                     </Grid>
