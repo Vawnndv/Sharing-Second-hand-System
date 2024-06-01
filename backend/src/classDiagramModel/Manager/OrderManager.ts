@@ -587,49 +587,9 @@ export class OrderManager {
     }
   }
 
-
-  // public getOrderDetails(orderID: string): Order {
-  //   // code here
-  //   return new Order('');
-  // }
-
   public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
-    // let query = `
-    //   SELECT *
-    //   FROM (
-    //       SELECT *,
-    //             ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-    //       FROM (
-    //           SELECT 
-    //               o.Title, 
-    //               o.Location, 
-    //               o.Status,
-    //               o.CreatedAt,
-    //               i.Path AS Image, 
-    //               o.OrderID,
-    //               ts.StatusName,
-    //               th.Time AS StatusCreatedAt,
-    //               o.GiveType
-    //           FROM 
-    //               Orders o
-    //           JOIN 
-    //               Image i ON o.ItemID = i.ItemID
-    //           JOIN 
-    //               Trace t ON o.OrderID = t.OrderID
-    //           JOIN 
-    //               Trace_History th ON t.TraceID = th.TraceID
-    //           JOIN 
-    //               Trace_Status ts ON th.StatusID = ts.StatusID
-    //           WHERE 
-    //             {placeholder}
-    //           ORDER BY
-    //               th.Time DESC
-    //       ) AS oo
-    //   ) AS ranked_orders
-    //   WHERE row_num = 1;
-    //   `;
     let query = `
       SELECT *,
       CASE
@@ -1211,7 +1171,7 @@ export class OrderManager {
       const resultReceive: QueryResult = await client.query(query, values);
       return resultReceive.rows
     } catch (error) {
-      console.error('Error get orders:', error);
+      console.error('Error get posts:', error);
     } finally {
       client.release(); // Release client sau khi sử dụng
     }

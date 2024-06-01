@@ -66,6 +66,7 @@ function Users() {
   
   // delete user handler
   const deleteUserHandler = (user: any) => {
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng ${  user.lastname}?`)) {
       dispatch(deleteUserAction(user.userid))
       setTotalUser(totalUser - 1);
@@ -74,6 +75,7 @@ function Users() {
 
   const handleDeleteSelectedRows = () => {
     const id = selectionModel.map((rowId: any) => rowId.toString()).join(',')
+    // eslint-disable-next-line no-alert
     if (window.confirm(`Bạn có chắc chắn muốn xóa ${selectionModel.length} người dùng này không ?` )) {
       dispatch(deleteUserAction(id))
       setTotalUser(totalUser - selectionModel.length);

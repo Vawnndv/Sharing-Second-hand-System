@@ -516,6 +516,12 @@ const handleGive = async () =>{
       orderid: orderID,
     });
 
+    const resUpdatePost = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+        postid: postid,
+        statusid: 14,
+    });
+
+
     Alert.alert('Thành công', 'Cho món đồ thành công.');
     setIsCompleted(true);
     navigation.navigate('Home', {screen: 'HomeScreen'})

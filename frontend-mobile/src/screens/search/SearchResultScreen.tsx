@@ -1,28 +1,11 @@
-import { AxiosResponse } from 'axios'
-import React, { useEffect, useState } from 'react'
-import { Image, StyleSheet, View } from 'react-native'
-import postsAPI from '../../apis/postApi'
-import { ContainerComponent } from '../../components'
-import { GetCurrentLocation } from '../../utils/GetCurrenLocation'
-import CardItemResult from './CardItemResult'
-import FilterSearch from './FilterSearch'
-
-// const data = [
-//   {
-//     "userid": "3",
-//     "firstname": "John",
-//     "lastname": "Mass",
-//     "avatar": "https://source.unsplash.com/random",
-//     "postid": "40",
-//     "title": "Cho Cái Bàn Đẹp Nè",
-//     "description": "UA Tech is our original go-to training gear: Under Armour men Tech polos are loose, light, and keep you cool. Basically, they are built to be everything you need",
-//     "createdat": "2024-03-25 22:14:09.238764",
-//     "address": "Đh Khoa Học Tự Nhiên",
-//     "longitude": "106.68249312376167",
-//     "latitude": "10.763025311133902",
-//     "path": "https://m.media-amazon.com/images/I/617iMeLtb+L._AC_SX679_.jpg"
-//   }
-// ]
+import { AxiosResponse } from "axios";
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, View } from "react-native";
+import postsAPI from "../../apis/postApi";
+import { ContainerComponent } from "../../components";
+import { GetCurrentLocation } from "../../utils/GetCurrenLocation";
+import CardItemResult from "./CardItemResult";
+import FilterSearch from "./FilterSearch";
 
 const LIMIT = 3;
 
@@ -49,10 +32,10 @@ const category = [
   "Công cụ",
   "Dụng cụ học tập",
   "Thể thao",
-  "Khác"
-]
+  "Khác",
+];
 
-const SearchResultScreen = ({ route, navigation } : any) => {
+const SearchResultScreen = ({ route, navigation }: any) => {
   const { searchQuery } = route.params;
   const [isPosts, setIsPosts] = useState(true);
   const [data, setData] = useState<any[]>([]);
@@ -61,14 +44,14 @@ const SearchResultScreen = ({ route, navigation } : any) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEndOfData, setIsEndOfData] = useState(false);
-  const [warehousesID, setWarehousesID] = useState([])
+  const [warehousesID, setWarehousesID] = useState([]);
 
   const [filterValue, setFilterValue] = useState({
     distance: -1,
     time: -1,
     category: category,
-    sort: "Mới nhất"
-  })
+    sort: "Mới nhất",
+  });
 
   useEffect(() => {
     setPage(0);
@@ -76,7 +59,7 @@ const SearchResultScreen = ({ route, navigation } : any) => {
     setData([]);
     setIsEndOfData(false);
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    console.log(data.length)
+    console.log(data.length);
   }, [filterValue, isPosts, warehousesID]);
 
   useEffect(() => {
@@ -98,7 +81,7 @@ const SearchResultScreen = ({ route, navigation } : any) => {
       const response: AxiosResponse<MyData[]> = await postsAPI.HandlePost(
         `/search`,
         {
-          keyword: searchQuery ? searchQuery.toLowerCase() : '',
+          keyword: searchQuery ? searchQuery.toLowerCase() : "",
           iswarehousepost: !isPosts,
           page: page,
           limit: LIMIT,
@@ -108,25 +91,21 @@ const SearchResultScreen = ({ route, navigation } : any) => {
           sort: filterValue.sort,
           latitude: location.latitude,
           longitude: location.longitude,
-          warehouses: warehousesID
+          warehouses: warehousesID,
         },
-        'post'
+        "post"
       );
       const newData: MyData[] = response.data;
 
-      if (newData.length <= 0 && page === 0)
-        setIsEmpty(true)
+      if (newData.length <= 0 && page === 0) setIsEmpty(true);
 
-      if (newData.length <= 0 && data.length > 0)
-        setIsEndOfData(true)
+      if (newData.length <= 0 && data.length > 0) setIsEndOfData(true);
 
-      if (newData.length > 0)
-        setPage(page + 1); // Tăng số trang lên
+      if (newData.length > 0) setPage(page + 1); // Tăng số trang lên
 
       setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
-
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -140,29 +119,45 @@ const SearchResultScreen = ({ route, navigation } : any) => {
 
   return (
     <ContainerComponent back>
-      <FilterSearch navigation={navigation} filterValue={filterValue} setFilterValue={setFilterValue} isPosts={isPosts} setIsPosts={setIsPosts} warehousesID={warehousesID} setWarehousesID={setWarehousesID}/>
-      {
-        isEmpty ? (
-          <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Image
-                source={require('../../../assets/images/shopping.png')}
-                style={styles.image} 
-                resizeMode="contain"
-            />
-          </View>
-        ) : (
-          <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
-        )
-      }
+      <FilterSearch
+        navigation={navigation}
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
+        isPosts={isPosts}
+        setIsPosts={setIsPosts}
+        warehousesID={warehousesID}
+        setWarehousesID={setWarehousesID}
+      />
+      {isEmpty ? (
+        <View
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            source={require("../../../assets/images/shopping.png")}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </View>
+      ) : (
+        <CardItemResult
+          data={data}
+          handleEndReached={handleEndReached}
+          isLoading={isLoading}
+        />
+      )}
     </ContainerComponent>
-  )
-}
+  );
+};
 
-export default SearchResultScreen
+export default SearchResultScreen;
 
 const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 80,
-  }
-})
+  },
+});

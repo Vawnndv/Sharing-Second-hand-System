@@ -1,13 +1,12 @@
-import { StyleSheet, View, ScrollView, Image } from 'react-native';
-import FilterOrder from './FilterOrder';
-import orderAPI from '../../apis/orderApi';
-import React, { useEffect, useState } from 'react';
-import CardOrderView from './CardOrderView';
-import { GetCurrentLocation } from '../../utils/GetCurrenLocation';
-import { LoadingModal } from '../../modals';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../../redux/reducers/authReducers';
-import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from "react";
+import { StyleSheet, View, FlatList, Image, ActivityIndicator, RefreshControl } from "react-native";
+import FilterOrder from "./FilterOrder";
+import orderAPI from "../../apis/orderApi";
+import CardOrderView from "./CardOrderView";
+import { GetCurrentLocation } from "../../utils/GetCurrenLocation";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../redux/reducers/authReducers";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface Item {
   title: string;
@@ -19,7 +18,7 @@ interface Item {
   createdat: string;
   orderid: string;
   statuscreatedat: string;
-  imgconfirmreceive:string;
+  imgconfirmreceive: string;
 }
 
 const category = [
@@ -29,41 +28,51 @@ const category = [
   "Công cụ",
   "Dụng cụ học tập",
   "Thể thao",
-  "Khác"
-]
+  "Khác",
+];
 
 export default function ReceiveOrderScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [filterValue, setFilterValue] = useState({
     distance: -1,
     time: -1,
     category: category,
-    sort: "Mới nhất"
-  })
-  console.log(filterValue)
+    sort: "Mới nhất",
+  });
 
   const auth = useSelector(authSelector);
-  // const userID = 29;
   const userID = auth.id;
 
+  // useEffect(() => {
+  //   if (route.params && route.params.reload) {
+  //     getOrderList();
+  //   }
+  // }, [route.params]);
 
-   // Sử dụng useEffect để theo dõi tham số điều hướng
-   useEffect(() => {
-    if (route.params && route.params.reload) {
-        getOrderList();
-    }
-  }, [route.params]);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     getOrderList();
+  //   }, [filterValue])
+  // );
 
-  useFocusEffect(
-    React.useCallback(() => {
+  useEffect(() => {
+    getOrderList();
+  }, [filterValue]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    setTimeout(() => {
       getOrderList()
-      return () => {};
-    }, [filterValue])
-  );
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   const getOrderList = async () => {
     try {
+      setOrderReceive([]);
       setIsLoading(true);
       let location = await GetCurrentLocation();
       if (!location) {
@@ -82,53 +91,66 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
           latitude: location.latitude,
           longitude: location.longitude,
         },
-        'post'
+        "post"
       );
-      
+
       setIsLoading(false);
       setOrderReceive(res.data.orderReceive);
-      
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
   };
 
+  const renderItem = ({ item }: { item: Item }) => (
+    <CardOrderView
+      navigation={navigation}
+      title={item.title}
+      location={item.location}
+      givetype={item.givetype}
+      statusname={item.statusname}
+      image={item.image}
+      status={item.status}
+      createdat={item.createdat}
+      orderid={item.orderid}
+      statuscreatedat={item.statuscreatedat}
+      isVisibleConfirm={true}
+      imgconfirmreceive={item.imgconfirmreceive}
+    />
+  );
+
+  const renderEmptyComponent = () => (
+    <View style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+      {
+        !isLoading && 
+        <Image
+          source={require("../../../assets/images/shopping.png")}
+          style={styles.image}
+          resizeMode="contain"
+        />
+      }
+    </View>
+  );
+
+  const renderFooterComponent = () => (
+    isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null
+  );
+
   return (
     <View style={styles.container}>
-      <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
+      <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue} />
       <View style={styles.content}>
-      <ScrollView 
-            style={styles.scrollView}>
-            {/* Các component con */}
-            {orderReceive.length !== 0 ? (
-              orderReceive.map((item : Item, index) => (
-                  <CardOrderView
-                      navigation={navigation}
-                      key={index}
-                      title={item.title}
-                      location={item.location}
-                      givetype={item.givetype}
-                      statusname={item.statusname}
-                      image={item.image}
-                      status={item.status}
-                      createdat={item.createdat}
-                      orderid={item.orderid}
-                      statuscreatedat={item.statuscreatedat}
-                      isVisibleConfirm={true}
-                      imgconfirmreceive={item.imgconfirmreceive}
-                  />
-              ))
-          ) : (
-              <View style={{display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Image
-                      source={require('../../../assets/images/shopping.png')}
-                      style={styles.image} 
-                      resizeMode="contain"
-                  />
-              </View>
-          )}
-          <LoadingModal visible={isLoading} />
-        </ScrollView>
+        <FlatList
+          data={orderReceive}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          ListEmptyComponent={renderEmptyComponent}
+          ListFooterComponent={renderFooterComponent}
+          contentContainerStyle={styles.scrollView}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
     </View>
   );
@@ -137,13 +159,13 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff",
   },
   content: {
     flex: 1,
   },
   scrollView: {
-    flexGrow: 1, 
+    flexGrow: 1,
   },
   image: {
     width: 100,

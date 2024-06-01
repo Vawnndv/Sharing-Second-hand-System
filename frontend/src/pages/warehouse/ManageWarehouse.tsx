@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable prefer-template */
@@ -23,6 +24,7 @@ interface Warehouse {
 
 export default function ManageWarehouse() {
   const [wareHouses, setWarehouses] = useState<Warehouse[]>([]);
+
 
   const dispatch: AppDispatch = useAppDispatch();
 

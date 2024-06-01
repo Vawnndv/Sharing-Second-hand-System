@@ -41,7 +41,7 @@ function Profile() {
   const { userInfo: authInfo } = useSelector( (state: RootState) => state.userLogin);
 
   const [imageUrl, setImageUrl] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
   const [location, setLocation] = useState<any>(null)
