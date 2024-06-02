@@ -6,16 +6,24 @@ import { doc, collection, query, orderBy, onSnapshot, DocumentData, getDocs, lim
 import { db } from '../../../firebaseConfig'
 import moment from 'moment';
 import 'moment/locale/vi';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import toast from 'react-hot-toast';
 
-const userID = '30'
 
 function ChatItem({item}: any) {
+  const { userInfo } = useSelector(
+    (state: RootState) => state.userLogin
+  );
+
+  const userID = userInfo?.id
+
   moment.locale();
   const navigate = useNavigate();
   const [lastMessage, setLastMessage] = useState<DocumentData | null | undefined>(undefined);
   
   const updateRead = async () => {
-    if (userID === lastMessage?.userid)
+    if (userID === lastMessage?.userid || userID === undefined)
       return
     try {
       const roomID = getRoomId(userID, item?.userid);
@@ -44,11 +52,19 @@ function ChatItem({item}: any) {
   }
   
   const handleClickChatRoom = () => {
+    if (userID === undefined) {
+      toast.error('Can not get user infomation')
+      return
+    }
     updateRead()
     navigate(`/chat/${getRoomId(userID, item?.userid)}`);
   };
 
   useEffect(() => {
+    if (userID === undefined) {
+      toast.error('Can not get user infomation')
+      return
+    }
 
     const roomID = getRoomId(userID, item?.userid);
     const docRef = doc(db, "rooms", roomID);

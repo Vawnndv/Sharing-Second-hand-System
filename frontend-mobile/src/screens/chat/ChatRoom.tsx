@@ -108,12 +108,6 @@ const ChatRoom = ({ route, navigation }: any) => {
       textRef.current = "";
       if(inputRef) inputRef?.current?.clear()
       const newDoc = await addDoc(messageRef, {
-        // userid: auth?.id,
-        // text: message,
-        // avatar: auth?.avatar,
-        // firstname: auth?.firstname,
-        // lastname: auth?.lastname,
-        // createdAt: Timestamp.fromDate(new Date())
         userid: auth?.id,
         text: message,
         username: auth?.firstName +  ' '  + auth?.lastName,

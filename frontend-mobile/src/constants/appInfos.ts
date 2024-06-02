@@ -1,7 +1,7 @@
 import { Dimensions } from "react-native";
 import { BASE_URL } from "@env";
 
-console.log('_BASE_URL___', BASE_URL)
+console.log('BASE_URL', BASE_URL)
 
 export const appInfo = {
   sizes: {

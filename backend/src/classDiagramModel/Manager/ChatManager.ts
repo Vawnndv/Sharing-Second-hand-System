@@ -39,31 +39,34 @@ export class ChatManager {
 
     const client = await pool.connect();
     let query = `
-      SELECT DISTINCT
-      "User".avatar,
-      "User".userid,
-      "User".firstname,
-      "User".lastname,
-      "User".phonenumber,
-      po.title,
-      po.postid,
-      CASE
-  --         WHEN od.usergiveid IS NOT NULL AND od.userreceiveid IS NOT NULL AND od.status = 'Hoàn tất' THEN 'false'
-          WHEN od.usergiveid IS NOT NULL AND od.userreceiveid IS NOT NULL AND od.status <> 'Hoàn tất' THEN 'true'
-          WHEN od.userreceiveid IS NULL AND od.status != 'Đã duyệt' THEN 'true'
-  -- 		WHEN od.userreceiveid IS NULL AND od.status == 'Đã duyệt' THEN 'true'
-          ELSE 'false'
-      END AS enableChat
-  FROM
-      Chats
-  JOIN "User" ON ("User".userID = CASE
-      WHEN Chats.FirstUserID = $1 THEN Chats.SecondUserID
-      WHEN Chats.SecondUserID = $1 THEN Chats.FirstUserID
-  END)
-  LEFT JOIN Posts po ON Chats.postid = po.postid
-  LEFT JOIN Orders od ON od.postid = Chats.postid
-  WHERE
-      Chats.FirstUserID = $1 OR Chats.SecondUserID = $1;
+        SELECT DISTINCT
+        "User".avatar,
+        "User".userid,
+        "User".firstname,
+        "User".lastname,
+        "User".phonenumber,
+        po.title,
+        po.postid,
+        CASE
+            WHEN (po.statusid = 14 OR po.statusid = 12) THEN
+                CASE
+                    WHEN od.orderid IS NULL THEN 'true'
+                    WHEN (od.usergiveid = $1 OR od.userreceiveid = $1) AND od.status <> 'Hoàn tất' THEN 'true'
+                    ELSE 'false'
+                END
+            ELSE 'false'
+        END AS enableChat
+    FROM
+        Chats
+    JOIN "User" ON ("User".userID = CASE
+        WHEN Chats.FirstUserID = $1 THEN Chats.SecondUserID
+        WHEN Chats.SecondUserID = $1 THEN Chats.FirstUserID
+    END)
+    LEFT JOIN Posts po ON Chats.postid = po.postid
+    LEFT JOIN Orders od ON od.postid = Chats.postid
+    WHERE
+        Chats.FirstUserID = $1 OR Chats.SecondUserID = $1;
+
     `
     
     try {
@@ -141,18 +144,10 @@ export class ChatManager {
       SELECT u.*
       FROM "User" u
       WHERE 
-      u.addressid = (
-          SELECT addressid
-          FROM warehouse w
-          WHERE w.warehouseid = (
-              SELECT warehouseid
-              FROM Workat
-              WHERE userid = $1
-          )
-      ) AND u.roleid = 1;
+      u.roleid = 1;
     `
     try {
-      const result: QueryResult = await client.query(query, [userID]);
+      const result: QueryResult = await client.query(query);
       return result.rows
     } catch (error) {
       console.error('Error get users chat:', error);

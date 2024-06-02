@@ -383,23 +383,25 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
               </Modal>
 
               <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if(auth.id != post.owner) {
-                    openChatRoomReceive({item: {
-                      avatar: profile?.avatar,
-                      userid: post.owner,
-                      username: profile?.firstname ? profile?.firstname + profile?.lastname : ' ',
-                      firstname: profile?.firstname,
-                      lastname: profile?.lastname,
-                    },
-                      postid: postID})}
-                  }}>
-                  <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
-                </TouchableOpacity>
-                
+                {auth.id !== post?.owner && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      openChatRoomReceive({
+                        item: {
+                          avatar: profile?.avatar,
+                          userid: post.owner,
+                          username: profile?.firstname ? `${profile.firstname} ${profile.lastname}` : ' ',
+                          firstname: profile?.firstname,
+                          lastname: profile?.lastname,
+                        },
+                        postid: postID,
+                      });
+                    }}
+                  >
+                    <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
+                  </TouchableOpacity>
+                )}
               </View>
-              
 
               <View style={styles.userContainer}>
                 {/* Hiển thị avatar của user */}
@@ -490,7 +492,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                   
                 return (
                   <TouchableOpacity onPress={() => {
-                    if(auth.id == post.owner) {
+                    if(auth.id === post.owner) {
                       openChatRoomReceive({item: {
                         avatar: postReceiver?.avatar,
                         userid: postReceiver.receiverid,
