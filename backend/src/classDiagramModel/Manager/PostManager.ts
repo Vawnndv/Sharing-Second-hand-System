@@ -789,12 +789,12 @@ export class PostManager {
   
 
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, statusid: number, givetypeid: number, warehouseid: number): Promise<void> {
+  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, statusid: number, givetypeid: number, warehouseid: number, phonenumber: string): Promise<void> {
 
     const client = await pool.connect();
 
     const queryInsertAddress = `
-      INSERT INTO "address" (address, latitude, longitude) 
+      INSERT INTO "address" (address, latitude, longitude, phonenumber) 
       VALUES ('${postLocation.address}', ${postLocation.latitude}, ${postLocation.longitude})
       RETURNING addressid;
     `
@@ -815,8 +815,8 @@ export class PostManager {
     INNER JOIN address a ON a.addressid = w.addressid `;
 
     const query = `
-        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid, iswarehousepost, statusid, givetypeid, warehouseid)
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        INSERT INTO posts(title, location, description, owner, time, itemid, timestart, timeend, addressid, iswarehousepost, statusid, givetypeid, warehouseid, phonenumber)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *;
       `;
   
@@ -854,9 +854,9 @@ export class PostManager {
       }
       if(isNewAddress){
         const resultInsertAddress: QueryResult = await client.query(queryInsertAddress);
-        values = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid, isWarehousePost, statusid, givetypeid, warehouseSelected];
+        values = [title, location, description, owner, time, itemid, timestart, timeend, resultInsertAddress.rows[0].addressid, isWarehousePost, statusid, givetypeid, warehouseSelected, phonenumber];
       }else{
-        values = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost, statusid, givetypeid, warehouseSelected];
+        values = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost, statusid, givetypeid, warehouseSelected, phonenumber];
       }
       const result: QueryResult = await client.query(query, values);
       console.log('Posts inserted successfully:', result.rows[0]);
@@ -1072,10 +1072,10 @@ export class PostManager {
 
   
         const resultQueryPost: QueryResult = await client.query(query)
-        if(resultQueryPost.rows[0].status !== status){
-          return false;
-        }
-        return resultQueryPost;
+        // if(resultQueryPost.rows[0].status !== status){
+        //   return false;
+        // }
+        return resultQueryPost.rows[0];
       }catch(error){
         console.log(error)
         return false

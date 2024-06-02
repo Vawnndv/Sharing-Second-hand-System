@@ -36,6 +36,8 @@ function EditPost() {
 
     const navigate = useNavigate();
 
+    const userLogin = useSelector((state: any) => state.userLogin);
+
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
     const [profile, setProfile] = useState<any>();
     const [itemImages, setItemImages] = useState([]);
@@ -81,7 +83,7 @@ function EditPost() {
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
             // console.log('Time Start',(res.postDetail.timestart).slice(0,10))
-            
+            setLocation({addressid: res.data.postDetail.adressid, address: res.data.postDetail.address, longitude: res.data.postDetail.longitude, latitude: res.data.postDetail.latitude});
 
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
@@ -175,6 +177,62 @@ function EditPost() {
             setItemNewImages(newImages)
         }
     }
+
+    const handleRepost = async () =>{
+
+        const newTitle: any = title;
+        const newDescription: any = description;
+        let newPostid: any = null;
+
+        console.log(location);
+
+        try{
+            const res = await axios.post(`http://localhost:3000/posts/createPost`, {
+                title: newTitle,
+                location: location.address,
+                description: newDescription,
+                owner: userLogin.userInfo.id,
+                time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                itemid: post.itemid,
+                timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
+                timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
+                isNewAddress: post.address !== location.address,
+                postLocation: location,
+                isWarehousePost: true,
+                givetypeid: 1,
+                statusid: 12,
+                warehouseid: post.warehouseid,
+            });
+
+            newPostid = res.data.postCreated.postid;
+            toast.success(`Post Reposted`);      
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+        try{
+            const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                postid: post.postid,
+                statusid: 15,
+            })
+        } catch (error) {
+            console.log(error);
+        }
+
+        // try{
+        //     const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+        //         postid: newPostid,
+        //         statusid: 12,
+        //         isApproveAction: true,
+        //     })
+        //     toast.success(`Update status sucessfully`);      
+        //     navigate(-1);
+        // } catch (error) {
+        //     console.log(error);
+        // }
+    }
+    
     
     return ( 
         <div style={{display: 'flex', flexDirection: 'column',
@@ -400,7 +458,7 @@ function EditPost() {
                     {post &&
                         <Button
                             sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={handleClickPost}>
+                            onClick={handleRepost}>
                             <PostAddIcon color='success'/>
                             <Typography variant='inherit' color='success'>Đăng bài</Typography>
                         </Button>

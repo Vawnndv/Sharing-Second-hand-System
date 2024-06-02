@@ -194,6 +194,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     setReceiveTypeID(receivetypeid);
     setWareHouseID(warehouseid);
     setGoToGiveForm(true);
+    setModalVisible(false);
+
   };
 
 
