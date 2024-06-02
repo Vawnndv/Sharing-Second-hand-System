@@ -10,6 +10,7 @@ import MessagesNavigator from './MessagesNavigator';
 import ProfileNavigator from './ProfileNavigator';
 import ScanNavigator from './ScanNavigator';
 import ChatNavigator from './ChatNavigator';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 
 const TabNavigator = () => {
@@ -73,11 +74,63 @@ const TabNavigator = () => {
         }
       })}
     >
-      <Tab.Screen name="Home" component={HomeNavigator} />
+      <Tab.Screen 
+        name="Home" 
+        component={HomeNavigator}  
+        options={({ route }) => ({
+          tabBarStyle: ((route) => {
+            const routeName = getFocusedRouteNameFromRoute(route) ?? "HomeScreen"
+            if (routeName !== 'HomeScreen') {
+              return { display: "none" }
+            }
+            return {
+              height: Platform.OS === 'ios' ? 88 : 68,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: appColors.white,
+            }
+          })(route),
+        })} 
+      />
       <Tab.Screen name="Scan" component={ScanNavigator} />
       <Tab.Screen name="Add" component={AddNavigator} />
-      <Tab.Screen name="Message" component={ChatNavigator} />
-      <Tab.Screen name="Profile" component={ProfileNavigator} />
+      <Tab.Screen 
+        name="Message" 
+        component={ChatNavigator}
+        options={({ route }) => ({
+          tabBarStyle: ((route) => {
+            const routeName = getFocusedRouteNameFromRoute(route) ?? "ChatScreen"
+            if (routeName !== 'ChatScreen') {
+              return { display: "none" }
+            }
+            return {
+              height: Platform.OS === 'ios' ? 88 : 68,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: appColors.white,
+            }
+          })(route),
+        })} 
+      />
+
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileNavigator} 
+        options={({ route }) => ({
+          tabBarStyle: ((route) => {
+            const routeName = getFocusedRouteNameFromRoute(route) ?? "ProfileScreen"
+            if (routeName !== 'ProfileScreen') {
+              return { display: "none" }
+            }
+            return {
+              height: Platform.OS === 'ios' ? 88 : 68,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: appColors.white,
+            }
+          })(route),
+        })} 
+      />  
     </Tab.Navigator>
   )
 }

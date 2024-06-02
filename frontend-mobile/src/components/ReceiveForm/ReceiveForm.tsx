@@ -13,11 +13,11 @@ import ContainerComponent from '../ContainerComponent';
 import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import PostDetail from '../PostDetail';
 import { useNavigation } from '@react-navigation/native';
-
 import { Dropdown } from 'react-native-element-dropdown';
 import { appColors } from '../../constants/appColors';
 import ShowMapComponent from '../ShowMapComponent';
 import TextComponent from '../TextComponent';
+import { current } from '@reduxjs/toolkit';
 
 
 interface Props {
@@ -240,7 +240,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown, warehouseSeleted])
 
   useEffect( () => {
-    if(!isUserPost){
+    // if(!isUserPost){
       if(      
         !errorMessage.bringItemToWarehouseMethod && 
         !errorMessage.receiveMethod && 
@@ -252,7 +252,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       else{
         setIsValidSubmit(false);
       }
-  }
+  // }
 
   },[errorMessage, validAllMethod])
 
@@ -514,15 +514,15 @@ const handleGive = async () =>{
       // if(receivetype === )
 
     const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
-      status,
+      currentstatus: status,
       orderid: orderID,
     });
 
-    const resUpdatePost = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-        postid: postid,
+    const resUpdatePost = await axios.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+        postid: post.postid,
         statusid: 14,
+        isApproveAction: false
     });
-
 
     Alert.alert('Thành công', 'Cho món đồ thành công.');
     setIsCompleted(true);
@@ -857,7 +857,7 @@ const handleGive = async () =>{
     )}
 
     {isUserPost && (
-      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleGive} >Xác nhận</Button>
     )}
   </ScrollView>
   );

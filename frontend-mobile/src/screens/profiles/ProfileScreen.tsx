@@ -166,7 +166,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             </View>
           </SectionComponent>
           {
-            // profile.userId === auth.id && (
+            profile.userId === auth.id && (
               <RowComponent justify='center'>
                 <SectionComponent>
                   <ButtonComponent
@@ -203,7 +203,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                   }
                 </SectionComponent>
               </RowComponent>
-            // )
+            )
           }
         </>
       )}

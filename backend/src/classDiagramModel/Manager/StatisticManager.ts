@@ -43,7 +43,6 @@ export class StatisticManager {
                 SELECT 1
                 FROM "posts" p
                 WHERE p.postid = o.postid
-                AND CURRENT_DATE BETWEEN p.timestart AND p.timeend
                 AND p.timeend >= NOW() - INTERVAL '${time}'
             ) 
             AND o.status = 'Chờ cộng tác viên lấy hàng'
@@ -63,7 +62,6 @@ export class StatisticManager {
               SELECT 1
               FROM "posts" p
               WHERE p.postid = o.postid
-              AND CURRENT_DATE BETWEEN p.timestart AND p.timeend
               AND p.timeend >= NOW() - INTERVAL '${time}'
           ) 
           AND o.status = 'Hàng đã nhập kho'

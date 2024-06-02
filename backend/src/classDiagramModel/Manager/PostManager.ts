@@ -217,6 +217,8 @@ export class PostManager {
         img.path,
         itt.nametype,
         od.status,
+		us.firstname,
+		us.lastname,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
         CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
       FROM Posts AS po
@@ -231,7 +233,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 2 OR po.statusid = 12)
+      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
       GROUP BY
           us.userid,
           us.firstname,
@@ -247,7 +249,9 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status
+          od.status,
+		  us.firstname,
+		  us.lastname
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -347,6 +351,8 @@ export class PostManager {
         img.path,
         itt.nametype,
         od.status,
+        us.firstname,
+		    us.lastname,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
@@ -361,7 +367,7 @@ export class PostManager {
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = true AND od.givetypeid != 3 AND od.givetypeid != 4
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
+	  AND (od.status LIKE '%Đã duyệt%')
       GROUP BY
           us.userid,
           us.firstname,
@@ -377,7 +383,9 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status
+          od.status,
+          us.firstname,
+		      us.lastname
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -418,6 +426,8 @@ export class PostManager {
         itt.nametype,
         ts.statusname,
         gr.give_receivetype,
+        us.firstname,
+		    us.lastname,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
@@ -450,7 +460,9 @@ export class PostManager {
           wh.warehousename,
           itt.nametype,
           ts.statusname,
-          gr.give_receivetype
+          gr.give_receivetype,
+          us.firstname,
+		      us.lastname
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -473,6 +485,8 @@ export class PostManager {
           itt.nametype,
           ts.statusname,
           gr.give_receivetype,
+          us.firstname,
+		      us.lastname,
       po.updatedat,
           CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
         FROM Posts AS po
@@ -509,7 +523,9 @@ export class PostManager {
             itt.nametype,
             gr.give_receivetype,
         ts.statusname,
-        po.updatedat
+        po.updatedat,
+        us.firstname,
+		    us.lastname
         ORDER BY po.createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
@@ -532,7 +548,9 @@ export class PostManager {
           itt.nametype,
           ts.statusname,
           gr.give_receivetype,
-      po.updatedat,
+          po.updatedat,
+          us.firstname,
+          us.lastname,
           CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
         FROM Posts AS po
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
@@ -567,8 +585,10 @@ export class PostManager {
             wh.warehousename,
             itt.nametype,
             gr.give_receivetype,
-        ts.statusname,
-        po.updatedat
+            ts.statusname,
+            po.updatedat,
+            us.firstname,
+            us.lastname
         ORDER BY po.createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
@@ -591,7 +611,9 @@ export class PostManager {
           itt.nametype,
           ts.statusname,
           gr.give_receivetype,
-      po.updatedat,
+          po.updatedat,
+          us.firstname,
+		      us.lastname,
           CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
         FROM Posts AS po
       LEFT JOIN "orders" od ON od.postid = po.postid
@@ -626,8 +648,10 @@ export class PostManager {
             wh.warehousename,
             itt.nametype,
             gr.give_receivetype,
-        ts.statusname,
-        po.updatedat
+            ts.statusname,
+            po.updatedat,
+            us.firstname,
+            us.lastname
         ORDER BY po.createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
@@ -1047,7 +1071,7 @@ export class PostManager {
     }
 
 
-    public static async updatePostStatus (postid: string, statusid: number, isApproveAction: any) : Promise<any> {
+    public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
 
       const client = await pool.connect();
   
@@ -1056,26 +1080,23 @@ export class PostManager {
         if(!isApproveAction){
           query = `
           UPDATE posts
-          SET statusid = '${statusid}'
-          WHERE postid = '${postid}'
+          SET statusid = ${statusid}
+          WHERE postid = ${postid}
           RETURNING *
           `
         }
         else{
           query = `
           UPDATE posts
-          SET statusid = '${statusid}', approvedate = NOW() 
-          WHERE postid = '${postid}'
+          SET statusid = ${statusid}, approvedate = NOW() 
+          WHERE postid = ${postid}
           RETURNING *
           `
         }
 
   
         const resultQueryPost: QueryResult = await client.query(query)
-        // if(resultQueryPost.rows[0].status !== status){
-        //   return false;
-        // }
-        return resultQueryPost.rows[0];
+        return resultQueryPost;
       }catch(error){
         console.log(error)
         return false
