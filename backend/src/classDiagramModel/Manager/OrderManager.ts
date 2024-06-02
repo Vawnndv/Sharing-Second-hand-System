@@ -201,7 +201,7 @@ export class OrderManager {
             FROM "orders" o
             JOIN "posts" p ON o.postid = p.postid
             WHERE o.orderid IN (
-              SELECT ic.orderid FROM  ${typeCard === "inputcard" ? "inputcard" : "outputcard"} ic
+              SELECT ic.orderid FROM  ${(typeCard === "inputcard" || typeCard === undefined) ? "inputcard" : "outputcard"} ic
               WHERE ic.warehouseid = (
                 SELECT w.warehouseid FROM "workat" w
                 WHERE $1 = w.userid

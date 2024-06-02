@@ -56,11 +56,11 @@ export class Account {
   public static async createItem(email: string, firstname: string, lastname: string, password: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(firstname, lastname, email, password, roleid, username) 
-        VALUES($1, $2, $3, $4, $5, $6)
+        INSERT INTO "User"(firstname, lastname, email, password, roleid) 
+        VALUES($1, $2, $3, $4, $5)
         RETURNING *;
       `;
-    const values : any = [firstname, lastname, email, password, roleid, ''];
+    const values : any = [firstname, lastname, email, password, roleid];
     try {
       const result = await client.query(query, values);
       console.log('User inserted successfully:', result.rows[0]);
