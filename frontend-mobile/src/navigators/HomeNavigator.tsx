@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-import { HomeScreen, ThankYouScreen } from '../screens';
+import { HomeScreen, ProfileScreen, ThankYouScreen } from '../screens';
 import OrderDetailsScreen from '../screens/collaborator/OrderDetailsScreen';
 import OrdersScreen from '../screens/collaborator/OrdersScreen';
 import StatisticScreen from '../screens/collaborator/StatisticScreen';
@@ -25,6 +25,7 @@ const HomeNavigator = () => {
       <Stack.Screen name="MapSelectWarehouseScreen" component={MapSelectWarehouse} />
       <Stack.Screen name="MapSelectWarehouseGiveScreen" component={MapSelectWarehouseGive} />
       <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
     </Stack.Navigator>
   )
 }
