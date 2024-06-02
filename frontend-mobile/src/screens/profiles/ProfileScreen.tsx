@@ -15,12 +15,21 @@ const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
   const [profileId, setProfileId] = useState('');
+  const [refresh, setRefresh] = useState(false)
 
   const dispatch = useDispatch();
-  const {id} = route.params;
 
   const auth = useSelector(authSelector);
   
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Thực hiện các hành động cần thiết khi màn hình được focus
+      console.log('Home Screen Reloaded:');
+      setRefresh(prevRefresh => !prevRefresh);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   useEffect(() => {
     if (auth) {
       getProfile();
@@ -29,7 +38,7 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (route.params) {
-      setProfileId(id);
+      setProfileId(route.params.id);
 
       if (route.params.isUpdated) {
         getProfile();
@@ -37,13 +46,13 @@ const ProfileScreen = ({navigation, route}: any) => {
     } else {
       setProfileId(auth.id);
     }
-  }, [route.params]);
+  }, [route.params, refresh]);
 
   useEffect(() => {
     if (profileId) {
       getProfile();
     }
-  }, [profileId]);
+  }, [profileId, refresh]);
 
   const getProfile = async () => {
     setIsLoading(true);
@@ -157,7 +166,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             </View>
           </SectionComponent>
           {
-            id === auth.id && (
+            // profile.userId === auth.id && (
               <RowComponent justify='center'>
                 <SectionComponent>
                   <ButtonComponent
@@ -194,7 +203,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                   }
                 </SectionComponent>
               </RowComponent>
-            )
+            // )
           }
         </>
       )}

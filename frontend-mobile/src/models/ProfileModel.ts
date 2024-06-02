@@ -9,4 +9,5 @@ export interface ProfileModel {
   dob: string;
   giveCount: string;
   receiveCount: string;
+  userId: string;
 }
