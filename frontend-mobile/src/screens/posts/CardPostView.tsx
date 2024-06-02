@@ -15,6 +15,7 @@ import ViewDetailOrder from "../../modals/ViewDetailOrder";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { appColors } from "../../constants/appColors";
+import { TextComponent } from "../../components";
 
 const { width, height } = Dimensions.get("window");
 
@@ -40,7 +41,7 @@ export default function CardPostView({
       });
     } else {
       navigation.navigate("ItemDetailScreen", {
-        postId: postid,
+        postID: postid,
       });
     }
   };
@@ -57,7 +58,7 @@ export default function CardPostView({
               <Text style={styles.title}>{title}</Text>
               <View style={styles.locationContainer}>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
-                <Text style={styles.location}>{location}</Text>
+                <TextComponent numberOfLines={1} text={location}></TextComponent>
               </View>
               <View style={styles.methodContainer}>
                 <Text style={styles.boldText}>Phương thức: </Text>
@@ -91,7 +92,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 120,
+    width: 130,
     height: 130,
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,

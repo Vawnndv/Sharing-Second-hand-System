@@ -10,7 +10,8 @@ import MessageScreen from "./messages/MessageScreen";
 import ProfileScreen from "./profiles/ProfileScreen";
 import ReceiveFormScreen from "./receiveform/ReceiveFormScreen";
 import ThankYouScreen from "./thankyou/ThankYou";
-
+import EditPostScreen from "./posts/EditPostScreen";
+ 
 
 export {
   LoginScreen,
@@ -25,4 +26,5 @@ export {
   ProfileScreen,
   ReceiveFormScreen,
   ThankYouScreen,
+  EditPostScreen
 }

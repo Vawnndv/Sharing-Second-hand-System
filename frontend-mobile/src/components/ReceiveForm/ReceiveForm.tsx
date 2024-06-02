@@ -220,7 +220,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
     }
 
-    if(isUserPost && bringItemToWarehouseMethodsDropDown){
+    else if(isUserPost && bringItemToWarehouseMethodsDropDown){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
 
@@ -241,16 +241,19 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown, warehouseSeleted])
 
   useEffect( () => {
-    if(      
-      !errorMessage.bringItemToWarehouseMethod && 
-      !errorMessage.receiveMethod && 
-      !errorMessage.warehouseSelected &&
-      validAllMethod) {
-        setIsValidSubmit(true);
-    }
+    if(!isUserPost){
+      if(      
+        !errorMessage.bringItemToWarehouseMethod && 
+        !errorMessage.receiveMethod && 
+        !errorMessage.warehouseSelected &&
+        validAllMethod) {
+          setIsValidSubmit(true);
+      }
+
       else{
         setIsValidSubmit(false);
       }
+  }
 
   },[errorMessage, validAllMethod])
 
@@ -426,7 +429,7 @@ const handleReceive = async () => {
     });       
     Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
     navigation.navigate('ItemDetailScreen', {
-      postId: postID,
+      postID: postID,
     })
     
   } catch (error) {

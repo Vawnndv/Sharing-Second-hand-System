@@ -52,7 +52,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
 
 
   const goToHomeScreen = () => {
-    navigation.navigate('Home', {screen: 'HomeScreen'})
+    navigation.navigate('ViewPostManagement', {screen: 'HomeScreen'})
   }
   return(
     <View style={styles.container}>

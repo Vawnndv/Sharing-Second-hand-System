@@ -154,6 +154,7 @@ function ViewPostDetail() {
                 const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                     postid: post.postid,
                     statusid: 12,
+                    isApproveAction: true
                 })
                 toast.success(`Post apporved`);      
                 navigate(-1);
@@ -222,6 +223,8 @@ function ViewPostDetail() {
                     const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                         postid: post.postid,
                         statusid: 7,
+                        isApproveAction: true
+
                     })
                     toast.success(`Post apporved`);            
                     navigate(-1);
@@ -237,6 +240,7 @@ function ViewPostDetail() {
                     const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                         postid: post.postid,
                         statusid: 13,
+                        isApproveAction: true
                     })
                     toast.success(`Post apporved`);
                     navigate(-1);
@@ -293,6 +297,7 @@ function ViewPostDetail() {
             const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
                 postid: post.postid,
                 statusid: 6,
+                isApproveAction: true
             })
             toast.success('Post canceled successfully!');
             navigate(-1);

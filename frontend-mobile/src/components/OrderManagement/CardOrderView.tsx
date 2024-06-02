@@ -10,6 +10,7 @@ import {
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
+import TextComponent from "../TextComponent";
 
 const { width } = Dimensions.get("window");
 
@@ -37,7 +38,7 @@ export default function CardOrderView({
               <Text style={styles.title}>{title}</Text>
               <View style={styles.locationContainer}>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
-                <Text style={styles.location}>{location}</Text>
+                <TextComponent numberOfLines={1} text={location}></TextComponent>
               </View>
               <View style={styles.methodContainer}>
                 <Text style={styles.boldText}>Phương thức: </Text>
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 120,
+    width: 130,
     height: 130,
     borderBottomLeftRadius: 10,
     borderTopLeftRadius: 10,

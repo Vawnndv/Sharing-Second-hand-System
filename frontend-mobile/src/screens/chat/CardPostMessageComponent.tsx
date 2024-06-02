@@ -11,7 +11,7 @@ const CardPostMessageComponent = ({route, navigation, title, uri, postid}: any) 
   return (
     <CardComponent
       onPress={() => navigation.navigate('ItemDetailScreen', {
-        postId : postid,
+        postID : postid,
       })}
       isShadow
     >

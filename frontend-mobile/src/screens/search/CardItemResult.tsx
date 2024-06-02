@@ -136,7 +136,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
           color={appColors.white4}
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen', {
-            postId : item.postid,
+            postID : item.postid,
           })}
         >
           <RowComponent>

@@ -909,6 +909,32 @@ export class PostManager {
   }
 
 
+  public static async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
+
+    const client = await pool.connect();
+    const query = `
+        UPDATE POSTS
+        SET title = '${title}', description = '${description}', timestart = '${timestart}', timeend = '${timeend}'
+        WHERE postid = ${postid}
+        RETURNING *
+      `;
+    // const values : any = [postid, receiverid, comment, time, receivertypeid, warehouseid];
+    
+    try {
+      const result: QueryResult = await client.query(query);
+      console.log('Post updated successfully:', result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error when updating post:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+
+
+
+
 
 
 
@@ -1021,17 +1047,29 @@ export class PostManager {
     }
 
 
-    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+    public static async updatePostStatus (postid: string, statusid: number, isApproveAction: any) : Promise<any> {
 
-      const client = await pool.connect()
+      const client = await pool.connect();
   
       try{
-        const query = `
+        let query = ''
+        if(!isApproveAction){
+          query = `
           UPDATE posts
           SET statusid = '${statusid}'
           WHERE postid = '${postid}'
           RETURNING *
-        `
+          `
+        }
+        else{
+          query = `
+          UPDATE posts
+          SET statusid = '${statusid}', approvedate = NOW() 
+          WHERE postid = '${postid}'
+          RETURNING *
+          `
+        }
+
   
         const resultQueryPost: QueryResult = await client.query(query)
         if(resultQueryPost.rows[0].status !== status){

@@ -9,11 +9,14 @@ import orderAPI from '../../apis/orderApi';
 import postsAPI from '../../apis/postApi';
 import { statusOrder } from '../../constants/statusOrder';
 
+
 const size = 24;
 const color = appColors.gray;
 
 const ViewPostManagement = ({navigation, route}: any) => {
   const {title, location, givetype, statusname, image, postid} = route.params;
+
+
   
   const cancelGivePost = async () => {
     try {
@@ -32,9 +35,27 @@ const ViewPostManagement = ({navigation, route}: any) => {
     }
   };
 
+  const handleEditPost  = () => {
+    navigation.navigate('EditPostScreen', {
+      title: 'Gửi bài viết thành công!!',
+      postID: postid,
+      content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
+    })
+  };
+
+
+  const handleViewPostDetail  = () => {
+    console.log('BÀI ĐĂNG IDDDDD LÀAAAAA:', postid);
+    navigation.navigate('ItemDetailScreen', {
+      postID: postid,
+    })
+  };
+
   const handleCancelPress = () => {
     cancelGivePost()
   };
+
+  
 
   return (
     <ContainerComponent back title="Bài Đăng">
@@ -48,26 +69,30 @@ const ViewPostManagement = ({navigation, route}: any) => {
           image={image}
           postid={postid}
         />
-        <TouchableOpacity onPress={() => {}} style={styles.button}>
-          <View style={{ flexDirection: 'row' }}>
-            <AntDesign name="edit" size={size} color={color} />
-            <Text style={styles.text}>Edit</Text>
-          </View>
-          <AntDesign name="right" size={size} color={appColors.black} />
-        </TouchableOpacity>
+        {statusname === 'Chờ xét duyệt' && (
+          <TouchableOpacity onPress={() => {handleEditPost()}} style={styles.button}>
+            <View style={{ flexDirection: 'row' }}>
+              <AntDesign name="edit" size={size} color={color} />
+              <Text style={styles.text}>Chỉnh sửa</Text>
+            </View>
+            <AntDesign name="right" size={size} color={appColors.black} />
+          </TouchableOpacity>
+        )}
 
-        <TouchableOpacity onPress={() => {}} style={styles.button}>
+        <TouchableOpacity onPress={() => {handleViewPostDetail()}} style={styles.button}>
           <View style={{ flexDirection: 'row' }}>
             <AntDesign name="eye" size={size} color={color} />
-            <Text style={styles.text}>View detail</Text>
+            <Text style={styles.text}>Xem chi tiết bài đăng</Text>
           </View>
           <AntDesign name="right" size={size} color={appColors.black} />
         </TouchableOpacity>
+        {statusname === 'Chờ xét duyệt' && (
         <View style={{marginVertical: 10, display: 'flex', alignItems: 'center'}}>
           <Button mode="contained" onPress={() => handleCancelPress()} buttonColor={appColors.danger} style={{width: '40%'}}>
             Hủy cho
           </Button>
         </View>
+        )}
       </View>
     </ContainerComponent>
   )
