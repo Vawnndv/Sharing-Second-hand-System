@@ -218,9 +218,10 @@ export const deletePostReceivers = asyncHandle(async (req, res) => {
 export const  updatePostStatus = asyncHandle(async (req, res) => {
   const postid: any = req.body.postid;
   const statusid: any = req.body.statusid;
+  const isApproveAction: any = req.body.isApproveAction;
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postUpdated = await PostManager.updatePostStatus(postid, statusid);
+    const postUpdated = await PostManager.updatePostStatus(postid, statusid, isApproveAction);
     if (postUpdated)
       res.status(200).json({ message: 'Post Updated Sucessfully', postUpdated });
   } catch (error) {

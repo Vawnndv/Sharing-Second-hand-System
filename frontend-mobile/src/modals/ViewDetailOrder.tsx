@@ -178,7 +178,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               color={appColors.white4}
               isShadow
               onPress={() => navigation.navigate('ItemDetailScreen', {
-                postId : data?.postid,
+                postID : data?.postid,
               })}
               // onPress={() => [navigation.navigate('MapSettingAddressScreen',{
               //   useTo: 'setAddress'

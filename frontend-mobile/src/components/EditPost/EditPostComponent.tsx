@@ -24,6 +24,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import ShowMapComponent from '../ShowMapComponent';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+import ContainerComponent from '../ContainerComponent';
 
 
 interface EditPostComponent  {
@@ -235,13 +236,11 @@ useEffect(() => {
 const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
   const currentDate = selectedDate ? selectedDate : post.timestart;
   setStartDatePickerVisibility(Platform.OS === 'ios');
-  setEndDate(null);
-  setPost({ ...post, timeend: null });
   setNewStartDate( moment(currentDate).format('YYYY-MM-DD') );
 };
 
 const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
-  const currentDate = selectedDate ? selectedDate : newStartDate;
+  const currentDate = selectedDate ? selectedDate : newEndDate;
   setEndDatePickerVisibility(Platform.OS === 'ios');
   setNewEndDate( moment(currentDate).format('YYYY-MM-DD') ); // Cập nhật formData
   
@@ -405,119 +404,80 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
 
   return(
-    <ScrollView style={styles.container}>
-{/* 
-      <LottieView source={require('../../../assets/Animation - 1715742581201.json')} style={{width: appInfo.sizes.WIDTH * 1.2 , height: appInfo.sizes.HEIGHT * 0.38}} autoPlay loop />
-      <LottieView source={require('../../assets/Animation - 1715742581201.json')} style={{width: appInfo.sizes.WIDTH , height: appInfo.sizes.HEIGHT * 0.38}} autoPlay loop /> */}
+    <ContainerComponent back title="Chỉnh sửa bài viết">
 
-    <View >
-        <TextInput
-            label="Ảnh của món đồ"
-            style={styles.input}
-            underlineColor="transparent" // Màu của gạch chân khi không focus
-            editable={false} // Người dùng không thể nhập trực tiếp vào trường này
-            error={false}
-            // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
-            theme={{
-              colors: {
-                error: appColors.danger, 
-              },
-            }}
-          />
-          {/* Hiển thị ảnh đã chọn */}
-        <ScrollView horizontal>
-            {itemImages.map((image: any, index) => (
-              <View key={index} style={styles.imageContainer}>
-                  <Image source={{ uri: image.path }} style={styles.image} />
-                  {itemImages.length > 1 && 
-                      <TouchableOpacity 
-                        onPress={() => {
-                          removeImage(index);
-                        }} 
-                        style={styles.closeButton}>
-                        <MaterialIcons name="close" size={24} color="white" />
-                      </TouchableOpacity>
-                  }
-                  
-                </View>
-              ))}
-        </ScrollView>
+      <ScrollView style={styles.container}>
 
-        <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
-          Thêm Ảnh
-        </Button>
-      </View>
-
-      {/* <TextInput
-        label="Tên món đồ"
-        value={post.name ? post.name : ''}
-        // onBlur={() => handleValidate(formData.itemName,'itemname')}
-        onChangeText={(text) => {
-          // handleValidate(text,'itemname');
-          // setErrorMessage({...errorMessage, itemName: ''})
-        }}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        error={false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      /> */}
-
-      {post &&
-        <>
+      <View >
           <TextInput
-            label="Tiêu đề bài đăng"
-            value={newTitle}
-            // onBlur={() => handleValidate(formData.postTitle,'postitle')}
-            onChangeText={(text) => {
-              setNewTitle(text);
-            }}
-            style={styles.input}
-            underlineColor="gray" // Màu của gạch chân khi không focus
-            activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-            // error={errorMessage.postTitle? true : false}
-            theme={{
-              colors: {
-                error: appColors.danger, 
-              },
-            }}
-          />
-
-          <TextInput
-            label="Nội dung của bài đăng"
-            value={newDescription}
-            // onBlur={() => handleValidate(formData.postDescription,'postdescription')}
-            onChangeText={(text) => {
-              // setFormData({ ...formData, postDescription: text });
-              setNewDescription(text);
-              // setErrorMessage({...errorMessage, postDescription: ''});
-              // handleValidate(text,'postdescription');
-
-            }}
-            style={styles.input}
-            underlineColor="gray" // Màu của gạch chân khi không focus
-            activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-            multiline={true} // Cho phép nhập nhiều dòng văn bản
-            numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-            // error={errorMessage.postDescription? true : false}
-            theme={{
-              colors: {
-                error: appColors.danger, 
-              },
-            }}
-            />
-
-          <TouchableOpacity onPress={showStartDatePicker}>
-            <TextInput
-              label="Ngày bắt đầu"
-              value={newStartDate ? moment(newStartDate).format('YYYY-MM-DD') : moment(post.timestart).format('YYYY-MM-DD')} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+              label="Ảnh của món đồ"
               style={styles.input}
-              editable={false} // Người dùng không thể chỉnh sửa trực tiếp
+              underlineColor="transparent" // Màu của gạch chân khi không focus
+              editable={false} // Người dùng không thể nhập trực tiếp vào trường này
               error={false}
+              // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+              theme={{
+                colors: {
+                  error: appColors.danger, 
+                },
+              }}
+            />
+            {/* Hiển thị ảnh đã chọn */}
+          <ScrollView horizontal>
+              {itemImages.map((image: any, index) => (
+                <View key={index} style={styles.imageContainer}>
+                    <Image source={{ uri: image.path }} style={styles.image} />
+                    {itemImages.length > 1 && 
+                        <TouchableOpacity 
+                          onPress={() => {
+                            removeImage(index);
+                          }} 
+                          style={styles.closeButton}>
+                          <MaterialIcons name="close" size={24} color="white" />
+                        </TouchableOpacity>
+                    }
+                    
+                  </View>
+                ))}
+          </ScrollView>
+
+          <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
+            Thêm Ảnh
+          </Button>
+        </View>
+
+        {/* <TextInput
+          label="Tên món đồ"
+          value={post.name ? post.name : ''}
+          // onBlur={() => handleValidate(formData.itemName,'itemname')}
+          onChangeText={(text) => {
+            // handleValidate(text,'itemname');
+            // setErrorMessage({...errorMessage, itemName: ''})
+          }}
+          style={styles.input}
+          underlineColor="gray" // Màu của gạch chân khi không focus
+          activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+          error={false}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
+        /> */}
+
+        {post &&
+          <>
+            <TextInput
+              label="Tiêu đề bài đăng"
+              value={newTitle}
+              // onBlur={() => handleValidate(formData.postTitle,'postitle')}
+              onChangeText={(text) => {
+                setNewTitle(text);
+              }}
+              style={styles.input}
+              underlineColor="gray" // Màu của gạch chân khi không focus
+              activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+              // error={errorMessage.postTitle? true : false}
               theme={{
                 colors: {
                   error: appColors.danger, 
@@ -525,25 +485,34 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
               }}
             />
 
-          </TouchableOpacity>
-            {isStartDatePickerVisible && (
-              <DateTimePicker
-                testID="dateTimePicker"
-                value={newStartDate ?  moment(newStartDate).toDate() :  moment(post.timestart).toDate()} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
-                mode="date"
-                is24Hour={true}
-                display="default"
-                minimumDate={new Date} // Đặt ngày tối thiểu có thể chọn cho DatePicker
-                maximumDate={moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
-                onChange={onChangeStartDate}
-              />
-            )}
+            <TextInput
+              label="Nội dung của bài đăng"
+              value={newDescription}
+              // onBlur={() => handleValidate(formData.postDescription,'postdescription')}
+              onChangeText={(text) => {
+                // setFormData({ ...formData, postDescription: text });
+                setNewDescription(text);
+                // setErrorMessage({...errorMessage, postDescription: ''});
+                // handleValidate(text,'postdescription');
 
-            <TouchableOpacity onPress={showEndDatePicker}>
+              }}
+              style={styles.input}
+              underlineColor="gray" // Màu của gạch chân khi không focus
+              activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+              multiline={true} // Cho phép nhập nhiều dòng văn bản
+              numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+              // error={errorMessage.postDescription? true : false}
+              theme={{
+                colors: {
+                  error: appColors.danger, 
+                },
+              }}
+              />
+
+            <TouchableOpacity onPress={showStartDatePicker}>
               <TextInput
-                label="Ngày kết thúc"
-                value={newEndDate ? moment(newEndDate).format('YYYY-MM-DD')  : post.timeend ? moment(post.timeend).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
-                // onBlur={() => handleValidate(formData.postEndDate,'postenddate')}
+                label="Ngày bắt đầu"
+                value={newStartDate ? moment(newStartDate).format('YYYY-MM-DD') : moment(post.timestart).format('YYYY-MM-DD')} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
                 style={styles.input}
                 editable={false} // Người dùng không thể chỉnh sửa trực tiếp
                 error={false}
@@ -552,58 +521,88 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
                     error: appColors.danger, 
                   },
                 }}
-              />      
+              />
+
             </TouchableOpacity>
-              {isEndDatePickerVisible && (
+              {isStartDatePickerVisible && (
                 <DateTimePicker
                   testID="dateTimePicker"
-                  value={newEndDate ? moment(newEndDate).toDate() : post.timeend ? moment(post.timeend).toDate() : new Date()}
+                  value={newStartDate ?  moment(newStartDate).toDate() :  moment(post.timestart).toDate()} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
                   mode="date"
                   is24Hour={true}
                   display="default"
-                  minimumDate={newStartDate ?  moment(newStartDate).toDate() :  moment(post.timestart).toDate()} // Đặt ngày tối thiểu có thể chọn cho DatePicker
-                  maximumDate={moment(post.timestart).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
-                  onChange={onChangeEndDate}
+                  minimumDate={new Date} // Đặt ngày tối thiểu có thể chọn cho DatePicker
+                  maximumDate={newEndDate ? moment(newEndDate).toDate() : post.timeend ? moment(post.timeend).toDate() : moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+                  onChange={onChangeStartDate}
                 />
               )}
-              {post && post.givetypeid !== 3 && (
-                <>
+
+              <TouchableOpacity onPress={showEndDatePicker}>
                 <TextInput
-                    label="Địa chỉ"
-                    value={location ? location.address : post?.address}
-                    style={styles.input}
-                    editable={false} // Người dùng không thể chỉnh sửa trực tiếp
-                    error={false}
-                    selection={{start: 0, end: 0}}
-                    onBlur={() => {
-                      // handleValidate('', 'postaddress');
-                      handleBlur();
-                      
-                    }}
-                    theme={{
-                      colors: {
-                        error: appColors.danger, 
-                      },
-                    }}
-                />
-                <ShowMapComponent
-                  location={location ? location : {address: post?.address, longitude: parseFloat(post?.longitude), latitude: parseFloat( post?.latitude)}}
-                  setLocation={setLocation}
-                  useTo={'setPostAddress'}
-                />
-                </>
-              )}
+                  label="Ngày kết thúc"
+                  value={newEndDate ? moment(newEndDate).format('YYYY-MM-DD')  : post.timeend ? moment(post.timeend).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+                  // onBlur={() => handleValidate(formData.postEndDate,'postenddate')}
+                  style={styles.input}
+                  editable={false} // Người dùng không thể chỉnh sửa trực tiếp
+                  error={false}
+                  theme={{
+                    colors: {
+                      error: appColors.danger, 
+                    },
+                  }}
+                />      
+              </TouchableOpacity>
+                {isEndDatePickerVisible && (
+                  <DateTimePicker
+                    testID="dateTimePicker"
+                    value={newEndDate ? moment(newEndDate).toDate() : post.timeend ? moment(post.timeend).toDate() : new Date()}
+                    mode="date"
+                    is24Hour={true}
+                    display="default"
+                    minimumDate={newStartDate ?  moment(newStartDate).toDate() :  moment(post.timestart).toDate()} // Đặt ngày tối thiểu có thể chọn cho DatePicker
+                    maximumDate={newStartDate ? moment(post.timestart).add(2, 'months').toDate() : moment(post.timestart).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+                    onChange={onChangeEndDate}
+                  />
+                )}
+                {post && post.givetypeid !== 3 && (
+                  <>
+                  <TextInput
+                      label="Địa chỉ"
+                      value={location ? location.address : post?.address}
+                      style={styles.input}
+                      editable={false} // Người dùng không thể chỉnh sửa trực tiếp
+                      error={false}
+                      selection={{start: 0, end: 0}}
+                      onBlur={() => {
+                        // handleValidate('', 'postaddress');
+                        handleBlur();
+                        
+                      }}
+                      theme={{
+                        colors: {
+                          error: appColors.danger, 
+                        },
+                      }}
+                  />
+                  <ShowMapComponent
+                    location={location ? location : {address: post?.address, longitude: parseFloat(post?.longitude), latitude: parseFloat( post?.latitude)}}
+                    setLocation={setLocation}
+                    useTo={'setPostAddress'}
+                  />
+                  </>
+                )}
 
-            <Button mode="contained" onPress={handleEdit} style={styles.button} >Lưu</Button>
-            <Button  onPress={handleCancel} style={styles.cancelButton} >Hủy</Button>
+              <Button mode="contained" onPress={handleEdit} style={styles.button} >Lưu</Button>
+              <Button  onPress={handleCancel} style={styles.cancelButton} >Hủy</Button>
 
 
-        </>
-      }
+          </>
+        }
 
-      
-    </ScrollView>
-    
+        
+      </ScrollView>
+    </ContainerComponent>
+
   )
 
 }

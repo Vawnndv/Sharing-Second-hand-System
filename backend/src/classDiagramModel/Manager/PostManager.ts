@@ -1047,17 +1047,29 @@ export class PostManager {
     }
 
 
-    public static async updatePostStatus (postid: string, statusid: number) : Promise<any> {
+    public static async updatePostStatus (postid: string, statusid: number, isApproveAction: any) : Promise<any> {
 
-      const client = await pool.connect()
+      const client = await pool.connect();
   
       try{
-        const query = `
+        let query = ''
+        if(!isApproveAction){
+          query = `
           UPDATE posts
           SET statusid = '${statusid}'
           WHERE postid = '${postid}'
           RETURNING *
-        `
+          `
+        }
+        else{
+          query = `
+          UPDATE posts
+          SET statusid = '${statusid}', approvedate = NOW() 
+          WHERE postid = '${postid}'
+          RETURNING *
+          `
+        }
+
   
         const resultQueryPost: QueryResult = await client.query(query)
         if(resultQueryPost.rows[0].status !== status){
