@@ -33,7 +33,7 @@ function Uploader(props: Props) {
   };
 
   const UploadImageToAws3 = async (file: any) => {
-
+    console.log("UploadImageToAws3", file)
     try {
       // Đọc nội dung của tệp tin bằng FileReader
       const fileReader: any = new FileReader();
@@ -77,7 +77,7 @@ function Uploader(props: Props) {
   const onDrop = useCallback(async (imageFile: any) => {
     const file = new FormData()
     file.append('file', imageFile[0])
-    
+    // console.log('OnDrop', file)
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);

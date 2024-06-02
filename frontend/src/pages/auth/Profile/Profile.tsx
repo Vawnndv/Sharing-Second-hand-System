@@ -156,6 +156,8 @@ function Profile() {
       boxShadow: '1px 1px 2px #CAC9C8',
   };
 
+  console.log('imageUrl', imageUrl)
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid

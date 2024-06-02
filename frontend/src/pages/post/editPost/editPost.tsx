@@ -24,6 +24,7 @@ import './styles.scss'
 import dayjs, { Dayjs } from 'dayjs';
 import MapSelectAddress from '../../../components/Map/MapSelectAddress';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
 
 
 function EditPost() {
@@ -32,20 +33,27 @@ function EditPost() {
     console.log(postState)
 
     const {postid}= useParams();
-    const userLogin = useSelector((state: any) => state.userLogin);
 
     const navigate = useNavigate();
 
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
-    const [postReceivers, setPostReceivers] = useState([]);
     const [profile, setProfile] = useState<any>();
     const [itemImages, setItemImages] = useState([]);
+    const [itemNewImages, setItemNewImages] = useState([]);
+
+    const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
 
     const today = dayjs();
     const [date, setDate] = React.useState<[Dayjs, Dayjs]>([today, today]);
 
     const [location, setLocation] = useState<any>(null)
     // const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs((post.timestart).slice(0,10)), dayjs((post.timeEnd).slice(0,10))]);
+    const onChangeLocation = (e: any) => {
+        const tempLocation: any = {...location}
+        tempLocation.address = e.target.value
+        setLocation(tempLocation)
+    }
 
     useEffect(() => {
         if(post != null){
@@ -56,6 +64,8 @@ function EditPost() {
                 latitude: parseFloat(post.latitude),
                 longitude: parseFloat(post.longitude)
             })
+            setTitle(post.title)
+            setDescription(post.description)
         }
     }, [post])
     useEffect(() => {
@@ -78,17 +88,6 @@ function EditPost() {
             
           } catch (error) {
             console.error('Error fetching post details:', error);
-          }
-    
-          try {
-    
-            const res: any = await Axios.get(`/posts/postreceivers/${postid}`)
-            if (!res) {
-              throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
-            }
-            setPostReceivers(res.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
-          } catch (error) {
-            console.error('Error fetching post receivers:', error);
           }
     
           try {
@@ -123,71 +122,6 @@ function EditPost() {
     console.log('post', post)
     console.log('profile', profile)
     console.log('itemImages', itemImages)
-    
-    const approvePost = async () => {
-        if(post.givetype !== "Cho kho" && post.givetype !== "Cho kho (kho đến lấy)"){
-            try{
-                const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                    postid: post.postid,
-                    statusid: 12,
-                })
-                toast.success(`Post apporved`);      
-                navigate(-1);
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        else if (post.givetype === 'Cho kho (kho đến lấy)') {
-
-                try{
-                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                        postid: post.postid,
-                        statusid: 7,
-                    })
-                    toast.success(`Post apporved`);            
-                    navigate(-1);
-
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-            else{
-
-                try{
-                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                        postid: post.postid,
-                        statusid: 13,
-                    })
-                    toast.success(`Post apporved`);
-                    navigate(-1);
-
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-
-    }
-            
-
-    const declinePost = async () => {
-        try{
-            const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                postid: post.postid,
-                statusid: 6,
-            })
-            toast.success('Post canceled successfully!');
-            navigate(-1);
-
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
-
-    const handleClickEdit = () => {
-        navigate(`/post/edit/${postid}`)
-    }
 
     const handleClickPost = () => {
         console.log('post')
@@ -208,6 +142,39 @@ function EditPost() {
         border: '2px solid #CAC9C8',
         boxShadow: '1px 1px 2px #CAC9C8',
     };
+
+    console.log("location", location)
+
+    const handleRemoveImage = (type: string, index: number) => {
+        console.log("handleRemoveImage")
+        console.log('itemImages', itemImages)
+        console.log('itemNewImages', itemNewImages)
+        console.log(type, index)
+
+        if(type === 'itemImages'){
+            const tempItemImages = [...itemImages]
+            tempItemImages.splice(index, 1);
+            setItemImages(tempItemImages)
+        }else{
+            const tempItemNewImages = [...itemNewImages]
+            tempItemNewImages.splice(index, 1);
+            setItemNewImages(tempItemNewImages)
+        }
+
+    }
+
+    const handleTakeImgFile = (e: any) => {
+        const newFile: any = e.target.files[0]
+        const newImages: any = [...itemNewImages]
+        if (newFile) {
+            const fileUrl = URL.createObjectURL(newFile);
+            const newImage: any = newFile
+            newImage.path = fileUrl
+            console.log(newImage)
+            newImages.push(newImage)
+            setItemNewImages(newImages)
+        }
+    }
     
     return ( 
         <div style={{display: 'flex', flexDirection: 'column',
@@ -221,7 +188,7 @@ function EditPost() {
                     flexDirection='row'
                     flexWrap='wrap'>
                     {
-                        itemImages && 
+                        itemImages.length > 0 && 
                         itemImages.map((image: any, index: number) => {
                             return (
                                 <Paper
@@ -229,8 +196,8 @@ function EditPost() {
                                     sx={{
                                         width: '400px',
                                         height: '250px',
-                                        overflow: 'hidden',
-                                        m: 2
+                                        m: 2,
+                                        position: 'relative'
                                     }}>
                                     <img
                                         style={{
@@ -238,6 +205,50 @@ function EditPost() {
                                             height: '250px',
                                         }}
                                         src={`${image.path}`} alt={`img ${index}`}/>
+                                    <HighlightOffTwoToneIcon
+                                        onClick={() => handleRemoveImage('itemImages', index)}
+                                        sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
+                                        transition: 'all 0.2s ease',
+                                        '&:hover': {
+                                            fontSize: 40
+                                        }
+                                     }} 
+                                     />
+                                    
+                                </Paper>
+                                
+                            )
+                        })
+                        
+                    }
+
+                    {
+                        itemNewImages.length > 0 && 
+                        itemNewImages.map((image: any, index: number) => {
+                            return (
+                                <Paper
+                                    key={index}
+                                    sx={{
+                                        width: '400px',
+                                        height: '250px',
+                                        m: 2,
+                                        position: 'relative'
+                                    }}>
+                                    <img
+                                        style={{
+                                            width: '400px',
+                                            height: '250px',
+                                        }}
+                                        src={`${image.path}`} alt={`img ${index}`}/>
+                                    <HighlightOffTwoToneIcon 
+                                        onClick={() => handleRemoveImage('itemNewImages', index)}
+                                        sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
+                                        transition: 'all 0.2s ease',
+                                        '&:hover': {
+                                            fontSize: 40
+                                        }
+                                     }} />
+                                    
                                 </Paper>
                                 
                             )
@@ -245,21 +256,35 @@ function EditPost() {
                         
                     }
                 
-                    <Paper
-                        className='paperImage'
-                        elevation={1}
-                        sx={{
-                            width: '250px',
-                            height: '250px',
-                            overflow: 'hidden',
-                            m: 2,
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            outline: '2px dash #000'
-                        }}>
-                            <AddPhotoAlternateOutlinedIcon className='iconImage' sx={{ color: '#A1A1A1'}}/>
-                    </Paper>
+                <Paper
+                    elevation={1}
+                    sx={{
+                        width: '250px',
+                        height: '250px',
+                        overflow: 'hidden',
+                        m: 2,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        position: 'relative', // Đảm bảo input phủ lên toàn bộ Paper
+                        outline: '2px dashed #A1A1A1',
+                    }}
+                    className='paperImage'
+                    >
+                    <input
+                        type='file'
+                        accept='image/*'
+                        onChange={(e) => handleTakeImgFile(e)}
+                        style={{
+                        position: 'absolute',
+                        width: '100%',
+                        height: '100%',
+                        opacity: 0,
+                        cursor: 'pointer',
+                        }}
+                    />
+                    <AddPhotoAlternateOutlinedIcon className='iconImage' sx={{ color: '#A1A1A1' }} />
+                </Paper>
                 </Stack>
                 
                 {
@@ -275,7 +300,8 @@ function EditPost() {
                             variant='h6'
                             >Tiêu đề</Typography>
                         <Input
-                            value={post.title}
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
@@ -291,7 +317,8 @@ function EditPost() {
                             variant='h6'
                             >Mô tả</Typography>
                         <Input
-                            value={post.description}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
@@ -328,7 +355,8 @@ function EditPost() {
                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
                                 {/* <Typography variant='body2' component='div'>{post.address}</Typography> */}
                                 <Input
-                                    value={post.address}
+                                    value={location.address}    
+                                    onChange={(e) => onChangeLocation(e)}
                                     sx={{
                                         color: 'black',
                                         mb: 2
@@ -337,7 +365,7 @@ function EditPost() {
                                 <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
                                     <Button fullWidth sx={{height: '55px', width: '100%', mb: 2}} variant="outlined" startIcon={<LocationOnIcon />}
                                         onClick={handleOpen}>
-                                        Cập nhật vị trí cho
+                                        Cập nhật vị trí cho đồ
                                     </Button>
                                     <Modal
                                         open={open}
@@ -369,34 +397,7 @@ function EditPost() {
                     m={2}>
                     
 
-                    {post && postState.canApproval&&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={approvePost}>
-                            <CheckCircleOutlineOutlinedIcon color='success'/>
-                            <Typography variant='inherit' color='success'>Duyệt</Typography>
-                        </Button>
-                    }
-                    
-                    {post && postState.canDelete &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={declinePost}>
-                            <RemoveCircleIcon color='error'/>
-                            <Typography variant='inherit' color='error'>Xóa</Typography>
-                        </Button>
-                    }
-
-                    {post && postState.isWaitForPost &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={handleClickEdit}>
-                            <ModeEditOutlineIcon color='secondary'/>
-                            <Typography variant='inherit' color='secondary'>Chỉnh sửa</Typography>
-                        </Button>
-                    }
-
-                    {post && postState.isWaitForPost &&
+                    {post &&
                         <Button
                             sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
                             onClick={handleClickPost}>
