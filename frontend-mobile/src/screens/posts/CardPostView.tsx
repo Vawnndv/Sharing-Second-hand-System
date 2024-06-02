@@ -16,6 +16,7 @@ import { fontFamilies } from "../../constants/fontFamilies";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { appColors } from "../../constants/appColors";
 import { TextComponent } from "../../components";
+import { Stacks } from "iconsax-react-native";
 
 const { width, height } = Dimensions.get("window");
 
@@ -58,7 +59,7 @@ export default function CardPostView({
               <Text style={styles.title}>{title}</Text>
               <View style={styles.locationContainer}>
                 <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
-                <TextComponent numberOfLines={1} text={location}></TextComponent>
+                <TextComponent styles={{flex: 1}} numberOfLines={1} text={location}></TextComponent>
               </View>
               <View style={styles.methodContainer}>
                 <Text style={styles.boldText}>Phương thức: </Text>

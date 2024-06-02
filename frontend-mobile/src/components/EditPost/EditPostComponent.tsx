@@ -567,22 +567,22 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
                 {post && post.givetypeid !== 3 && (
                   <>
                   <TextInput
-                      label="Địa chỉ"
-                      value={location ? location.address : post?.address}
-                      style={styles.input}
-                      editable={false} // Người dùng không thể chỉnh sửa trực tiếp
-                      error={false}
-                      selection={{start: 0, end: 0}}
-                      onBlur={() => {
-                        // handleValidate('', 'postaddress');
-                        handleBlur();
-                        
-                      }}
-                      theme={{
-                        colors: {
-                          error: appColors.danger, 
-                        },
-                      }}
+                    label="Địa chỉ"
+                    value={(location ? location.address : post?.address)} // Hiển thị 10 ký tự đầu tiên
+                    style={styles.input}
+                    editable={true} // Người dùng không thể chỉnh sửa trực tiếp
+                    error={false}
+                    onBlur={() => {
+                      // handleValidate('', 'postaddress');
+                      handleBlur();
+                    }}
+                    theme={{
+                      colors: {
+                        error: appColors.danger, 
+                      },
+                    }}
+                    disabled={true}
+                    selection={{start: 0, end: 0}}
                   />
                   <ShowMapComponent
                     location={location ? location : {address: post?.address, longitude: parseFloat(post?.longitude), latitude: parseFloat( post?.latitude)}}

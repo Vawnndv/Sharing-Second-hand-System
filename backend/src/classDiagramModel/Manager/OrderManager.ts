@@ -214,6 +214,8 @@ export class OrderManager {
             ORDER BY o.createdat DESC
           `;
 
+          console.log('ordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQueryordersQuery', ordersQuery)
+
       const addressQuery = `
         SELECT * FROM "address"
         WHERE addressid = $1

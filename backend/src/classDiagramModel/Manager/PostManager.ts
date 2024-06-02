@@ -233,7 +233,7 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 2 OR po.statusid = 12)
+      WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
       GROUP BY
           us.userid,
           us.firstname,
@@ -367,7 +367,7 @@ export class PostManager {
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = true AND od.givetypeid != 3 AND od.givetypeid != 4
-	  AND (od.status LIKE '%Chờ xét duyệt%' OR od.status LIKE '%Đã duyệt%')
+	  AND (od.status LIKE '%Đã duyệt%')
       GROUP BY
           us.userid,
           us.firstname,
@@ -1071,7 +1071,7 @@ export class PostManager {
     }
 
 
-    public static async updatePostStatus (postid: string, statusid: number, isApproveAction: any) : Promise<any> {
+    public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
 
       const client = await pool.connect();
   
@@ -1080,25 +1080,22 @@ export class PostManager {
         if(!isApproveAction){
           query = `
           UPDATE posts
-          SET statusid = '${statusid}'
-          WHERE postid = '${postid}'
+          SET statusid = ${statusid}
+          WHERE postid = ${postid}
           RETURNING *
           `
         }
         else{
           query = `
           UPDATE posts
-          SET statusid = '${statusid}', approvedate = NOW() 
-          WHERE postid = '${postid}'
+          SET statusid = ${statusid}, approvedate = NOW() 
+          WHERE postid = ${postid}
           RETURNING *
           `
         }
 
   
         const resultQueryPost: QueryResult = await client.query(query)
-        if(resultQueryPost.rows[0].status !== status){
-          return false;
-        }
         return resultQueryPost;
       }catch(error){
         console.log(error)
