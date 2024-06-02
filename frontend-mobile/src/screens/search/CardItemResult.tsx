@@ -145,12 +145,12 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
               avatar={item.avatar}
               size={50}
               onPress={() => {
-                !item.iswarehousepost && navigation.navigate('Profile', {
-                  screen: 'ProfileScreen',
-                  params: {
+                !item.iswarehousepost && navigation.navigate(
+                  'ProfileScreen',
+                  {
                     id: item.userid
                   },
-                });
+                );
               }}
             />
             <SpaceComponent width={12} />
