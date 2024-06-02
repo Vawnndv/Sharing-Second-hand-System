@@ -116,7 +116,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
-  const scrollViewRef = useRef(null);
 
 
   const handleScroll = (event: any) => {
@@ -390,7 +389,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                     openChatRoomReceive({item: {
                       avatar: profile?.avatar,
                       userid: post.owner,
-                      username: profile?.username,
+                      username: profile?.firstname ? profile?.firstname + profile?.lastname : ' ',
                       firstname: profile?.firstname,
                       lastname: profile?.lastname,
                     },
@@ -407,12 +406,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                 <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                   <AvatarComponent 
                     avatar={profile?.avatar}
-                    username={profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}
+                    username={ profile?.firstname + ' ' + profile?.lastname}
                     styles={styles.avatar}
                   />
                   <View style={[styles.username_timeContaner, {rowGap: 5}]}>
                   {/* Hiển thị tên của user */}
-                    <Text style={styles.username_owner}>{profile?.username   ? profile?.username + ' đang muốn cho đồ'  : profile?.firstname  + ' ' + profile?.lastname + ' đang muốn cho đồ' }</Text>
+                    <Text style={styles.username_owner}>{ profile?.firstname  + ' ' + profile?.lastname + ' đang muốn cho đồ' }</Text>
                     <Text style={{fontFamily: fontFamilies.regular, fontSize:16}}>{post?.title}</Text>
 
                     {/* Hiển thị ngày đăng */}
@@ -504,7 +503,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                       openChatRoomReceive({item: {
                         avatar: profile?.avatar,
                         userid: post.owner,
-                        username: profile?.username,
+                        username: profile?.firstname ? profile?.firstname + profile?.lastname : ' ',
                         firstname: profile?.firstname,
                         lastname: profile?.lastname,
                       }, 

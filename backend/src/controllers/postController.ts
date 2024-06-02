@@ -1,3 +1,5 @@
+import { AddressManager } from '../classDiagramModel/Manager/AddressManager';
+import { ItemManager } from '../classDiagramModel/Manager/ItemManager';
 import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
 
@@ -238,5 +240,58 @@ export const getAllPostByUserId = asyncHandle(async (req, res) => {
     res.status(200).json({ message: 'Get all posts successfully', data });
   } else {
     res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+  }
+});
+
+
+export const  EditPost = asyncHandle(async (req, res) => {
+  const postid: any = req.body.postid;
+  // const isAddImage: any = req.body.isAddImage;
+  const isDeleteImage: any = req.body.isDeleteImage;
+  const newTitle: any = req.body.newTitle;
+  const newDescription: any = req.body.newDescription;
+  const newLocation: any = req.body.newLocation;
+  const newStartDate: any = req.body.newStartDate;
+  const newEndDate: any = req.body.newEndDate;
+  // const imageAddArray: any = req.body.imageAddArray;
+  const imageDeleteArray: any = req.body.imageDeleteArray;
+  // const itemid: any = req.body.itemid;
+  const addressid: any = req.body.addressid;
+
+  // let addImage = false;
+  let deleteImage = false;
+
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    // if (isAddImage) {
+    //   for (let i = 0; i < imageAddArray.length; i++) {
+    //     await ItemManager.uploadImageItem(imageAddArray[i].path, itemid);
+    //   }
+    //   addImage = true;
+    // }
+    // if (!isAddImage) {
+    //   addImage = true;
+    // }
+
+    if (!isDeleteImage) {
+      deleteImage = true;
+    }
+    if (isDeleteImage) {
+      for (let i = 0; i < imageDeleteArray.length; i++) {
+        await ItemManager.deleteImageItem(imageDeleteArray[i].imgid);
+      }
+      deleteImage = true;
+    }
+
+    const postUpdated: any = await PostManager.updatePostDetail(postid, newTitle, newDescription, newStartDate, newEndDate);
+    const addressUpdated: any = await AddressManager.updateAddress(addressid, newLocation.address, newLocation.longitude, newLocation.latitude);
+    if (postUpdated && deleteImage && addressUpdated) {
+      res.status(200).json({ message: 'Post Updated Sucessfully', postUpdated });
+    }
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Error when update post:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });

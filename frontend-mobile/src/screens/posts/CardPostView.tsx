@@ -40,7 +40,7 @@ export default function CardPostView({
       });
     } else {
       navigation.navigate("ItemDetailScreen", {
-        postId: postid,
+        postID: postid,
       });
     }
   };
