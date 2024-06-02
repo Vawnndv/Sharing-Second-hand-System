@@ -34,8 +34,9 @@ function MessageItem({ messages, typeChat }: any) {
                     px: 2,
                     py: 1,
                     borderRadius: 5,
-                    backgroundColor: '#bbdefb',
+                    backgroundColor: 'gray',
                     wordBreak: 'break-word',
+                    color: 'white'
                   }}
                 >
                   <Typography sx={{ padding: 1 }}>
@@ -67,7 +68,7 @@ function MessageItem({ messages, typeChat }: any) {
                     px: 2,
                     py: 1,
                     borderRadius: 5,
-                    backgroundColor: 'gray',
+                    backgroundColor: '#bbdefb',
                     wordBreak: 'break-word',
                   }}
                 >
@@ -76,7 +77,7 @@ function MessageItem({ messages, typeChat }: any) {
                   </Typography>
                 </Box>
               )}
-              <Typography variant='caption' sx={{ mt: 0.5, opacity: 0.5 }}>
+              <Typography variant='caption' sx={{ mt: 0.5, opacity: 0.5, display: 'flex', justifyContent: 'flex-end' }}>
                 {formattedTime}
               </Typography>
             </Box>

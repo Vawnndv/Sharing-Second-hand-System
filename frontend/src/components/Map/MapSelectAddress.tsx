@@ -15,8 +15,8 @@ import { useSelector } from 'react-redux';
 import home from '../../assets/home.png'
 import  './styles.scss'
 
-// const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
-const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
+const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
+// const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
 // const API_KEY = 'AIzaSyBW-S8iBG0D-d2QahuXvJbtvkUOpy2A8OY'
 
 const getUrlRequest = (query: string) => {
