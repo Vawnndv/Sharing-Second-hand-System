@@ -211,13 +211,12 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     setErrorMessage(updatedErrorMessage);
 
   }
-
+  selectedReceiveMethod
   useEffect(() => {
 
     if(isUserPost && receivetype === 'Cho nhận trực tiếp'){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
-
     }
 
     else if(isUserPost && bringItemToWarehouseMethodsDropDown){

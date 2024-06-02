@@ -253,6 +253,7 @@ const MultiStepForm = () => {
             isWarehousePost: false,
             statusid: statusid,
             givetypeid: givetypeid,
+            phonenumber: formDataStepTwo.postPhoneNumber
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
@@ -270,7 +271,8 @@ const MultiStepForm = () => {
             isWarehousePost: false,
             statusid: statusid,
             givetypeid: givetypeid,
-            warehouseid: warehouseid
+            warehouseid: warehouseid,
+            phonenumber: formDataStepTwo.postPhoneNumber
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
@@ -288,6 +290,8 @@ const MultiStepForm = () => {
             isWarehousePost: false,
             statusid: statusid,
             givetypeid: givetypeid,
+            phonenumber: formDataStepTwo.postPhoneNumber
+
           });
         }    
 

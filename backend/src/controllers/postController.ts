@@ -135,12 +135,13 @@ export const createPost = asyncHandle(async (req, res) => {
   const statusid = req.body.statusid;
   const givetypeid = req.body.givetypeid;
   const warehouseid = req.body.warehouseid;
+  const phonenumber = req.body.phonenumber;
 
 
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend, isNewAddress, postLocation, isWarehousePost, statusid, givetypeid, warehouseid);
+    const postCreated = await PostManager.createPost(title, location, description, owner, time, itemid, timestart, timeend, isNewAddress, postLocation, isWarehousePost, statusid, givetypeid, warehouseid, phonenumber);
     res.status(200).json({ message: 'Create post successfully', postCreated: postCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
