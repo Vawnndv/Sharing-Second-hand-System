@@ -909,6 +909,32 @@ export class PostManager {
   }
 
 
+  public static async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
+
+    const client = await pool.connect();
+    const query = `
+        UPDATE POSTS
+        SET title = '${title}', description = '${description}', timestart = '${timestart}', timeend = '${timeend}'
+        WHERE postid = ${postid}
+        RETURNING *
+      `;
+    // const values : any = [postid, receiverid, comment, time, receivertypeid, warehouseid];
+    
+    try {
+      const result: QueryResult = await client.query(query);
+      console.log('Post updated successfully:', result.rows[0]);
+      return result.rows[0];
+    } catch (error) {
+      console.error('Error when updating post:', error);
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+
+
+
+
 
 
 
