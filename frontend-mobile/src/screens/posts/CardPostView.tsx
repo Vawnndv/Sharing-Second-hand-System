@@ -48,7 +48,7 @@ export default function CardPostView({
   };
 
   return (
-    <View>
+    <View key={postid}>
       <TouchableOpacity
         onPress={() => handleNavigate()}
       >

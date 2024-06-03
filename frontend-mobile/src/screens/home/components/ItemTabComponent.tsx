@@ -11,6 +11,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import postsAPI from '../../../apis/postApi';
 import axios from 'axios';
 import { appInfo } from '../../../constants/appInfos';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../../redux/reducers/authReducers';
 
 export interface filterValue {
   distance: number;
@@ -29,7 +31,8 @@ const category = [
   "Khác"
 ]
 
-const ItemTabComponent = () => {
+const ItemTabComponent = ({navigation}: any) => {
+  const auth = useSelector(authSelector)
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [warehouses, setWarehouses] = useState<any[]>([]);
@@ -40,6 +43,22 @@ const ItemTabComponent = () => {
     category: category,
     sort: "Mới nhất"
   })
+
+  const [isNewUser, setIsNewUser] = useState(false)
+
+  useEffect(() => {
+    const getUserAddress = async () => {
+      const response: any = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+      console.log('getUserAddress', response.data)
+      if(response.data.data === null){
+        // setIsNewUser(true)
+        // console.log('getUserAddress true', response.data)
+        navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
+        // console.log("navigate to map")
+      }
+    }
+    getUserAddress()
+  }, [])
 
   const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
   useEffect(() => {
@@ -58,8 +77,16 @@ const ItemTabComponent = () => {
       setWarehousesID(listWarehouseID)
     }
     fetchDataWarehouses()
+
+    
   }, [])
-  console.log("warehousesID", warehousesID)
+
+  // useEffect(() => {
+  //   if(isNewUser){
+  //     navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
+  //   }
+  // }, [isNewUser])
+  // console.log("warehousesID", warehousesID)
 
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {

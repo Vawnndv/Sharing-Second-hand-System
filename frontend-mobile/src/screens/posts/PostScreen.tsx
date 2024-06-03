@@ -80,7 +80,7 @@ const PostScreen = ({ navigation, route }: any) => {
           <FlatList
             data={posts}
             renderItem={renderItem}
-            keyExtractor={(item) => item.postid.toString()}
+            keyExtractor={(item, index) => item.postid.toString()}
           />
         )}
       </View>

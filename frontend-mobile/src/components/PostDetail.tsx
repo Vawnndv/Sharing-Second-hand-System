@@ -336,7 +336,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
           <View style={styles.like_receiver_CountContainer}>
             <AntDesign name="inbox" size={24} color="green" />
-            <Text style={styles.receiverCount}>Người nhận: {postReceivers.length}</Text>
+            <Text style={styles.receiverCount}>Người xin nhận: {postReceivers.length}</Text>
             <AntDesign name="hearto" size={24} color="red" />
             <Text style={styles.loverCount}>Thích: 10</Text>
           </View>
@@ -385,7 +385,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
               </Modal>
 
               <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
-                {auth.id !== post?.owner && (
+                {(auth.id !== post?.owner) && (
                   <TouchableOpacity
                     onPress={() => {
                       openChatRoomReceive({
@@ -415,7 +415,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                   />
                   <View style={[styles.username_timeContaner, {rowGap: 5}]}>
                   {/* Hiển thị tên của user */}
-                    <Text style={styles.username_owner}>{ profile?.firstname  + ' ' + profile?.lastname + ' đang muốn cho đồ' }</Text>
+                    <Text style={styles.username_owner}><Text style={{fontWeight: 'bold', color: 'black'}}>{ profile?.firstname  + ' ' + profile?.lastname }</Text> đang muốn cho đồ</Text>
                     <Text style={{fontFamily: fontFamilies.regular, fontSize:16}}>{post?.title}</Text>
 
                     {/* Hiển thị ngày đăng */}
@@ -429,17 +429,17 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
                 <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
                   {/* <View style={{flexDirection: 'column', gap: 10}}> */}
-                    {isUserPost && (
+                    {isUserPost && post?.statusid === 12 && (
                       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
                     )}
                     {/* Nút chỉ hiển thị khi isUserPost là false */}
-                    {!isUserPost && (
+                    {!isUserPost && post?.statusid === 12 && (
                       <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                         {
                           postReceivers.some(postReceiver => postReceiver.receiverid === auth.id) ?
                           <TouchableOpacity style={styles.button} onPress={handleCancelReceive} ><Text style={{color: 'white'}}>Hủy</Text></TouchableOpacity>
                           :
-                          <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Nhận</Text></TouchableOpacity>
+                          <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Xin nhận</Text></TouchableOpacity>
                         }
                         
                       </View>

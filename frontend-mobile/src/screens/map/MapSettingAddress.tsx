@@ -67,11 +67,13 @@ export default function MapSettingAddress({navigation, route}: any) {
     useEffect(() => {
         const fetchHomeLocation = async () => {
             const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
-            setHomeLocation({
-                address: response.data.data.address,
-                latitude: parseFloat(response.data.data.latitude),
-                longitude: parseFloat(response.data.data.longitude)
-            })
+            if(response.data.data !== null){
+                setHomeLocation({
+                    address: response.data.data.address,
+                    latitude: parseFloat(response.data.data.latitude),
+                    longitude: parseFloat(response.data.data.longitude)
+                })
+            }
         }
         fetchHomeLocation()
         
