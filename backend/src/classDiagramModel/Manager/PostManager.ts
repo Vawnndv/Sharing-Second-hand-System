@@ -1039,7 +1039,7 @@ export class PostManager {
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
       `;
-    
+
     try {
       const result: QueryResult = await client.query(query);
       const warehouseList = await this.getListAddressByWarehouseID(warehouses);

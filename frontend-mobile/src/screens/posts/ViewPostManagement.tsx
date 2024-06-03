@@ -29,7 +29,7 @@ const ViewPostManagement = ({navigation, route}: any) => {
         'post'
       );
       
-      navigation.navigate('MyPost', { reload: true })
+      navigation.navigate('PostScreen')
     } catch (error) {
       console.log(error);
     }
@@ -45,7 +45,6 @@ const ViewPostManagement = ({navigation, route}: any) => {
 
 
   const handleViewPostDetail  = () => {
-    console.log('BÀI ĐĂNG IDDDDD LÀAAAAA:', postid);
     navigation.navigate('ItemDetailScreen', {
       postID: postid,
     })

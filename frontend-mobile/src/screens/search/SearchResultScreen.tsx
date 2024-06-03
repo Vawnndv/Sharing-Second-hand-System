@@ -45,6 +45,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
   const [shouldFetchData, setShouldFetchData] = useState(false);
   const [isEndOfData, setIsEndOfData] = useState(false);
   const [warehousesID, setWarehousesID] = useState([]);
+  const [refresh, setRefresh] = useState(false);
 
   const [filterValue, setFilterValue] = useState({
     distance: -1,
@@ -65,9 +66,12 @@ const SearchResultScreen = ({ route, navigation }: any) => {
   useEffect(() => {
     if (shouldFetchData) {
       fetchData(); // Fetch dữ liệu chỉ khi shouldFetchData là true
-      setShouldFetchData(false); // Đặt lại shouldFetchData về false sau khi đã fetch dữ liệu
     }
-  }, [shouldFetchData]);
+  }, [shouldFetchData, refresh]);
+
+  const handleRefresh = () => {
+    setRefresh(prevRefresh => !prevRefresh);
+  }
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -95,7 +99,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
         },
         "post"
       );
-      const newData: MyData[] = response.data;
+      let newData: MyData[] = response.data;
 
       if (newData.length <= 0 && page === 0) setIsEmpty(true);
 
@@ -147,6 +151,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
           data={data}
           handleEndReached={handleEndReached}
           isLoading={isLoading}
+          handleRefresh={handleRefresh}
         />
       )}
     </ContainerComponent>
