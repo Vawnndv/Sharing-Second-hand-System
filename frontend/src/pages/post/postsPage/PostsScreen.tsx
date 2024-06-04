@@ -6,13 +6,13 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useEffect, useState } from "react";
-import FilterModal from "../../modal/FilterModal/FilterModal";
+import FilterModal from "../../../modal/FilterModal/FilterModal";
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
-import PostJustApproved from "./PostJustApproved";
-import PostAwaitForApproval from "./PostAwaitForApproval";
-import PostJustCanceled from "./PostJustCanceled";
-import Axios from "../../redux/APIs/Axios";
+
+import HomeWarehousePosts from "../../home/HomeWarehousePosts";
+import Axios from "../../../redux/APIs/Axios";
+import PostWaitForPost from "../../approval/PostWaitForPost";
 
 const category = [
   "Quần áo",
@@ -24,7 +24,7 @@ const category = [
   "Khác"
 ]
 
-function PostApproval() {
+function PostsCreen() {
   // const dispatch: AppDispatch = useAppDispatch();
   // const navigate = useNavigate();
 
@@ -94,22 +94,16 @@ function PostApproval() {
                 }
               }}
             >
-              <Tab label="Đang chờ xét duyệt" value="1" sx={{paddingX: 3}}/>
-              <Tab label="Vừa duyệt" value="2" sx={{paddingX: 3}} />
-              <Tab label="Vừa hủy" value="3" sx={{paddingX: 3}} />
-              <Tab label="Chờ được đăng" value="4" sx={{paddingX: 3}} />
+              <Tab label="Bài đăng của kho" value="1" sx={{paddingX: 3}}/>
+              <Tab label="Chờ được đăng" value="2" sx={{paddingX: 3}} />
             </TabList>
           </Box>
           <TabPanel value="1">
-            <PostAwaitForApproval filterValue={filterValue} warehousesID={warehousesID}/>
+            <HomeWarehousePosts filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
           <TabPanel value="2">
-            <PostJustApproved filterValue={filterValue} warehousesID={warehousesID}/>
+            <PostWaitForPost filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
-          <TabPanel value="3">
-            <PostJustCanceled filterValue={filterValue} warehousesID={warehousesID}/>
-          </TabPanel>
-          
         </TabContext>
 
       </Box>
@@ -118,4 +112,4 @@ function PostApproval() {
   )
 }
 
-export default PostApproval;
+export default PostsCreen;
