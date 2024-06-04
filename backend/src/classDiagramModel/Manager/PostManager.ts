@@ -339,8 +339,8 @@ export class PostManager {
       SELECT DISTINCT
         us.userid,
         po.iswarehousepost,
-        CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-        CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+        CASE WHEN po.iswarehousepost = 'true' THEN wh.warehousename END AS name,
+        CASE WHEN po.iswarehousepost = 'true' THEN '' ELSE us.avatar END AS avatar,
         po.postid,
         po.title,
         po.description,
@@ -348,6 +348,7 @@ export class PostManager {
         ad.address,
         ad.longitude,
         ad.latitude,
+		    wh.warehousename,
         img.path,
         itt.nametype,
         od.status,
@@ -361,7 +362,7 @@ export class PostManager {
       LEFT JOIN item it ON it.itemid = po.itemid
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
-      LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+      LEFT JOIN warehouse wh ON po.warehouseid = wh.warehouseid
       LEFT JOIN orders od ON od.postid = po.postid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
@@ -632,7 +633,7 @@ export class PostManager {
 
         WHERE (od.status LIKE 'Hàng đã nhập kho')
       AND (od.givetypeid=3 OR od.givetypeid=4 )
-      AND (po.statusid = 14)
+      AND (po.statusid = 14 OR po.statusid = 12)
         GROUP BY
             us.userid,
             us.firstname,
@@ -819,7 +820,7 @@ export class PostManager {
     const client = await pool.connect();
 
     const queryInsertAddress = `
-      INSERT INTO "address" (address, latitude, longitude, phonenumber) 
+      INSERT INTO "address" (address, latitude, longitude) 
       VALUES ('${postLocation.address}', ${postLocation.latitude}, ${postLocation.longitude})
       RETURNING addressid;
     `

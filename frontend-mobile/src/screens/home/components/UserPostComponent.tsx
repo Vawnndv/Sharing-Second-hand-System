@@ -73,6 +73,7 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
         },
         'post'
       )
+      
       const newData: MyData[] = res.allPosts;
 
       if (!newData) {

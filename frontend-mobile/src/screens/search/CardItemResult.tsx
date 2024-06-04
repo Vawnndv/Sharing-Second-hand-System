@@ -141,7 +141,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
         >
           <RowComponent>
             <AvatarComponent
-              username={item.name} 
+              username={"item.name"} 
               avatar={item.avatar}
               size={50}
               onPress={() => {
