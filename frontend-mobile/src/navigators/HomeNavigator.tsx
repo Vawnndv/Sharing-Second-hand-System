@@ -10,6 +10,7 @@ import ChatRoom from '../screens/chat/ChatRoom';
 import MapSelectWarehouseGive from '../screens/map/MapSelectWarehouseGive';
 import ReceiveFormScreen from '../screens/receiveform/ReceiveFormScreen';
 import MapSettingAddress from '../screens/map/MapSettingAddress';
+import NotificationScreen from '../screens/notifications/NotificationScreen';
 
 
 const HomeNavigator = () => {
@@ -28,6 +29,8 @@ const HomeNavigator = () => {
       <Stack.Screen name="MapSelectWarehouseGiveScreen" component={MapSelectWarehouseGive} />
       <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+      {/* <Stack.Screen name="NotificationScreen" component={NotificationScreen} /> */}
+
     </Stack.Navigator>
   )
 }

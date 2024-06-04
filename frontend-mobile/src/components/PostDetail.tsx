@@ -27,6 +27,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
 import postsAPI from '../apis/postApi';
 import { Heart, DirectboxReceive } from 'iconsax-react-native';
+import { HandleNotification } from '../utils/handleNotification';
 
 
 interface Post {
@@ -165,6 +166,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
     if(!isReceived){
       setGoToReceiveForm(true);
+      HandleNotification.sendNotification({
+        userReceiverId: post.owner,
+        userSendId: auth.id,
+        postid: postID,
+        avatar: auth.avatar,
+        link: 'ItemDetailScreen',
+        name: `${auth?.firstName} ${auth.lastName}`,
+        text: 'xin sản phẩm của bạn',
+      })
     }
     else{
       setGoToReceiveForm(false);
