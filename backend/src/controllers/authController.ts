@@ -88,7 +88,7 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const register = asyncHandle(async (req: Request, res: Response) => {
-  const { email, fistname, lastname, password } = req.body;
+  const { email, firstname, lastname, password } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
 
@@ -102,7 +102,7 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
 
   const newUser = await Account.createItem(
     email,
-    fistname, 
+    firstname, 
     lastname,
     hashedPassword,
     1,

@@ -9,7 +9,7 @@ import FilterSearch from "./FilterSearch";
 
 const LIMIT = 3;
 
-export interface MyData {
+export interface PostData {
   userid?: string;
   username?: string;
   firstname: string;
@@ -82,7 +82,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
         return;
       }
 
-      const response: AxiosResponse<MyData[]> = await postsAPI.HandlePost(
+      const response: AxiosResponse<PostData[]> = await postsAPI.HandlePost(
         `/search`,
         {
           keyword: searchQuery ? searchQuery.toLowerCase() : "",
@@ -99,7 +99,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
         },
         "post"
       );
-      let newData: MyData[] = response.data;
+      let newData: PostData[] = response.data;
 
       if (newData.length <= 0 && page === 0) setIsEmpty(true);
 

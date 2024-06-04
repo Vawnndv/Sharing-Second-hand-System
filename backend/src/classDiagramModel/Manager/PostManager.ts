@@ -160,7 +160,8 @@ export class PostManager {
       //   a.latitude,
       //   MIN(i.path) AS path,
       //   CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-      //   CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
+      // CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+      //   CAST(COUNT(pr.receiverid) AS INTEGER)userreciver_count
       // FROM 
       //   "User" u
       // RIGHT JOIN 
@@ -220,7 +221,7 @@ export class PostManager {
         us.firstname,
         us.lastname,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
+        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
@@ -290,7 +291,8 @@ export class PostManager {
       //     a.latitude,
       //     itt.nametype,
       //     MIN(i.path) AS path,
-      //     CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+      //     CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+      // CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
       //   FROM 
       //     "posts" p
       //   JOIN 
@@ -353,7 +355,8 @@ export class PostManager {
         od.status,
         us.firstname,
 		    us.lastname,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid
@@ -428,7 +431,8 @@ export class PostManager {
         gr.give_receivetype,
         us.firstname,
 		    us.lastname,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid
@@ -488,7 +492,8 @@ export class PostManager {
           us.firstname,
 		      us.lastname,
       po.updatedat,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
         LEFT JOIN "User" us ON po.owner = us.UserID
@@ -551,7 +556,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
           us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
         LEFT JOIN "User" us ON po.owner = us.UserID
@@ -614,7 +620,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
 		      us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "orders" od ON od.postid = po.postid
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
@@ -692,7 +699,8 @@ export class PostManager {
           a.latitude,
           itt.nametype,
           MIN(i.path) AS path,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
         FROM 
           "posts" p
         LEFT JOIN 
@@ -711,6 +719,8 @@ export class PostManager {
           "image" i ON p.itemid = i.itemid
         LEFT JOIN 
           "like_post" lp ON p.postid = lp.postid
+        LEFT JOIN
+          "postreceiver" pr ON p.postid = pr.postid  
         WHERE 
           (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) AND lp.userid = ${userId}
         GROUP BY 
@@ -1008,7 +1018,8 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count
+        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid

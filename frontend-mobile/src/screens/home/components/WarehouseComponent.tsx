@@ -5,7 +5,7 @@ import { Image, StyleSheet, View } from 'react-native'
 import postsAPI from '../../../apis/postApi'
 import { GetCurrentLocation } from '../../../utils/GetCurrenLocation'
 import CardItemResult from '../../search/CardItemResult'
-import { MyData } from '../../search/SearchResultScreen'
+import { PostData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
 
@@ -71,7 +71,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
         'post'
       )
 
-      const newData: MyData[] = res.allPosts;
+      const newData: PostData[] = res.allPosts;
 
       if (!newData) {
         setIsEndOfData(true)

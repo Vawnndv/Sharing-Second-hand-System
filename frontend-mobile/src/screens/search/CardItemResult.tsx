@@ -29,6 +29,7 @@ interface DataItem {
   path: string;
   like_count: number;
   name: string;
+  receiver_count: string;
 }
 
 interface Props {
@@ -188,7 +189,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             <RowComponent>
               <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='0 Người xin' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${item.receiver_count} Người xin`} font={fontFamilies.medium} /> 
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
