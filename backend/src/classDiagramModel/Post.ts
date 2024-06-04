@@ -19,7 +19,7 @@ export class Post {
 
   private timeend: Date | undefined;
 
-  private receiverType: string | undefined;
+  private phonenumber: string | undefined;
 
 
 
@@ -34,7 +34,7 @@ export class Post {
     location?: string,
     timestart?: Date,
     timeend?: Date,
-    receiverType?: string,
+    phonenumber?: string,
 
   ) {
     this.postID = postID;
@@ -46,7 +46,7 @@ export class Post {
     this.location = location;
     this.timestart = timestart;
     this.timeend = timeend;
-    this.receiverType = receiverType;
+    this.phonenumber = phonenumber;
   }
 
   public update(): boolean {

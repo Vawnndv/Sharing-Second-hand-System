@@ -4,7 +4,7 @@ import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { appInfo } from "../../constants/appInfos";
 import { appColors } from "../../constants/appColors";
-
+import TextComponent from "../TextComponent";
 interface OrderFunctionProbs {
     avatar: string,
     name: string,
@@ -109,16 +109,18 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
                         </View>
 
                         <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20}/>
-                                <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text>
+                                {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text> */}
+                                <TextComponent numberOfLines={2} text={departure} />
                             </View>
                         </View>
 
                         <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20} color='red'/>
-                                <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text>
+                                {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text> */}
+                                <TextComponent numberOfLines={2} text={destination} />
                             </View>
                         </View>
                     </View>

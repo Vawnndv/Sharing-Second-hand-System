@@ -4,6 +4,7 @@ import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, Act
 import { StringLiteral } from 'typescript';
 import { AntDesign, Ionicons, SimpleLineIcons  } from '@expo/vector-icons';
 
+
 import moment from 'moment';
 import { appInfo } from '../constants/appInfos';
 import axios from 'axios';
@@ -25,6 +26,7 @@ import ShowMapComponent from './ShowMapComponent';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
 import postsAPI from '../apis/postApi';
+import { Heart, DirectboxReceive } from 'iconsax-react-native';
 
 
 interface Post {
@@ -117,6 +119,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
 
+  const [amountLike, setAmountLike] = useState(0)
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -204,6 +207,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     const fetchAllData = async () => {
       let itemIDs = null;
       let owner = null
+
+      try{
+        const res: any = await axios.get(`${appInfo.BASE_URL}/posts/get-amount-user-like-post?postID=${postID}`)
+        setAmountLike(res.data.amount)
+
+      }catch(error){
+        console.log(error)
+      }
+
       try {
         // console.log(postID);
         setIsLoading(true);
@@ -335,10 +347,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
           </View>
 
           <View style={styles.like_receiver_CountContainer}>
-            <AntDesign name="inbox" size={24} color="green" />
+            {/* <AntDesign name="inbox" size={24} color="green" /> */}
+            <DirectboxReceive size={24} color={appColors.green} variant={ 'Bold' }/>
             <Text style={styles.receiverCount}>Người xin nhận: {postReceivers.length}</Text>
-            <AntDesign name="hearto" size={24} color="red" />
-            <Text style={styles.loverCount}>Thích: 10</Text>
+            {/* <AntDesign name="hearto" size={24} color="red" /> */}
+            <Heart size={24} color={appColors.heart} variant={ 'Bold' }/>
+            <Text style={styles.loverCount}>Thích: {amountLike}</Text>
           </View>
 
           <View style={styles.container}>
@@ -674,6 +688,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-end', // Đảm bảo các phần tử nằm ở cuối container
     marginBottom: 15,
+    alignItems: 'center'
   },
 
   receiverCount: {

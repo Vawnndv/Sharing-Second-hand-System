@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView} from "react-native";
+import React, { useCallback, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, RefreshControl} from "react-native";
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import OrderComponent from "../../components/OrderCollaborator/OrderComponent";
@@ -17,6 +17,7 @@ import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
 
+
 const category = [
     "Quần áo",
     "Giày dép",
@@ -29,7 +30,7 @@ const category = [
 
 export default function OrdersScreen({navigation}: any) {
 
-    const [refresh, setRefresh] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
 
     const auth = useSelector(authSelector)
     
@@ -69,7 +70,7 @@ export default function OrdersScreen({navigation}: any) {
         }
 
         fetchAPI()
-    },[changeOrdersGiving, refresh, tab])
+    },[changeOrdersGiving, refreshing])
 
     // thực hiện trả về order[] khi filterValue thay đổi
     
@@ -99,9 +100,9 @@ export default function OrdersScreen({navigation}: any) {
                 console.log(error)
             }
         }
-
+        console.log("TAGGGGGGGGGGGGGGGGGGGGG", tab)
         fetchAPI()
-    },[tab, filterValue, changeOrdersGiving, refresh])
+    },[tab, filterValue, changeOrdersGiving, refreshing])
 
     const calculateDay = (dayAmount: number) => {
         if(dayAmount === -1){
@@ -116,17 +117,27 @@ export default function OrdersScreen({navigation}: any) {
     }
 
 
-    useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
-          // Thực hiện các hành động cần thiết khi màn hình được focus
-          console.log('Home Screen Reloaded:');
-          setRefresh(prevRefresh => !prevRefresh);
-        });
-        return unsubscribe;
-      }, [navigation]);
+    // useEffect(() => {
+    //     const unsubscribe = navigation.addListener('focus', () => {
+    //       // Thực hiện các hành động cần thiết khi màn hình được focus
+    //       console.log('Home Screen Reloaded:');
+    //       setRefresh(prevRefresh => !prevRefresh);
+    //     });
+    //     return unsubscribe;
+    //   }, [navigation]);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+    
+        // Giả sử bạn load lại dữ liệu từ API
+        setTimeout(() => {
+          // Ví dụ này chỉ là load lại dữ liệu cũ, bạn có thể thay thế bằng API call
+          setRefreshing(false);
+        }, 1000);
+      }, []);
 
     return(
-        <ContainerComponent right>
+        <ContainerComponent>
             {/* <ShowMapComponent location={{latitude: 10.768879, longitude: 106.656034, address: 'Nhà thi đấu Phú Thọ'}} setLocation={''}/> */}
             <View style={[styles.container, {marginTop: 10}]}>
                 <View style={styles.container}>
@@ -144,6 +155,13 @@ export default function OrdersScreen({navigation}: any) {
                                 onPress={()=>{setTab('Hàng đã nhập kho')}}>
                                 <Text style={[styles.defaultText, tab === 'Hàng đã nhập kho' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
                                     Đã lấy
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={()=>{setTab('Chờ người cho giao hàng')}}>
+                                <Text style={[styles.defaultText, tab === 'Chờ người cho giao hàng' ? styles.tabSelected : styles.defaultTab, {marginLeft: 20}]}>
+                                    Người dùng mang đến
                                 </Text>
                             </TouchableOpacity>
 
@@ -173,8 +191,12 @@ export default function OrdersScreen({navigation}: any) {
                     {/* // seperate */}
                     <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 
+                    
                     <ScrollView style={{width: '90%', marginTop: 10}}
-                        horizontal={false}>
+                        horizontal={false}
+                        refreshControl={
+                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                          }>
 
                         {
                             ordersGiving.map((order: any, index) => {

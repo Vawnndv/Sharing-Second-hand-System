@@ -801,7 +801,7 @@ export class PostManager {
         return null;
       }
       const row = result.rows[0]
-      return new Post(row.postid, row.title, row.itemid, row.time, row.owner, row.description, row.location, row.timestart, row.timeend)
+      return new Post(row.postid, row.title, row.itemid, row.time, row.owner, row.description, row.location, row.timestart, row.timeend, row.phonenumber)
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
@@ -1068,91 +1068,109 @@ export class PostManager {
       } finally {
         client.release(); // Release client sau khi sử dụng
       }
-    }
+  }
 
 
-    public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
+  public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
 
-      const client = await pool.connect();
-  
-      try{
-        let query = ''
-        if(!isApproveAction){
-          query = `
-          UPDATE posts
-          SET statusid = ${statusid}
-          WHERE postid = ${postid}
-          RETURNING *
-          `
-        }
-        else{
-          query = `
-          UPDATE posts
-          SET statusid = ${statusid}, approvedate = NOW() 
-          WHERE postid = ${postid}
-          RETURNING *
-          `
-        }
+    const client = await pool.connect();
 
-  
-        const resultQueryPost: QueryResult = await client.query(query)
-        return resultQueryPost;
-      }catch(error){
-        console.log(error)
-        return false
-      }finally{
-        client.release()
-      }
-    }
-
-    public static async getAllPostByUserId(userID: string[]): Promise<any> {
-      const client = await pool.connect();
-      try {
-        let query = `
-        SELECT
-        po.postid,
-        po.Title, 
-        adg.address AS Location, 
-        po.CreatedAt,
-        (
-          SELECT i.Path 
-          FROM Image i 
-          WHERE i.ItemID = po.ItemID 
-          ORDER BY i.CreatedAt ASC -- Adjust this line based on how you determine the "first" image
-          LIMIT 1
-        ) AS Image, 
-        ts.StatusName,
-        adg.Longitude AS LongitudeGive,
-        adg.Latitude AS LatitudeGive,
-        itt.NameType,
-        grt.Give_receivetype AS givetype
-      FROM 
-        Posts po
-      LEFT JOIN 
-        Address adg ON adg.AddressID = po.AddressID
-      LEFT JOIN
-        Item it ON it.ItemID = po.ItemID
-      LEFT JOIN 
-        Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-      LEFT JOIN 
-        Postreceiver por ON po.PostID = por.PostID
-      LEFT JOIN 
-        Trace_Status ts ON po.StatusID = ts.StatusID
-      LEFT JOIN
-        Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
-      WHERE 
-        po.owner = $1
-      ORDER BY
-        po.CreatedAt DESC;
+    try{
+      let query = ''
+      if(!isApproveAction){
+        query = `
+        UPDATE posts
+        SET statusid = ${statusid}
+        WHERE postid = ${postid}
+        RETURNING *
         `
-        const result: QueryResult = await client.query(query, [userID]);
-        return result.rows; 
-      } catch (error) {
-        console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
-        throw error;
-      } finally {
-        client.release();
       }
+      else{
+        query = `
+        UPDATE posts
+        SET statusid = ${statusid}, approvedate = NOW() 
+        WHERE postid = ${postid}
+        RETURNING *
+        `
+      }
+
+
+      const resultQueryPost: QueryResult = await client.query(query)
+      return resultQueryPost;
+    }catch(error){
+      console.log(error)
+      return false
+    }finally{
+      client.release()
     }
+  }
+
+  public static async getAllPostByUserId(userID: string[]): Promise<any> {
+    const client = await pool.connect();
+    try {
+      let query = `
+      SELECT
+      po.postid,
+      po.Title, 
+      adg.address AS Location, 
+      po.CreatedAt,
+      (
+        SELECT i.Path 
+        FROM Image i 
+        WHERE i.ItemID = po.ItemID 
+        ORDER BY i.CreatedAt ASC -- Adjust this line based on how you determine the "first" image
+        LIMIT 1
+      ) AS Image, 
+      ts.StatusName,
+      adg.Longitude AS LongitudeGive,
+      adg.Latitude AS LatitudeGive,
+      itt.NameType,
+      grt.Give_receivetype AS givetype
+    FROM 
+      Posts po
+    LEFT JOIN 
+      Address adg ON adg.AddressID = po.AddressID
+    LEFT JOIN
+      Item it ON it.ItemID = po.ItemID
+    LEFT JOIN 
+      Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN 
+      Postreceiver por ON po.PostID = por.PostID
+    LEFT JOIN 
+      Trace_Status ts ON po.StatusID = ts.StatusID
+    LEFT JOIN
+      Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
+    WHERE 
+      po.owner = $1
+    ORDER BY
+      po.CreatedAt DESC;
+      `
+      const result: QueryResult = await client.query(query, [userID]);
+      return result.rows; 
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async getAmountUserLikePost(postID: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      let query = `
+      SELECT COUNT(*) AS amount
+      FROM "like_post"
+      WHERE postid = ${postID}
+      `
+      const result: QueryResult = await client.query(query);
+      return result.rows[0].amount; 
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
 
 }

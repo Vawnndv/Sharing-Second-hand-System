@@ -153,12 +153,12 @@ export class OrderManager {
     try {
       let values: any = [userID]
       let queryType =`AND o.status = '${type}'`
-      if(type === 'Hàng đã nhập kho'){
-        queryType = `
-          AND o.status != 'Hàng đang được đến lấy'
-          AND o.collaboratorreceiveid IS NOT NULL
-        `
-      }
+      // if(type === 'Hàng đã nhập kho'){
+      //   queryType = `
+      //     AND o.status != 'Hàng đang được đến lấy'
+      //     AND o.collaboratorreceiveid IS NOT NULL
+      //   `
+      // }
       if(typeCard === "outputcard"){
         queryType = ''
       }

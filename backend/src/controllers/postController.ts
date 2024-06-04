@@ -199,6 +199,21 @@ export const getUserLikePosts = asyncHandle(async (req, res) => {
   }
 });
 
+export const getAmountUserLikePost = asyncHandle(async (req, res) => {
+  const postID: any = req.query.postID;
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const amount = await PostManager.getAmountUserLikePost(postID);
+  
+    res.status(200).json({ message: 'Lấy số lượng yêu thích của bài đăng thành công', amount });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Lỗi khi lấy chi tiết bài đăng:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
 
 export const deletePostReceivers = asyncHandle(async (req, res) => {
   const postID: any = req.query.postID;

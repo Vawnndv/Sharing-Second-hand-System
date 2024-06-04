@@ -16,4 +16,6 @@ export const appColors = {
   link: '#5669FF',
   danger: '#e74c3c',
   purple: '#321357',
+  heart: '#DB1045',
+  green: '#1AAE7E'
 };
