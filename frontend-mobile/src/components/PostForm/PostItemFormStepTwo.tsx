@@ -337,7 +337,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             is24Hour={true}
             display="default"
             minimumDate={new Date} // Đặt ngày tối thiểu có thể chọn cho DatePicker
-            maximumDate={moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+            maximumDate={endDate ? moment(endDate).toDate() : moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
             onChange={onChangeStartDate}
           />
         )}
@@ -407,6 +407,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
               handleBlur();
               
             }}
+            editable={false}
             selection={{start: 0, end: 0}}
             onChangeText={(text) =>{ 
               setFormData({ ...formData, postAddress: text });

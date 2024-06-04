@@ -19,6 +19,8 @@ import ModalEditWarehouse from '../modals/ModalEditWarehouse'
 import { TbLock, TbLockOpen } from 'react-icons/tb'
 import toast from 'react-hot-toast'
 import { banUserService } from '../../../../redux/services/userServices'
+import moment from 'moment'
+import dayjs from 'dayjs'
 
 
 interface Props {
@@ -35,10 +37,14 @@ interface Props {
   setPageState: (val: any) => void;
   setFilterModel: (val: any) => void;
   setSortModel: (val: any) => void;
+  isAddNewWarehouse: any;
+  isUpdateWarehouse: any;
+  setIsAddNewWarehouse: (val: any) => void;
+  setIsUpdateWarehouse: (val: any) => void;
 }
 
 function WarehouseTable(props: Props) {
-  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel} = props;
+  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse} = props;
 
   // const { userInfo } = useSelector(
   //   (state: RootState) => state.userLogin
@@ -53,7 +59,8 @@ function WarehouseTable(props: Props) {
 
 
   const handleOpen = () => {
-    setIsOpen(!isOpen)
+    setIsOpen(!isOpen);
+    // setIsUpdateWarehouse(true);
   }
 
   useEffect(() => {
@@ -68,6 +75,7 @@ function WarehouseTable(props: Props) {
 
   const handleOpenModalCreate = () => {
     setIsOpenModalCreate(!isOpenModalCreate);
+    // setIsAddNewWarehouse(true);
   }
   
   const handleBanUser = async (id: number, isBanned: any) => {
@@ -103,16 +111,16 @@ function WarehouseTable(props: Props) {
       }
       ,
       { field: 'warehousename', headerName: 'Tên kho', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Địa chỉ', width: 350, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Địa chỉ', width: 700, getTooltip: (params: any) => params.value },
       { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'numberofemployees', headerName: 'Nhân viên', width: 150, getTooltip: (params: any) => params.value },
+      { field: 'numberofemployees', headerName: 'Nhân viên', width: 100, getTooltip: (params: any) => params.value },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
       {
         field: 'createdat',
         headerName: 'Ngày tạo',
         width: 150,
         renderCell: (params: any) =>
-          DateFormat(params.row.createdat)
+          dayjs(params.row.createdat).format('DD/MM/YYYY')      
       },
       // {
       //   field: 'isbanned',
@@ -127,12 +135,12 @@ function WarehouseTable(props: Props) {
         width: 120,
         renderCell: (params: any) => (
           <Box>
-            <Tooltip title="Lock this warehouse">
+            {/* <Tooltip title="Lock this warehouse">
               <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
-            </Tooltip>
-            <Tooltip title="Edit this warehouse">
+            </Tooltip> */}
+            <Tooltip title="Cập nhật kho">
               <IconButton onClick={() => { handleOpen(); setWarehouseRow(params.row) }}>
                 <Edit />
               </IconButton>
@@ -158,7 +166,6 @@ function WarehouseTable(props: Props) {
       justifyContent="center"
       sx={{ mt: 1, mb: 5, p: 4 }}
     >
-
         <ModalEditWarehouse
           isOpen={isOpen}
           handleOpen={handleOpen}
@@ -171,6 +178,8 @@ function WarehouseTable(props: Props) {
           isEdit={isEdit}
           setIsEdit={setIsEdit}
           warehouseNameList={[]}
+          isUpdateWarehouse= {isUpdateWarehouse}
+          setIsUpdateWarehouse={setIsUpdateWarehouse}
         />
         <ModalCreateWarehouse
         isOpen={isOpenModalCreate}
@@ -178,7 +187,9 @@ function WarehouseTable(props: Props) {
         setIsOpen={setIsOpenModalCreate}
         pageState={pageState} 
         filterModel={{ items: [] }}
-        sortModel={[]}
+        sortModel={[]}        
+        isAddNewWarehouse= {isAddNewWarehouse}
+        setIsAddNewWarehouse={setIsAddNewWarehouse}
         />
       <Grid item xs={12}>
         <Box

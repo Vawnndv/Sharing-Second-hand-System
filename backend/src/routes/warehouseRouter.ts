@@ -11,7 +11,7 @@ router.get('/', getAllWarehouses);
 
 router.get('/warehouse-name-list', getWarehouseNameList);
 
-router.get('/getAllWarehousesAllInfo', getAllWarehousesAllInfo);
+router.post('/getAllWarehousesAllInfo', getAllWarehousesAllInfo);
 
 router.post('/createWarehouse', createWarehouse);
 router.post('/updateWarehouse', updateWarehouse);

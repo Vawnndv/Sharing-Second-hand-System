@@ -392,13 +392,15 @@ function EditPost() {
                             }}
                             variant='h6'
                             >Tiêu đề</Typography>
-                        <Input
+                        <TextField
+                            error={title === ""}
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
-                            }}/>
+                            }}
+                            helperText={title === "" ? "Tiêu đề không được để trống" : ''}/>
 
                         <Typography
                             sx={{
@@ -409,13 +411,15 @@ function EditPost() {
                             }}
                             variant='h6'
                             >Mô tả</Typography>
-                        <Input
+                        <TextField
+                            error={description === ""}
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
-                            }}/>
+                            }}
+                            helperText={description === "" ? "Mô tả không được để trống" : ''}/>
 
                         <Typography
                             sx={{
@@ -426,13 +430,15 @@ function EditPost() {
                             }}
                             variant='h6'
                             >Số điện thoại</Typography>
-                        <Input
+                        <TextField
+                            error={phoneNumber.length !== 10}
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
-                            }}/>
+                            }}
+                            helperText={phoneNumber.length !== 10 ? 'Sai định dạng số điện thoại' : ''}/>
                     </Stack>
                 }
 
@@ -464,13 +470,15 @@ function EditPost() {
                             }}>
                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
                                 {/* <Typography variant='body2' component='div'>{post.address}</Typography> */}
-                                <Input
+                                <TextField
+                                    error={location.address === ""}
                                     value={location.address}    
                                     onChange={(e) => onChangeLocation(e)}
                                     sx={{
                                         color: 'black',
                                         mb: 2
-                                    }}/>
+                                    }}
+                                    helperText={location.address === "" ? "Địa chỉ không được để trống" : ''}/>
 
                                 <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
                                     <Button fullWidth sx={{height: '55px', width: '100%', mb: 2}} variant="outlined" startIcon={<LocationOnIcon />}

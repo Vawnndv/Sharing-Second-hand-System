@@ -22,8 +22,39 @@ export const getAllWarehouses = asyncHandle(async (req, res) => {
 
 export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
   try {
+    const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
+    // console.log(filterModel)
+    // Build WHERE clause based on filterModel (replace with your logic)
+    let whereClause = '';
+    if (filterModel.items && filterModel.items.length > 0) {
+      whereClause = ' WHERE ';
+      for (const filter of filterModel.items) {
+        if (filter.operator === 'is' && filter.value) {
+          whereClause += `w.${filter.field} is ${filter.value} OR `;
+        } else if (filter.operator === 'contains') {
+          // Add filtering conditions based on filter object properties
+          whereClause += `w.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+        }
+  
+      }
+      whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+    }
+    let orderByClause = '';
+    if (sortModel && sortModel.length > 0) {
+      orderByClause = ' ORDER BY ';
+      for (const sort of sortModel) {
+        orderByClause += `w.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+      }
+      orderByClause = orderByClause.slice(0, -2); // Remove trailing comma and space
+    }
+
+    if (orderByClause === '') {
+      orderByClause = ' ORDER BY createdat DESC ';
+    }
+
+  
     // Call the static method getAllItems to fetch all items from the database
-    const warehouses = await WarehouseManager.getAllWarehouseAllInfo();
+    const warehouses = await WarehouseManager.getAllWarehouseAllInfo(page, pageSize, whereClause, orderByClause);
     // If items are found, return them as a response
     if (warehouses) {
       res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
