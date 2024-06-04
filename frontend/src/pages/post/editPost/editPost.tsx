@@ -197,6 +197,7 @@ function EditPost() {
         let newPostid: any = null;
 
         console.log(location);
+        let isSuccessRepost = true
 
         try{
             const res = await axios.post(`http://localhost:3000/posts/createPost`, {
@@ -218,11 +219,12 @@ function EditPost() {
             });
 
             newPostid = res.data.postCreated.postid;
-            toast.success(`Đăng lại thành công`);      
-            navigate(-1)
+             
+            
         }
         catch (error) {
             console.log(error);
+            isSuccessRepost = false
         }
 
         try{
@@ -232,6 +234,14 @@ function EditPost() {
             })
         } catch (error) {
             console.log(error);
+            isSuccessRepost = false
+        }
+
+        if(isSuccessRepost){
+            toast.success(`Đăng lại thành công`);     
+            navigate(-1)
+        }else{
+            toast.success(`Lỗi đăng bài`);     
         }
 
         // try{
