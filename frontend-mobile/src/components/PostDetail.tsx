@@ -209,6 +209,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       let owner = null
 
       try{
+        setIsLoading(true);
         const res: any = await axios.get(`${appInfo.BASE_URL}/posts/get-amount-user-like-post?postID=${postID}`)
         setAmountLike(res.data.amount)
 
@@ -218,7 +219,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
       try {
         // console.log(postID);
-        setIsLoading(true);
         const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,

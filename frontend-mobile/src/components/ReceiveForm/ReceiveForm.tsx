@@ -143,6 +143,8 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   const [location, setLocation] = useState<any>(null);
 
+  const [isFetchData, setIsReFetchData] = useState(false);
+
 
   const auth = useSelector(authSelector);
 
@@ -211,7 +213,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     setErrorMessage(updatedErrorMessage);
 
   }
-  selectedReceiveMethod
+
   useEffect(() => {
 
     if(isUserPost && receivetype === 'Cho nhận trực tiếp'){
@@ -241,20 +243,26 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   useEffect( () => {
     // if(!isUserPost){
-      if(      
-        !errorMessage.bringItemToWarehouseMethod && 
-        !errorMessage.receiveMethod && 
-        !errorMessage.warehouseSelected &&
-        validAllMethod) {
-          setIsValidSubmit(true);
-      }
 
-      else{
-        setIsValidSubmit(false);
-      }
+    if (isUserPost && receivetype === 'Cho nhận trực tiếp'){
+      setIsValidSubmit(true);
+
+    }
+  
+    else if(      
+      !errorMessage.bringItemToWarehouseMethod && 
+      !errorMessage.receiveMethod && 
+      !errorMessage.warehouseSelected &&
+      validAllMethod) {
+        setIsValidSubmit(true);
+    }
+
+    else{
+      setIsValidSubmit(false);
+    }
   // }
 
-  },[errorMessage, validAllMethod])
+  },[errorMessage, validAllMethod, isUserPost])
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -396,7 +404,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       }
     };
     fetchAllData();
-}, [])
+}, [postID])
 
 
 const handleReceive = async () => {
@@ -931,7 +939,7 @@ const handleGive = async () =>{
 
 
     {!isUserPost && (
-      <Button mode="contained" onPress={handleReceive}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleReceive} disabled={!isValidSubmit}>Xác nhận</Button>
     )}
 
     {isUserPost && (

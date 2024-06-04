@@ -61,37 +61,42 @@ export class WarehouseManager {
     }
   } 
 
-  public static async getAllWarehouseAllInfo(): Promise<any[] | null> {
+  public static async getAllWarehouseAllInfo(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any[] | null> {
     const client = await pool.connect();
+
+    const query = `
+    SELECT 
+      w.warehouseid,
+      w.addressid,
+      w.warehousename,
+      w.avatar,
+      w.phonenumber,
+      w.createdat,
+      a.address,
+      longitude,
+      latitude,
+        COUNT(WorkAt.UserID) AS NumberOfEmployees
+    FROM 
+        Warehouse w
+    INNER JOIN address a ON a.addressid = w.addressid
+    LEFT JOIN 
+        WorkAt ON w.WarehouseID = WorkAt.WarehouseID
+    ${whereClause}
+    GROUP BY 
+      w.warehouseid,
+      w.addressid,
+      w.warehousename,
+      w.avatar,
+      w.phonenumber,
+      a.address,
+      longitude,
+      latitude
+    ${orderByClause}
+     ` + ` LIMIT ${pageSize} OFFSET ${page} * ${pageSize}`;
+
+    
     try {
-      const result = await client.query(`
-        SELECT 
-          w.warehouseid,
-          w.addressid,
-          w.warehousename,
-          w.avatar,
-          w.phonenumber,
-          w.createdat,
-          a.address,
-          longitude,
-          latitude,
-            COUNT(WorkAt.UserID) AS NumberOfEmployees
-        FROM 
-            Warehouse w
-        INNER JOIN address a ON a.addressid = w.addressid
-        
-        LEFT JOIN 
-            WorkAt ON w.WarehouseID = WorkAt.WarehouseID
-        GROUP BY 
-          w.warehouseid,
-          w.addressid,
-          w.warehousename,
-          w.avatar,
-          w.phonenumber,
-          a.address,
-          longitude,
-          latitude;
-      `);
+      const result = await client.query(query);
       if (result.rows.length === 0) {
         return [];
       }

@@ -35,6 +35,9 @@ interface Props {
   pageState: any;
   sortModel: any;
   filterModel: any;
+  isAddNewWarehouse: any;
+  setIsAddNewWarehouse: (val: any) => void;
+
 }
 
 interface WarehouseLocation {
@@ -47,7 +50,7 @@ interface WarehouseLocation {
 
 
 function ModalCreateCollaborator(props: Props) {
-  const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel} = props;
+  const { isOpen, handleOpen, setIsOpen, pageState, sortModel, filterModel,isAddNewWarehouse, setIsAddNewWarehouse} = props;
   const [imageUrl, setImageUrl] = useState<any>('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState<any>(null);
   const [openMap, setOpenMap] = useState(false);
@@ -136,6 +139,7 @@ function ModalCreateCollaborator(props: Props) {
         warehouseLocation: location,
         isNewAddress
       });
+      setIsAddNewWarehouse(!isAddNewWarehouse);
       setIsOpen(!isOpen);
       toast.success(`Tạo kho thành công`);
       // Alert.alert('Success', 'Item created successfully');
@@ -188,7 +192,7 @@ function ModalCreateCollaborator(props: Props) {
 
             <TextField
               id="warehousename"
-              label="WarehouseName"
+              label="Tên kho"
               variant="outlined"
               {...register('warehousename')}
               error={!!errors.warehousename}
@@ -198,7 +202,7 @@ function ModalCreateCollaborator(props: Props) {
 
             <TextField
               id="phonenumber"
-              label="Phone"
+              label="Số điện thoại"
               variant="outlined"
               {...register('phonenumber')}
               error={!!errors.phonenumber}
@@ -211,7 +215,7 @@ function ModalCreateCollaborator(props: Props) {
               <TextField
                 value={location.address}
                 id="address"
-                label="Address"
+                label="Địa chỉ"
                 variant="outlined"
                 {...register('address')}
                 error={!!errors.address}

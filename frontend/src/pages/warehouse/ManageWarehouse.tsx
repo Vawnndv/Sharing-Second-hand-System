@@ -27,6 +27,8 @@ export default function ManageWarehouse() {
 
 
   const dispatch: AppDispatch = useAppDispatch();
+  const [isAddNewWarehouse, setIsAddNewWarehouse] = useState();
+  const [isUpdateWarehouse, setIsUpdateWarehouse] = useState();
 
   const [selectionModel, setSelectionModel] = useState([])
   const [pageState, setPageState] = useState({
@@ -35,7 +37,8 @@ export default function ManageWarehouse() {
     });
   const [filterModel, setFilterModel] = useState({ items: [] });
   const [sortModel, setSortModel] = useState([]);
-  const [totalCollaborator, setTotalCollaborator] = useState(0);
+  const [totalWarehouses, setTotalWarehouses] = useState(0);
+
 
   const { isLoading, isError, collaborators } = useSelector(
     (state: RootState) => state.adminGetAllCollaborators
@@ -48,19 +51,32 @@ export default function ManageWarehouse() {
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/warehouse/getAllWarehousesAllInfo`)
-
+        const res = await axios.post(`http://localhost:3000/warehouse/getAllWarehousesAllInfo`,{
+          page: pageState.page,
+          pageSize: pageState.pageSize,
+          filterModel,
+          sortModel
+        })
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
         setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching warehouses:', error);
+      }
 
+      try {
+        const res = await axios.get(`http://localhost:3000/warehouse/`)
+        if (!res) {
+          throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
+        }
+        setTotalWarehouses(res.data.wareHouses.length); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching warehouses:', error);
       }
     }
   fetchWarehouses();
-  },[])
+  },[pageState,sortModel,filterModel,isAddNewWarehouse, isUpdateWarehouse])
 
     // delete user handler
   const deleteWarehouseHandler = (warehouse: any) => {
@@ -83,7 +99,7 @@ export default function ManageWarehouse() {
         deleteHandler={deleteWarehouseHandler} 
         isLoading={isLoading ?? false} 
         warehouses={wareHouses ?? []} 
-        total={wareHouses.length} 
+        total={totalWarehouses} 
         deleteSelectedHandler={handleDeleteSelectedRows} 
         selectionModel={selectionModel} 
         setSelectionModel={setSelectionModel} 
@@ -93,6 +109,10 @@ export default function ManageWarehouse() {
         setPageState={setPageState} 
         setFilterModel={setFilterModel}
         setSortModel={setSortModel}
+        isAddNewWarehouse = {isAddNewWarehouse}
+        isUpdateWarehouse = {isUpdateWarehouse}
+        setIsAddNewWarehouse={setIsAddNewWarehouse}
+        setIsUpdateWarehouse={setIsUpdateWarehouse}
     />
 )
 

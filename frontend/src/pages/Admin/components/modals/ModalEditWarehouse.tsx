@@ -44,6 +44,8 @@ interface Props {
   filterModel: any;
   isEdit: boolean;
   setIsEdit: (val: boolean) => void;
+  isUpdateWarehouse: any;
+  setIsUpdateWarehouse: (val: any) => void;
 }
 
 interface WarehouseLocation {
@@ -54,7 +56,7 @@ interface WarehouseLocation {
 }
 
 function ModalEditWarehouse(props: Props) {
-  const { isOpen, handleOpen, setWarehouseRow, warehouseRow, setIsOpen, pageState, sortModel, filterModel, isEdit, setIsEdit} = props;
+  const { isOpen, handleOpen, setWarehouseRow, warehouseRow, setIsOpen, pageState, sortModel, filterModel, isEdit, setIsEdit, isUpdateWarehouse, setIsUpdateWarehouse} = props;
   const [imageUrl, setImageUrl] = useState<any>('');
   const [imageUpdateUrl, setImageUpdateUrl] = useState<any>(null);
   const [openMap, setOpenMap] = useState(false);
@@ -118,6 +120,7 @@ function ModalEditWarehouse(props: Props) {
       // dispatch(getAllCollaboratorsAction(pageState.page, pageState.pageSize, filterModel, sortModel))
       setIsOpen(!isOpen)
       // dispatch({ type: 'UPDATE_USER_RESET' })
+
     }
     if (editError) {
       toast.error(editError)
@@ -153,6 +156,7 @@ function ModalEditWarehouse(props: Props) {
       });
 
       toast.success(`Update warehouse info successfully`);
+      setIsUpdateWarehouse(!isUpdateWarehouse);
       setIsOpen(!isOpen);
 
       // Alert.alert('Success', 'Item created successfully');
@@ -184,7 +188,7 @@ function ModalEditWarehouse(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
             <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Edit Warehouse
+                Cập nhật kho
             </Typography>
 
             
@@ -201,7 +205,7 @@ function ModalEditWarehouse(props: Props) {
 
             <TextField
               id="warehousename"
-              label="Warehouse Name"
+              label="Tên kho"
               variant="outlined"
               disabled={!isEdit}
               {...register('warehousename')}
@@ -213,7 +217,7 @@ function ModalEditWarehouse(props: Props) {
 
             <TextField
               id="phonenumber"
-              label="Phone Number"
+              label="Số điện thoại"
               variant="outlined"
               disabled={!isEdit}
               {...register('phonenumber')}
@@ -224,7 +228,7 @@ function ModalEditWarehouse(props: Props) {
 
             <TextField
               id="address"
-              label="Address"
+              label="Địa chỉ"
               variant="outlined"
               disabled={!isEdit}
               {...register('address')}
@@ -253,12 +257,12 @@ function ModalEditWarehouse(props: Props) {
             </Grid>  
 
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null); setIsEdit(true); setLocation({address: ''}); setImageUrl('')}}>Cancel</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null); setIsEdit(true); setLocation({address: ''}); setImageUrl('')}}>Hủy</Button>
               {!isEdit && (
-                <Button variant='contained' onClick={() => setIsEdit(true)}>Edit</Button>
+                <Button variant='contained' onClick={() => {setIsEdit(true); setIsUpdateWarehouse(!isUpdateWarehouse)}}>Cập nhật</Button>
               )}
               {isEdit && (
-                <Button variant='contained' type="submit">Save</Button>
+                <Button variant='contained' type="submit">Lưu</Button>
               )}
               
             </Stack>
