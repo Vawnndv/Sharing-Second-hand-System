@@ -499,12 +499,12 @@ function ViewPostDetail() {
                 {
                     post && post.statusname !== 'Chờ xét duyệt' && 
                     <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
-                        <Typography variant='h6' sx={{fontWeigth: 'bold', width: '90%', mb: 2, mt: 2}}>Danh sách người xin</Typography>
+                        <Typography variant='h6' sx={{fontWeigth: 'bold', width: '95%', mb: 2, mt: 2}}>Danh sách người xin</Typography>
                         <Stack
                             flexDirection='column'
                             justifyContent='flex-start'
                             gap={3}
-                            style={{width: '90%'}}>
+                            style={{width: '95%'}}>
 
                             {/*  profile */}
                             <Grid

@@ -40,11 +40,14 @@ function EditPost() {
 
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
     const [profile, setProfile] = useState<any>();
+    const [userProfile, setUserProfile] = useState<any>();
     const [itemImages, setItemImages] = useState([]);
     const [itemNewImages, setItemNewImages] = useState([]);
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
+
+    const [phoneNumber, setPhoneNumber] = useState('')
 
     const today = dayjs();
     const [date, setDate] = React.useState<[Dayjs, Dayjs]>([today, today]);
@@ -83,7 +86,7 @@ function EditPost() {
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
             // console.log('Time Start',(res.postDetail.timestart).slice(0,10))
-            setLocation({addressid: res.data.postDetail.adressid, address: res.data.postDetail.address, longitude: res.data.postDetail.longitude, latitude: res.data.postDetail.latitude});
+            setLocation({addressid: res.postDetail.adressid, address: res.postDetail.address, longitude: res.postDetail.longitude, latitude: res.postDetail.latitude});
 
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
@@ -113,6 +116,18 @@ function EditPost() {
           } catch (error) {
             console.log(error);
           } 
+
+          try {
+    
+            const res = await Axios.get(`/user/get-profile?userId=${userLogin.userInfo.id}`);
+            console.log('getProfile', res);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            res && res.data && setUserProfile(res.data);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+            res && res.data && setPhoneNumber(res.data.phonenumber);
+          } catch (error) {
+            console.log(error);
+          } 
         };
     
         if (postid) {
@@ -125,9 +140,6 @@ function EditPost() {
     console.log('profile', profile)
     console.log('itemImages', itemImages)
 
-    const handleClickPost = () => {
-        console.log('post')
-    }
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -196,16 +208,18 @@ function EditPost() {
                 itemid: post.itemid,
                 timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
                 timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
-                isNewAddress: post.address !== location.address,
+                isNewAddress: true,
                 postLocation: location,
                 isWarehousePost: true,
                 givetypeid: 1,
                 statusid: 12,
                 warehouseid: post.warehouseid,
+                phonenumber: phoneNumber
             });
 
             newPostid = res.data.postCreated.postid;
-            toast.success(`Post Reposted`);      
+            toast.success(`Đăng lại thành công`);      
+            navigate(-1)
         }
         catch (error) {
             console.log(error);
@@ -252,15 +266,16 @@ function EditPost() {
                                 <Paper
                                     key={index}
                                     sx={{
-                                        width: '400px',
+                                        width: '300px',
                                         height: '250px',
                                         m: 2,
                                         position: 'relative'
                                     }}>
                                     <img
                                         style={{
-                                            width: '400px',
+                                            width: '300px',
                                             height: '250px',
+                                            objectFit: 'cover'
                                         }}
                                         src={`${image.path}`} alt={`img ${index}`}/>
                                     <HighlightOffTwoToneIcon
@@ -346,7 +361,7 @@ function EditPost() {
                 </Stack>
                 
                 {
-                    post && 
+                    post && phoneNumber &&
                     <Stack>
                         <Typography
                             sx={{
@@ -381,12 +396,29 @@ function EditPost() {
                                 mx: 2,
                                 color: 'black'
                             }}/>
+
+                        <Typography
+                            sx={{
+                                mt: 2,
+                                mx: 2,
+                                color: 'black',
+                                fontWeight: 'bold'
+                            }}
+                            variant='h6'
+                            >Số điện thoại</Typography>
+                        <Input
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            sx={{
+                                mx: 2,
+                                color: 'black'
+                            }}/>
                     </Stack>
                 }
 
                 {
                     
-                    profile && post && location &&
+                    profile && userProfile && post && location &&
                    
                         <Stack>
 

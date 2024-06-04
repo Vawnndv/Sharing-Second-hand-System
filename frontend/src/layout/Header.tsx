@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
@@ -218,7 +220,7 @@ export default function Header({setIndex}: any) {
           >
             <img alt='logo' src={logo} style={{width: '80px', height: '60px', color: 'white'}}/>
           </IconButton>
-          <FormControl sx={{ m: 1, width: '35ch', borderRadius: 2,
+          {/* <FormControl sx={{ m: 1, width: '35ch', borderRadius: 2,
             transition: 'width 3s ease', // Thêm transition cho hiệu ứng mở rộng
             '&:focus-within': {
               width: '60ch', // Kích thước mới khi focus
@@ -237,7 +239,9 @@ export default function Header({setIndex}: any) {
                 </InputAdornment>
                 }
             />
-          </FormControl>
+          </FormControl> */}
+
+
            {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -249,11 +253,11 @@ export default function Header({setIndex}: any) {
           </Search> */}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               aria-label="show 17 new notifications"

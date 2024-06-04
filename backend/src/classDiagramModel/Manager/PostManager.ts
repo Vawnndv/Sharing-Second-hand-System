@@ -217,8 +217,8 @@ export class PostManager {
         img.path,
         itt.nametype,
         od.status,
-		us.firstname,
-		us.lastname,
+        us.firstname,
+        us.lastname,
         CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
         CAST(COUNT(pr.receiverid) AS INTEGER) AS userreciver_count
       FROM Posts AS po
@@ -250,8 +250,8 @@ export class PostManager {
           wh.warehousename,
           itt.nametype,
           od.status,
-		  us.firstname,
-		  us.lastname
+          us.firstname,
+          us.lastname
       ORDER BY po.createdat DESC
       LIMIT ${limit}
       OFFSET ${limit} * ${page};
@@ -366,8 +366,8 @@ export class PostManager {
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
-      WHERE po.iswarehousepost = true AND od.givetypeid != 3 AND od.givetypeid != 4
-	  AND (od.status LIKE '%Đã duyệt%')
+      WHERE po.iswarehousepost = true AND po.givetypeid != 3 AND po.givetypeid != 4 
+	    AND (po.statusid = 12)
       GROUP BY
           us.userid,
           us.firstname,
@@ -632,6 +632,7 @@ export class PostManager {
 
         WHERE (od.status LIKE 'Hàng đã nhập kho')
       AND (od.givetypeid=3 OR od.givetypeid=4 )
+      AND (po.statusid = 14)
         GROUP BY
             us.userid,
             us.firstname,

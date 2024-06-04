@@ -60,7 +60,7 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
                         { posts !== null && 
                             posts.map((post: any, index: number) => (
                             <Grid xs={12} sm={4} md={4} key={index}>
-                                <OrderCard order={post} isPost canDelete/>
+                                <OrderCard order={post} isPost/>
                             </Grid>
                         ))}
                     </Grid>
