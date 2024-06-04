@@ -256,7 +256,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   },[errorMessage, validAllMethod])
 
-
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -401,40 +400,119 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
 
 const handleReceive = async () => {
-  try {
-    const postid = postID;
-    const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
-    const comment = '';
-    const time = new Date();
-    let receivertypeid = 1;
-    let warehouseid = null;
-    if(selectedReceiveMethod == "Nhận đồ qua kho"){
-      receivertypeid = 2;
-      warehouseid = warehouseSeleted.warehouseid;
-    }
 
-    if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
-      setIsShowAddress(true);
+  if(!post.iswarehousepost){
+    try {
+      const postid = postID;
+      const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+      const comment = '';
+      const time = new Date();
+      let receivertypeid = 1;
+      let warehouseid = null;
+      if(selectedReceiveMethod == "Nhận đồ qua kho"){
+        receivertypeid = 2;
+        warehouseid = warehouseSeleted.warehouseid;
+      }
+  
+      if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
+        setIsShowAddress(true);
+      }
+      
+      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
+      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
+        postid,
+        receiverid,
+        comment,
+        warehouseid,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        receivertypeid,
+      });       
+      Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+      navigation.navigate('ItemDetailScreen', {
+        postID: postID,
+      })
+      
+    } catch (error) {
+      console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
+      Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
     }
-    
-    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-    const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
-      postid,
-      receiverid,
-      comment,
-      warehouseid,
-      time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-      receivertypeid,
-    });       
-    Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
-    navigation.navigate('ItemDetailScreen', {
-      postID: postID,
-    })
-    
-  } catch (error) {
-    console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
-    Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+  }else{
+    let status = 'Chờ người nhận lấy hàng';
+    let statusid = 3;
+    let orderID = null;
+
+  
+      const title = post.title;
+      const location = ' ';
+      const description = post.description;
+      const departure = post.location;
+      const time = new Date();
+      const itemid = post.itemid;
+      const qrcode = ' ';
+      const ordercode = ' ';
+      const usergiveid = post.owner;
+      const postid = post.postid;
+      const imgconfirm = ' ';
+      const locationgive = post.addressid;
+      let userreceiveid = receiveid;
+      let locationreceive = post.addressid;
+      let givetypeid : any = receivetypeid;
+      const imgconfirmreceive = ' ';
+      let givetype = receivetype;
+      let warehouseidPost = post.warehouseid;
+  
+      // let warehouseid = null;
+  
+      try{
+        const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+          title,
+          location,
+          description,
+          departure,
+          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+          itemid,
+          status,
+          qrcode,
+          ordercode,
+          usergiveid,
+          postid,
+          imgconfirm,
+          locationgive,
+          locationreceive,
+          givetypeid: 3,
+          imgconfirmreceive,
+          givetype: "Cho nhận trực tiếp",
+          warehouseid: warehouseidPost,
+          userreceiveid: auth.id
+        });
+  
+        console.log(response.data.orderCreated);
+  
+        orderID = response.data.orderCreated.orderid;    
+        // if(receivetype === )
+  
+      const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+        currentstatus: status,
+        orderid: orderID,
+      });
+
+      const resUpdatePost = await axios.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+        postid: post.postid,
+        statusid: 14,
+        isApproveAction: false
+    });
+  
+  
+      Alert.alert('Thành công', 'Nhận món đồ thành công.');
+      setIsCompleted(true);
+      navigation.navigate('Home', {screen: 'HomeScreen'})
+  
+    } catch(error){
+      Alert.alert('Error', 'Cho món đồ thất bại.');
+        setIsCompleted(false);
+    }
   }
+
 }
 
 
@@ -853,11 +931,11 @@ const handleGive = async () =>{
 
 
     {!isUserPost && (
-      <Button mode="contained" onPress={handleReceive} disabled={!isValidSubmit}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleReceive}>Xác nhận</Button>
     )}
 
     {isUserPost && (
-      <Button mode="contained" onPress={handleGive} >Xác nhận</Button>
+      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit} >Xác nhận</Button>
     )}
   </ScrollView>
   );

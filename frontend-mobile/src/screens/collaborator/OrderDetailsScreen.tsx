@@ -163,10 +163,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View> 
                                             </View>
                                         </View>
-                                        <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
-                                                                        longitude: order.order.addressGive.longitude,
-                                                                        address: order.order.addressGive.address
-                                        }} setLocation={''}/>
+                                        
 
                                         {/* // seperate */}
                                         <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
@@ -221,6 +218,10 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                             />
                                         </View>
                                         
+                                        <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
+                                                                        longitude: order.order.addressGive.longitude,
+                                                                        address: order.order.addressGive.address
+                                        }} setLocation={''}/>
 
                                         <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
 

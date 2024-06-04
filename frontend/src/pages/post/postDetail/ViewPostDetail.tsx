@@ -9,7 +9,7 @@ import Carousel from 'react-material-ui-carousel';
 import { Avatar, Button, Card, Paper, Stack, Typography } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import PostAddIcon from '@mui/icons-material/PostAdd';
@@ -416,8 +416,8 @@ function ViewPostDetail() {
                                 justifyContent='flex-end'
                                 alignItems='center'
                                 gap={1}>
-                                    <FavoriteBorderIcon sx={{width: 40, height: 40}} color='error'/>
-                                    <Typography variant='body2'>Thích: 3</Typography>
+                                    <FavoriteIcon sx={{width: 40, height: 40}} color='error'/>
+                                    <Typography variant='body2'>Thích: 0</Typography>
                             </Stack>
                     </Stack>
                 }
@@ -587,14 +587,14 @@ function ViewPostDetail() {
                         </Button>
                     }
 
-                    {post && postState.isWaitForPost &&
+                    {/* {post && postState.isWaitForPost &&
                         <Button
                             sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
                             onClick={handleClickPost}>
                             <PostAddIcon color='success'/>
                             <Typography variant='inherit' color='success'>Đăng bài</Typography>
                         </Button>
-                    }
+                    } */}
                     
                 </Stack>
             </div>

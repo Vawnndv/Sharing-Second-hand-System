@@ -164,6 +164,9 @@ function EditPost() {
         console.log('itemImages', itemImages)
         console.log('itemNewImages', itemNewImages)
         console.log(type, index)
+        if(itemImages.length + itemNewImages.length === 1){
+            return;
+        }
 
         if(type === 'itemImages'){
             const tempItemImages = [...itemImages]
@@ -198,48 +201,55 @@ function EditPost() {
 
         console.log(location);
         let isSuccessRepost = true
-
-        try{
-            const res = await axios.post(`http://localhost:3000/posts/createPost`, {
-                title: newTitle,
-                location: location.address,
-                description: newDescription,
-                owner: userLogin.userInfo.id,
-                time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                itemid: post.itemid,
-                timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
-                timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
-                isNewAddress: true,
-                postLocation: location,
-                isWarehousePost: true,
-                givetypeid: 1,
-                statusid: 12,
-                warehouseid: post.warehouseid,
-                phonenumber: phoneNumber
-            });
-
-            newPostid = res.data.postCreated.postid;
-             
-            
-        }
-        catch (error) {
-            console.log(error);
+        // console.log('VALIDATEEEEEEEEE: ', `${itemImages.length + itemNewImages.length  } ${  title} ${ description} ${ phoneNumber.length}`)
+        if((itemImages.length + itemNewImages.length > 0) &&
+            title !== '' && description !== '' && phoneNumber.length === 10 &&
+            location !== null){
+                try{
+                    const res = await axios.post(`http://localhost:3000/posts/createPost`, {
+                        title: newTitle,
+                        location: location.address,
+                        description: newDescription,
+                        owner: userLogin.userInfo.id,
+                        time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                        itemid: post.itemid,
+                        timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
+                        timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
+                        isNewAddress: true,
+                        postLocation: location,
+                        isWarehousePost: true,
+                        givetypeid: 1,
+                        statusid: 12,
+                        warehouseid: post.warehouseid,
+                        phonenumber: phoneNumber
+                    });
+                    console.log(res)
+                    newPostid = res.data.postCreated.postid;
+                    
+                    
+                }
+                catch (error) {
+                    console.log(error);
+                    isSuccessRepost = false
+                }
+        
+                try{
+                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                        postid: post.postid,
+                        statusid: 15,
+                    })
+                } catch (error) {
+                    console.log(error);
+                    isSuccessRepost = false
+                }
+        }else{
             isSuccessRepost = false
         }
-
-        try{
-            const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                postid: post.postid,
-                statusid: 15,
-            })
-        } catch (error) {
-            console.log(error);
-            isSuccessRepost = false
-        }
+        
 
         if(isSuccessRepost){
             toast.success(`Đăng lại thành công`);     
-            navigate(-1)
+            navigate(-2)
         }else{
             toast.success(`Lỗi đăng bài`);     
         }
