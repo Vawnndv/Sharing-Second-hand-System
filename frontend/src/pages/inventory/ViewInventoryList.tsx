@@ -45,7 +45,7 @@ function ViewInventoryList({searchQuery, filterValue, typeCard, status} : any) {
   };
   useEffect(() => {
     fetchInventoryList();
-  }, [tab, searchQuery]);
+  }, [tab, searchQuery, filterValue]);
 
   useEffect(() => {
     if (status === 1) {
