@@ -42,9 +42,10 @@ export const getUserChatListUser = async (req: Request, res: Response) => {
 
 export const getChatListCollaborator = async (req: Request, res: Response) => {
   const userID : any = req.query.userID;
+  const searchQuery : any = req.query.searchQuery;
   
   try {
-    const userList = await ChatManager.getChatListCollaborator(userID);
+    const userList = await ChatManager.getChatListCollaborator(userID, searchQuery);
     res.status(200).json({ message: 'Get list success:', data: userList });
   } catch (error) {
     console.error(error);
@@ -54,9 +55,10 @@ export const getChatListCollaborator = async (req: Request, res: Response) => {
 
 export const getChatListUser = async (req: Request, res: Response) => {
   const userID : any = req.query.userID;
+  const searchQuery : any = req.query.searchQuery;
   
   try {
-    const userList = await ChatManager.getChatListUser(userID);
+    const userList = await ChatManager.getChatListUser(userID, searchQuery);
     res.status(200).json({ message: 'Get list success:', data: userList });
   } catch (error) {
     console.error(error);
