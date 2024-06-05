@@ -35,7 +35,7 @@ function OutputCardScreen({searchQuery, filterValue}: any) {
   };
   useEffect(() => {
     fetchInventoryList();
-  }, []);
+  }, [filterValue]);
 
   return (
     <Grid container spacing={2}>
