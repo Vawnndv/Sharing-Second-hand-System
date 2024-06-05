@@ -288,14 +288,21 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
   let tempLocation: any = location;
 
   const handleEdit = async () =>{
-    if(!newTitle.trim()){
-      tempTitle = post.title;
-      setNewTitle(post.title);
+    if(!newTitle){
+      if(!newTitle.trim()){
+        tempTitle = post.title;
+        setNewTitle(post.title);
+      }
     }
-    if(!newDescription.trim()){
-      tempDescription = post.description;
-      setNewDescription(post.description);
+
+    if(!newDescription){
+      if(!newDescription.trim()){
+        tempDescription = post.description;
+        setNewDescription(post.description);
+      }
     }
+
+
     if(!newStartDate){
       tempStartdate = new Date(post.timestart);
       setNewStartDate(new Date(post.timestart));
