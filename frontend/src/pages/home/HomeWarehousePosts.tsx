@@ -51,11 +51,25 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
         setPage(value);
       };
 
+    const isEmpty = () => {
+        console.log(posts)
+        if(posts === null || posts.length === 0){
+            console.log(false)
+            return false
+        }
+        return true
+    }
     return ( 
         <div>
             {
                 !isLoading ? 
                 <>
+                    {
+                        
+                        !isEmpty() &&  
+                        <img src='https://i.pinimg.com/564x/9a/7c/58/9a7c58b1532f43d69be0dcaec9130495.jpg' alt='img not found'
+                            style={{width: '100%', height: '100%'}}/>
+                    }
                     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                         { posts !== null && 
                             posts.map((post: any, index: number) => (

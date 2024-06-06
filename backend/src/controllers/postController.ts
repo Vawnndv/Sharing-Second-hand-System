@@ -32,10 +32,10 @@ export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
 });
 
 export const getAllPostByStatus  = asyncHandle(async (req, res) => {
-  const { status, limit, page, distance, time, category, sort, latitude, longitude, warehouses } = req.body;
+  const { status, limit, page, distance, time, category, sort, latitude, longitude, warehouses, userID } = req.body;
 
 
-  const allPosts = await PostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses);
+  const allPosts = await PostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses, userID);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
 

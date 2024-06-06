@@ -139,6 +139,7 @@ function ModalCreateCollaborator(props: Props) {
         warehouseLocation: location,
         isNewAddress
       });
+      console.log(res.data);
       setIsAddNewWarehouse(!isAddNewWarehouse);
       setIsOpen(!isOpen);
       toast.success(`Tạo kho thành công`);

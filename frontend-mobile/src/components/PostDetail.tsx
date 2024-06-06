@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-native-paper';
 import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, TouchableWithoutFeedback  } from 'react-native';
 import { StringLiteral } from 'typescript';
@@ -66,6 +66,7 @@ interface PostDetailProps {
   postID: number;
   navigation?: any;
   route?: any;
+  fetchFlag?: any;
 }
 
 interface PostReceiver {
@@ -86,17 +87,18 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   // console.log(postID)
+
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
   const [profile, setProfile] = useState<ProfileModel>();
   const [itemImages, setItemImages] = useState<ItemImage[]>([]);
   const [itemDetails, setItemDetails] = useState<Item | any>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isFetchData, setIsFetchData] = useState<any>(true);
 
   const [isUserPost, setIsUserPost] = useState(false);
   const [itemID, setItemID] = useState();
@@ -211,9 +213,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
   };
 
-
-
   useEffect(() => {
+    if(fetchFlag){
+      setIsFetchData(!isFetchData);
+    }
+  },[fetchFlag])
+
+
+
+ 
     const fetchAllData = async () => {
       let itemIDs = null;
       let owner = null
@@ -285,11 +293,19 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       }
     };
 
-    if (postID) {
-      fetchAllData();
-    }
 
-}, [postID])
+    useFocusEffect(
+      useCallback(() => {
+        fetchAllData();
+      }, [postID, fetchFlag])
+    );
+  
+    useEffect(() => {
+      if (fetchFlag) {
+        fetchAllData();
+        navigation.setParams({ fetchFlag: false });
+      }
+    }, [fetchFlag]);
 
 
   if (isLoading) {
@@ -305,6 +321,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     navigation.navigate('ReceiveFormScreen', {
       postID: postID,
     });
+    // setPost(null);
   }
 
   if(goToGiveForm && postID  && isUserPost){
@@ -314,9 +331,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       receiveid: selectedReceiver,
       receivetype: receivemethod,
       receivetypeid: receivetypeid,
-      warehouseid: warehouseid
+      warehouseid: warehouseid,
     });
-
+    // setPost(null);
+    <ReceiveForm
+      postID = {postID}
+      setIsFetchData = {setIsFetchData}
+    />
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
@@ -461,9 +482,9 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                       <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                         {
                           postReceivers.some(postReceiver => postReceiver.receiverid === auth.id) ?
-                          <TouchableOpacity style={styles.button} onPress={handleCancelReceive} ><Text style={{color: 'white'}}>Hủy</Text></TouchableOpacity>
+                          <TouchableOpacity style={styles.button} onPress={() => {handleCancelReceive();}} ><Text style={{color: 'white'}}>Hủy</Text></TouchableOpacity>
                           :
-                          <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Xin nhận</Text></TouchableOpacity>
+                          <TouchableOpacity style={styles.button} onPress={() => {handleReceiveForm();}} ><Text style={{color: 'white'}}>Xin nhận</Text></TouchableOpacity>
                         }
                         
                       </View>

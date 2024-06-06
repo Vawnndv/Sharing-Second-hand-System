@@ -113,7 +113,7 @@ export class ChatManager {
     }
   };
 
-  public static async getChatListCollaborator (userID: string): Promise<any> {
+  public static async getChatListCollaborator (userID: string, searchQuery: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -123,8 +123,7 @@ export class ChatManager {
       WHERE w.warehouseid = (
           SELECT warehouseid
           FROM Workat
-          WHERE userid = $1
-      );
+          WHERE userid = $1) AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'))
     `
     try {
       const result: QueryResult = await client.query(query, [userID]);
@@ -137,14 +136,14 @@ export class ChatManager {
     }
   };
 
-  public static async getChatListUser (userID: string): Promise<any> {
+  public static async getChatListUser (userID: string, searchQuery: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
       SELECT u.*
       FROM "User" u
       WHERE 
-      u.roleid = 1;
+      u.roleid = 1 AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'));
     `
     try {
       const result: QueryResult = await client.query(query);

@@ -1,16 +1,16 @@
 import Axios from '../APIs/Axios';
 
 // getChatListCollaborator API call
-const getChatListCollaborator = async (userID: string): Promise<any>  => {
-  const { data }: any = await Axios.get(`/chat/getChatListCollaborator?userID=${userID}`)
+const getChatListCollaborator = async (userID: string, searchQuery: string): Promise<any>  => {
+  const { data }: any = await Axios.get(`/chat/getChatListCollaborator?userID=${userID}&searchQuery=${searchQuery}`)
   return {
     data
   };
 }
 
 // getChatListUser API call
-const getChatListUser = async (userID: string): Promise<any>  => {
-  const { data }: any = await Axios.get(`/chat/getChatListUser?userID=${userID}`)
+const getChatListUser = async (userID: string, searchQuery: string): Promise<any>  => {
+  const { data }: any = await Axios.get(`/chat/getChatListUser?userID=${userID}&searchQuery=${searchQuery}`)
   return {
     data
   };

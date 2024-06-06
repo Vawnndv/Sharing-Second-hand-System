@@ -28,6 +28,8 @@ interface Props {
   warehouseid?: number;
   navigation?: any;
   route?: any;
+  isFetchData?: any;
+  setIsFetchData: (val: any) => void;
 }
 
 
@@ -67,7 +69,7 @@ interface postOwnerInfo {
   timeend?: string;
   phonenumber?: string;
   itemid?: number;
-  iswarehousepost?: boolean;
+  iswarehousepost?: any;
   longitude?: string;
   latitude?: string;
 
@@ -95,7 +97,7 @@ export interface ErrorProps  {
 }
 
 
-export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
+export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid, setIsFetchData }) => {
 
   // const navigation: any = useNavigation();
 
@@ -241,28 +243,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     }
   },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown, warehouseSeleted])
 
-  useEffect( () => {
-    // if(!isUserPost){
 
-    if (isUserPost && receivetype === 'Cho nhận trực tiếp'){
-      setIsValidSubmit(true);
-
-    }
-  
-    else if(      
-      !errorMessage.bringItemToWarehouseMethod && 
-      !errorMessage.receiveMethod && 
-      !errorMessage.warehouseSelected &&
-      validAllMethod) {
-        setIsValidSubmit(true);
-    }
-
-    else{
-      setIsValidSubmit(false);
-    }
-  // }
-
-  },[errorMessage, validAllMethod, isUserPost])
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -406,6 +387,38 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     fetchAllData();
 }, [postID])
 
+useEffect( () => {
+  // if(!isUserPost){
+
+  if(post){
+
+    if (!post.iswarehousepost){
+      if (isUserPost && receivetype === 'Cho nhận trực tiếp'){
+        setIsValidSubmit(true);
+      }
+    
+      else if(      
+        !errorMessage.bringItemToWarehouseMethod && 
+        !errorMessage.receiveMethod && 
+        !errorMessage.warehouseSelected &&
+        validAllMethod) {
+          setIsValidSubmit(true);
+      }
+
+      else{
+        setIsValidSubmit(false);
+      }
+    }
+    else{
+      setIsValidSubmit(true);
+    }
+}
+
+
+// }
+
+},[errorMessage, validAllMethod, isUserPost, post])
+
 
 const handleReceive = async () => {
 
@@ -436,11 +449,13 @@ const handleReceive = async () => {
         receivertypeid,
       });       
       Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+
       navigation.navigate('ItemDetailScreen', {
         postID: postID,
-      })
-      
-    } catch (error) {
+        fetchFlag: true,
+      })    
+    }
+       catch (error) {
       console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
       Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
     }
@@ -572,6 +587,7 @@ const handleGive = async () =>{
     // let warehouseid = null;
 
     try{
+      setIsLoading(true);
       const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
         title,
         location,
@@ -612,6 +628,19 @@ const handleGive = async () =>{
 
     Alert.alert('Thành công', 'Cho món đồ thành công.');
     setIsCompleted(true);
+
+    if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
+      {
+        const responseTrace = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+          qrcode: '',
+          warehouseid: warehouseid,
+          usergiveid: auth.id,
+          orderid: orderID,
+          itemid: post.itemid
+        });
+      }
+      
+    setIsLoading(false);
     navigation.navigate('Home', {screen: 'HomeScreen'})
 
   } catch(error){
@@ -624,16 +653,7 @@ const handleGive = async () =>{
   //   givetype = receivetype;
   // }
 
-    if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
-    {
-      const responseTrace = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
-        qrcode: '',
-        warehouseid: warehouseid,
-        usergiveid: auth.id,
-        orderid: orderID,
-        itemid: post.itemid
-      });
-    }
+
   }
   
 

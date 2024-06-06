@@ -411,7 +411,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
+  public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[], userID: string): Promise<any> {
     const client = await pool.connect();
     try {
       let postsQuery = `
@@ -449,6 +449,11 @@ export class PostManager {
       ) img ON img.itemid = po.itemid
 
 	  WHERE (ts.statusname LIKE '${status}')
+    AND po.warehouseid = (
+	  	SELECT warehouseid
+      FROM "workat"
+      WHERE userid = ${userID}
+	  )
       GROUP BY
           us.userid,
           us.firstname,
@@ -510,8 +515,13 @@ export class PostManager {
         ) img ON img.itemid = po.itemid
 
         WHERE (ts.statusname LIKE 'Đã duyệt')
-      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-      AND current_timestamp >= po.approvedate::timestamp
+        AND po.warehouseid = (
+          SELECT warehouseid
+          FROM "workat"
+          WHERE userid = ${userID}
+        )
+        AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+        AND current_timestamp >= po.approvedate::timestamp
         GROUP BY
             us.userid,
             us.firstname,
@@ -574,8 +584,13 @@ export class PostManager {
         ) img ON img.itemid = po.itemid
 
         WHERE (ts.statusname LIKE 'Đã hủy')
-      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-      AND current_timestamp >= po.approvedate::timestamp
+        AND po.warehouseid = (
+          SELECT warehouseid
+          FROM "workat"
+          WHERE userid = ${userID}
+        )
+        AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+        AND current_timestamp >= po.approvedate::timestamp
         GROUP BY
             us.userid,
             us.firstname,
@@ -639,8 +654,13 @@ export class PostManager {
         ) img ON img.itemid = po.itemid
 
         WHERE (od.status LIKE 'Hàng đã nhập kho')
-      AND (od.givetypeid=3 OR od.givetypeid=4 )
-      AND (po.statusid = 14 OR po.statusid = 12)
+        AND po.warehouseid = (
+          SELECT warehouseid
+          FROM "workat"
+          WHERE userid = ${userID}
+        )
+        AND (od.givetypeid=3 OR od.givetypeid=4 )
+        AND (po.statusid = 14 OR po.statusid = 12)
         GROUP BY
             us.userid,
             us.firstname,
