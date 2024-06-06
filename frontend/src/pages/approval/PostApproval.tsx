@@ -97,7 +97,6 @@ function PostApproval() {
               <Tab label="Đang chờ xét duyệt" value="1" sx={{paddingX: 3}}/>
               <Tab label="Vừa duyệt" value="2" sx={{paddingX: 3}} />
               <Tab label="Vừa hủy" value="3" sx={{paddingX: 3}} />
-              <Tab label="Chờ được đăng" value="4" sx={{paddingX: 3}} />
             </TabList>
           </Box>
           <TabPanel value="1">
