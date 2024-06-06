@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import StepOne from './PostItemFormStepOne';
 import StepTwo from './PostItemFormStepTwo';
 import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import itemsAPI from '../../apis/itemApi'
@@ -80,6 +80,8 @@ const MultiStepForm = () => {
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isValidSubmit, setIsValidSubmit] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [location, setLocation] = useState<any>(false);
   
@@ -198,6 +200,7 @@ const MultiStepForm = () => {
       let warehouseid = null;
       // let givetype = 'Cho nhận trực tiếp';
       // if(formDataStepOne.methodsBringItemToWarehouse )
+      setIsLoading(true);
       if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
         givetypeid = 3;
         if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
@@ -300,7 +303,7 @@ const MultiStepForm = () => {
         postID = response.data.postCreated.postid;
         // address = response.data.postCreated.address;
         // addressid = response.data.postCreated.addressid;
-
+        setIsLoading(false);
         setCurrentStep(1);
         setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
         setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
@@ -423,6 +426,14 @@ const MultiStepForm = () => {
   //     </ContainerComponent>
   //   )
   // }
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView>

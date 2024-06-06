@@ -58,7 +58,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   useEffect( () => {
     const fetchUserData = async () =>{
         try {
-  
+          setIsLoading(true);
           const res = await axios.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
@@ -67,11 +67,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
           }
 
-          setProfile(res.data);
+          setProfile(res.data.data);
+          console.log(res.data);
           setFormData({
             ...formData,
             postAddress: res.data.data.address,
-            postPhoneNumber: res.data.data.postPhoneNumber,
+            postPhoneNumber: res.data.data.phonenumber,
           });
           } catch (error) {
           console.error('Error fetching user info:', error);
@@ -82,7 +83,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
     const fetchUserAddressData = async () =>{
       try {
-
+        setIsLoading(true);
         const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -107,10 +108,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
     }
    
-            
     fetchUserData();
     fetchUserAddressData()
-  
   },[] )
 
   

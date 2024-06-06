@@ -111,7 +111,7 @@ function WarehouseTable(props: Props) {
       }
       ,
       { field: 'warehousename', headerName: 'Tên kho', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Địa chỉ', width: 700, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Địa chỉ', width: 300, getTooltip: (params: any) => params.value },
       { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
       { field: 'numberofemployees', headerName: 'Nhân viên', width: 100, getTooltip: (params: any) => params.value },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },

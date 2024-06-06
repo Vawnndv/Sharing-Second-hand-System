@@ -39,6 +39,7 @@ interface Warehouse {
   warehousename: string;
   longitude: string;
   latitude: string;
+  addressid?: number;
 }
 
 
@@ -117,6 +118,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
 
+
   // const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
 
   // const methodsBringItemToWarehouse = ["Tự đem đến kho", "Nhân viên kho sẽ đến lấy"];
@@ -132,6 +134,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   ];
 
   const [warehouse, setWarehouse] = useState<Warehouse>();
+
 
   const [warehouseDropdown, setWarehouseDropdown] = useState<any>([]);
 
@@ -580,8 +583,9 @@ const handleGive = async () =>{
     let givetype = receivetype;
     let warehouseidPost = post.warehouseid;
 
-    if(receivetype !== 'Cho nhận trực tiếp'){
+    if(receivetype !== 'Cho nhận trực tiếp' && warehouse){
       warehouseidPost = warehouseid;
+      locationreceive = warehouse.addressid;
     }
 
     // let warehouseid = null;
@@ -636,7 +640,7 @@ const handleGive = async () =>{
           warehouseid: warehouseid,
           usergiveid: auth.id,
           orderid: orderID,
-          itemid: post.itemid
+          itemid: post.itemid,
         });
       }
       
