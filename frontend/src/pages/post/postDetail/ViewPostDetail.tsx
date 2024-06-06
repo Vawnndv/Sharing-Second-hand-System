@@ -164,8 +164,7 @@ function ViewPostDetail() {
     const approvePost = async () => {
         console.log(post);
 
-        if(post.givetypeid !== 3 && post.givetypeid !== 4){
-            console.log(post);
+        if(post.givetypeid === 1){
 
             try{
                 const res = await await Axios.post(`posts/update-post-status`, {
@@ -179,23 +178,20 @@ function ViewPostDetail() {
                 console.log(error);
             }
         }
-        if (post.givetypeid === 4) {
-            console.log(post);
-            // let orderID = -1;
-            // let warehouseIDOfCollaborator = -1;
-            // try{
-            //     const res = await axios.post(`http://localhost:3000/order/updateTraceStatus`, {
-            //         orderid: post.orderid,
-            //         newstatus: "Hoàn tất ",
-            //         statusid: "5",
-            //     })
-            // }
-            // catch (error) {
-            //     console.log(error);
-            // }
+        else if (post.givetypeid === 4) {
+            try{
+                const res = await Axios.post(`posts/update-post-status`, {
+                    postid: post.postid,
+                    statusid: 12,
+                    isApproveAction: true
+                })
+                toast.success(`Duyệt bài thành công`);            
+            } catch (error) {
+                console.log(error);
+            }
                 let orderID: any = null;
                 const time = new Date();
-                const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                const response = await Axios.post(`/order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -214,56 +210,45 @@ function ViewPostDetail() {
                     locationreceive: warehouseInfo.addressid,
                     givetypeid: post.givetypeid,
                     imgconfirmreceive: '',
-                    givetype: post.givetype,
+                    givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
                 orderID = response.data.orderCreated.orderid;
 
                 try{
                     const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                    const responseTrace = await axios.post(`http://localhost:3000/order/createTrace`, {
+                    const responseTrace = await Axios.post(`order/createTrace`, {
                         currentstatus,
                         orderid: orderID,
                     });
-                    toast.success(`Tạo order thành công`);
+                    toast.success(`Tạo đơn hàng thành công`);
 
                 } catch(error){
                     console.log(error);
                 }
 
                 try{
-                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
-                        postid: post.postid,
-                        statusid: 12,
-                        isApproveAction: true
-
-                    })
-                    toast.success(`Duyệt bài thành công`);            
-                } catch (error) {
-                    console.log(error);
-                }
-
-                try{
-                    const responseInputcard = await axios.post(`http://localhost:3000/card/createInputCard`, {
+                    const responseInputcard = await Axios.post(`card/createInputCard`, {
                         itemid: post.itemid,
                         qrcode: '',
                         usergiveid: post.owner,
                         warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
                         orderid: orderID
-                    }); 
+                    });
                     toast.success(`Tạo inputcard thành công`);
-                    navigate(-1);
                 }
                 catch (error) {
                     console.log(error);
                 // }
                 }
+                navigate(-1);
+
+
             }
 
             else{
-
                 try{
-                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                    const res = await Axios.post(`posts/update-post-status`, {
                         postid: post.postid,
                         statusid: 12,
                         isApproveAction: true
@@ -276,7 +261,7 @@ function ViewPostDetail() {
                 }
                 let orderID: any = null;
                 const time = new Date();
-                const response = await axios.post(`http://localhost:3000/order/createOrder`, {
+                const response = await Axios.post(`order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -295,13 +280,13 @@ function ViewPostDetail() {
                     locationreceive: warehouseInfo.addressid,
                     givetypeid: post.givetypeid,
                     imgconfirmreceive: '',
-                    givetype: post.givetype,
+                    givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
                 orderID = response.data.orderCreated.orderid;
 
                 try{
-                    const responseInputcard = await axios.post(`http://localhost:3000/card/createInputCard`, {
+                    const responseInputcard = await Axios.post(`card/createInputCard`, {
                         itemid: post.itemid,
                         qrcode: '',
                         usergiveid: post.owner,
@@ -309,51 +294,13 @@ function ViewPostDetail() {
                         orderid: orderID
                     }); 
                     toast.success(`Tạo inputcard thành công`);
-                    navigate(-1);
                 }
                 catch (error) {
                     console.log(error);
                 }
+                navigate(-1);
+
             }
-            // try {
-            //     if(post.givetype === 'Cho kho'){
-            //         const currentstatus = 'Chờ người cho giao hàng';
-            //         const orderid = orderID;
-            //         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-            //         const response = await axios.post(`http://localhost:3000/order/createTrace`, {
-            //         currentstatus,
-            //         orderid,
-            //         });
-            //     }
-
-            //     if(post.givetype === 'Cho kho (kho đến lấy)'){
-            //         const currentstatus = 'Chờ cộng tác viên lấy hàng';
-            //         const orderid = orderID;
-            //         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-            //         const response = await axios.post(`http://localhost:3000/order/createTrace`, {
-            //         currentstatus,
-            //         orderid,
-            //         });
-            //     }
-
-            // try{
-            //     const response = await axios.post(`http://localhost:3000/card/createInputCard`, {
-            //         itemid: post.itemid,
-            //         qrcode: '',
-            //         usergiveid: userLogin.userInfo.id,
-            //         warehouseid: '19',          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
-            //         orderid: orderID
-            //     }); 
-            //     orderID = response.data.orderCreated.orderid;
-            // }
-            // catch (error) {
-            //     console.log(error);
-            // }
-
-            // toast.success('Post approved, repost successfully!')
-            // } catch (error) {
-            //     console.log(error);
-            // }
         
     }
             
