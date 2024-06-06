@@ -322,14 +322,14 @@ function EditPost() {
                                 <Paper
                                     key={index}
                                     sx={{
-                                        width: '400px',
+                                        width: '300px',
                                         height: '250px',
                                         m: 2,
                                         position: 'relative'
                                     }}>
                                     <img
                                         style={{
-                                            width: '400px',
+                                            width: '300px',
                                             height: '250px',
                                         }}
                                         src={`${image.path}`} alt={`img ${index}`}/>
@@ -381,7 +381,7 @@ function EditPost() {
                 </Stack>
                 
                 {
-                    post && phoneNumber &&
+                    post &&
                     <Stack>
                         <Typography
                             sx={{
