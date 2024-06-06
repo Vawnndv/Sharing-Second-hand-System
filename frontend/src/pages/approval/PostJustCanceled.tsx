@@ -31,7 +31,8 @@ function PostJustCanceled({filterValue, warehousesID}: any) {
                     latitude: parseFloat(responseUser.data.latitude),
                     longitude: parseFloat(responseUser.data.longitude),
                     category: filterValue.category,
-                    warehouses: warehousesID
+                    warehouses: warehousesID,
+                    userID: userLogin.userInfo.id
                       
                 })
                 setPosts(responsePosts.allPosts)
