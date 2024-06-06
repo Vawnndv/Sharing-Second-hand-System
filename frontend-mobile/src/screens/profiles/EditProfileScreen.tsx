@@ -217,7 +217,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
       <TouchableOpacity onPress={showdatePicker}>
         <InputComponent
           value={values.dob ? moment(values.dob).format('DD-MM-YYYY') : ''}
-          placeholder="Ngày kết thúc"
+          placeholder="Ngày sinh"
           onChange={val => handleChangeValue('', val)}
           editable={false}
           affix={<Fontisto name="date" size={22} color={appColors.gray} />}

@@ -77,11 +77,11 @@ export class Account {
   public static async createCollaborator(username: string, firstname: string, lastname: string, email: string, password: string, phonenumber: string, dob: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(username, firstname, lastname, email, password, phonenumber, roleid, dateofbirth) 
-        VALUES($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO "User"(firstname, lastname, email, password, phonenumber, roleid, dateofbirth) 
+        VALUES($1, $2, $3, $4, $5, $6, $7)
         RETURNING *;
       `;
-    const values : any = [username, firstname, lastname, email, password, phonenumber, roleid, dob];
+    const values : any = [firstname, lastname, email, password, phonenumber, roleid, dob];
     try {
       const result = await client.query(query, values);
       console.log('Collaborator inserted successfully:', result.rows[0]);
