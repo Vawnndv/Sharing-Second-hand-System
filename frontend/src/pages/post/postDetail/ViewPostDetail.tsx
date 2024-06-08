@@ -81,7 +81,7 @@ function ViewPostDetail() {
           try {
             // console.log(postID);
             // setIsLoading(true);
-            const res: any = await Axios.get(`/posts/${postid}`)
+            const res: any = await Axios.get(`posts/${postid}`)
             // const res = await postsAPI.HandlePost(
             //   `/${postID}`,
             // );
@@ -102,7 +102,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`/posts/postreceivers/${postid}`)
+            const res: any = await Axios.get(`posts/postreceivers/${postid}`)
             if (!res) {
               throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
             }
@@ -113,7 +113,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`/items/images/${itemIDs}`)
+            const res: any = await Axios.get(`items/images/${itemIDs}`)
             // const res = await itemsAPI.HandleAuthentication(
             //   `/${itemID}`,
             // );
@@ -130,7 +130,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res = await Axios.get(`/user/get-profile?userId=${owner}`);
+            const res = await Axios.get(`user/get-profile?userId=${owner}`);
             console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setProfile(res.data);
@@ -167,7 +167,7 @@ function ViewPostDetail() {
         if(post.givetypeid === 1){
 
             try{
-                const res = await await Axios.post(`posts/update-post-status`, {
+                const res = await Axios.post(`posts/update-post-status`, {
                     postid: post.postid,
                     statusid: 12,
                     isApproveAction: true
@@ -189,60 +189,60 @@ function ViewPostDetail() {
             } catch (error) {
                 console.log(error);
             }
-
-            let orderID: any = null;
-            const time = new Date();
-            const response = await Axios.post(`/order/createOrder`, {
-                title: post.title,
-                location: '',
-                description: post.description,
-                departure: '',
-                time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                itemid: post.itemid,
-                status: 'Chờ cộng tác viên lấy hàng',
-                statusid: 7,
-                qrcode: '',
-                ordercode: '',
-                usergiveid: post.owner,
-                userreceiveid: userLogin.userInfo.id,
-                postid: post.postid,
-                imgconfirm: '',
-                locationgive: post.addressid,
-                locationreceive: warehouseInfo.addressid,
-                givetypeid: post.givetypeid,
-                imgconfirmreceive: '',
-                givetype: post.give_receivetype,
-                warehouseid: post.warehouseid,
-            }); 
-            orderID = response.data.orderCreated.orderid;
-
-            try{
-                const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                const responseTrace = await Axios.post(`order/createTrace`, {
-                    currentstatus,
-                    orderid: orderID,
-                });
-                toast.success(`Tạo đơn hàng thành công`);
-
-            } catch(error){
-                console.log(error);
-            }
-
-            try{
-                const responseInputcard = await Axios.post(`card/createInputCard`, {
+                let orderID: any = null;
+                const time = new Date();
+                const response: any = await Axios.post(`order/createOrder`, {
+                    title: post.title,
+                    location: '',
+                    description: post.description,
+                    departure: '',
+                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
                     itemid: post.itemid,
+                    status: 'Chờ cộng tác viên lấy hàng',
+                    statusid: 7,
                     qrcode: '',
+                    ordercode: '',
                     usergiveid: post.owner,
-                    warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
-                    orderid: orderID
-                });
-                toast.success(`Tạo inputcard thành công`);
-            }
-            catch (error) {
-                console.log(error);
-            // }
-            }
-            navigate(-1);
+                    userreceiveid: userLogin.userInfo.id,
+                    postid: post.postid,
+                    imgconfirm: '',
+                    locationgive: post.addressid,
+                    locationreceive: warehouseInfo.addressid,
+                    givetypeid: post.givetypeid,
+                    imgconfirmreceive: '',
+                    givetype: post.give_receivetype,
+                    warehouseid: post.warehouseid,
+                }); 
+                console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
+                orderID = response.orderCreated.orderid;
+                
+                try{
+                    const currentstatus = 'Chờ cộng tác viên lấy hàng';
+                    const responseTrace = await Axios.post(`order/createTrace`, {
+                        currentstatus,
+                        orderid: orderID,
+                    });
+                    toast.success(`Tạo đơn hàng thành công`);
+
+                } catch(error){
+                    console.log(error);
+                }
+
+                try{
+                    const responseInputcard = await Axios.post(`card/createInputCard`, {
+                        itemid: post.itemid,
+                        qrcode: '',
+                        usergiveid: post.owner,
+                        warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
+                        orderid: orderID
+                    });
+                    toast.success(`Tạo inputcard thành công`);
+                }
+                catch (error) {
+                    console.log(error);
+                // }
+                }
+                navigate(-1);
 
 
             }
@@ -262,7 +262,7 @@ function ViewPostDetail() {
                 }
                 let orderID: any = null;
                 const time = new Date();
-                const response = await Axios.post(`order/createOrder`, {
+                const response: any = await Axios.post(`order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -284,7 +284,7 @@ function ViewPostDetail() {
                     givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
-                orderID = response.data.orderCreated.orderid;
+                orderID = response.orderCreated.orderid;
 
                 try{
                     const responseInputcard = await Axios.post(`card/createInputCard`, {
