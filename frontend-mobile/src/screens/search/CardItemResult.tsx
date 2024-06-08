@@ -140,7 +140,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             postID : item.postid,
           })}
         >
-          <RowComponent>
+          <RowComponent
+          styles={styles.rowComponent}>
             <AvatarComponent
               username={"item.name"} 
               avatar={item.avatar}
@@ -153,6 +154,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
                   },
                 );
               }}
+              styles={styles.avatar}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
@@ -176,14 +178,15 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             </View>
           </RowComponent>
           <SpaceComponent height={8} />
-          <TextComponent text={item.description} />
+          <TextComponent styles={styles.description} text={item.description} />
           <SpaceComponent height={8} />
           {item.path && 
             <Image
-              style={{width: '100%', height: 160, resizeMode: 'cover'}}
+              style={{width: '100%', height: 170, resizeMode: 'cover'}}
               source={{ uri: item.path }}
             />  
           }
+          <View style={{paddingHorizontal: 12}}>
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
@@ -198,6 +201,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
               <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>
           </RowComponent>
+          </View>
+          
         </CardComponent>
       )}
       keyExtractor={(item, index) => index.toString()}
@@ -218,5 +223,15 @@ const styles = StyleSheet.create({
     width: '95%', // Đảm bảo phần tử cha có chiều rộng 100%
     overflow: 'hidden', // Ẩn văn bản bị tràn ra ngoài phần tử cha
   },
+  avatar: {
+    
+  },
+  rowComponent: {
+    paddingHorizontal: 12,
+    paddingTop: 12
+  },
+  description: {
+    paddingHorizontal: 12,
+  }
 
 });

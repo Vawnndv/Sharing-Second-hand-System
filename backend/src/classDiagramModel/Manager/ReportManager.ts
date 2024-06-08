@@ -28,6 +28,78 @@ export class ReportManager {
     } catch (error) {
       console.log(error)
       return false
+    } finally {
+      client.release();
     }
   }
+
+  public static async getUserReports() {
+    const client = await pool.connect();
+    try {
+      const query = `
+        SELECT 
+          u.firstname,
+          u.lastname,
+          u.avatar,
+          r.*
+        FROM report r
+        JOIN "User" u ON u.userid = r.reporterid
+        WHERE r.reporttype = '1' AND r.approvedate IS NULL
+        ORDER BY r.createdat ASC 
+      `
+      const result: any = await client.query(query)
+
+      return result.rows
+    } catch (error) {
+      console.log(error)
+      return false
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async getPostReports() {
+    const client = await pool.connect();
+    try {
+      const query = `
+        SELECT 
+          u.firstname,
+          u.lastname,
+          u.avatar,
+          r.*
+        FROM report r
+        JOIN "User" u ON u.userid = r.reporterid
+        WHERE r.reporttype = '2' AND r.approvedate IS NULL
+        ORDER BY r.createdat ASC 
+      `
+      const result: any = await client.query(query)
+
+      return result.rows
+    } catch (error) {
+      console.log(error)
+      return false
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async updateReport(reportID: string) {
+    const client = await pool.connect();
+    try {
+      const query = `
+        UPDATE report
+        SET approvedate = CURRENT_DATE
+        WHERE reportid = $1;
+      `
+      const values: any = [reportID]
+      const result: any = await client.query(query, values)
+      return true
+    } catch (error) {
+      console.log(error)
+      return false
+    } finally {
+      client.release();
+    }
+  }
+
 }

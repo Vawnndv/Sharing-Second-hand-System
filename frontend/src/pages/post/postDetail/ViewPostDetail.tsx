@@ -81,7 +81,7 @@ function ViewPostDetail() {
           try {
             // console.log(postID);
             // setIsLoading(true);
-            const res: any = await Axios.get(`/posts/${postid}`)
+            const res: any = await Axios.get(`posts/${postid}`)
             // const res = await postsAPI.HandlePost(
             //   `/${postID}`,
             // );
@@ -102,7 +102,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`/posts/postreceivers/${postid}`)
+            const res: any = await Axios.get(`posts/postreceivers/${postid}`)
             if (!res) {
               throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
             }
@@ -113,7 +113,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`/items/images/${itemIDs}`)
+            const res: any = await Axios.get(`items/images/${itemIDs}`)
             // const res = await itemsAPI.HandleAuthentication(
             //   `/${itemID}`,
             // );
@@ -130,7 +130,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res = await Axios.get(`/user/get-profile?userId=${owner}`);
+            const res = await Axios.get(`user/get-profile?userId=${owner}`);
             console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setProfile(res.data);
@@ -167,7 +167,7 @@ function ViewPostDetail() {
         if(post.givetypeid === 1){
 
             try{
-                const res = await await Axios.post(`posts/update-post-status`, {
+                const res = await Axios.post(`posts/update-post-status`, {
                     postid: post.postid,
                     statusid: 12,
                     isApproveAction: true
@@ -191,7 +191,7 @@ function ViewPostDetail() {
             }
                 let orderID: any = null;
                 const time = new Date();
-                const response = await Axios.post(`/order/createOrder`, {
+                const response: any = await Axios.post(`order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -213,8 +213,9 @@ function ViewPostDetail() {
                     givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
-                orderID = response.data.orderCreated.orderid;
-
+                // console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
+                orderID = response.orderCreated.orderid;
+                
                 try{
                     const currentstatus = 'Chờ cộng tác viên lấy hàng';
                     const responseTrace = await Axios.post(`order/createTrace`, {
@@ -261,7 +262,7 @@ function ViewPostDetail() {
                 }
                 let orderID: any = null;
                 const time = new Date();
-                const response = await Axios.post(`order/createOrder`, {
+                const response: any = await Axios.post(`order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -283,7 +284,7 @@ function ViewPostDetail() {
                     givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
-                orderID = response.data.orderCreated.orderid;
+                orderID = response.orderCreated.orderid;
 
                 try{
                     const responseInputcard = await Axios.post(`card/createInputCard`, {

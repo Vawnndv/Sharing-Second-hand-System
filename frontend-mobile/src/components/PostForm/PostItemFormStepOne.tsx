@@ -86,10 +86,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   });
 
 
-  // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
+  // const methodsGive = ["Đăng món đồ lên hệ thống", "Gửi món đồ đến kho"];
 
   const methodsGive = [
-    { label: "  Đăng món đồ lên hệ thống ứng dụng", value: "  Đăng món đồ lên hệ thống ứng dụng" },
+    { label: "  Đăng món đồ lên hệ thống", value: "  Đăng món đồ lên hệ thống" },
     { label: "  Gửi món đồ đến kho", value: "  Gửi món đồ đến kho" },
   ];
 
@@ -139,7 +139,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
 
   useEffect(() => {
-    if(formData.methodGive == 'Đăng món đồ lên hệ thống ứng dụng'){
+    if(formData.methodGive == 'Đăng món đồ lên hệ thống'){
       setValidAllMethod(true);
     }
     else if(formData.methodGive == 'Gửi món đồ đến kho' && formData.methodsBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
