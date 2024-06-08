@@ -52,7 +52,7 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
 
 
   const goToHomeScreen = () => {
-    navigation.navigate('ViewPostManagement', {screen: 'HomeScreen'})
+    navigation.navigate('HomeScreen')
   }
   return(
     <View style={styles.container}>
@@ -64,16 +64,22 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
       <Text style={styles.textContent}>{content}</Text>
 
       <View style={styles.buttonContainer}>
-      <TouchableOpacity onPress={goToPostDetail} style={styles.buttonStyle}>
-        <Icon name="left" size={18} color="white" style={styles.icon} />
-        <Text style={styles.textStyle}>Bài đăng</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity onPress={goToOrderScreen} style={styles.buttonStyle}>
-        <Text style={styles.textStyle}>Đơn hàng</Text>
-        <Icon name="right" size={18} color="white" style={styles.icon} />
-      </TouchableOpacity>
+        <TouchableOpacity onPress={goToHomeScreen} style={styles.buttonStyle}>
+          <Text style={styles.textStyle}>Trang chủ</Text>
+          <Icon name="right" size={18} color="white" style={styles.icon} />
+        </TouchableOpacity>
+        
+        <TouchableOpacity onPress={goToPostDetail} style={styles.buttonStyle}>
+          <Icon name="left" size={18} color="white" style={styles.icon} />
+          <Text style={styles.textStyle}>Bài đăng</Text>
+        </TouchableOpacity>
+
       </View>
+
+      
+
+      
 
       {/* <TouchableOpacity onPress={goToHomeScreen} style={styles.homeButton}>
         <Text style={styles.textStyle}>Về trang chủ </Text>

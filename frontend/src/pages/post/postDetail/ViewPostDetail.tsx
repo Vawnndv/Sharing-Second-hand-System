@@ -189,59 +189,60 @@ function ViewPostDetail() {
             } catch (error) {
                 console.log(error);
             }
-                let orderID: any = null;
-                const time = new Date();
-                const response = await Axios.post(`/order/createOrder`, {
-                    title: post.title,
-                    location: '',
-                    description: post.description,
-                    departure: '',
-                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+
+            let orderID: any = null;
+            const time = new Date();
+            const response = await Axios.post(`/order/createOrder`, {
+                title: post.title,
+                location: '',
+                description: post.description,
+                departure: '',
+                time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                itemid: post.itemid,
+                status: 'Chờ cộng tác viên lấy hàng',
+                statusid: 7,
+                qrcode: '',
+                ordercode: '',
+                usergiveid: post.owner,
+                userreceiveid: userLogin.userInfo.id,
+                postid: post.postid,
+                imgconfirm: '',
+                locationgive: post.addressid,
+                locationreceive: warehouseInfo.addressid,
+                givetypeid: post.givetypeid,
+                imgconfirmreceive: '',
+                givetype: post.give_receivetype,
+                warehouseid: post.warehouseid,
+            }); 
+            orderID = response.data.orderCreated.orderid;
+
+            try{
+                const currentstatus = 'Chờ cộng tác viên lấy hàng';
+                const responseTrace = await Axios.post(`order/createTrace`, {
+                    currentstatus,
+                    orderid: orderID,
+                });
+                toast.success(`Tạo đơn hàng thành công`);
+
+            } catch(error){
+                console.log(error);
+            }
+
+            try{
+                const responseInputcard = await Axios.post(`card/createInputCard`, {
                     itemid: post.itemid,
-                    status: 'Chờ cộng tác viên lấy hàng',
-                    statusid: 7,
                     qrcode: '',
-                    ordercode: '',
                     usergiveid: post.owner,
-                    userreceiveid: userLogin.userInfo.id,
-                    postid: post.postid,
-                    imgconfirm: '',
-                    locationgive: post.addressid,
-                    locationreceive: warehouseInfo.addressid,
-                    givetypeid: post.givetypeid,
-                    imgconfirmreceive: '',
-                    givetype: post.give_receivetype,
-                    warehouseid: post.warehouseid,
-                }); 
-                orderID = response.data.orderCreated.orderid;
-
-                try{
-                    const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                    const responseTrace = await Axios.post(`order/createTrace`, {
-                        currentstatus,
-                        orderid: orderID,
-                    });
-                    toast.success(`Tạo đơn hàng thành công`);
-
-                } catch(error){
-                    console.log(error);
-                }
-
-                try{
-                    const responseInputcard = await Axios.post(`card/createInputCard`, {
-                        itemid: post.itemid,
-                        qrcode: '',
-                        usergiveid: post.owner,
-                        warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
-                        orderid: orderID
-                    });
-                    toast.success(`Tạo inputcard thành công`);
-                }
-                catch (error) {
-                    console.log(error);
-                // }
-                }
-                navigate(-1);
+                    warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
+                    orderid: orderID
+                });
+                toast.success(`Tạo inputcard thành công`);
+            }
+            catch (error) {
+                console.log(error);
+            // }
+            }
+            navigate(-1);
 
 
             }
