@@ -6,7 +6,7 @@ import axios from "axios";
 import { appInfo } from "../constants/appInfos";
 import LoadingModal from "./LoadingModal";
 
-export default function ReportModal({ visible, setVisible, title, reportType, userID, postID }: any) {
+export default function ReportModal({ visible, setVisible, title, reportType, userID, postID, reporterID }: any) {
     
     const [description, setDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false)
@@ -18,7 +18,8 @@ export default function ReportModal({ visible, setVisible, title, reportType, us
                 userID,
                 postID,
                 description,
-                reportType
+                reportType,
+                reporterID
             })
             if(response.data.data === true){
                 setVisible(false)
@@ -100,6 +101,7 @@ const styles = StyleSheet.create({
         padding: 5,
         marginVertical: 10,
         textAlignVertical: 'top', // Đặt văn bản luôn ở đầu đoạn input
+        fontSize: 15
     },
     buttonContainer: {
         width: '100%', 

@@ -477,6 +477,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                     avatar={profile?.avatar}
                     username={ profile?.firstname + ' ' + profile?.lastname}
                     styles={styles.avatar}
+                    onPress={() => {
+                      navigation.navigate(
+                        'ProfileScreen',
+                        {
+                          id: post.owner
+                        },
+                      );
+                    }}
+                  
                   />
                   <View style={[styles.username_timeContaner, {rowGap: 5}]}>
                   {/* Hiển thị tên của user */}
@@ -618,7 +627,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
          Đi đến trang cảm ơn</Button> */}
         {
           post !== null && 
-          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID}/>
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id}/>
         }
         
       </ScrollView>

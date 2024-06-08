@@ -14,14 +14,14 @@ export class ReportManager {
     //code here
   }
 
-  public static async insertReport(userID: string, postID: string, reportType: string, description: string) {
+  public static async insertReport(userID: string, postID: string, reportType: string, description: string, reporterID: string) {
     const client = await pool.connect();
     try {
       const query = `
-        INSERT INTO report (userid, postid, reporttype, description)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO report (userid, postid, reporttype, description, reporterid)
+        VALUES ($1, $2, $3, $4, $5)
       `
-      const values: any = [userID, postID, reportType, description]
+      const values: any = [userID, postID, reportType, description, reporterID]
       const result: any = await client.query(query, values)
 
       return true
