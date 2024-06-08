@@ -24,6 +24,7 @@ import ManageWarehouse from './pages/warehouse/ManageWarehouse';
 import PostApproval from './pages/approval/PostApproval';
 import EditPost from './pages/post/editPost/editPost';
 import PostsCreen from './pages/post/postsPage/PostsScreen';
+import ReportScreen from './pages/report/ReportScreen';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -51,6 +52,7 @@ export function App() {
           <Route path="/approval" element={<PostApproval />} />
           <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route path="/post/edit/:postid" element={<EditPost />} />
+          <Route path="/report" element={<ReportScreen />} />
         </Route>
         <Route element={<AdminProtectedRouter />}>
           <Route path="/users" element={<Users />} />

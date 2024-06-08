@@ -57,12 +57,12 @@ function ChatRoom({ typeChat }: any) {
         roomID,
         createdAt: Timestamp.fromDate(new Date())
       });
-      if (!warehouse) await createNewChatUser(userID, convert(roomid).userID2);
+      if (!warehouse) await createNewChatUser(userID, userID?.toString() !== convert(roomid).userID2 ? convert(roomid).userID2 : convert(roomid).userID1);
     }
   };
 
   const getProfile = async () => {
-    const res = await getProfileService(convert(roomid).userID2);
+    const res = await getProfileService(userID?.toString() !== convert(roomid).userID2 ? convert(roomid).userID2 : convert(roomid).userID1);
     setProfile(res);
   };
 
