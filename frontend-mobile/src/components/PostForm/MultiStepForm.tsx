@@ -16,6 +16,7 @@ import ContainerComponent from '../ContainerComponent';
 import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import { useNavigation } from '@react-navigation/native';
 import { ProfileModel } from '../../models/ProfileModel';
+import { LoadingModal } from '../../modals';
 
 
 interface FormDataStepOne {
@@ -186,8 +187,8 @@ const MultiStepForm = () => {
       formDataStepTwo.postPhoneNumber && 
       formDataStepTwo.postAddress 
     ) {
-      console.log(errorMessage);
-      console.log(formDataStepTwo);
+      // console.log(errorMessage);
+      // console.log(formDataStepTwo);
 
       let itemID = 0;
       let postID = 0;
@@ -414,6 +415,8 @@ const MultiStepForm = () => {
       } catch (error) {
         console.log(error)
       }
+
+      setIsLoading(false)
     }
   };
 
@@ -437,6 +440,9 @@ const MultiStepForm = () => {
 
   return (
     <ScrollView>
+
+      <LoadingModal visible={isLoading} />
+
       <View style={styles.screenContainer}>
         <ScrollView  style={styles.container}>
         <View style={styles.header}>
@@ -453,6 +459,8 @@ const MultiStepForm = () => {
           )}
         </ScrollView>
       </View>
+
+      
     </ScrollView>
   );
 

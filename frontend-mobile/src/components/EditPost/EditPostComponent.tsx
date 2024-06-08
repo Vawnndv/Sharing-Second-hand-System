@@ -360,7 +360,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
       }
     }
     console.log(res.data.postUpdated);
-    Alert.alert('Success', 'Cập nhật post thành công');
+    Alert.alert('Thông báo', 'Cập nhật bài đăng thành công');
 
     navigation.navigate('PostScreen');
       } catch(error){

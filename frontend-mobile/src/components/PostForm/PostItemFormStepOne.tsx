@@ -473,7 +473,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
     })
   }
 
-
+  console.log("isBringItemToWarehouse", isBringItemToWarehouse)
+  console.log("isWarehouseGive", isWarehouseGive)
   return (
     <ScrollView style = {styles.container}>
       <Text style={styles.title}>Thông tin sản phẩm </Text>
@@ -661,7 +662,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
           {(errorMessage.methodsBringItemToWarehouse) && <TextComponent text={errorMessage.methodsBringItemToWarehouse}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
-
+      
       {isBringItemToWarehouse && isWarehouseGive && (
         <>
           <TextInput
