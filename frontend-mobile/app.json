@@ -15,14 +15,25 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.retreasure.firebase"
+      "package": "com.retreasure.firebase",
+      "googleServicesFile": "./android/google-services.json",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -44,7 +55,11 @@
           "cameraPermission": "Allow  $(PRODUCT_NAME) to access your camera."
         }
       ]
-      
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3d1b1f78-a4b7-4ba8-9f74-8d08fdc8185d"
+      }
+    }
   }
 }
