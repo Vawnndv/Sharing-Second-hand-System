@@ -17,6 +17,7 @@ import chatRouter from './routes/chatRouter';
 import mapRouter from './routes/mapRouter';
 import statisticRouter from './routes/statisticRouter';
 import collaboratorRouter from './routes/collaboratorRouter';
+import reportRouter from './routes/reportRouter';
 
 const app = express();
 
@@ -40,6 +41,8 @@ app.use('/aws3', uploadImageToAwsRoute);
 app.use('/card', cardRouter);
 app.use('/chat', chatRouter);
 app.use('/map', mapRouter);
+
+app.use('/report', reportRouter);
 
 app.use('/statistic', statisticRouter);
 

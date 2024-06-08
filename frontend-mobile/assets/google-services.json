@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40214556157",
+    "project_id": "retreasure-e3982",
+    "storage_bucket": "retreasure-e3982.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40214556157:android:346c63412d422d191dfd94",
+        "android_client_info": {
+          "package_name": "com.retreasure.firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_vD7zrBC8BOkwgZKQQPu3kw66ZLD7nUI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

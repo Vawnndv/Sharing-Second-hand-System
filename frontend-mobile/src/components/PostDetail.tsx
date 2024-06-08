@@ -26,8 +26,9 @@ import ShowMapComponent from './ShowMapComponent';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
 import postsAPI from '../apis/postApi';
-import { Heart, DirectboxReceive } from 'iconsax-react-native';
+import { Heart, DirectboxReceive, Flag } from 'iconsax-react-native';
 import { HandleNotification } from '../utils/handleNotification';
+import ReportModal from '../modals/ReportModal';
 
 
 interface Post {
@@ -123,6 +124,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
   const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
 
   const [amountLike, setAmountLike] = useState(0)
+
+  const [visibleModalReport, setVisibleModalReport] = useState(false)
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -432,6 +435,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
               <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
                 {(auth.id !== post?.owner) && (
                   <TouchableOpacity
+                    style={{marginRight: 10}}
                     onPress={() => {
                       openChatRoomReceive({
                         item: {
@@ -447,12 +451,28 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                   >
                     <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
                   </TouchableOpacity>
+                  
+                )}
+
+                {(auth.id !== post?.owner) && (
+                  <TouchableOpacity
+                    onPress={() => 
+                      setVisibleModalReport(true)
+                    }
+                  >
+                    <Flag
+                      size="28"
+                      color={appColors.green}
+                      variant="Outline"
+                    />
+                  </TouchableOpacity>
+                  
                 )}
               </View>
 
               <View style={styles.userContainer}>
                 {/* Hiển thị avatar của user */}
-                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                   <AvatarComponent 
                     avatar={profile?.avatar}
                     username={ profile?.firstname + ' ' + profile?.lastname}
@@ -596,6 +616,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                                                     content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
                                                      }) })}>
          Đi đến trang cảm ơn</Button> */}
+        {
+          post !== null && 
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID}/>
+        }
+        
       </ScrollView>
     )
   }
@@ -793,13 +818,14 @@ const styles = StyleSheet.create({
 
   timeContainer: {
     flexDirection: 'row',
-
+    alignItems: 'center',
+    columnGap: 2
   },
 
   username_timeContaner: {
     flexDirection: 'column',
     justifyContent: 'space-around',
-    marginLeft: 20
+    marginLeft: 15
   },
 
   centeredModalReceiveView: {

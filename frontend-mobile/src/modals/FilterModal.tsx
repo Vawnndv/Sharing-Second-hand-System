@@ -16,7 +16,7 @@ export default function FilterModal({visible, setVisible, hideModal, showModal, 
                     transparent={true}
                     visible={visible}
                     onRequestClose={() => {
-                        Alert.alert('Modal has been closed.');
+                        Alert.alert('Đã ẩn bộ lọc.');
                         setVisible(!visible);
                     }}>
                         <TouchableWithoutFeedback
