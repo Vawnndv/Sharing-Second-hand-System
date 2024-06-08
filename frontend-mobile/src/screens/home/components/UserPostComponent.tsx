@@ -26,12 +26,14 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [isEndOfData, setIsEndOfData] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(true)
 
   const LIMIT = 5;
 
   const handleRefresh = () => {
     setRefresh(prevRefresh => !prevRefresh);
   }
+  console.log("DATAAAAAAAAAAAAAAAAAAAA", data)
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
@@ -75,19 +77,24 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
       )
       const newData: PostData[] = res.allPosts;
 
-      if (!newData) {
-        setIsEndOfData(true)
-      } else {
-        if (newData.length <= 0 && page === 0)
-          setIsEmpty(true)
-        if (newData.length <= 0 && data.length > 0)
+      if(!isFirstTime){
+        if (!newData) {
           setIsEndOfData(true)
+        } else {
+          if (newData.length <= 0 && page === 0)
+            setIsEmpty(true)
+          if (newData.length <= 0 && data.length > 0)
+            setIsEndOfData(true)
+        }
+  
+        if (newData.length > 0)
+          setPage(page + 1); // Tăng số trang lên
+  
+        setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+      }else{
+        setIsFirstTime(false)
       }
-
-      if (newData.length > 0)
-        setPage(page + 1); // Tăng số trang lên
-
-      setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+      
 
     } catch (error) {
       console.log(error);

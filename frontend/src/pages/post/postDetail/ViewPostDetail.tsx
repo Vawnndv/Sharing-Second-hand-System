@@ -213,7 +213,7 @@ function ViewPostDetail() {
                     givetype: post.give_receivetype,
                     warehouseid: post.warehouseid,
                 }); 
-                console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
+                // console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
                 orderID = response.orderCreated.orderid;
                 
                 try{

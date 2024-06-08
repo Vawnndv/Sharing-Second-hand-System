@@ -120,13 +120,13 @@ const MultiStepForm = () => {
     }
 
 
-    if (formDataStepOne.methodsBringItemToWarehouse && formDataStepOne.methodsBringItemToWarehouse != 'Chọn phương thức mang đồ đến kho' &&  formDataStepOne.methodGive != 'Đăng món đồ lên hệ thống ứng dụng') {
+    if (formDataStepOne.methodsBringItemToWarehouse && formDataStepOne.methodsBringItemToWarehouse != 'Chọn phương thức mang đồ đến kho' &&  formDataStepOne.methodGive != 'Đăng món đồ lên hệ thống') {
       console.log(formDataStepOne.methodGive);
       updates.postBringItemToWarehouse = formDataStepOne.methodsBringItemToWarehouse;
     }
 
     
-    if (formDataStepOne.methodGive == 'Đăng món đồ lên hệ thống ứng dụng') {
+    if (formDataStepOne.methodGive == 'Đăng món đồ lên hệ thống') {
       console.log(formDataStepOne.methodGive);
       updates.postBringItemToWarehouse = '';
     }
@@ -241,7 +241,7 @@ const MultiStepForm = () => {
         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
         let response : any = null;
 
-        if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống ứng dụng"){
+        if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống"){
           response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
