@@ -2,7 +2,7 @@ import { Fontisto, SimpleLineIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import userAPI from '../../apis/userApi'
 import { AvatarComponent, ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
@@ -10,12 +10,16 @@ import { appColors } from '../../constants/appColors'
 import { ProfileModel } from '../../models/ProfileModel'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
+import { Flag } from 'iconsax-react-native'
+import ReportModal from '../../modals/ReportModal'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
   const [profileId, setProfileId] = useState('');
   const [refresh, setRefresh] = useState(false)
+
+  const [visibleModalReport, setVisibleModalReport] = useState(false)
 
   const dispatch = useDispatch();
 
@@ -125,9 +129,25 @@ const ProfileScreen = ({navigation, route}: any) => {
             </RowComponent>
           </SectionComponent>
           {/* <SpaceComponent height={21} /> */}
+          <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
+            {(auth.id !== profile.userId) && (
+              <TouchableOpacity
+                onPress={() => 
+                  setVisibleModalReport(true)
+                }
+              >
+                <Flag
+                  size="28"
+                  color={appColors.green}
+                  variant="Outline"
+                />
+              </TouchableOpacity>
+              
+            )}
+          </View>
           <SectionComponent>
             <View style={styles.container}>
-            <View style={styles.infoContainer}>
+              <View style={styles.infoContainer}>
                 <View style={styles.iconContainer}>
                   <Fontisto name="email" size={24} color={appColors.gray} />
                 </View>
@@ -205,6 +225,8 @@ const ProfileScreen = ({navigation, route}: any) => {
               </RowComponent>
             )
           }
+
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={2} userID={profile.userId} postID={null} reporterID={auth.id}/>
         </>
       )}
     </ContainerComponent>
