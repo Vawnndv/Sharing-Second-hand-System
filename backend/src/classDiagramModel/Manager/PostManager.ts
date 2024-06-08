@@ -1048,6 +1048,7 @@ export class PostManager {
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid
+      LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
       LEFT JOIN item it ON it.itemid = po.itemid
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
