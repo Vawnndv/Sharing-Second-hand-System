@@ -136,6 +136,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
   },[location])
 
+  useEffect(() =>{
+    if(profile){
+      setFormData({ ...formData, postPhoneNumber: profile.phonenumber ? profile.phonenumber : ''});
+    }
+  },[profile])
+
   const handleBlur = () => {
     // Khi mất focus, reset giá trị của TextInput
     if (textInputRef.current) {
@@ -226,7 +232,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
       else if (text.trim().length < 10 || text.trim().length > 11) {
         updatedErrorMessage.postPhoneNumber = 'Số điện thoại này không hợp lệ.';
-      } else {
+        setFormData({ ...formData, postPhoneNumber: text });
+      }
+      else {
         updatedErrorMessage.postPhoneNumber = '';
         setFormData({ ...formData, postPhoneNumber: text });
       }
@@ -373,7 +381,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
       <TextInput
         label="Số điện thoại"
-        value={profile?.phonenumber}
+        value={formData.postPhoneNumber}
         onBlur={() => handleValidate(formData.postPhoneNumber,'postphonenumber')}
         onChangeText={(text) => {
           // Chỉ cho phép cập nhật nếu text mới là số

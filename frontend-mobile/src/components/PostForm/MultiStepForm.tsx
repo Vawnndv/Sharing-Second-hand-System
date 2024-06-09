@@ -298,24 +298,27 @@ const MultiStepForm = () => {
 
           });
         }    
-
         console.log(response.data.postCreated.postid);
 
         postID = response.data.postCreated.postid;
         // address = response.data.postCreated.address;
         // addressid = response.data.postCreated.addressid;
-        setIsLoading(false);
-        setCurrentStep(1);
-        setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
-        setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' })
-        navigation.navigate('ThankYouScreen', {
-          title: 'Gửi bài viết thành công!!',
-          postID: response.data.postCreated.postid,
-          content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
-        })
+
 
       } catch (error) {
+        console.log(error);
         Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
+      } finally{
+        setCurrentStep(1);
+        setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
+        setFormDataStepTwo({ ...formDataStepTwo,  postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postPhoneNumber: '', postAddress: '' });
+        setIsLoading(false);
+        navigation.navigate('ThankYouScreen', {
+          title: 'Gửi bài viết thành công!!',
+          postID: postID,
+          content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viên kiểm duyệt',
+        })
+
       }
   
       // try {

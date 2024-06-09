@@ -1,5 +1,5 @@
 import express from 'express';
-import { getWarehouse, getAllWarehouses, getAllWarehousesAllInfo, getWarehouseNameList, createWarehouse, updateWarehouse } from '../controllers/warehouseController';
+import { getWarehouse, getAllWarehouses, getAllWarehousesAllInfo, getWarehouseNameList, createWarehouse, updateWarehouse, updateWarehouseStatus } from '../controllers/warehouseController';
 
 
 
@@ -15,6 +15,8 @@ router.post('/getAllWarehousesAllInfo', getAllWarehousesAllInfo);
 
 router.post('/createWarehouse', createWarehouse);
 router.post('/updateWarehouse', updateWarehouse);
+router.post('/updateWarehouseStatus', updateWarehouseStatus);
+
 
 
 export default router;
