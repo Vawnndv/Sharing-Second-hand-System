@@ -470,7 +470,7 @@ const handleReceive = async () => {
         fetchFlag: true,
       })    
     }
-       catch (error) {
+      catch (error) {
       console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
       Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
     }

@@ -144,63 +144,6 @@ export class PostManager {
   public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
-      // const postsQuery = `
-      // SELECT 
-      //   u.userid,
-      //   u.avatar, 
-      //   CONCAT(u.firstname, ' ', u.lastname) AS name,
-      //   p.description, 
-      //   p.postid,
-      //   p.updatedat, 
-      //   p.createdat,
-      //   p.postid,
-      //   a.address,
-      //   itt.nametype,
-      //   a.longitude,
-      //   a.latitude,
-      //   MIN(i.path) AS path,
-      //   CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-      // CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
-      //   CAST(COUNT(pr.receiverid) AS INTEGER)userreciver_count
-      // FROM 
-      //   "User" u
-      // RIGHT JOIN 
-      //   "posts" p ON u.userId = p.owner
-      // RIGHT JOIN 
-      //   "orders" o ON p.postid = o.postid
-      // RIGHT JOIN 
-      //   "postreceiver" pr ON p.postid = pr.postid
-      // JOIN 
-      //   "address" a ON a.addressid = p.addressid
-      // JOIN 
-      //   item it ON it.itemid = p.itemid
-      // JOIN item_type 
-      //   itt ON itt.itemtypeid = it.itemtypeid
-      // LEFT JOIN 
-      //   "image" i ON p.itemid = i.itemid
-      // LEFT JOIN 
-      //   "like_post" lp ON p.postid = lp.postid
-      // WHERE 
-      //   u.userId NOT IN (SELECT userId FROM workAt) AND o.userreceiveid is null
-      // GROUP BY 
-      //   u.userid,
-      //   u.avatar, 
-      //   u.firstname, 
-      //   u.lastname, 
-      //   p.description, 
-      //   p.postid,
-      //   p.updatedat, 
-      //   p.createdat,
-      //   p.postid,
-      //   a.address,
-      //   itt.nametype,
-      //   a.longitude,
-      //   a.latitude
-      // ORDER BY
-      //   p.createdat DESC
-      // LIMIT ${limit}
-      // OFFSET ${limit} * ${page};
-      // `;
 
       const postsQuery = `
       SELECT DISTINCT
@@ -277,65 +220,6 @@ export class PostManager {
   public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
-      // const postsQuery = `
-      //   SELECT 
-      //     p.description, 
-      //     p.updatedat, 
-      //     p.createdat,
-      //     p.itemid,
-      //     p.postid,
-      //     w.warehousename As name,
-      //     w.avatar,
-      //     a.address,
-      //     a.longitude,
-      //     a.latitude,
-      //     itt.nametype,
-      //     MIN(i.path) AS path,
-      //     CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-      // CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
-      //   FROM 
-      //     "posts" p
-      //   JOIN 
-      //     "workat" wa
-      //   ON 
-      //     p.owner = wa.userid
-      //   JOIN 
-      //     "warehouse" w
-      //   ON 
-      //     wa.warehouseid = w.warehouseid
-      //   JOIN 
-      //     "address" a
-      //   ON
-      //     a.addressid = p.addressid
-      //   JOIN 
-      //     item it ON it.itemid = p.itemid
-      //   JOIN item_type 
-      //     itt ON itt.itemtypeid = it.itemtypeid
-      //   LEFT JOIN 
-      //     "image" i
-      //   ON 
-      //     p.itemid = i.itemid
-      //   LEFT JOIN 
-      //     "like_post" lp
-      //   ON p.postid = lp.postid
-        
-      //   GROUP BY
-      //     p.description, 
-      //     p.updatedat, 
-      //     p.createdat,
-      //     p.itemid,
-      //     p.postid,
-      //     w.warehousename,
-      //     a.address,
-      //     w.avatar,
-      //     a.longitude,
-      //     a.latitude,
-      //     itt.nametype
-      //   ORDER BY
-      //     p.createdat DESC
-      //   LIMIT ${limit}
-      //   OFFSET ${limit} * ${page};
-      // `;
 
       const postsQuery = `
       SELECT DISTINCT
@@ -396,18 +280,121 @@ export class PostManager {
       `;
 
       const result: QueryResult = await client.query(postsQuery);
+      // console.log(result.rows)
       if (result.rows.length === 0) {
         return null;
       }
 
       const warehouseList = await this.getListAddressByWarehouseID(warehouses);
 
+      console.log(filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows))
       return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error; // Ném lỗi để controller có thể xử lý
     } finally {
       client.release(); // Release client sau khi sử dụng
+    }
+  }
+
+  public static async getTotalPost(status: string, userID: string){
+    const client = await pool.connect();
+
+    let query = ``
+    if(status === 'userPost'){
+      query = `
+        SELECT COUNT (*) AS total_posts FROM (
+          SELECT DISTINCT po.postid
+          FROM Posts AS po
+          WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
+        ) as Amount
+      `
+    }else if(status === 'warehousePost'){
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+        SELECT DISTINCT po.postid
+        FROM Posts AS po
+        WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
+      ) as Amount
+      `
+    }else if (status === 'waitForApprove'){
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+      SELECT DISTINCT po.postid
+        FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
+        WHERE po.statusid = 2
+        AND po.warehouseid = (
+          SELECT warehouseid
+            FROM "workat"
+            WHERE userid = ${userID}
+        )
+    ) as Amount
+      `
+    }else if(status === 'justApprove'){
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+      SELECT DISTINCT po.postid
+        FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
+        WHERE po.statusid = 12
+        AND po.warehouseid = (
+          SELECT warehouseid
+            FROM "workat"
+            WHERE userid = ${userID}
+        )
+      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+      AND current_timestamp >= po.approvedate::timestamp
+    ) as Amount
+      `
+    }else if(status === 'justCancel'){
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+      SELECT DISTINCT po.postid
+        FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
+        WHERE po.statusid = 6
+        AND po.warehouseid = (
+          SELECT warehouseid
+            FROM "workat"
+            WHERE userid = ${userID}
+        )
+      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
+      AND current_timestamp >= po.approvedate::timestamp
+    ) as Amount
+      `
+    }else{
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+      SELECT DISTINCT po.postid
+        FROM Posts AS po
+      LEFT JOIN "User" us ON po.owner = us.UserID
+      LEFT JOIN "orders" od ON od.postid = po.postid
+        WHERE (od.status LIKE 'Hàng đã nhập kho')
+        AND po.warehouseid = (
+          SELECT warehouseid
+            FROM "workat"
+            WHERE userid = ${userID}
+        )
+      AND (od.givetypeid=3 OR od.givetypeid=4 )
+      AND (po.statusid = 14 OR po.statusid = 12)
+    ) as Amount
+      `
+    }
+
+    try {
+      const result: QueryResult = await client.query(query)
+      if(result.rows.length === 0){
+        return 0
+      }
+
+      return result.rows[0].total_posts
+    } catch (error) {
+      console.log(error)
+      return 0
     }
   }
 

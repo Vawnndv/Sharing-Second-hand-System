@@ -22,7 +22,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
     }
     
   };
-  console.log(order.give_receivetype)
+  // console.log(order.give_receivetype)
 
   moment.locale();
   return (

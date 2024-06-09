@@ -459,7 +459,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
               <View style={styles.userContainer}>
                 {/* Hiển thị avatar của user */}
-                <View style={{flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+                <View style={styles.userContainer}>
                   <AvatarComponent 
                     avatar={profile?.avatar}
                     username={ profile?.firstname + ' ' + profile?.lastname}
@@ -488,7 +488,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
                 </View>
 
-                <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+                <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                   {/* <View style={{flexDirection: 'column', gap: 10}}> */}
                     {isUserPost && post?.statusid === 12 && (
                       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
@@ -646,7 +646,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    flex: 1
   },
   title: {
     marginTop: 5,
