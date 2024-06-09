@@ -60,9 +60,28 @@ const TabNavigator = () => {
           marginTop: 8
         },
         tabBarLabel ({focused}) {
+          let text;
+          switch (route.name) {
+            case 'Home':
+              text = 'Trang chủ';
+              break;
+            case 'Scan':
+              text = 'Quét mã';
+              break;
+            case 'Message':
+              text = 'Tin nhắn';
+              break;
+            case 'Profile':
+              text = 'Thông tin';
+              break;
+            default:
+              text = route.name;
+              break;
+          }
+
           return route.name === 'Add' ? null : (
             <TextComponent
-              text={route.name}
+              text={text}
               flex={0}
               size={12}
               color={focused ? appColors.primary : appColors.gray5}
