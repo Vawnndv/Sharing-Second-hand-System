@@ -1,21 +1,18 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, TouchableWithoutFeedback  } from 'react-native';
-import { StringLiteral } from 'typescript';
-import { AntDesign, Ionicons, SimpleLineIcons  } from '@expo/vector-icons';
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 
-import moment from 'moment';
-import { appInfo } from '../constants/appInfos';
 import axios from 'axios';
+import moment from 'moment';
 import { useSelector } from 'react-redux';
-import { authSelector } from '../redux/reducers/authReducers';
 import userAPI from '../apis/userApi';
+import { appInfo } from '../constants/appInfos';
 import { ProfileModel } from '../models/ProfileModel';
+import { authSelector } from '../redux/reducers/authReducers';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
-import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
 
 import { appColors } from '../constants/appColors';
@@ -24,10 +21,9 @@ import ShowMapComponent from './ShowMapComponent';
 // import ImageCropPicker from 'react-native-image-crop-picker';
 
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
+import { DirectboxReceive, Flag, Heart } from 'iconsax-react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Đảm bảo đã cài đặt thư viện này
 import postsAPI from '../apis/postApi';
-import { Heart, DirectboxReceive, Flag } from 'iconsax-react-native';
-import { HandleNotification } from '../utils/handleNotification';
 import ReportModal from '../modals/ReportModal';
 
 
@@ -163,21 +159,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
     });
   }
 
-  const handleReceiveForm = () => {
+  const handleReceiveForm = async () => {
     const isReceived = postReceivers.find(postReceiver => postReceiver.receiverid == auth.id);
 
 
     if(!isReceived){
       setGoToReceiveForm(true);
-      HandleNotification.sendNotification({
-        userReceiverId: post.owner,
-        userSendId: auth.id,
-        postid: postID,
-        avatar: auth.avatar,
-        link: 'ItemDetailScreen',
-        name: `${auth?.firstName} ${auth.lastName}`,
-        text: 'xin sản phẩm của bạn',
-      })
     }
     else{
       setGoToReceiveForm(false);

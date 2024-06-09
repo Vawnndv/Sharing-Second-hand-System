@@ -18,6 +18,7 @@ import { appColors } from '../../constants/appColors';
 import ShowMapComponent from '../ShowMapComponent';
 import TextComponent from '../TextComponent';
 import { current } from '@reduxjs/toolkit';
+import { HandleNotification } from '../../utils/handleNotification';
 
 
 interface Props {
@@ -451,6 +452,17 @@ const handleReceive = async () => {
         time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
         receivertypeid,
       });       
+
+      await HandleNotification.sendNotification({
+        userReceiverId: post.owner,
+        userSendId: auth.id,
+        postid: postID,
+        avatar: auth.avatar,
+        link: 'ItemDetailScreen',
+        name: `${auth?.firstName} ${auth.lastName}`,
+        text: ' xin sản phẩm của bạn',
+      })
+      
       Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
 
       navigation.navigate('ItemDetailScreen', {

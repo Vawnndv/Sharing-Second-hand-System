@@ -29,13 +29,13 @@ import { usePushNotifications } from './src/utils/usePushNotification';
 SplashScreen.preventAutoHideAsync();
 
 
-
 export default function App() {
   const {expoPushToken, notification} = usePushNotifications();
 
   const data = JSON.stringify(notification, undefined, 2);
   console.log("token: ", expoPushToken);
   console.log("data: ", data);
+
   const [appIsReady, setAppIsReady] = useState(false);
   // const [fontsLoaded, setFontsLoaded] = useState(false);
 

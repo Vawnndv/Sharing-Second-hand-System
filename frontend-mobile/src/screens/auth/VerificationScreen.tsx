@@ -12,7 +12,7 @@ import { addAuth } from '../../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerificationScreen = ({navigation, route}: any) => {
-  const limitTime = 20;
+  const limitTime = 120;
   const {code, email, password, firstname, lastname} = route.params;
 
   const [currentCode, setCurrentCode] = useState(code);
