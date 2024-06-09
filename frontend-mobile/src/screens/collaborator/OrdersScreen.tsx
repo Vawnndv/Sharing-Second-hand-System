@@ -16,7 +16,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
-
+import { Ionicons } from '@expo/vector-icons'
 
 const category = [
     "Quần áo",
@@ -135,7 +135,7 @@ export default function OrdersScreen({navigation}: any) {
           setRefreshing(false);
         }, 1000);
       }, []);
-
+    console.log(ordersGiving)
     return(
         <ContainerComponent>
             {/* <ShowMapComponent location={{latitude: 10.768879, longitude: 106.656034, address: 'Nhà thi đấu Phú Thọ'}} setLocation={''}/> */}
@@ -172,7 +172,7 @@ export default function OrdersScreen({navigation}: any) {
                             showsHorizontalScrollIndicator={false}>
                             <TouchableOpacity style={styles.itemFilter}
                                 onPress={showModal}>
-                                <IconFeather name="filter" size={20} color={appColors.primary2}/>
+                                <Ionicons name="options" size={26} color={'#552466'}/>
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
@@ -189,78 +189,90 @@ export default function OrdersScreen({navigation}: any) {
                         </Text>
                     </View>
                     {/* // seperate */}
-                    <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
+                    <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10
+                    }}></View>
 
+                    {/* <View style={{width: '100%', height: "100%", backgroundColor: '#EBEBEB',
+                        display: 'flex', justifyContent: 'center', alignItems: 'center'}}> */}
+                        <ScrollView style={{width: '100%', height: "100%"}}
+                            horizontal={false}
+                            refreshControl={
+                                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                            }>
+
+                            {
+                                ordersGiving.map((order: any, index) => {
+                                    return (
+                                        <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
+                                            orderID: order.orderID,
+                                            status: order.status,
+                                        })} key={index}
+                                        style={{
+                                            paddingHorizontal: 20,
+                                            paddingBottom: 10
+                                        }}>
+                                            <OrderComponent
+                                                avatar={order.giver.avatar}
+                                                name={`${order.giver.firstName} ${order.giver.lastName}`}
+                                                timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
+                                                timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
+                                                departure={order.addressGive.address}
+                                                destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
+                                                quantity={order.item.quantity}
+                                                itemName={order.item.name}
+                                                status={order.status}
+                                                changeOrdersGiving={changeOrdersGiving}
+                                                setChangeOrdersGiving={setChangeOrdersGiving}
+                                                orderID={order.orderID}
+                                                collboratorReceiveID={auth.id}
+                                                imagePath={order.imagePath}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                })
+                            }
+
+                            {
+                                orders.map((order: any, index) => {
+                                    return (
+                                        <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
+                                            orderID: order.orderID,
+                                            status: order.status,
+                                        })} key={index}
+                                        style={{
+                                            paddingHorizontal: 20,
+                                            paddingBottom: 10
+                                        }}>
+                                            <OrderComponent
+                                                avatar={order.giver.avatar}
+                                                name={`${order.giver.firstName} ${order.giver.lastName}`}
+                                                timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
+                                                timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
+                                                departure={order.addressGive.address}
+                                                destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
+                                                quantity={order.item.quantity}
+                                                itemName={order.item.name}
+                                                status={order.status}
+                                                changeOrdersGiving={changeOrdersGiving}
+                                                setChangeOrdersGiving={setChangeOrdersGiving}
+                                                orderID={order.orderID}
+                                                collboratorReceiveID={auth.id}
+                                                imagePath={order.imagePath}
+                                            />
+                                        </TouchableOpacity>
+                                    )
+                                })
+                            }
+                        </ScrollView>
+                    </View>
                     
-                    <ScrollView style={{width: '90%', marginTop: 10}}
-                        horizontal={false}
-                        refreshControl={
-                            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                          }>
-
-                        {
-                            ordersGiving.map((order: any, index) => {
-                                return (
-                                    <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                        orderID: order.orderID,
-                                        status: order.status,
-                                    })} key={index}>
-                                        <OrderComponent
-                                            avatar={order.giver.avatar}
-                                            name={`${order.giver.firstName} ${order.giver.lastName}`}
-                                            timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
-                                            timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
-                                            departure={order.addressGive.address}
-                                            destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
-                                            quantity={order.item.quantity}
-                                            itemName={order.item.name}
-                                            status={order.status}
-                                            changeOrdersGiving={changeOrdersGiving}
-                                            setChangeOrdersGiving={setChangeOrdersGiving}
-                                            orderID={order.orderID}
-                                            collboratorReceiveID={auth.id}
-                                        />
-                                    </TouchableOpacity>
-                                )
-                            })
-                        }
-
-                        {
-                            orders.map((order: any, index) => {
-                                return (
-                                    <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
-                                        orderID: order.orderID,
-                                        status: order.status,
-                                    })} key={index}>
-                                        <OrderComponent
-                                            avatar={order.giver.avatar}
-                                            name={`${order.giver.firstName} ${order.giver.lastName}`}
-                                            timeStart={moment(order.timeStart).format("DD-MM-YYYY")}
-                                            timeEnd={moment(order.timeEnd).format("DD-MM-YYYY")}
-                                            departure={order.addressGive.address}
-                                            destination={order.addressReceive.address!==undefined ? order.addressReceive.address : ''}
-                                            quantity={order.item.quantity}
-                                            itemName={order.item.name}
-                                            status={order.status}
-                                            changeOrdersGiving={changeOrdersGiving}
-                                            setChangeOrdersGiving={setChangeOrdersGiving}
-                                            orderID={order.orderID}
-                                            collboratorReceiveID={auth.id}
-                                        />
-                                    </TouchableOpacity>
-                                )
-                            })
-                        }
-                    </ScrollView>
-
-
 
                 </View>
 
                 <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
                 <LoadingModal visible={isLoading}/>
                 
-            </View>
+            {/* </View> */}
         </ContainerComponent>
         
         
@@ -288,10 +300,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     itemFilter: {
-        paddingVertical: 10,
+        paddingVertical: 8,
         paddingHorizontal: 20,
-        backgroundColor: appColors.gray5,
-        borderRadius: 15,
+        backgroundColor: appColors.white5,
+        borderRadius: 20,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',

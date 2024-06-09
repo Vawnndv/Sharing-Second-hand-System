@@ -12,6 +12,7 @@ import { viVN } from '@mui/x-data-grid/locales';
 import { banUserService } from '../../../../redux/services/userServices'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs';
+import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -36,6 +37,7 @@ function UserTable(props: Props) {
     (state: RootState) => state.userLogin
   );
 
+  console.log(userInfo)
   const [data, setData] = useState<any>([]); 
 
   useEffect(() => {
@@ -54,7 +56,17 @@ function UserTable(props: Props) {
         const updatedUsers = [...data];
         updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
         // Create a new array with the user replaced with updated data
+        console.log(updatedUsers[userIndex], '12313');
         setData(updatedUsers);
+        await HandleNotification.sendNotification({
+          userReceiverId: updatedUsers[userIndex].userid,
+          userSendId: userInfo?.id,
+          postid: '',
+          avatar: userInfo?.avatar,
+          link: '',
+          name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+          text: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+        })
         toast.success(`Ban user successfully`);
       }
     } catch (error: unknown) {
@@ -82,7 +94,7 @@ function UserTable(props: Props) {
       { field: 'firstname', headerName: 'Tên', width: 150, getTooltip: (params: any) => params.value },
       { field: 'email', headerName: 'Email', width: 150, getTooltip: (params: any) => params.value },
       { field: 'dob', headerName: 'Ngày sinh', width: 100, getTooltip: (params: any) => params.value,  renderCell: (params: any) =>
-        dayjs(params.row.dob).format('DD/MM/YYYY')
+        params.row.dob ? dayjs(params.row.dob).format('DD/MM/YYYY') : ''
       },
       { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
       { field: 'address', headerName: 'Địa chỉ', width: 250, getTooltip: (params: any) => params.value },

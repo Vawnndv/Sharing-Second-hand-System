@@ -78,7 +78,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   }
 
   return (
-    <ContainerComponent isScroll title='Profile' back={auth.roleID === 1} right={auth.roleID === 1}>
+    <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1}>
       {isLoading ? (
         <ActivityIndicator />
         // <LoadingComponent isLoading={isLoading} value={1} />
@@ -195,7 +195,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                       borderColor: appColors.primary,
                       backgroundColor: appColors.white,
                     }}
-                    text="Edit profile"
+                    text="Sửa thông tin"
                     onPress={() =>
                       navigation.navigate('EditProfileScreen', {
                         profile,
@@ -213,7 +213,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                         borderColor: appColors.white,
                         backgroundColor: appColors.gray,
                       }}
-                      text="Log out"
+                      text="Đăng xuất"
                       onPress={() =>
                         handleLogout()
                       }
@@ -226,7 +226,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             )
           }
 
-          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={2} userID={profile.userId} postID={null} reporterID={auth.id}/>
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={1} userID={profile.userId} postID={null} reporterID={auth.id}/>
         </>
       )}
     </ContainerComponent>

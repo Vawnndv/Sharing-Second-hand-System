@@ -215,15 +215,28 @@ export class OrderManager {
           `;
 
 
+      
+
+      const ordersResult: QueryResult = await client.query(ordersQuery, values);
+      
+      const ordersRow: any = ordersResult.rows;
+
       const addressQuery = `
         SELECT * FROM "address"
         WHERE addressid = $1
       `
-      const ordersResult: QueryResult = await client.query(ordersQuery, values);
+
+      const queryImageItem = `
+        SELECT path 
+        FROM "image"
+        WHERE itemid = $1
+        LIMIT 1;
+      `
+
       
-      const ordersRow = ordersResult.rows;
       let result: any = []
       if(ordersRow.length > 0) {
+        
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
 
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
@@ -236,6 +249,8 @@ export class OrderManager {
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
+
+          const path = await client.query(queryImageItem, [row.itemid])
 
           if(parseInt(distance) !== -1){
             if(addressGive.getDistance(addressReceive)/1000 <= parseInt(distance)){
@@ -259,6 +274,7 @@ export class OrderManager {
               )
     
               orderObj.setTime(row.timestart, row.timeend);
+              orderObj.setImagePath(path.rows[0].path)
               result.push(
                 orderObj
               )
@@ -283,6 +299,8 @@ export class OrderManager {
             )
   
             orderObj.setTime(row.timestart, row.timeend);
+            console.log(row.itemid)
+            orderObj.setImagePath(path.rows[0].path)
             result.push(
               orderObj
             )
@@ -432,6 +450,13 @@ export class OrderManager {
         SELECT * FROM "address"
         WHERE addressid = $1
       `
+
+      const queryImageItem = `
+        SELECT path 
+        FROM "image"
+        WHERE itemid = $1
+        LIMIT 1;
+      `
       
       const values: any = [userID]
   
@@ -454,6 +479,8 @@ export class OrderManager {
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
           
+          const path = await client.query(queryImageItem, [row.itemid])
+
           const orderObj = new Order(
             row.orderid,
             row.title,
@@ -473,6 +500,7 @@ export class OrderManager {
           )
 
           orderObj.setTime(row.timestart, row.timeend);
+          orderObj.setImagePath(path.rows[0].path)
           result.push(
             orderObj
           )

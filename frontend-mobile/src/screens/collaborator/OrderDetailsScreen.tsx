@@ -131,11 +131,19 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 {/* <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View> */}
                 {
                     
-                    <ScrollView style={{width: '95%'}} showsVerticalScrollIndicator={false}>
+                    <ScrollView style={{width: '100%'}} showsVerticalScrollIndicator={false}>
                         {
                             orders.map((order: any, index) => {
                                 return (
                                     <View key={index}>
+                                        <Image
+                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5}}
+                                                source={{
+                                                    uri: order.image
+                                                }}
+                                            />
+
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 0}}></View>
                                         <View style={styles.content}>
 
                                             <View style={styles.infoUser}>
@@ -184,7 +192,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View>
                                             </View>
 
-                                            <View style={[styles.infoUser, {alignItems:'center'}]}>
+                                            {/* <View style={[styles.infoUser, {alignItems:'center'}]}>
                                                 <Image
                                                     style={{width: 60, height: 60, marginRight: 10}}
                                                     source={
@@ -195,7 +203,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Xe máy</Text>
                                                     <Text>Hàng hóa tối đa 30kg (50x40x50cm)</Text>
                                                 </View>
-                                            </View>
+                                            </View> */}
 
                                             <View style={[styles.infoUser, {alignItems:'center'}]}>
                                                 <Image
@@ -210,12 +218,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View>
                                             </View>
 
-                                            <Image
-                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
-                                                source={{
-                                                    uri: order.image
-                                                }}
-                                            />
+                                            
                                         </View>
                                         
                                         <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
@@ -223,7 +226,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                                         address: order.order.addressGive.address
                                         }} setLocation={''}/>
 
-                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 15}}></View>
 
                                         {
                                             (status === 'Hàng đang được đến lấy' || status === 'Chờ người cho giao hàng') &&
@@ -337,7 +340,8 @@ const styles = StyleSheet.create({
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
-        marginBottom: 10
+        marginBottom: 10,
+        padding: 10
     },
     infoUser: {
         display: 'flex',

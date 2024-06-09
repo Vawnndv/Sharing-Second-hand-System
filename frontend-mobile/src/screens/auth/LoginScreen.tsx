@@ -20,29 +20,29 @@ const initValue = {
   password: '',
 };
 
-const sendNotification = async (expoPushToken: ExpoPushToken | undefined) => {
-  console.log("Sending push notification...");
+// const sendNotification = async (expoPushToken: ExpoPushToken | undefined) => {
+//   console.log("Sending push notification...");
 
-  // notification message
-  const message = {
-    to: expoPushToken?.data,
-    sound: "default",
-    title: "My first push notification!",
-    body: "This is my first push notification made with expo rn app",
-  };
-  console.log(expoPushToken?.data)
+//   // notification message
+//   const message = {
+//     to: expoPushToken?.data,
+//     sound: "default",
+//     title: "My first push notification!",
+//     body: "This is my first push notification made with expo rn app",
+//   };
+//   console.log(expoPushToken?.data)
 
-  await fetch("https://exp.host/--/api/v2/push/send", {
-    method: "POST",
-    headers: {
-      host: "exp.host",
-      accept: "application/json",
-      "accept-encoding": "gzip, deflate",
-      "content-type": "application/json",
-    },
-    body: JSON.stringify(message),
-  });
-};
+//   await fetch("https://exp.host/--/api/v2/push/send", {
+//     method: "POST",
+//     headers: {
+//       host: "exp.host",
+//       accept: "application/json",
+//       "accept-encoding": "gzip, deflate",
+//       "content-type": "application/json",
+//     },
+//     body: JSON.stringify(message),
+//   });
+// };
 
 const LoginScreen = ({navigation}: any) => {
   const {expoPushToken, notification} = usePushNotifications();
@@ -110,11 +110,6 @@ const LoginScreen = ({navigation}: any) => {
 
   return (
     <ContainerComponent isImageBackground isScroll>
-
-    <View style={{ marginTop: 100, alignItems: "center" }}>
-        <Text style={{ marginVertical: 30 }}>Expo RN Push Notifications</Text>
-      <Button title="Send push notification" onPress={() => sendNotification(expoPushToken)} />
-    </View>
       <SectionComponent 
         styles={{
           justifyContent: 'center',
