@@ -112,6 +112,7 @@ function ModalEditWarehouse(props: Props) {
       setValue('address', location?.address || warehouseRow?.address);
       setValue('avatar', imageUrl || warehouseRow.avatar);
       setValue('warehouseid', warehouseRow?.warehouseid);
+
     }
   }, [warehouseRow, setValue, isOpen, location, imageUrl])
 
@@ -123,7 +124,7 @@ function ModalEditWarehouse(props: Props) {
 
     }
     if (editError) {
-      toast.error(editError)
+      toast.error('Cập nhật kho thất bại',editError)
       setIsOpen(!isOpen)
       // dispatch({ type: 'UPDATE_USER_RESET' })
     }
@@ -155,7 +156,7 @@ function ModalEditWarehouse(props: Props) {
         warehouseid,
       });
 
-      toast.success(`Update warehouse info successfully`);
+      toast.success(`Cập nhật kho thành công`);
       setIsUpdateWarehouse(!isUpdateWarehouse);
       setIsOpen(!isOpen);
 
@@ -257,7 +258,7 @@ function ModalEditWarehouse(props: Props) {
             </Grid>  
 
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null); setIsEdit(true); setLocation({address: ''}); setImageUrl('')}}>Hủy</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen(); setWarehouseRow(null); setIsEdit(true); setLocation({address: ''}); setImageUrl('')}}>Bỏ qua</Button>
               {!isEdit && (
                 <Button variant='contained' onClick={() => {setIsEdit(true); setIsUpdateWarehouse(!isUpdateWarehouse)}}>Cập nhật</Button>
               )}

@@ -35,12 +35,11 @@ const initValueError = {
 const EditProfileScreen = ({navigation, route}: any) => {
   
   const {profile}: {profile:ProfileModel} = route.params;
-  
   const dispatch = useDispatch();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [image, setImage] = useState<any>(null);
-  const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber, dob: ''});
+  const [values, setValues] = useState({email: profile.email, firstname: profile.firstname, lastname: profile.lastname, phonenumber : profile.phonenumber, dob: profile.dob});
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValueError);
   const [errorRegister, setErrorRegister] = useState('');
@@ -148,7 +147,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
 
   return (
     <>
-      <ContainerComponent back title={'Edit Profile'} isScroll>
+      <ContainerComponent back title={'Chỉnh sửa thông tin'} isScroll>
         <SectionComponent styles={[globalStyles.center]}>
           <AvatarComponent
             avatar={image ? image.uri : profile.avatar }

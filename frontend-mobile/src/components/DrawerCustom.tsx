@@ -11,13 +11,14 @@ import RowComponent from './RowComponent';
 import SpaceComponent from './SpaceComponent';
 import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
+import { fontFamilies } from '../constants/fontFamilies';
 
 const DrawerCustom = ({navigation}: any) => {
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
 
   const size = 24;
-  const color = appColors.gray;
+  const color = appColors.black2;
   const profileMenu = [
     {
       key: 'Home',
@@ -162,7 +163,7 @@ const DrawerCustom = ({navigation}: any) => {
             {item.icon}
             <TextComponent
               text={item.title}
-              styles={[localStyles.listItemText, {fontSize: 16}]}
+              styles={[localStyles.listItemText, {fontSize: 16, fontFamily: fontFamilies.medium}]}
             />
           </RowComponent>
         )}
@@ -196,6 +197,6 @@ const localStyles = StyleSheet.create({
   },
 
   listItemText: {
-    paddingLeft: 12,
+    paddingLeft: 15
   }
 })

@@ -14,30 +14,31 @@ import {
   Roboto_900Black_Italic,
 } from '@expo-google-fonts/roboto';
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import Entypo from '@expo/vector-icons/Entypo';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import AppRouters from './src/screens/auth/AppRouters';
 import { registerRootComponent } from 'expo';
-import { usePushNotifications } from './src/utils/usePushNotification';
+
+import {usePushNotifications}  from './src/utils/usePushNotification';
+
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-
-
 export default function App() {
-  const {expoPushToken, notification} = usePushNotifications();
-
-  const data = JSON.stringify(notification, undefined, 2);
-  console.log("token: ", expoPushToken);
-  console.log("data: ", data);
+  
   const [appIsReady, setAppIsReady] = useState(false);
   // const [fontsLoaded, setFontsLoaded] = useState(false);
+  useEffect(() => {
+    usePushNotifications.registerForPushNotificationsAsync()
+  }, []);
 
   useEffect(() => {
     async function prepare() {

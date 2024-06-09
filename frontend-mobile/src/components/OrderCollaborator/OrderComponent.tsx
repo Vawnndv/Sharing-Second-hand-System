@@ -59,7 +59,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
         // }
 
         return (
-        <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#D0D0D0" : appColors.white2}]}>
+        <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#E9FFE9" : appColors.white2}]}>
 
             <View style= {[styles.padding,{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5}]}>
                 <Text style={{color: '#54C362', fontStyle: 'italic'}}>{status}</Text>
