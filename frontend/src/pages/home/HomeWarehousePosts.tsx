@@ -40,7 +40,6 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
                 console.log(responseUser)
                 
                 const responsePosts: any = await Axios.post('/posts/warehouse', {
-                    
                     page: page -1,
                     limit: LIMIT,
                     distance: filterValue.distance,
@@ -66,7 +65,7 @@ function HomeWarehousePosts({filterValue, warehousesID}: any) {
     }, [page, filterValue])
     const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
-      };
+    };
 
     const isEmpty = () => {
         console.log(posts)

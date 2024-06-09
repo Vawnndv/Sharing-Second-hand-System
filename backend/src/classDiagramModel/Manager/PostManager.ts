@@ -287,7 +287,6 @@ export class PostManager {
 
       const warehouseList = await this.getListAddressByWarehouseID(warehouses);
 
-      console.log(filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows))
       return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, true, result.rows); 
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -395,6 +394,8 @@ export class PostManager {
     } catch (error) {
       console.log(error)
       return 0
+    }finally {
+      client.release(); // Release client sau khi sử dụng
     }
   }
 
