@@ -165,6 +165,18 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
   }
 });
 
+export const updateFcmToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, fcmtoken } = req.body;
+
+  console.log(userid, fcmtoken, 'ádasd');
+  await UserManager.addFcmTokenToUser(userid, fcmtoken);
+
+  res.status(200).json({
+    message: 'Fcmtoken updated',
+    data: [],
+  });
+});
+
 //  ************** ADMIN CONTROLLERS **************
 // @des Get all users
 // @route GET /api/users
