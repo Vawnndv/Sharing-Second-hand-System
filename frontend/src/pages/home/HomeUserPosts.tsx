@@ -40,7 +40,6 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
                 console.log(responseUser)
                 
                 const responsePosts: any = await Axios.post('/posts/user-post', {
-                    
                     page: page -1,
                     limit: LIMIT,
                     distance: filterValue.distance,
