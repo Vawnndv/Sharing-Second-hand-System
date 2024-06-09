@@ -5,6 +5,7 @@ import { getUserTokensService } from '../redux/services/userServices';
 export class HandleNotification {
 
     static sendPushFCMNotification = async (fcmtoken: string, title: string, body: string) => {
+      console.log(fcmtoken,' 1231312313')
       const message = {
         to: fcmtoken,
         sound: "default",
@@ -27,12 +28,17 @@ export class HandleNotification {
 
     static sendPushNotification = async (id: string, data: any) => {
       try {
+        
         const fcmtokens: string[] = await await getUserTokensService(id);
-        if (fcmtokens.length > 0) {
+        console.log(fcmtokens.length)
+
+        // if (fcmtokens.length > 0) {
+          console.log(fcmtokens)
           fcmtokens.forEach(async (expoPushToken: string) => {
+            console.log(expoPushToken,' 1231312313')
             HandleNotification.sendPushFCMNotification(expoPushToken, data.name, data.text);
           })
-        }
+        // }
       } catch(err: any) {
         console.error(err.message);
       }
@@ -40,8 +46,10 @@ export class HandleNotification {
 
     static sendNotification = async (data: any) => {
         try {
+
+            await HandleNotification.sendPushNotification('83', data)
+
             const docRef = doc(db, "receivers",  data.userReceiverId.toString());
-            console.log('fcm token start')
           
             const docSnap = await getDoc(docRef);
             if (!docSnap.exists()) {
@@ -66,12 +74,6 @@ export class HandleNotification {
               isRead: false
             });
 
-            console.log('fcm token midlde')
-
-           
-            console.log('fcm token end')
-
-            console.log("notification, end 123");
           } catch(err: any) {
             console.error(err.message);
           }

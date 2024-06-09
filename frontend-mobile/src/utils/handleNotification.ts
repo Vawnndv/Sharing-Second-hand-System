@@ -1,18 +1,14 @@
+import { Timestamp, addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Alert } from "react-native";
 import { db } from "../../firebaseConfig";
-import { DocumentData, Timestamp, addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
-import { usePushNotifications } from "./usePushNotification";
-import { useAsyncStorage } from "@react-native-async-storage/async-storage";
+import { usePushNotifications } from './usePushNotification';
 
 export class HandleNotification {
     static sendNotification = async (data: any) => {
-        const {getItem} = useAsyncStorage('fcmtoken');
-          const res = await getItem();
       
-        const expoPushToken = JSON.parse(res ?? '');
-        console.log(expoPushToken, ' expoPushToken expoPushToken expoPushToken')
-
         try {
+            await usePushNotifications.sendPushNotification("83", data);
+
             const docRef = doc(db, "receivers",  data.userReceiverId.toString());
             console.log('fcm token start')
           
@@ -40,7 +36,6 @@ export class HandleNotification {
             });
             console.log('fcm token midlde')
             
-            // await usePushNotifications.sendPushNotification("83", data);
 
             console.log('fcm token end')
           } catch(err: any) {

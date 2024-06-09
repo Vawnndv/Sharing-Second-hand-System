@@ -43,9 +43,9 @@ const getProfileService = async (id: string): Promise<any>  => {
 }
 
 const getUserTokensService = async (id: string): Promise<any>  => {
-  const { data } = await Axios.get(`/get-fcmtokens?userId=${id}`)
+  const { data } = await Axios.get(`/user/get-fcmtokens?userid=${id}`)
 
-  return data;
+  return data.fcmTokens;
 }
 
 

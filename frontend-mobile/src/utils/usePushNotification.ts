@@ -20,8 +20,6 @@ function handleRegistrationError(errorMessage: string) {
 }
 
 export class usePushNotifications {
-  
-  
   static async registerForPushNotificationsAsync() {
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
@@ -68,11 +66,8 @@ export class usePushNotifications {
   static getExpoPushToken = async (token: string) => {
     const fcmtoken = await AsyncStorage.getItem('fcmtoken');
 
-    console.log(token, fcmtoken, '123');
-
     if (!fcmtoken) {
       if (token) {
-        console.log(token, fcmtoken, '456');
         await AsyncStorage.setItem('fcmtoken', token);
       }
     }
@@ -81,13 +76,10 @@ export class usePushNotifications {
 
   static async updateTokenForUser(token: string) {
     const res = await AsyncStorage.getItem('auth');
-    console.log(token, res)
     if (res) {
       const auth = JSON.parse(res);
       const { fcmTokens } = auth;
       if (fcmTokens && !fcmTokens.includes(token)) {
-        console.log(fcmTokens, !fcmTokens.includes(token), ' 222222222222222222223')
-        // fcmTokens.push(token);
         await this.addUserToken(auth.id, token);
       }
     }
@@ -95,7 +87,6 @@ export class usePushNotifications {
 
   static async addUserToken(id: string, fcmToken: string) {
     try {
-      console.log(id, fcmToken)
       await userAPI.HandleUser(
         '/add-fcmtoken',
         { userid: id, fcmtoken:  fcmToken},
@@ -121,13 +112,10 @@ export class usePushNotifications {
 
   static async getUserTokens(id: string) {
     try {
-      console.log(id)
-      const fcmtokens = await userAPI.HandleUser(
-        '/get-fcmtokens',
-        { userid: id},
-        'get',
+      const {data} = await userAPI.HandleUser(
+        `/get-fcmtokens?userid=${id}`
       );
-      return fcmtokens;
+      return data.fcmTokens;
     } catch (error) {
       console.log(`Cannot get user tokens: ${error}`);
     }
@@ -135,6 +123,7 @@ export class usePushNotifications {
 
   static async sendPushNotification(id: string, data: NotificationModel) {
     const fcmtokens: any = await usePushNotifications.getUserTokens(id);
+
     if (fcmtokens.length > 0) {
       fcmtokens.forEach(async (expoPushToken: any) => {
         const message = {

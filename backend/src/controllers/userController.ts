@@ -191,9 +191,10 @@ export const removeFcmToken = asyncHandle(async (req: Request, res: Response) =>
 
 export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) => {
   const { userid } = req.query;
+  console.log(userid, '11111111');
   if (typeof userid === 'string' && userid) {
     const fcmTokens = await Account.getFcmTokenListOfUser(userid);  
-  
+    console.log(fcmTokens);
     res.status(200).json({
       message: 'get user fcmtoken list successfully',
       data: {
