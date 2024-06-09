@@ -1,44 +1,74 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { ContainerComponent } from '../../components'
-import { StatusBar } from 'expo-status-bar'
-import ChatList from './ChatList'
-import { ActivityIndicator } from 'react-native-paper'
-import chatAPI from '../../apis/chatApi'
-import { useDispatch, useSelector } from 'react-redux'
-import { authSelector } from '../../redux/reducers/authReducers'
+import { StyleSheet, Text, View, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import ChatList from './ChatList';
+import { ActivityIndicator } from 'react-native-paper';
+import chatAPI from '../../apis/chatApi';
+import { useDispatch, useSelector } from 'react-redux';
+import { authSelector } from '../../redux/reducers/authReducers';
 import { useFocusEffect } from '@react-navigation/native';
+import { getRoomId, getRoomIdWithPost } from '../../utils/GetRoomID';
+import { collection, doc, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { db } from '../../../firebaseConfig';
 
-const ChatUserScreen = ({ router, navigation } : any) => {
-  const [users, setUsers] = useState([])
+interface User {
+  userid: string;
+  postid?: string;
+  latestMessage?: {
+    createdAt: number;
+  };
+  // Thêm các trường khác nếu cần thiết
+}
+
+const ChatUserScreen = ({ router, navigation }: any) => {
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const auth = useSelector(authSelector);
 
   useFocusEffect(
     React.useCallback(() => {
-      getUsers()
+      getUsers();
     }, [])
   );
 
   useEffect(() => {
+    getUsers();
+  }, []);
 
-    getUsers()
-  }, [])
-
-  const getUsers = async ()=> {
+  const getUsers = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const res = await chatAPI.HandleChat(
         `/listUser?userID=${auth?.id}`,
         'get'
       );
-      setUsers(res.data)
-      setIsLoading(false)
-      
+      const usersWithLatestMessage = await Promise.all(res.data.map(async (item: User) => {
+        const roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
+        const docRef = doc(db, "rooms", roomID);
+        const messagesRef = collection(docRef, "messages");
+        const q = query(messagesRef, orderBy('createdAt', 'desc'), limit(1)); // lấy tin nhắn mới nhất
+
+        const querySnapshot = await getDocs(q);
+        const latestMessage = querySnapshot.docs.map(doc => doc.data())[0];
+        return { ...item, latestMessage };
+      }));
+
+      // Sắp xếp users dựa trên thời gian của tin nhắn mới nhất
+      usersWithLatestMessage.sort((a, b) => {
+        if (!a.latestMessage && !b.latestMessage) return 0;
+        if (!a.latestMessage) return 1;
+        if (!b.latestMessage) return -1;
+        return b.latestMessage.createdAt - a.latestMessage.createdAt;
+      });
+
+      setUsers(usersWithLatestMessage);
+      setIsLoading(false);
+
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <View 
@@ -64,17 +94,16 @@ const ChatUserScreen = ({ router, navigation } : any) => {
             </View>
           )
         )
-
       }
     </View>
-  )
+  );
 }
 
-export default ChatUserScreen
+export default ChatUserScreen;
 
 const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 80,
   }
-})
+});

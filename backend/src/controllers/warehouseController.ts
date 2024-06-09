@@ -127,6 +127,22 @@ export const updateWarehouse = asyncHandle(async (req, res) => {
   }
 });
 
+export const updateWarehouseStatus = asyncHandle(async (req, res) => {
+  const warehouseid = req.body.warehouseid;
+  const status = req.body.status;
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const warehouseUpdated = await WarehouseManager.updateWarehouseStatus(warehouseid, status);
+    res.status(200).json({ message: 'Update warehouse status successfully', warehouseUpdated });
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Lỗi khi cập nhật trạng thái của kho:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
 
 
 export const getWarehouseNameList = asyncHandle(async (_req, res) => {

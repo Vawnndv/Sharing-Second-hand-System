@@ -1,4 +1,4 @@
-import { View, Text, Switch, Alert, Button } from 'react-native'
+import { View, Text, Switch, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { ArrowRight, Lock, Sms } from 'iconsax-react-native';
@@ -12,44 +12,13 @@ import { LoadingModal } from '../../modals';
 import { globalStyles } from '../../styles/globalStyles';
 import { ErrorMessages } from '../../models/ErrorMessages';
 import SocialLogin from './components/SocialLogin';
-import { usePushNotifications } from '../../utils/usePushNotification';
-import { ExpoPushToken } from 'expo-notifications';
 
 const initValue = {
   email: '',
   password: '',
 };
 
-// const sendNotification = async (expoPushToken: ExpoPushToken | undefined) => {
-//   console.log("Sending push notification...");
-
-//   // notification message
-//   const message = {
-//     to: expoPushToken?.data,
-//     sound: "default",
-//     title: "My first push notification!",
-//     body: "This is my first push notification made with expo rn app",
-//   };
-//   console.log(expoPushToken?.data)
-
-//   await fetch("https://exp.host/--/api/v2/push/send", {
-//     method: "POST",
-//     headers: {
-//       host: "exp.host",
-//       accept: "application/json",
-//       "accept-encoding": "gzip, deflate",
-//       "content-type": "application/json",
-//     },
-//     body: JSON.stringify(message),
-//   });
-// };
-
 const LoginScreen = ({navigation}: any) => {
-  const {expoPushToken, notification} = usePushNotifications();
-
-  const data = JSON.stringify(notification, undefined, 2);
-  console.log("token: ", expoPushToken);
-  console.log("data: ", data);
   const [values, setValues] = useState(initValue);
   const [isRemember, setIsRemember] = useState(true);
   const [isDisable, setIsDisable] = useState(true);

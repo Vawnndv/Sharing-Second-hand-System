@@ -74,7 +74,6 @@ export class UserManager {
 
   public static async getAllUsers(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
     const client = await pool.connect()
-  
 
     const query = `SELECT 
     u.userid,
@@ -200,6 +199,29 @@ export class UserManager {
       client.release();
     }
   };
+
+  
+  public static async addFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO fcmtoken(userid, fcmtoken) 
+        VALUES($1, $2)
+        RETURNING *;
+      `;
+    const values : any = [userid, fcmtoken];
+    try {
+      const result = await client.query(query, values);
+      console.log('FcmToken inserted successfully:', result.rows[0]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
 
 
   public ban(userID: string): void {

@@ -1,3 +1,5 @@
+import moment from 'moment';
+import 'moment/locale/vi';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
@@ -8,8 +10,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
 import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData, updateDoc, getDocs, limit, Firestore } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
-import moment from 'moment';
-import 'moment/locale/vi';
 
 const ChatItem = ({item, route, navigation, noBorder}: any) => {
   moment.locale();
@@ -51,13 +51,13 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
 
   const renderLastMessage = () =>{
     if (lastMessage === undefined)
-      return 'Loading...';
+      return 'Đang tải...';
     if (lastMessage) {
       let mess = lastMessage?.text
       if (lastMessage.type == 'image')
         mess = "Đã gửi ảnh"
       if(auth?.id == lastMessage.userid)
-        return "You: " + mess;
+        return "Bạn: " + mess;
       return mess;
     } else {
       return 'Gửi lời chào 👋'

@@ -21,6 +21,7 @@ import toast from 'react-hot-toast'
 import { banUserService } from '../../../../redux/services/userServices'
 import moment from 'moment'
 import dayjs from 'dayjs'
+import Axios from '../../../../redux/APIs/Axios'
 
 
 interface Props {
@@ -78,25 +79,19 @@ function WarehouseTable(props: Props) {
     // setIsAddNewWarehouse(true);
   }
   
-  const handleBanUser = async (id: number, isBanned: any) => {
-    // try {
-    //   await banUserService(id, {userId: id, isBanned});
-    //   const userIndex = data.findIndex((user:any) => user.userid === id);
-    //   if (userIndex !== -1) {
-    //     const updatedUsers = [...data];
-    //     updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-    //     // Create a new array with the user replaced with updated data
-    //     setData(updatedUsers);
-    //     toast.success(`Ban user successfully`);
-    //   }
-    // } catch (error: unknown) {
-    //   console.log(error)
-    //   if (error instanceof Error) {
-    //     toast.error(error.message)
-    //   } else {
-    //     toast.error("Network Error");
-    //   }
-    // }
+  const handleLockWarehouse = async (warehouseid: number, status: any) => {
+    const res = await Axios.post(`warehouse/updateWarehouseStatus`, {
+      warehouseid,
+      status
+    });
+    const warehouseIndex = data.findIndex((warehouse:any) => warehouse.warehouseid === warehouseid);
+    if (warehouseIndex !== -1) {
+      const updatedWarehouse = [...data];
+      updatedWarehouse[warehouseIndex] = { ...updatedWarehouse[warehouseIndex], isactivated: status };
+      setData(updatedWarehouse);
+      toast.success(`Cập nhật trạng thái kho thành công`);
+    }
+
   }
 
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
@@ -122,12 +117,33 @@ function WarehouseTable(props: Props) {
         renderCell: (params: any) =>
           dayjs(params.row.createdat).format('DD/MM/YYYY')      
       },
-      // {
-      //   field: 'isbanned',
-      //   headerName: 'Ban',
-      //   width: 100,
-      //   type: 'boolean'
-      // },
+      {
+        field: 'isactivated',
+        headerName: 'Tình trạng',
+        width: 150,
+        renderCell: (params: any) =>(
+          <Box sx={{
+            width: '100%',
+            height: '100%',
+            alignContent: 'center',
+          }}>
+            {params.row.isactivated ? (
+              <Tooltip title="Trạng thái kho" style={{color: 'green', fontSize: '15px'}} >
+                <Typography>
+                    Hoạt động
+                </Typography>
+                </Tooltip>
+            ) : (
+              <Tooltip title="Trạng thái kho" style={{color: 'grey', fontSize: '15px'}}> 
+                <Typography>
+                    Ngưng hoạt động
+                </Typography>
+              </Tooltip>
+
+            )}
+          </Box>  
+        )
+      },
       {
         field: 'actions',
         headerName: 'Hành động',
@@ -135,11 +151,11 @@ function WarehouseTable(props: Props) {
         width: 120,
         renderCell: (params: any) => (
           <Box>
-            {/* <Tooltip title="Lock this warehouse">
-              <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
-                {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
+            <Tooltip title="Cập nhật trạng thái kho">
+              <IconButton onClick={() => {handleLockWarehouse(params.row.warehouseid, !params.row.isactivated) }}>
+                {!params.row.isactivated ? <TbLock /> : <TbLockOpen />}
               </IconButton>
-            </Tooltip> */}
+            </Tooltip>
             <Tooltip title="Cập nhật kho">
               <IconButton onClick={() => { handleOpen(); setWarehouseRow(params.row) }}>
                 <Edit />
@@ -234,7 +250,7 @@ function WarehouseTable(props: Props) {
             onSortModelChange={setSortModel}
             onFilterModelChange={setFilterModel}
             pageSizeOptions={[5, 10, 20]}
-            checkboxSelection
+            // checkboxSelection
             getRowSpacing={(params: any) => ({
               top: params.isFirstVisible ? 0 : 1,
               bottom: params.isLastVisible ? 0 : 1
