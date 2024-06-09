@@ -147,7 +147,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
 
   return (
     <>
-      <ContainerComponent back title={'Edit Profile'} isScroll>
+      <ContainerComponent back title={'Chỉnh sửa thông tin'} isScroll>
         <SectionComponent styles={[globalStyles.center]}>
           <AvatarComponent
             avatar={image ? image.uri : profile.avatar }
