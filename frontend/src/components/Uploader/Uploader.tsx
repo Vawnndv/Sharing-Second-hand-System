@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { FiUploadCloud } from 'react-icons/fi'
 import Loader from '../notification/Loader'
 import toast from 'react-hot-toast'
+import Axios from '../../redux/APIs/Axios'
 
 interface Props {
   imageUrl: string; 
@@ -52,14 +53,15 @@ function Uploader(props: Props) {
                   formData.append('type', file.type);
 
                   // Gửi FormData qua phương thức POST
-                  const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
-                      method: 'POST',
-                      body: formData,
+                  const serverResponse = await Axios.post('aws3/uploadImage', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
                   });
 
                   // Xử lý phản hồi từ server nếu cần
-                  const data = await serverResponse.json();
-                  
+                  const data: any = serverResponse;
+                  console.log(data)
                   resolve(data);
               } catch (error) {
                   console.error('Error uploading file:', error);
