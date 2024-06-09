@@ -66,21 +66,17 @@ export const ThankYou: React.FC<ThankYouProps> = ({ route, title, titleButton1, 
       <View style={styles.buttonContainer}>
 
         <TouchableOpacity onPress={goToHomeScreen} style={styles.buttonStyle}>
+        <Icon name="left" size={18} color="white" style={styles.icon} />
           <Text style={styles.textStyle}>Trang chủ</Text>
-          <Icon name="right" size={18} color="white" style={styles.icon} />
         </TouchableOpacity>
         
         <TouchableOpacity onPress={goToPostDetail} style={styles.buttonStyle}>
-          <Icon name="left" size={18} color="white" style={styles.icon} />
           <Text style={styles.textStyle}>Bài đăng</Text>
+          <Icon name="right" size={18} color="white" style={styles.icon} />
+
         </TouchableOpacity>
 
       </View>
-
-      
-
-      
-
       {/* <TouchableOpacity onPress={goToHomeScreen} style={styles.homeButton}>
         <Text style={styles.textStyle}>Về trang chủ </Text>
       </TouchableOpacity> */}

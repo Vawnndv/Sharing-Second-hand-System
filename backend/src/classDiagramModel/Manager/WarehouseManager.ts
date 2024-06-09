@@ -47,7 +47,7 @@ export class WarehouseManager {
   public static async viewWarehouse(warehouseid: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT warehouseid, address.address, phonenumber, warehousename, warehouse.addressid, longitude, latitude  FROM warehouse JOIN address ON warehouse.addressid = address.addressid WHERE warehouseid = $1`,[warehouseid]);
+      const result = await client.query(`SELECT warehouseid, address.address, phonenumber, warehousename, warehouse.addressid, longitude, latitude, isactivated  FROM warehouse JOIN address ON warehouse.addressid = address.addressid WHERE warehouseid = $1`,[warehouseid]);
       if (result.rows.length === 0) {
         console.log('Không tìm thấy kho');
       }
@@ -72,6 +72,7 @@ export class WarehouseManager {
       w.avatar,
       w.phonenumber,
       w.createdat,
+      w.isactivated,
       a.address,
       longitude,
       latitude,
@@ -88,6 +89,7 @@ export class WarehouseManager {
       w.warehousename,
       w.avatar,
       w.phonenumber,
+      w.isactivated,
       a.address,
       longitude,
       latitude
@@ -144,8 +146,8 @@ export class WarehouseManager {
       RETURNING addressid;
     `
     const query = `
-        INSERT INTO warehouse(warehousename, phonenumber, avatar, addressid)
-        VALUES($1, $2, $3, $4)
+        INSERT INTO warehouse(warehousename, phonenumber, avatar, addressid, isactivated)
+        VALUES($1, $2, $3, $4, true)
         RETURNING *;
       `;
     
@@ -171,6 +173,26 @@ export class WarehouseManager {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+  public static async updateWarehouseStatus (warehouseid: number, status: boolean){
+    const client = await pool.connect();
+
+      const updateWarehouseStatus = `
+        UPDATE warehouse
+        SET isActivated = ${status}
+        WHERE warehouseid = ${warehouseid}
+        RETURNING *;
+      `
+      try{
+        const resultUpdateWarehouseStatus: QueryResult = await client.query(updateWarehouseStatus);
+        console.log('Warehouse status updated sucessfully:', resultUpdateWarehouseStatus.rows[0]);
+        return resultUpdateWarehouseStatus.rows[0];
+      } catch (error) {
+        console.error('Error updating warehouse status:', error);
+      } finally {
+        client.release(); // Release client sau khi sử dụng
+      }
+  }
 
   public static async updateWarehouse (phonenumber: string, warehousename: string, warehouseLocation: any, avatar: string, isNewAddress: string, warehouseid: string): Promise<void> {
 
