@@ -1,7 +1,43 @@
 import { Timestamp, addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../firebaseConfig";
+import { getUserTokensService } from '../redux/services/userServices';
 
 export class HandleNotification {
+
+    static sendPushFCMNotification = async (fcmtoken: string, title: string, body: string) => {
+      const message = {
+        to: fcmtoken,
+        sound: "default",
+        title,
+        body,
+      };
+    
+      await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          host: "exp.host",
+          accept: "application/json",
+          "accept-encoding": "gzip, deflate",
+          "content-type": "application/json",
+        },
+        mode: "no-cors",
+        body: JSON.stringify(message),
+      });
+    }
+
+    static sendPushNotification = async (id: string, data: any) => {
+      try {
+        const fcmtokens: string[] = await await getUserTokensService(id);
+        if (fcmtokens.length > 0) {
+          fcmtokens.forEach(async (expoPushToken: string) => {
+            HandleNotification.sendPushFCMNotification(expoPushToken, data.name, data.text);
+          })
+        }
+      } catch(err: any) {
+        console.error(err.message);
+      }
+    }
+
     static sendNotification = async (data: any) => {
         try {
             const docRef = doc(db, "receivers",  data.userReceiverId.toString());
@@ -32,24 +68,7 @@ export class HandleNotification {
 
             console.log('fcm token midlde')
 
-            const message = {
-              to: 'ExponentPushToken[rV1zD6PKVlrbHHyVOasuSm]',
-              sound: "default",
-              title: data.name,
-              body: data.text,
-            };
-          
-            await fetch("https://exp.host/--/api/v2/push/send", {
-              method: "POST",
-              headers: {
-                host: "exp.host",
-                accept: "application/json",
-                "accept-encoding": "gzip, deflate",
-                "content-type": "application/json",
-              },
-              mode: "no-cors",
-              body: JSON.stringify(message),
-            });
+           
             console.log('fcm token end')
 
             console.log("notification, end 123");

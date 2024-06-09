@@ -226,5 +226,22 @@ export class Account {
       client.release();
     }
   }
+
+  public static async getFcmTokenListOfUser(userid: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        SELECT fcmtoken FROM fcmtoken WHERE userid = $1;
+      `;
+    const values : any = [userid];
+    try {
+      const result = await client.query(query, values);
+      return result.rows.map(row => row.fcmtoken);
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
 }
 

@@ -37,7 +37,13 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   // const [fontsLoaded, setFontsLoaded] = useState(false);
   useEffect(() => {
-    usePushNotifications.registerForPushNotificationsAsync()
+    const fetchToken = async () => {
+      const fcmtoken = await usePushNotifications.registerForPushNotificationsAsync();
+      if (fcmtoken) {
+        usePushNotifications.getExpoPushToken(fcmtoken);
+      }
+    };
+    fetchToken();
   }, []);
 
   useEffect(() => {

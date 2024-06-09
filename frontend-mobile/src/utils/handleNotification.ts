@@ -39,25 +39,9 @@ export class HandleNotification {
               isRead: false
             });
             console.log('fcm token midlde')
+            
+            // await usePushNotifications.sendPushNotification("83", data);
 
-
-            const message = {
-              to: expoPushToken?.data,
-              sound: "default",
-              title: data.name,
-              body: data.text,
-            };
-          
-            await fetch("https://exp.host/--/api/v2/push/send", {
-              method: "POST",
-              headers: {
-                host: "exp.host",
-                accept: "application/json",
-                "accept-encoding": "gzip, deflate",
-                "content-type": "application/json",
-              },
-              body: JSON.stringify(message),
-            });
             console.log('fcm token end')
           } catch(err: any) {
             Alert.alert('Lỗi', err.message)

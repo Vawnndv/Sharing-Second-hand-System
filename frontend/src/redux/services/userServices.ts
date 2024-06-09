@@ -42,6 +42,12 @@ const getProfileService = async (id: string): Promise<any>  => {
   };
 }
 
+const getUserTokensService = async (id: string): Promise<any>  => {
+  const { data } = await Axios.get(`/get-fcmtokens?userId=${id}`)
+
+  return data;
+}
+
 
 // *************** ADMIN APIs ***************
 
@@ -83,4 +89,5 @@ export {
     deleteUserService,
     banUserService,
     getUsersTotalService,
+    getUserTokensService,
 }

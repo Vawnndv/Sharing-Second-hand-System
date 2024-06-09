@@ -138,6 +138,8 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     throw new Error('Password is invalid!!!');
   }
 
+  const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+
   if (platform === 'web' && existingUser.roleid > 1) {
     res.status(200).json({
       message: 'Login successfully!!!',
@@ -155,6 +157,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     res.status(400);
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
+    console.log(fcmTokens);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
@@ -164,6 +167,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
         lastName: existingUser.lastname,
         avatar: existingUser.avatar,
         roleID: existingUser.roleid,
+        fcmTokens: fcmTokens ?? [],
         accessToken: await getJsonWebToken(email, existingUser.userid),
       },
     });

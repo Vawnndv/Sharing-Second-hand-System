@@ -222,6 +222,25 @@ export class UserManager {
     }
   };
 
+  public static async removeFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
+    
+    const client = await pool.connect();
+    try {
+      const result = await client.query('DELETE FROM "fcmtoken" WHERE userid = $1 AND fcmtoken = $2', [userid, fcmtoken]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows[0];
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
 
 
   public ban(userID: string): void {

@@ -172,10 +172,40 @@ export const updateFcmToken = asyncHandle(async (req: Request, res: Response) =>
   await UserManager.addFcmTokenToUser(userid, fcmtoken);
 
   res.status(200).json({
-    message: 'Fcmtoken updated',
+    message: 'Fcmtoken addded',
     data: [],
   });
 });
+
+export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, fcmtoken } = req.body;
+
+  console.log(userid, fcmtoken, 'bbbbbb');
+  await UserManager.removeFcmTokenToUser(userid, fcmtoken);
+
+  res.status(200).json({
+    message: 'Fcmtoken deleted',
+    data: [],
+  });
+});
+
+export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) => {
+  const { userid } = req.query;
+  if (typeof userid === 'string' && userid) {
+    const fcmTokens = await Account.getFcmTokenListOfUser(userid);  
+  
+    res.status(200).json({
+      message: 'get user fcmtoken list successfully',
+      data: {
+        fcmTokens: fcmTokens ?? [],
+      },
+    });
+  } else {
+    // If userId is missing or invalid, send a 401 status without throwing an error
+    res.sendStatus(401);
+  }
+});
+
 
 //  ************** ADMIN CONTROLLERS **************
 // @des Get all users

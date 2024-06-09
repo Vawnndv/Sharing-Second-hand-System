@@ -12,6 +12,7 @@ import { LoadingModal } from '../../modals';
 import { globalStyles } from '../../styles/globalStyles';
 import { ErrorMessages } from '../../models/ErrorMessages';
 import SocialLogin from './components/SocialLogin';
+import { usePushNotifications } from '../../utils/usePushNotification';
 
 const initValue = {
   email: '',
@@ -64,6 +65,11 @@ const LoginScreen = ({navigation}: any) => {
       setIsDisable(true);
       setErrorLogin('');
       await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
+      const fcmtoken = await usePushNotifications.registerForPushNotificationsAsync() ?? '';
+      if (fcmtoken) {
+        usePushNotifications.updateTokenForUser(fcmtoken);
+      }
+
       setIsLoading(false);
       
     } catch (error: unknown) {

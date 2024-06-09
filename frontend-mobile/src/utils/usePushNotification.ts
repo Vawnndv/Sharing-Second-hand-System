@@ -4,6 +4,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import userAPI from '../apis/userApi'; // Adjust the import according to your project structure
+import { NotificationModel } from '../models/NotificationModel';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -53,9 +54,8 @@ export class usePushNotifications {
             projectId,
           })
         ).data;
-        console.log(pushTokenString);
 
-        this.getExpoPushToken(pushTokenString);
+        return pushTokenString;
 
       } catch (e: unknown) {
         handleRegistrationError(`${e}`);
@@ -71,15 +71,10 @@ export class usePushNotifications {
     console.log(token, fcmtoken, '123');
 
     if (!fcmtoken) {
-
       if (token) {
         console.log(token, fcmtoken, '456');
         await AsyncStorage.setItem('fcmtoken', token);
-        this.updateTokenForUser(token);
       }
-    } else {
-    console.log(token, fcmtoken, '567');
-      this.updateTokenForUser(fcmtoken);
     }
   };
 
@@ -91,17 +86,18 @@ export class usePushNotifications {
       const auth = JSON.parse(res);
       const { fcmTokens } = auth;
       if (fcmTokens && !fcmTokens.includes(token)) {
+        console.log(fcmTokens, !fcmTokens.includes(token), ' 222222222222222222223')
         // fcmTokens.push(token);
-        await this.updateUserTokens(auth.id, token);
+        await this.addUserToken(auth.id, token);
       }
     }
   }
 
-  static async updateUserTokens(id: string, fcmToken: string) {
+  static async addUserToken(id: string, fcmToken: string) {
     try {
       console.log(id, fcmToken)
       await userAPI.HandleUser(
-        '/update-fcmtoken',
+        '/add-fcmtoken',
         { userid: id, fcmtoken:  fcmToken},
         'post',
       );
@@ -110,23 +106,54 @@ export class usePushNotifications {
     }
   }
 
-  static async sendPushNotification(expoPushToken: string) {
-    const message = {
-      to: expoPushToken,
-      sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
-      data: { someData: 'goes here' },
-    };
+  static async removeUserToken(id: string, fcmToken: string) {
+    try {
+      console.log(id, fcmToken)
+      await userAPI.HandleUser(
+        '/remove-fcmtoken',
+        { userid: id, fcmtoken:  fcmToken},
+        'post',
+      );
+    } catch (error) {
+      console.log(`Cannot update tokens: ${error}`);
+    }
+  }
 
-    await fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Accept-encoding': 'gzip, deflate',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(message),
-    });
+  static async getUserTokens(id: string) {
+    try {
+      console.log(id)
+      const fcmtokens = await userAPI.HandleUser(
+        '/get-fcmtokens',
+        { userid: id},
+        'get',
+      );
+      return fcmtokens;
+    } catch (error) {
+      console.log(`Cannot get user tokens: ${error}`);
+    }
+  }
+
+  static async sendPushNotification(id: string, data: NotificationModel) {
+    const fcmtokens: any = await usePushNotifications.getUserTokens(id);
+    if (fcmtokens.length > 0) {
+      fcmtokens.forEach(async (expoPushToken: any) => {
+        const message = {
+          to: expoPushToken,
+          sound: "default",
+          title: data.name,
+          body: data.text,
+        };
+    
+        await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(message),
+        });
+      });
+    }
   }
 }
