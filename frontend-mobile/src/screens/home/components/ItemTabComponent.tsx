@@ -155,10 +155,10 @@ const ItemTabComponent = ({navigation}: any) => {
           <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
           {state.index === 1 && (
             <TouchableOpacity
-              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: "#64368F", borderRadius: 15 }}
+              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.white5, borderRadius: 15 }}
               onPress={() => handleNavigateMapSelectWarehouses(navigation)}
             >
-              <MaterialCommunityIcons name='map-search' size={25} color={appColors.white}/>
+              <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary2}/>
             </TouchableOpacity>
           )}
         </View>

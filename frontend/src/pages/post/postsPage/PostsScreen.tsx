@@ -12,7 +12,7 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 
 import HomeWarehousePosts from "../../home/HomeWarehousePosts";
 import Axios from "../../../redux/APIs/Axios";
-import PostWaitForPost from "../../approval/PostWaitForPost";
+import PostComponent from "../../approval/PostComponent";
 
 const category = [
   "Quần áo",
@@ -102,7 +102,7 @@ function PostsCreen() {
             <HomeWarehousePosts filterValue={filterValue} warehousesID={warehousesID}/>
           </TabPanel>
           <TabPanel value="2">
-            <PostWaitForPost filterValue={filterValue} warehousesID={warehousesID}/>
+            <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Chờ được đăng" statusTotalPosts="waitForPost" isWaitForPost/>
           </TabPanel>
         </TabContext>
 

@@ -6,14 +6,31 @@ import CircularProgress from '@mui/material/CircularProgress';
 import OrderCard from '../order/OrderCard';
 import { useSelector } from 'react-redux';
 
-function PostJustApproved({filterValue, warehousesID}: any) {
+function PostComponent({filterValue, warehousesID, status, statusTotalPosts, canDelete, canApproval, isWaitForPost}: any) {
     
     const userLogin = useSelector((state: any) => state.userLogin);
 
     const [isLoading, setIsLoading] = useState(true)
     const [page, setPage] = useState(1);
-    const [posts, setPosts] = useState<any[]>([])
+    const [totalItems, setTotalItems] = useState(0);
+    const [posts, setPosts] = useState<any>([])
     const LIMIT = 10
+    
+    useEffect(() => {
+        const fetchTotalPost = async () => {
+            try {
+                const response: any = await Axios.post(`/posts/getTotalPost`, {
+                    userID: userLogin.userInfo.id,
+                    status: statusTotalPosts
+                })
+                console.log(response.totalPosts)
+                setTotalItems(response.totalPosts)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchTotalPost()
+    }, [])
 
     useEffect(() => {
         const fetchData = async () => {
@@ -22,8 +39,8 @@ function PostJustApproved({filterValue, warehousesID}: any) {
                 const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
                 
                 const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
-                    status: 'Vừa duyệt',
-                    page: page -1,
+                    status,
+                    page: page - 1,
                     limit: LIMIT,
                     distance: filterValue.distance,
                     time: filterValue.time,
@@ -33,8 +50,9 @@ function PostJustApproved({filterValue, warehousesID}: any) {
                     category: filterValue.category,
                     warehouses: warehousesID,
                     userID: userLogin.userInfo.id
-                      
                 })
+
+            
                 setPosts(responsePosts.allPosts)
                 setIsLoading(false)
             }catch(error){
@@ -60,30 +78,34 @@ function PostJustApproved({filterValue, warehousesID}: any) {
     }
 
     return ( 
-        <div>
+        <div style={{}}>
             {
                 !isLoading ? 
                 <>
                     {
                         
-                        !isEmpty() &&  
-                        <img src='https://i.pinimg.com/564x/9a/7c/58/9a7c58b1532f43d69be0dcaec9130495.jpg' alt='img not found'
-                            style={{width: '90%', height: '100%'}}/>
+                        !isEmpty() && 
+                        <div style={{
+                            width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'
+                        }}>
+                            <img src='https://i.pinimg.com/564x/3a/67/19/3a67194f5897030237d83289372cf684.jpg' alt='img not found'
+                                style={{width: '50%'}}/>
+                        </div> 
+                        
                     }
 
-                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}
-                        >
+                    <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                         { posts !== null && 
                             posts.map((post: any, index: number) => (
                             <Grid xs={12} sm={4} md={4} key={index}>
-                                <OrderCard order={post} isPost canDelete/>
+                                <OrderCard order={post} isPost canApproval={canApproval} canDelete={canDelete} isWaitForPost={isWaitForPost}/>
                             </Grid>
                         ))}
                     </Grid>
 
                     <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
                         <Stack>
-                            <Pagination count={Math.ceil(100 / LIMIT)} page={page} onChange={handleChange} />
+                            <Pagination count={Math.ceil(totalItems / LIMIT)} page={page} onChange={handleChange} />
                         </Stack>
                     </Box>
                 </>   :
@@ -97,4 +119,4 @@ function PostJustApproved({filterValue, warehousesID}: any) {
      );
 }
 
-export default PostJustApproved;
+export default PostComponent;

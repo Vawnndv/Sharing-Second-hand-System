@@ -64,11 +64,11 @@ function EditPost() {
         if(post != null){
             console.log('true')
             setDate([dayjs((post.timestart).slice(0,10)), dayjs((post.timeend).slice(0,10))])
-            setLocation({
-                address: post.address,
-                latitude: parseFloat(post.latitude),
-                longitude: parseFloat(post.longitude)
-            })
+            // setLocation({
+            //     address: post.address,
+            //     latitude: parseFloat(post.latitude),
+            //     longitude: parseFloat(post.longitude)
+            // })
             setTitle(post.title)
             setDescription(post.description)
         }
@@ -77,6 +77,7 @@ function EditPost() {
         const fetchAllData = async () => {
           let itemIDs = null;
           let owner = null
+          let warehouseid = 0
           try {
 
             const res: any = await Axios.get(`/posts/${postid}`)
@@ -86,13 +87,24 @@ function EditPost() {
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
             // console.log('Time Start',(res.postDetail.timestart).slice(0,10))
-            setLocation({addressid: res.postDetail.adressid, address: res.postDetail.address, longitude: res.postDetail.longitude, latitude: res.postDetail.latitude});
-
+            // setLocation({addressid: res.postDetail.adressid, address: res.postDetail.address, longitude: res.postDetail.longitude, latitude: res.postDetail.latitude});
+            warehouseid = res.postDetail.warehouseid
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
+            console.log(res.postDetail)
             
           } catch (error) {
             console.error('Error fetching post details:', error);
+          }
+
+          try {
+            const response: any = await Axios.get(`warehouse/getWarehouse/${warehouseid}`)
+            setLocation({addressid: response.wareHouse.addressid, 
+                address: response.wareHouse.address, longitude: parseFloat(response.wareHouse.longitude), 
+                latitude: parseFloat(response.wareHouse.latitude)});
+            // console.log(response)
+          }catch(error){
+            console.log(error)
           }
     
           try {
@@ -203,7 +215,7 @@ function EditPost() {
         let isSuccessRepost = true
         // console.log('VALIDATEEEEEEEEE: ', `${itemImages.length + itemNewImages.length  } ${  title} ${ description} ${ phoneNumber.length}`)
         if((itemImages.length + itemNewImages.length > 0) &&
-            title !== '' && description !== '' && phoneNumber.length === 10 &&
+            title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){
                 try{
                     const res = await axios.post(`http://localhost:3000/posts/createPost`, {
@@ -215,7 +227,7 @@ function EditPost() {
                         itemid: post.itemid,
                         timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
                         timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
-                        isNewAddress: true,
+                        isNewAddress: false,
                         postLocation: location,
                         isWarehousePost: true,
                         givetypeid: 1,
@@ -431,14 +443,14 @@ function EditPost() {
                             variant='h6'
                             >Số điện thoại</Typography>
                         <TextField
-                            error={phoneNumber.length !== 10}
+                            error={(phoneNumber.length < 10 || phoneNumber.length > 11)}
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value)}
                             sx={{
                                 mx: 2,
                                 color: 'black'
                             }}
-                            helperText={phoneNumber.length !== 10 ? 'Sai định dạng số điện thoại' : ''}/>
+                            helperText={ ( phoneNumber.length < 10 || phoneNumber.length > 11 ) ? 'Sai định dạng số điện thoại' : ''}/>
                     </Stack>
                 }
 
@@ -471,6 +483,7 @@ function EditPost() {
                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
                                 {/* <Typography variant='body2' component='div'>{post.address}</Typography> */}
                                 <TextField
+                                    disabled
                                     error={location.address === ""}
                                     value={location.address}    
                                     onChange={(e) => onChangeLocation(e)}
@@ -482,7 +495,8 @@ function EditPost() {
 
                                 <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
                                     <Button fullWidth sx={{height: '55px', width: '100%', mb: 2}} variant="outlined" startIcon={<LocationOnIcon />}
-                                        onClick={handleOpen}>
+                                        onClick={handleOpen}
+                                        disabled>
                                         Cập nhật vị trí cho đồ
                                     </Button>
                                     <Modal
