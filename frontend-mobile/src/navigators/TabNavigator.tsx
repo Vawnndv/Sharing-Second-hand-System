@@ -34,23 +34,23 @@ const TabNavigator = () => {
           const variant = focused ? 'Bold' : 'Outline';
           
           switch (route.name) {
-            case 'Home':
+            case 'Trang chủ':
               icon = <Home size={size} color={color} variant={variant} />
               break;
-            case 'Scan':
+            case 'Quét mã':
               icon = <Scan size={size} color={color} variant={variant} />
               break;
-            case 'Add':
+            case 'Thêm':
               icon = <CircleComponent size={52} styles={{
                       marginTop: Platform.OS === 'ios' ? -50 : -60
                     }}>
                       <AddSquare size={24} color={appColors.white} variant="Bold" />
                     </CircleComponent>
               break;
-            case 'Message':
+            case 'Tin nhắn':
               icon = <Message size={size} fill={color} color={color} variant={variant} />
               break;
-            case 'Profile':
+            case 'Thông tin':
               icon = <User size={size} color={color} variant={variant} />
               break;
           }
@@ -60,7 +60,7 @@ const TabNavigator = () => {
           marginTop: 8
         },
         tabBarLabel ({focused}) {
-          return route.name === 'Add' ? null : (
+          return route.name === 'Thêm' ? null : (
             <TextComponent
               text={route.name}
               flex={0}
@@ -75,7 +75,7 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen 
-        name="Home" 
+        name="Trang chủ" 
         component={HomeNavigator}  
         options={({ route }) => ({
           tabBarStyle: ((route) => {
@@ -92,10 +92,10 @@ const TabNavigator = () => {
           })(route),
         })} 
       />
-      <Tab.Screen name="Scan" component={ScanNavigator} />
-      <Tab.Screen name="Add" component={AddNavigator} />
+      <Tab.Screen name="Quét mã" component={ScanNavigator} />
+      <Tab.Screen name="Thêm" component={AddNavigator} />
       <Tab.Screen 
-        name="Message" 
+        name="Tin nhắn" 
         component={ChatNavigator}
         options={({ route }) => ({
           tabBarStyle: ((route) => {
@@ -114,7 +114,7 @@ const TabNavigator = () => {
       />
 
       <Tab.Screen 
-        name="Profile" 
+        name="Thông tin" 
         component={ProfileNavigator} 
         options={({ route }) => ({
           tabBarStyle: ((route) => {
