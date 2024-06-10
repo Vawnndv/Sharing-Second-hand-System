@@ -14,8 +14,8 @@ import { NotificationModel } from '../../../models/NotificationModel';
 type UserItemPros = {
     item: NotificationModel;
     index: number;
-    onDeletePressed: (item: NotificationModel) => void;
-    updateRead: (item: NotificationModel) => void;
+    onDeletePressed: (id: string) => void;
+    updateRead: (id: string) => void;
 };
 
 const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItemPros) => {
@@ -27,10 +27,10 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
       <TouchableOpacity
         onPress={() => {
           swipeableRef.current?.close();
-          onDeletePressed(item);
+          onDeletePressed(item.id);
         }}
       >
-        <View style={styles.swipeContainer}>
+        <View style={[styles.swipeContainer, {backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6'}]}>
           <View style={styles.swipeBtn}>
             <FontAwesome name="trash" size={24} color={appColors.white} />
           </View>
@@ -45,6 +45,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         ref={swipeableRef}
         renderRightActions={renderRightActions}
         key={`swipe-${item.createdAt}-${index}`}
+        leftThreshold={10}
       >
         <RowComponent
           key={`event${index}`}
@@ -57,9 +58,9 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
                 },
               });
             }
-            updateRead(item);
+            updateRead(item.id);
           }}
-          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6', marginBottom: 4 }}
+          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6', borderBottomWidth: 1}}
         >
           <AvatarComponent
             username={item.name}
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+    borderBottomWidth: 1,
   },
 
   swipeBtn: {

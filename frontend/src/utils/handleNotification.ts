@@ -1,11 +1,10 @@
-import { Timestamp, addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { Timestamp, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../firebaseConfig";
 import { getUserTokensService } from '../redux/services/userServices';
 
 export class HandleNotification {
 
     static sendPushFCMNotification = async (fcmtoken: string, title: string, body: string) => {
-      console.log(fcmtoken,' 1231312313')
       const message = {
         to: fcmtoken,
         sound: "default",
@@ -26,16 +25,15 @@ export class HandleNotification {
       });
     }
 
-    static sendPushNotification = async (id: string, data: any) => {
+    static sendPushNotification = async (data: any) => {
       try {
         
-        const fcmtokens: string[] = await await getUserTokensService(id);
+        const fcmtokens: string[] = await await getUserTokensService(data.userReceiverId);
         console.log(fcmtokens.length)
 
         // if (fcmtokens.length > 0) {
           console.log(fcmtokens)
           fcmtokens.forEach(async (expoPushToken: string) => {
-            console.log(expoPushToken,' 1231312313')
             HandleNotification.sendPushFCMNotification(expoPushToken, data.name, data.text);
           })
         // }
@@ -47,9 +45,9 @@ export class HandleNotification {
     static sendNotification = async (data: any) => {
         try {
 
-            await HandleNotification.sendPushNotification('83', data)
+            await HandleNotification.sendPushNotification(data)
 
-            const docRef = doc(db, "receivers",  data.userReceiverId.toString());
+            const docRef = doc(db, "receivers", data.userReceiverId.toString());
           
             const docSnap = await getDoc(docRef);
             if (!docSnap.exists()) {
@@ -60,9 +58,12 @@ export class HandleNotification {
               });
             }
           
+            // Generate a new document reference with a unique ID
             const notificationRef = collection(docRef, "notification");
+            const newNotificationRef = doc(notificationRef);
           
-            await addDoc(notificationRef, {
+            await setDoc(newNotificationRef, {
+              id: newNotificationRef.id,
               userid: data.userReceiverId,
               text: data.text,
               postid: data.postid,
@@ -72,7 +73,7 @@ export class HandleNotification {
               link: data.link,
               createdAt: Timestamp.fromDate(new Date()),
               isRead: false
-            });
+          });
 
           } catch(err: any) {
             console.error(err.message);

@@ -26,59 +26,34 @@ const NotificationScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notificationList, setNotificationList] = useState<NotificationModel[]>([]);
 
-  const updateRead = async (notificationCurrent: NotificationModel) => {
+  const updateRead = async (id: string) => {
     try {
-      console.log(notificationCurrent, 'aaaaaaaaaaaaaaaaaaaa');
-      const docRef = doc(db, "receivers", auth.id.toString());
-      const messageRef = collection(docRef, "notification");
-  
-      // Lấy tin nhắn cuối cùng từ bộ sưu tập "messages"
-      const querySnapshot = await getDocs(query(messageRef));
-      let notificationItem: any = null; // Khai báo kiểu dữ liệu cho lastMessage
-  
-      querySnapshot.forEach((doc) => {
-        if (JSON.stringify(doc.data()) === JSON.stringify(notificationCurrent)) {
-          console.log(doc.data(), notificationCurrent, '1233123123')
-          notificationItem = doc
-        }
-      });
-
-      if (notificationItem) {
-
-        await updateDoc(notificationItem.ref, {
-          isRead: true
+        const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
+        
+        // Update the document
+        await updateDoc(docRef, {
+            isRead: true
         });
-        notificationItem = null
-      }
+        console.log(`Notification with id ${id} has been marked as read`);
     } catch(err) {
-      console.error('Lỗi khi cập nhật trạng thái tin nhắn:', err);
+        console.error('Error updating notification:', err);
     }
-  }
+};
 
-
-  const onDeletePressed = async (notificationCurrent: NotificationModel) => {
+  const onDeletePressed = async (id: string) => {
     try {
-      const notificationRef = collection(db, "receivers", auth.id.toString(), "notification");
-      const q = query(notificationRef);
-  
-      const querySnapshot = await getDocs(q);
-  
-      querySnapshot.forEach(async (docSnapshot) => {
-        if (JSON.stringify(docSnapshot.data()) === JSON.stringify(notificationCurrent)) {
-          await deleteDoc(docSnapshot.ref);
-          console.log(`Notification with postid ${notificationCurrent.postid} has been deleted`);
-        }
-      });
+        // Reference to the specific notification document using its ID
+        const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
+
+        // Delete the document
+        await deleteDoc(docRef);
+        console.log(`Notification with id ${id} has been deleted`);
     } catch (err) {
-      console.error('Error deleting notification:', err);
+        console.error('Error deleting notification:', err);
     }
   };
   
 
-// Usage example
-// deleteNotification('specific-post-id');
-
-    
   useEffect(() => {
     setIsLoading(true);
     const docRef = doc(db, "receivers", auth.id.toString());
@@ -86,7 +61,6 @@ const NotificationScreen = () => {
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
 
     onSnapshot(q, (snapshot)=> {
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       const list: any = snapshot.docs.map(doc=>{
         return doc.data();      
       })

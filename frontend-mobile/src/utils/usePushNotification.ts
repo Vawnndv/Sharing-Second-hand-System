@@ -122,8 +122,8 @@ export class usePushNotifications {
     }
   }
 
-  static async sendPushNotification(id: string, data: NotificationModel) {
-    const fcmtokens: any = await usePushNotifications.getUserTokens(id);
+  static async sendPushNotification(data: any) {
+    const fcmtokens: any = await usePushNotifications.getUserTokens(data.userReceiverId);
 
     if (fcmtokens.length > 0) {
       fcmtokens.forEach(async (expoPushToken: any) => {

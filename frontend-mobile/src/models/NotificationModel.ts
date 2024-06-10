@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 export interface NotificationModel {
+  id: string;
   userid: string;
   text: string;
   postid: string;
