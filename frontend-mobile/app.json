@@ -26,7 +26,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.retreasure.frontendmobile",
+      "package": "com.retreasure.firebase",
       "googleServicesFile": "./android/google-services.json",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
