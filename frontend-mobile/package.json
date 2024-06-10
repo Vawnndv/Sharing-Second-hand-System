@@ -14,7 +14,9 @@
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/datetimepicker": "^7.6.3",
     "@react-native-community/geolocation": "^3.2.1",
-    "@react-native-firebase/storage": "^19.1.1",
+    "@react-native-firebase/analytics": "^20.1.0",
+    "@react-native-firebase/app": "^20.1.0",
+    "@react-native-firebase/storage": "^20.1.0",
     "@react-native-google-signin/google-signin": "^11.0.1",
     "@react-native-picker/picker": "^2.7.5",
     "@react-navigation/bottom-tabs": "^6.5.20",
@@ -70,7 +72,8 @@
     "react-native-step-indicator": "^1.0.3",
     "react-native-vector-icons": "^10.1.0",
     "react-redux": "^9.1.0",
-    "rn-fetch-blob": "^0.12.0"
+    "rn-fetch-blob": "^0.12.0",
+    "expo-dev-client": "~3.3.12"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
