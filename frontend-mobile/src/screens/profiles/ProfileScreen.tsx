@@ -12,7 +12,6 @@ import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
 import { Flag } from 'iconsax-react-native'
 import ReportModal from '../../modals/ReportModal'
-import analytics from '@react-native-firebase/analytics';
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -76,17 +75,6 @@ const ProfileScreen = ({navigation, route}: any) => {
   const handleLogout = async () => {
     await AsyncStorage.clear();
     dispatch(removeAuth({}));
-  }
-
-  function logAppOpen() {
-    analytics().logEvent('app_open');
-  }
-
-  function logPostCreated(postId: string) {
-    analytics().logEvent('post_created', {
-      post_id: postId,
-      timestamp: new Date().toISOString()
-    });
   }
 
   return (
@@ -212,20 +200,6 @@ const ProfileScreen = ({navigation, route}: any) => {
                       navigation.navigate('EditProfileScreen', {
                         profile,
                       })
-                    }
-                    textColor={appColors.primary}
-                    type="primary"
-                  />
-
-                  <ButtonComponent
-                    styles={{
-                      borderWidth: 1,
-                      borderColor: appColors.primary,
-                      backgroundColor: appColors.white,
-                    }}
-                    text="Button thống kê"
-                    onPress={() =>
-                      logAppOpen()
                     }
                     textColor={appColors.primary}
                     type="primary"
