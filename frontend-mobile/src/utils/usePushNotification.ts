@@ -53,7 +53,7 @@ export class usePushNotifications {
           })
         ).data;
 
-        return pushTokenString;
+        this.getExpoPushToken(pushTokenString);
 
       } catch (e: unknown) {
         handleRegistrationError(`${e}`);
@@ -65,14 +65,15 @@ export class usePushNotifications {
 
   static getExpoPushToken = async (token: string) => {
     const fcmtoken = await AsyncStorage.getItem('fcmtoken');
-
     if (!fcmtoken) {
       if (token) {
         await AsyncStorage.setItem('fcmtoken', token);
+        this.updateTokenForUser(token);
       }
+    } else {
+      this.updateTokenForUser(fcmtoken);
     }
   };
-
 
   static async updateTokenForUser(token: string) {
     const res = await AsyncStorage.getItem('auth');

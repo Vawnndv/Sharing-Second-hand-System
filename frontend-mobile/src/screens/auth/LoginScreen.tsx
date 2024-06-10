@@ -65,11 +65,7 @@ const LoginScreen = ({navigation}: any) => {
       setIsDisable(true);
       setErrorLogin('');
       await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
-      const fcmtoken = await usePushNotifications.registerForPushNotificationsAsync() ?? '';
-      if (fcmtoken) {
-        usePushNotifications.updateTokenForUser(fcmtoken);
-      }
-
+      await usePushNotifications.registerForPushNotificationsAsync();
       setIsLoading(false);
       
     } catch (error: unknown) {

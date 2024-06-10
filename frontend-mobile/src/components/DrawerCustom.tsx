@@ -93,13 +93,8 @@ const DrawerCustom = ({navigation}: any) => {
     const fcmtoken = await AsyncStorage.getItem('fcmtoken');
 
     if (fcmtoken) {
-      if (auth.fcmTokens && auth.fcmTokens.length > 0) {
-        const items = [...auth.fcmTokens];
-        const index = items.findIndex(element => element === fcmtoken);
-
-        console.log(auth.fcmTokens, index, fcmtoken, auth.fcmTokens[index], 'ccccccc')
-
-        await usePushNotifications.removeUserToken(auth.id, auth.fcmTokens[index]);
+      if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
+        await usePushNotifications.removeUserToken(auth.id, fcmtoken);
       }
     }
 

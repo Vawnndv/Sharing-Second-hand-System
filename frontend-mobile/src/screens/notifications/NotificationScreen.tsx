@@ -1,31 +1,34 @@
 import { MaterialIcons } from '@expo/vector-icons'
 import { Clock } from 'iconsax-react-native'
 import React, { useEffect, useState } from 'react'
-import { FlatList, View } from 'react-native'
+import { FlatList, TouchableOpacity, View } from 'react-native'
 import { AvatarComponent, ContainerComponent, RowComponent, SpaceComponent, TextComponent } from '../../components'
 import { appColors } from '../../constants/appColors'
 import { fontFamilies } from '../../constants/fontFamilies'
 import { globalStyles } from '../../styles/globalStyles'
 import { NotificationModel } from '../../models/NotificationModel'
-import { doc, collection, query, orderBy, onSnapshot, DocumentData, getDocs, limit, updateDoc } from 'firebase/firestore'
+import { doc, collection, query, orderBy, onSnapshot, DocumentData, getDocs, limit, updateDoc, deleteDoc, Timestamp } from 'firebase/firestore'
 import { useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
 import { db } from '../../../firebaseConfig'
 import moment from 'moment'
 import { useNavigation } from '@react-navigation/native'
 import LoadingComponent from '../../components/LoadingComponent'
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler'
+import { StyleSheet } from 'react-native'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import NotificationItem from './component/NotificationItem'
+
 
 const NotificationScreen = () => {
-
   const auth = useSelector(authSelector);
-  const navigation: any = useNavigation();
   console.log(auth.id)
   const [isLoading, setIsLoading] = useState(false);
   const [notificationList, setNotificationList] = useState<NotificationModel[]>([]);
 
-  const updateRead = async (postid: string) => {
+  const updateRead = async (notificationCurrent: NotificationModel) => {
     try {
-
+      console.log(notificationCurrent, 'aaaaaaaaaaaaaaaaaaaa');
       const docRef = doc(db, "receivers", auth.id.toString());
       const messageRef = collection(docRef, "notification");
   
@@ -33,10 +36,9 @@ const NotificationScreen = () => {
       const querySnapshot = await getDocs(query(messageRef));
       let notificationItem: any = null; // Khai báo kiểu dữ liệu cho lastMessage
   
-      // eslint-disable-next-line @typescript-eslint/no-shadow
       querySnapshot.forEach((doc) => {
-        if (doc.data().postid === postid) {
-          console.log(doc.data().postid, postid, '1233123123')
+        if (JSON.stringify(doc.data()) === JSON.stringify(notificationCurrent)) {
+          console.log(doc.data(), notificationCurrent, '1233123123')
           notificationItem = doc
         }
       });
@@ -52,6 +54,30 @@ const NotificationScreen = () => {
       console.error('Lỗi khi cập nhật trạng thái tin nhắn:', err);
     }
   }
+
+
+  const onDeletePressed = async (notificationCurrent: NotificationModel) => {
+    try {
+      const notificationRef = collection(db, "receivers", auth.id.toString(), "notification");
+      const q = query(notificationRef);
+  
+      const querySnapshot = await getDocs(q);
+  
+      querySnapshot.forEach(async (docSnapshot) => {
+        if (JSON.stringify(docSnapshot.data()) === JSON.stringify(notificationCurrent)) {
+          await deleteDoc(docSnapshot.ref);
+          console.log(`Notification with postid ${notificationCurrent.postid} has been deleted`);
+        }
+      });
+    } catch (err) {
+      console.error('Error deleting notification:', err);
+    }
+  };
+  
+
+// Usage example
+// deleteNotification('specific-post-id');
+
     
   useEffect(() => {
     setIsLoading(true);
@@ -69,8 +95,8 @@ const NotificationScreen = () => {
       console.log(notificationList)
       setIsLoading(false);
     })
-  }, [])
-
+  }, []);
+  
   return (
     <ContainerComponent back title='Thông báo'>
       {isLoading ? (
@@ -79,41 +105,7 @@ const NotificationScreen = () => {
         <FlatList
           data={notificationList}
           renderItem={({item, index}) => (
-            <RowComponent 
-              key={`event${index}`}
-              onPress={() => {
-                navigation.navigate('Home', {
-                  screen: item.link,
-                  params: {
-                    postID: item.postid
-                  },
-                });
-                updateRead(item.postid);
-                console.log(item.postid, 'itemitemitem')
-              }}
-              styles={{padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6', marginBottom: 4}}
-            >
-              <AvatarComponent
-                username={item.name} 
-                size={78}
-              />
-              <SpaceComponent width={12} />
-              <View style={[globalStyles.col]}>
-                <RowComponent>
-                  <TextComponent text={`${item.name} `} font={fontFamilies.medium} text2={item.text} isConcat />
-                </RowComponent>
-                <RowComponent justify='space-between'>
-                  <RowComponent>
-                    <Clock size={14} color={appColors.black} />
-                    <SpaceComponent width={4} />
-                    <TextComponent text={moment(item.createdAt.seconds * 1000 + item.createdAt.nanoseconds / 1000000).fromNow()} font={fontFamilies.light} />
-                  </RowComponent>
-                  <RowComponent>
-                    <MaterialIcons name="more-horiz" color={appColors.black} variant='Bold' size={24}/>
-                  </RowComponent>
-                </RowComponent>
-              </View>
-            </RowComponent>
+            <NotificationItem item={item} index={index} onDeletePressed={onDeletePressed} updateRead={updateRead}/>
           )}
         />
       )}
@@ -122,3 +114,4 @@ const NotificationScreen = () => {
 }
 
 export default NotificationScreen
+

@@ -33,7 +33,6 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const handleRefresh = () => {
     setRefresh(prevRefresh => !prevRefresh);
   }
-  console.log("DATAAAAAAAAAAAAAAAAAAAA", data)
 
   useEffect(() => {
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
