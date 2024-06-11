@@ -6,13 +6,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TouchAppOutlinedIcon from '@mui/icons-material/TouchAppOutlined';
 import React, { useEffect, useState } from 'react';
 import ChartComponent from '../../components/Chart/ChartComponentCollaborator';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import MapSelectWarehouses from '../../components/Map/MapSelectWarehouses';
 import dayjs, { Dayjs } from 'dayjs';
 import DatePicker from '../../components/DatePicker';
 import ChartComponentFollowTime from '../../components/Chart/ChartComponentFollowTime';
 import ChartComponentFollowTimeCollaborator from '../../components/Chart/ChartComponentFollowTimeCollaborator';
+import Axios from '../../redux/APIs/Axios';
 // import MapSelectAddress from '../../components/Map/MapSelectAddress';
 const category = [
     "Quần áo",
@@ -35,10 +35,10 @@ function ChartTypeComponent ({typeChart, setTypeChart}: any) {
                 component='div' onClick={() => setTypeChart('bar')}>Cột</Typography>
             <Typography variant='body2' sx={{borderLeft: `3px solid ${typeChart === 'pie' ? '#6A1D70' : '#CCCCCC'}`, ml: -3, p: 1, pl: 3, cursor: 'pointer'}}
                 component='div' onClick={() => setTypeChart('pie')}>Tròn</Typography>
-            <Typography variant='body2' sx={{borderLeft: `3px solid ${typeChart === 'polarArea' ? '#6A1D70' : '#CCCCCC'}`, ml: -3, p: 1, pl: 3, cursor: 'pointer'}}
+            {/* <Typography variant='body2' sx={{borderLeft: `3px solid ${typeChart === 'polarArea' ? '#6A1D70' : '#CCCCCC'}`, ml: -3, p: 1, pl: 3, cursor: 'pointer'}}
                 component='div' onClick={() => setTypeChart('polarArea')}>Polar</Typography>
             <Typography variant='body2' sx={{borderLeft: `3px solid ${typeChart === 'radar' ? '#6A1D70' : '#CCCCCC'}`, ml: -3, p: 1, pl: 3, cursor: 'pointer'}}
-                component='div' onClick={() => setTypeChart('radar')}>Radar</Typography>
+                component='div' onClick={() => setTypeChart('radar')}>Radar</Typography> */}
         </Stack>
     )
 }
@@ -107,36 +107,6 @@ function SelectCategory({categoryIndex, handleSelectCategory}: any) {
     );
 }
 
-const timeArr = [
-    {
-        value: 1,
-        label: '1 tháng'
-    },
-    {
-        value: 2,
-        label: '2 tháng'
-    },
-    {
-        value: 3,
-        label: '3 tháng'
-    },
-    {
-        value: 6,
-        label: '6 tháng'
-    },
-    {
-        value: 12,
-        label: '1 năm'
-    },
-    {
-        value: 24,
-        label: '2 năm'
-    },
-    {
-        value: 60,
-        label: '5 năm'
-    }
-]
 
 function Statistic() {
 
@@ -146,7 +116,7 @@ function Statistic() {
     const [tabImportExportValue, setTabImportExportValue] = useState('Thống kê theo loại');
 
     const today = dayjs();
-    const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs('2024-03-01'), today]);
+    const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs('2024-06-01'), today]);
     console.log(date)
     const handleChange = (event: any, newValue: any) => {
         setTabValue(newValue);
@@ -155,15 +125,10 @@ function Statistic() {
         setTabImportExportValue(newValue);
     };
 
-    const [typeChart, setTypeChart] = useState('bar')
+    const [typeChart, setTypeChart] = useState('line')
     const [typeItemInOut, setTypeItemInOut] = useState('import')
     const handleChangeItemInOut = (event: any, newValue: any) => {
         setTypeItemInOut(newValue.props.value);
-    };
-
-    const [timeUserAccess, setTimeUserAccess] = useState(1)
-    const handleChangeTimeUserAccess = (event: any, newValue: any) => {
-        setTimeUserAccess(newValue.props.value);
     };
 
     const [data, setData] = useState([])
@@ -193,8 +158,8 @@ function Statistic() {
         const fetchDataWarehouses = async () => {
             try {
                 setIsLoading(true)
-                const response = await axios.get(`http://localhost:3000/warehouse/`)
-                const tempWarehouses = response.data.wareHouses
+                const response: any = await Axios.get(`warehouse`)
+                const tempWarehouses = response.wareHouses
                 
                 for(let i = 0; i < tempWarehouses.length; i+=1){
                     tempWarehouses[i].label = tempWarehouses[i].warehousename
@@ -214,10 +179,28 @@ function Statistic() {
     useEffect(() => {
         const fetchDataCollaborator = async () => {
             let response;
-            if(tabValue === "Lượng người truy cập"){
+            if(tabValue === "Lượng đăng bài"){
                 try{
                     setIsLoading(true)
-                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?timeValue=${timeUserAccess}`)
+                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                            type: 'post',
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
+                        }
+                    )
+                } catch(error){
+                    console.log(error)
+                } 
+            }
+            else if(tabValue === "Lượng người truy cập"){
+                try{
+                    setIsLoading(true)
+                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                            type: 'access',
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
+                        }
+                    )
                 } catch(error){
                     console.log(error)
                 } 
@@ -225,7 +208,7 @@ function Statistic() {
             else if(tabValue === "Lượng sản phẩm vào/ra kho"){
                 try{
                     setIsLoading(true)
-                    response = await axios.post(`http://localhost:3000/statistic/statisticImportExport`,{
+                    response = await Axios.post(`statistic/statisticImportExport`,{
                         userID: userLogin.userInfo.id,
                         type: typeItemInOut,
                         timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
@@ -237,24 +220,41 @@ function Statistic() {
             } else {
                 try {
                     setIsLoading(true)
-                    response = await axios.get(`http://localhost:3000/statistic/statisticInventory?userID=${userLogin.userInfo.id}`)
+                    response = await Axios.get(`statistic/statisticInventory?userID=${userLogin.userInfo.id}`)
                 } catch (error) {
                     console.log(error)
                 }                
             }
             if(response){
-                setData(response.data.data);
-                console.log(response);
+                setData(response.data);
                 setIsLoading(false)
             }
         }
 
         const fetchDataAdmin = async () => {
             let response;
-            if(tabValue === "Lượng người truy cập"){
+            if(tabValue === "Lượng đăng bài"){
                 try{
                     setIsLoading(true)
-                    response = await axios.get(`http://localhost:3000/statistic/statisticAccessUser?timeValue=${timeUserAccess}`)
+                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                            type: 'post',
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
+                        }
+                    )
+                } catch(error){
+                    console.log(error)
+                } 
+            }
+            else if(tabValue === "Lượng người truy cập"){
+                try{
+                    setIsLoading(true)
+                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                            type: 'access',
+                            timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
+                            timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
+                        }
+                    )
                 } catch(error){
                     console.log(error)
                 } 
@@ -269,14 +269,14 @@ function Statistic() {
                         }
                     }
                     if(tabImportExportValue === 'Thống kê theo loại'){
-                        response = await axios.post(`http://localhost:3000/statistic/statisticImportExportAdmin`,{
+                        response = await Axios.post(`statistic/statisticImportExportAdmin`,{
                             type: typeItemInOut,
                             warehouses: listWarehousesSelected,
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`,
                         })
                     }else{
-                        response = await axios.post(`http://localhost:3000/statistic/statisticImportExportFollowTimeAdmin`,{
+                        response = await Axios.post(`statistic/statisticImportExportFollowTimeAdmin`,{
                             type: typeItemInOut,
                             warehouses: listWarehousesSelected,
                             category: category[categoryIndex],
@@ -297,7 +297,7 @@ function Statistic() {
                             listWarehousesSelected.push(warehouses[i])
                         }
                     }
-                    response = await axios.post(`http://localhost:3000/statistic/statisticInventoryAdmin`,{
+                    response = await Axios.post(`statistic/statisticInventoryAdmin`,{
                         warehouses: listWarehousesSelected
                     })
                 } catch (error) {
@@ -305,7 +305,7 @@ function Statistic() {
                 }                
             }
             if(response){
-                setData(response.data.data);
+                setData(response.data);
                 setIsLoading(false)
                 console.log(response.data)
             }
@@ -317,14 +317,8 @@ function Statistic() {
             fetchDataAdmin()
         }
         
-    }, [tabValue, tabImportExportValue, typeItemInOut, timeUserAccess,apply, warehouses])
+    }, [tabValue, tabImportExportValue, typeItemInOut, apply, warehouses])
 
-    const currentDate = new Date();
-    // Ngày trong quá khứ (ví dụ: 1 tháng trước)
-    const pastDate = new Date('2024-03-01');
-
-    // Số tháng từ ngày trong quá khứ đến ngày hiện tại
-    const monthsDifference = (currentDate.getFullYear() - pastDate.getFullYear()) * 12 + (currentDate.getMonth() - pastDate.getMonth());
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -341,6 +335,7 @@ function Statistic() {
         border: '2px solid #CAC9C8',
         boxShadow: '1px 1px 2px #CAC9C8',
     };
+    console.log("DATA", data)
 
     // const [location, setLocation] = useState<any>(null)
     return ( 
@@ -350,34 +345,36 @@ function Statistic() {
                 <TabContext value={tabValue}>
                     <Box sx={{ borderBottom: 1, borderColor: 'divider', mt: 2, ml: 2 }}>
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
+                        <Tab label="Lượng đăng bài" value="Lượng đăng bài" />
                         <Tab label="Lượng người truy cập" value="Lượng người truy cập" />
                         <Tab label="Lượng sản phẩm vào/ra kho" value="Lượng sản phẩm vào/ra kho" />
                         <Tab label="Lượng hàng tồn kho" value="Lượng hàng tồn kho" />
                         </TabList>
                     </Box>
+                    <TabPanel value="Lượng đăng bài"
+                        sx={{display: 'flex', flexDirection: 'column', ml: 4}}>
+                        <Stack
+                            flexDirection='row'>
+                            <Stack sx={{mb: 1}}>
+                                <DatePicker date={date} setDate={setDate}/>
+                            </Stack>
+                            
+                        </Stack>
+                        <Stack
+                            flexDirection='row'>
+                            <ChartComponent data={data} title='Lượng bài đăng' typeChart={typeChart}/>
+                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                        </Stack>
+                    </TabPanel>
                     <TabPanel value="Lượng người truy cập"
                         sx={{display: 'flex', flexDirection: 'column', ml: 4}}>
-                        <FormControl
-                        sx={{width: '200px', ml: 4}}>
-                            <Select
-                                labelId="dropdown-label"
-                                id="dropdown"
-                                value={timeUserAccess}
-                                onChange={handleChangeTimeUserAccess}
-                            >
-                                {
-                                    timeArr.map((item: any, index: number) => {
-                                        if(item.value <= monthsDifference){
-                                            return (
-                                                <MenuItem key={index} value={item.value}>{item.label}</MenuItem>
-                                            )
-                                        }
-                                        return null
-                                        
-                                    })
-                                }
-                            </Select>
-                        </FormControl>
+                        <Stack
+                            flexDirection='row'>
+                            <Stack sx={{mb: 1}}>
+                                <DatePicker date={date} setDate={setDate}/>
+                            </Stack>
+                            
+                        </Stack>
                         <Stack
                             flexDirection='row'>
                             <ChartComponent data={data} title='Lượng người truy cập' typeChart={typeChart}/>

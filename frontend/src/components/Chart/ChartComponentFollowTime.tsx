@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import { useSelector } from 'react-redux';
+import { option } from './ChartConfig';
 
 const colorArrayBackground = [
   'rgba(255, 99, 132, 0.2)',
@@ -55,8 +56,8 @@ function ChartComponentFollowTime({data, title, typeChart}: any) {
                 'rgb(153, 102, 255)',
                 'rgb(201, 203, 207)'
               ],
-            borderWidth: 1,
-            tension: 0
+            borderWidth: 3,
+            tension: 0.2
           },
         ] :
         data.map((wh: any, index: number) => {
@@ -97,18 +98,12 @@ function ChartComponentFollowTime({data, title, typeChart}: any) {
                 colorArrayBorder[index % 7],
                 colorArrayBorder[index % 7]
               ],
-            borderWidth: 1,
-            tension: 0
+            borderWidth: 3,
+            tension: 0.2
           }
         })
       },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
+      options: option
     });
 
     return () => {

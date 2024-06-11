@@ -17,6 +17,7 @@ import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import { useNavigation } from '@react-navigation/native';
 import { ProfileModel } from '../../models/ProfileModel';
 import { LoadingModal } from '../../modals';
+import axiosClient from '../../apis/axiosClient';
 
 
 interface FormDataStepOne {
@@ -416,6 +417,14 @@ const MultiStepForm = () => {
         })
         
       } catch (error) {
+        console.log(error)
+      }
+
+      try{
+        const response = await axios.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
+          type: 'post'
+        })
+      }catch(error){
         console.log(error)
       }
 
