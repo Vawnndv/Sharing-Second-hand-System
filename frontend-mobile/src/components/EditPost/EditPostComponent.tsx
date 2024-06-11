@@ -345,7 +345,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
       try{
         itemImagesAdd.map(async (image) => {
           const imgTemp = {uri: image.path, name: image.name, type: image.type};
-          const data = await UploadImageToAws3(imgTemp);
+          const data = await UploadImageToAws3(imgTemp, false);
           
           const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,

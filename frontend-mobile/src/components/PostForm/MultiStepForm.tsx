@@ -406,7 +406,7 @@ const MultiStepForm = () => {
   
       try{
         formDataStepOne.itemPhotos.map(async (image) => {
-          const data = await UploadImageToAws3(image);
+          const data = await UploadImageToAws3(image, false);
           
           const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,

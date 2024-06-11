@@ -36,9 +36,6 @@ const storage = multer.diskStorage({
   },
 });
 
-
-
-
 const upload = multer({ 
   storage: storage,
   limits: {
@@ -54,11 +51,16 @@ router.post('/uploadImage', upload.single('file'), async (req: Request, res: Res
     
 
     // const dataImage = fs.readFileSync(file.path);
+    let typeExpire = '';
+    if (req.body.typeExpire === 'expire') {
+      typeExpire = 'temp/';
+    }
     const params = {
       Bucket: bucket,
-      Key: `${req.body.name}`,
+      Key: `${typeExpire}${req.body.name}`,
       Body: Buffer.from(req.body.file, 'base64'), // Sử dụng file.buffer thay vì file.data
       ContentType: `${req.body.type}`, // Loại tệp tin của tệp tin đã đọc
+      Tagging: 'DeleteAfter=' + new Date(Date.now() + 2 * 60 * 1000).toISOString(), // Gắn tag với thời gian xóa
     };
       
     //   Gửi yêu cầu PUT đến AWS S3
@@ -69,12 +71,31 @@ router.post('/uploadImage', upload.single('file'), async (req: Request, res: Res
       } else {
         console.log('File uploaded successfully:', data);
         res.status(200).json({
-          
-          url: `${URL}${req.body.name}`,
-          
+          url: `${URL}${typeExpire}${req.body.name}`,
         });
       }
     });
+
+    // Đặt thời gian xóa sau 5 phút
+    // const deleteParams = {
+    //   Bucket: bucket,
+    //   Key: req.body.name,
+    //   DeleteAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString(), // 5 phút sau
+    // };
+    
+    // await s3.putObjectTagging({
+    //   Bucket: deleteParams.Bucket,
+    //   Key: deleteParams.Key,
+    //   Tagging: {
+    //     TagSet: [
+    //       {
+    //         Key: 'DeleteAfter',
+    //         Value: deleteParams.DeleteAfter,
+    //       },
+    //     ],
+    //   },
+    // }).promise();
+
   } else {
     console.log('error');
     res.json('error upload image');

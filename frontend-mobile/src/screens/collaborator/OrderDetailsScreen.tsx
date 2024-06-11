@@ -38,7 +38,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         if(image !== null){
             setIsLoading(true);
         
-            const data = await UploadImageToAws3(image);
+            const data = await UploadImageToAws3(image, false);
             // const urlConfirm = response.url
             await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
                 url: data.url

@@ -141,7 +141,7 @@ function ChatRoom({ typeChat }: any) {
     const files = Array.from(event.target.files || []);
     files.forEach(async (file) => {
       try {
-        const responseUploadImage: any = await UploadImageToAws3(file);
+        const responseUploadImage: any = await UploadImageToAws3(file, false);
 
         const roomID = warehouse ? `${warehouse.warehouseid}` : roomid;
         if (!roomID) return;

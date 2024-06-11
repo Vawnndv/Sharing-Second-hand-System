@@ -156,7 +156,7 @@ const ChatRoom = ({ route, navigation }: any) => {
       (async () => {
         for (const img of image) {
           try {
-            const temp = await UploadImageToAws3(img);
+            const temp = await UploadImageToAws3(img, false);
             console.log('START')
 
             console.log('TEMP', temp)
