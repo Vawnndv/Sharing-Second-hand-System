@@ -131,7 +131,7 @@ function Statistic() {
         setTypeItemInOut(newValue.props.value);
     };
 
-    const [data, setData] = useState([])
+    const [data, setData] = useState<any>([])
     const [isLoading, setIsLoading] = useState(false)
 
     const [warehouses, setWarehouses] = useState<any>([]);
@@ -383,7 +383,7 @@ function Statistic() {
                     </TabPanel>
                     <TabPanel value="Lượng sản phẩm vào/ra kho"
                         sx={{display: 'flex', flexDirection: 'column', ml: 4}}>
-
+                            
                             {
                                 userLogin.userInfo.roleID === 3 ?
                                 <TabContext value={tabImportExportValue}>
@@ -497,17 +497,20 @@ function Statistic() {
                                                 <MenuItem value="export">Ra kho</MenuItem>
                                             </Select>
                                         </FormControl>
-
-                                        <Stack
-                                            flexDirection='row'>
-                                            <ChartComponentFollowTime data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
-                                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
-                                        </Stack>
+                                        {
+                                            data[0].data &&
+                                            <Stack
+                                                flexDirection='row'>
+                                                <ChartComponentFollowTime data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
+                                                <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                            </Stack>
+                                        }
+                                        
                                     </TabPanel>
                                 </TabContext>
 
                                 :
-
+                                
                                 <TabContext value={tabImportExportValue}>
 
                                     <Stack
@@ -534,11 +537,16 @@ function Statistic() {
                                             <MenuItem value="export">Ra kho</MenuItem>
                                         </Select>
                                     </FormControl>
-                                    <Stack
-                                        flexDirection='row'>
-                                        <ChartComponentFollowTimeCollaborator data={data} typeChart={typeChart}/>
-                                        <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
-                                    </Stack>
+
+                                    {
+                                        data[0].data &&
+                                        <Stack
+                                            flexDirection='row'>
+                                            <ChartComponentFollowTimeCollaborator data={data} typeChart={typeChart}/>
+                                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                        </Stack>
+                                    }
+                                    
                                 </TabContext>
                             }
     
