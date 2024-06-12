@@ -13,39 +13,88 @@ import SearchIcon from '@mui/icons-material/Search'
 import MailIcon from '@mui/icons-material/Mail'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import MoreIcon from '@mui/icons-material/MoreVert'
-import { Avatar, InputAdornment, InputLabel, Typography } from '@mui/material'
+import { Avatar, InputAdornment, InputLabel, Popover, Typography } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import FilledInput from '@mui/material/FilledInput'
 import logo from '../assets/logo.png'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { handleClickMenu } from '../redux/actions/menuActions';
 import { FiSettings } from 'react-icons/fi'
 import { Link, useNavigate } from 'react-router-dom'
 import { RiLockPasswordLine, RiLogoutCircleLine } from 'react-icons/ri'
-import { AppDispatch, useAppDispatch } from '../redux/store'
+import { AppDispatch, RootState, useAppDispatch } from '../redux/store'
 import toast from 'react-hot-toast'
 import { logoutAction } from '../redux/actions/authActions'
+import Notification from '../components/notification/Notification'
 // import { useDispatch } from 'react-redux'
 // import { handleClickMenu } from '../redux/actions/menuActions'
+import { Timestamp, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore'
+import { db } from '../../firebaseConfig'
 
+export interface NotificationModel {
+  id: string;
+  userid: string;
+  text: string;
+  postid: string;
+  name: string;
+  avatar: string;
+  link: string;
+  createdAt: Timestamp;
+  isRead: boolean;
+}
 
 export default function Header({setIndex}: any) {
   
+  const { userInfo } = useSelector( (state: RootState) => state.userLogin);
   const MyDispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
+  const [isNoti, setIsNoti] = React.useState (false)
+  const [anchorElNoti, setAnchorElNoti] = React.useState(null)
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [notificationList, setNotificationList] = React.useState<NotificationModel[]>([]);
 
   const isMenuOpen = Boolean(anchorEl)
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+  React.useEffect(() => {
+    setIsLoading(true);
+    if (userInfo?.id) {
+      const docRef = doc(db, "receivers", userInfo?.id.toString());
+      const messagesRef = collection(docRef, "notification");
+      const q = query(messagesRef, orderBy('createdAt', 'desc'));
 
+      onSnapshot(q, (snapshot)=> {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const list: any = snapshot.docs.map(doc=>{
+          return doc.data();      
+        })
+
+        setNotificationList(list);
+        console.log(notificationList)
+        setIsLoading(false);
+      })
+    } else {
+      console.error('User ID is not defined');
+    }
+  }, []);
+  
   const handleProfileMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget)
   }
 
   const handleMobileMenuClose = () => {
     setMobileMoreAnchorEl(null)
+  }
+
+  const handleClickNotification = () => {
+    setIsNoti(!isNoti)
+  }
+
+  const handleClickAncorEl = (e: any) => {
+    setAnchorElNoti(e.target)
+    handleClickNotification()
   }
 
   const handleMenuClose = () => {
@@ -165,15 +214,31 @@ export default function Header({setIndex}: any) {
       <MenuItem>
         <IconButton
           size="large"
-          aria-label="show 17 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
+          <Badge badgeContent={notificationList.length} color="error">
+            <NotificationsIcon onClick={( e ) => handleClickAncorEl( e ) }/>
           </Badge>
         </IconButton>
         <p>Notifications</p>
       </MenuItem>
+      <Popover
+        anchorEl={anchorElNoti}
+        open={isNoti}
+        onClose={handleClickNotification}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+      >
+        <Notification
+          notificationList={notificationList}
+        />
+      </Popover>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"
@@ -263,10 +328,27 @@ export default function Header({setIndex}: any) {
               aria-label="show 17 new notifications"
               color="inherit"
             >
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
+              <Badge badgeContent={notificationList.length} color="error">
+                <NotificationsIcon onClick={( e ) => handleClickAncorEl( e ) }/>
               </Badge>
             </IconButton>
+            <Popover
+              anchorEl={anchorElNoti}
+              open={isNoti}
+              onClose={handleClickNotification}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+            >
+              <Notification
+                notificationList={notificationList}
+              />
+            </Popover>
             <IconButton
               size="large"
               edge="end"

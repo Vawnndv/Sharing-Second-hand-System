@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import { TbLock, TbLockOpen } from "react-icons/tb";
 import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
 import dayjs from 'dayjs';
+import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -75,7 +76,16 @@ function CollaboratorTable(props: Props) {
         updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
         // Create a new array with the user replaced with updated data
         setData(updatedUsers);
-        toast.success(`Khóa tài khoản của người dùng thành công`);
+        await HandleNotification.sendNotification({
+          userReceiverId: updatedUsers[userIndex].userid,
+          userSendId: userInfo?.id,
+          postid: '',
+          avatar: userInfo?.avatar,
+          link: '',
+          name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+          text: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+        })
+        toast.success(`Khóa tài khoản của cộng tac viên dùng thành công`);
       }
     } catch (error: unknown) {
       console.log(error)
