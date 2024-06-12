@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
+import { option } from './ChartConfig';
 
 const colorArrayBackground = [
   'rgba(255, 99, 132, 0.2)',
@@ -69,18 +70,12 @@ function ChartComponentFollowTimeCollaborator({data, typeChart}: any) {
                 colorArrayBorder[index % 7],
                 colorArrayBorder[index % 7]
               ],
-            borderWidth: 1,
-            tension: 0
+            borderWidth: 3,
+            tension: 0.2
           }
         })
       },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-      },
+      options: option,
     });
 
     return () => {

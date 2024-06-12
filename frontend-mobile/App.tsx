@@ -19,7 +19,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
-import { Platform, StatusBar } from 'react-native';
+import { Platform, StatusBar, AppState } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import AppRouters from './src/screens/auth/AppRouters';
@@ -29,6 +29,9 @@ import {usePushNotifications}  from './src/utils/usePushNotification';
 
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { current } from '@reduxjs/toolkit';
+import axios from 'axios';
+import { appInfo } from './src/constants/appInfos';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
@@ -36,7 +39,7 @@ export default function App() {
   
   const [appIsReady, setAppIsReady] = useState(false);
   // const [fontsLoaded, setFontsLoaded] = useState(false);
- 
+  const count = useRef(0);
 
   useEffect(() => {
     async function prepare() {
@@ -70,7 +73,35 @@ export default function App() {
       }
     }
     prepare();
+
+    // Xử lý tại đây khi ứng dụng được mở hoặc vào lại
+    handleAppStateChange(AppState.currentState);
+
+    // Đăng ký sự kiện để theo dõi thay đổi trạng thái của ứng dụng
+    AppState.addEventListener('change', handleAppStateChange);
+
   }, []);
+
+  const handleAppStateChange = async (currentState: string) => {
+    // Kiểm tra trạng thái tiếp theo của ứng dụng (active, background, inactive)
+    console.log('App State:', currentState);
+    console.log(count.current,count.current)
+    // Xử lý tương ứng với các trạng thái ứng dụng
+    if (currentState === 'active') {
+      if(count.current === 0){
+        try {
+          count.current += 1;
+          const response = await axios.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
+            type: 'access'
+          })
+          // console.log("Response ACCESSSSSSS", response)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    } 
+    
+  };
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {

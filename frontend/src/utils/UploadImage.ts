@@ -1,6 +1,6 @@
 // uploadToAws3.ts
 
-const UploadImageToAws3 = async (file: any) => {
+const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
   try {
     // Đọc nội dung của tệp tin bằng FileReader
     const fileReader: any = new FileReader();
@@ -17,7 +17,9 @@ const UploadImageToAws3 = async (file: any) => {
           formData.append('file', fileContent);
           formData.append('name', `${new Date().getTime()}${file.name}`);
           formData.append('type', file.type);
-
+          if(isLimit){
+            formData.append('typeExpire', "expire")
+          }
           // Gửi FormData qua phương thức POST
           const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
             method: 'POST',

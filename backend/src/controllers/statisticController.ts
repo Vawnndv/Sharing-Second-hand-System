@@ -26,13 +26,10 @@ export const statisticInventory = async (req: Request, res: Response) => {
 };
 
 export const statisticAccessUser = async (req: Request, res: Response) => {
-  const timeValue = typeof req.query.timeValue === 'string' ? req.query.timeValue : undefined;
-  let newTimeValue: number = -1;
-  if (timeValue !== undefined) {
-    newTimeValue = parseInt(timeValue);
-  } 
+  const { type, timeStart, timeEnd } = req.body;
+
   try {
-    const results = await StatisticManager.statisticAccessUser(newTimeValue);
+    const results = await StatisticManager.statisticAccessUser(type, timeStart, timeEnd);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -87,6 +84,19 @@ export const statisticAccessUserAdmin = async (req: Request, res: Response) => {
     const results = await StatisticManager.statisticAccessUserAdmin(newTimeValue, warehouses);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const insertAnalytic = async (req: Request, res: Response) => {
+  const { type } = req.body;
+  
+  try {
+    const results = await StatisticManager.insertAnalytic(type);
+        
+    res.status(201).json({ message: 'Insert data analytic successfully', data: results });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

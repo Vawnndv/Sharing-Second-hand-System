@@ -11,6 +11,7 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import { useNavigation } from '@react-navigation/native';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 // import { Picker } from '@react-native-picker/picker';
 
@@ -287,11 +288,19 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
     });
 
     if (!pickerResult.canceled) {
-      const imageData = pickerResult.assets.map((asset: any) => {
-        return {
+      const imageData = pickerResult.assets.map(async (asset: any) => {
+        const file = {
           uri: asset.uri,
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType
+        }
+        const response: any = await UploadImageToAws3(file, true)
+        // console.log("IMAGE PICKERRRRRRRRRRRRRR",response)
+        return {
+          uri: asset.uri,
+          name: new Date().getTime() + asset.fileName,
+          type: asset.mimeType,
+          url: response.url
         }
       });
       // const finalResult = {
@@ -301,10 +310,13 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
       // }
       // setImage(finalResult);
 
-      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
-      handleValidate('','photo');
+      Promise.all(imageData).then(completed => {
+        setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed] });
+        handleValidate('', 'photo');
+      });
     }
   };
+  // console.log("formData.itemPhotos",formData.itemPhotos)
 
   const removeImage = (index: number) => {
     const updatedPhotos = [...formData.itemPhotos];
@@ -504,7 +516,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
             style={styles.input}
             underlineColor="transparent" // Màu của gạch chân khi không focus
             editable={false} // Người dùng không thể nhập trực tiếp vào trường này
-            error={errorMessage.itemPhotos? true : false}
+            error={errorMessage.itemPhotos? true : false} 
             // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
             theme={{
               colors: {
@@ -673,6 +685,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
             editable={false} // Người dùng không thể nhập trực tiếp vào trường này
             error={errorMessage.warehouseAddress? true : false}
             // onBlur={() => handleValidate(formData.itemPhotos,'photo')}
+            multiline
             theme={{
               colors: {
                 error: appColors.danger, 
