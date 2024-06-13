@@ -32,10 +32,13 @@ const SocialLogin = () => {
     const user = await AsyncStorage.getItem("@user");
     if (!user) {
       if (response?.type === "success") {
+        console.log(response)
         await getUserInfo(response.authentication?.accessToken);
       }
     } else {
-      setUserInfo(JSON.parse(user));
+      // setUserInfo(JSON.parse(user));
+      console.log(response)
+
     }
     // await GoogleSignin.hasPlayServices({
     //   showPlayServicesUpdateDialog: true,
@@ -94,7 +97,7 @@ const SocialLogin = () => {
         iconFlex="left"
       />
       {/* <Button title='delete local storage' onPress={() => AsyncStorage.removeItem("@user")} /> */}
-      {/* <Text>{JSON.stringify(userInfo)}</Text> */}
+      <Text>{JSON.stringify(userInfo)}</Text>
       {/* <ButtonComponent 
         type="primary"
         color={appColors.white}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -167,6 +167,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     setErrorMessage({...errorMessage, postEndDate: ''});
 
   };
+
+  console.log('HELLOOO   ASDASDAS', itemPhotos ? itemPhotos[0] : '')
+
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
@@ -316,34 +319,34 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}
       />
       {(errorMessage.postTitle) && <TextComponent text={errorMessage.postTitle}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      
+        <TextInput
+          label="Nội dung của bài đăng"
+          value={formData.postDescription}
+          onBlur={() => handleValidate(formData.postDescription,'postdescription')}
+          onChangeText={(text) => {
+            setFormData({ ...formData, postDescription: text });
+            // setErrorMessage({...errorMessage, postDescription: ''});
+            handleValidate(text,'postdescription');
 
-      <TextInput
-        label="Nội dung của bài đăng"
-        value={formData.postDescription}
-        onBlur={() => handleValidate(formData.postDescription,'postdescription')}
-        onChangeText={(text) => {
-          setFormData({ ...formData, postDescription: text });
-          // setErrorMessage({...errorMessage, postDescription: ''});
-          handleValidate(text,'postdescription');
-
-        }}
-        style={styles.input}
-        underlineColor="white" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        multiline={true} // Cho phép nhập nhiều dòng văn bản
-        numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-        error={errorMessage.postDescription? true : false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      />  
-      <Button icon="autorenew" mode="contained" onPress={generateDecription} style={styles.button}>
-          Tạo mô tả tự động
+          }}
+          style={styles.inputDescription}
+          underlineColor="gray" // Màu của gạch chân khi không focus
+          activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+          multiline={true} // Cho phép nhập nhiều dòng văn bản
+          numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
+          error={errorMessage.postDescription? true : false}
+          theme={{
+            colors: {
+              error: appColors.danger, 
+            },
+          }}
+        />
+        <Button icon="autorenew" mode="contained" onPress={generateDecription} style={styles.button}>
+            Tạo mô tả tự động
         </Button>
-      {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
+        {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           label="Ngày bắt đầu"
@@ -449,7 +452,8 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             style={styles.input}
             underlineColor="gray" // Màu của gạch chân khi không focus
             activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-            error={errorMessage.postAddress? true : false}
+            error={errorMessage.postAddress? true : false}        
+
             // textAlignVertical="top"
             // textAlign="left"
             // scrollEnabled={true}
@@ -495,7 +499,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
       }
-
       {/* Thêm các trường input khác tương tự */}
     </ScrollView>
   );
@@ -526,7 +529,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 10
   },
   datePicker: {
     width: '100%',
@@ -539,6 +543,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
   },
+
+  inputDescription: {
+    width: '100%',
+    marginBottom: 10,
+    backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
+    fontSize: 14,
+  }
 });
 
 export default StepTwo;
