@@ -26,6 +26,23 @@ const NotificationScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [notificationList, setNotificationList] = useState<NotificationModel[]>([]);
 
+  useEffect(() => {
+    setIsLoading(true);
+    const docRef = doc(db, "receivers", auth.id.toString());
+    const messagesRef = collection(docRef, "notification");
+    const q = query(messagesRef, orderBy('createdAt', 'desc'));
+
+    onSnapshot(q, (snapshot)=> {
+      const list: any = snapshot.docs.map(doc=>{
+        return doc.data();      
+      })
+
+      setNotificationList(list);
+      console.log(notificationList)
+      setIsLoading(false);
+    })
+  }, []);
+
   const updateRead = async (id: string) => {
     try {
         const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
@@ -52,24 +69,6 @@ const NotificationScreen = () => {
         console.error('Error deleting notification:', err);
     }
   };
-  
-
-  useEffect(() => {
-    setIsLoading(true);
-    const docRef = doc(db, "receivers", auth.id.toString());
-    const messagesRef = collection(docRef, "notification");
-    const q = query(messagesRef, orderBy('createdAt', 'desc'));
-
-    onSnapshot(q, (snapshot)=> {
-      const list: any = snapshot.docs.map(doc=>{
-        return doc.data();      
-      })
-
-      setNotificationList(list);
-      console.log(notificationList)
-      setIsLoading(false);
-    })
-  }, []);
   
   return (
     <ContainerComponent back title='Thông báo'>

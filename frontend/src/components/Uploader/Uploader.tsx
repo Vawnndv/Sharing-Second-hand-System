@@ -33,7 +33,7 @@ function Uploader(props: Props) {
     });
   };
 
-  const UploadImageToAws3 = async (file: any) => {
+  const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
     console.log("UploadImageToAws3", file)
     try {
       // Đọc nội dung của tệp tin bằng FileReader
@@ -51,6 +51,9 @@ function Uploader(props: Props) {
                   formData.append('file', fileContent);
                   formData.append('name', `${new Date().getTime()}${file.name}`);
                   formData.append('type', file.type);
+                  if(isLimit){
+                    formData.append('typeExpire', "expire")
+                  }
 
                   // Gửi FormData qua phương thức POST
                   const serverResponse = await Axios.post('aws3/uploadImage', formData, {
@@ -88,7 +91,7 @@ function Uploader(props: Props) {
     // const data = await uploadImageService(file, setLoading);
     try {
       setLoading(true)
-      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
+      const responseUploadImage: any = await UploadImageToAws3(imageFile[0], false)
       setImageUrl(responseUploadImage.url);
       setLoading(false)
       toast.success('Image Upload successfully')

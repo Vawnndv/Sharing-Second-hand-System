@@ -1,0 +1,37 @@
+/* Tùy chỉnh thanh cuộn cho trình duyệt WebKit (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 10px; /* Độ rộng của thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background: #f9f6f6d7; /* Màu nền của track (phần nền thanh cuộn) */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #65bb9a; /* Màu của thanh (phần thanh cuộn) */
+  border-radius: 80px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #369a6f; /* Màu khi di chuột qua thanh cuộn */
+}
+
+/* Tùy chỉnh thanh cuộn cho Internet Explorer */
+/* Lưu ý: Thuộc tính này chỉ hoạt động trên IE 10+ */
+/* IE Edge không hỗ trợ thuộc tính này */
+::-ms-scrollbar {
+  width: 10px;
+}
+
+::-ms-scrollbar-track {
+  background: #f9f6f6d7;
+}
+
+::-ms-scrollbar-thumb {
+  background: #65bb9a; /* Màu của thanh (phần thanh cuộn) */
+  border-radius: 80px;
+}
+
+::-ms-scrollbar-thumb:hover {
+  background: #369a6f; /* Màu khi di chuột qua thanh cuộn */
+}

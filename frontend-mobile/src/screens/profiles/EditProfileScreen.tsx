@@ -86,7 +86,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
   const handleChangeProfile = async () => {
     setIsLoading(true);
     try {
-      const {url} = image ? await UploadImageToAws3(image) : profile.avatar;
+      const {url} = image ? await UploadImageToAws3(image, false) : profile.avatar;
       const res = await userAPI.HandleUser('/change-profile', 
         {
           email: values.email, 

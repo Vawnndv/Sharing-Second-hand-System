@@ -72,7 +72,6 @@ export default function App() {
         setAppIsReady(true);
       }
     }
-
     prepare();
 
     // Xử lý tại đây khi ứng dụng được mở hoặc vào lại

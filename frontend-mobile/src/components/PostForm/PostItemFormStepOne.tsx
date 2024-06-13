@@ -11,6 +11,7 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import { useNavigation } from '@react-navigation/native';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 import * as FileSystem  from 'expo-file-system';
 // import * as Asset from 'expo-asset';
@@ -363,14 +364,21 @@ const pickImage = async () => {
           { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
         );
 
+        const file = {
+          uri: asset.uri,
+          name: new Date().getTime() + asset.fileName,
+          type: asset.mimeType
+        }
+        const response: any = await UploadImageToAws3(file, true)
+
 
         const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
-
         return {
-          uri: asset.uri,
+          uri: manipulatedImage.uri,
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType,
           prediction: prediction,
+          url: response.url,
         };
       });
 
@@ -461,9 +469,7 @@ const predictImage = async (imageUri: any) => {
   }
 };
 
-
-
-
+  // console.log("formData.itemPhotos",formData.itemPhotos)
 
   const removeImage = (index: number) => {
     const updatedPhotos = [...formData.itemPhotos];

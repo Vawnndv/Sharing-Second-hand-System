@@ -12,6 +12,9 @@ import { ErrorProps } from './MultiStepForm';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import ShowMapComponent from '../ShowMapComponent';
+import getGPTDescription from '../../apis/apiChatGPT';
+import LoadingComponent from '../LoadingComponent';
+import { LoadingModal } from '../../modals';
 
 interface FormData {
   postTitle: string;
@@ -23,8 +26,6 @@ interface FormData {
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
   location?: any;
-  itemPhotos?: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
-
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -36,11 +37,12 @@ interface StepTwoProps {
   setErrorMessage: (errorMessage: ErrorProps) => void;
   location: any;
   setLocation: any;
-  itemPhotos: any[];
+  itemPhotos: any[],
+  itemCategory: string
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -52,12 +54,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [isLoadingGenerateGPT, setIsLoadingGenerateGPT] = useState(false)
+
   const auth = useSelector(authSelector);
 
   const textInputRef = useRef<any>(null);
 
-
-
+  console.log("itemPhotos",itemPhotos)
   useEffect( () => {
     const fetchUserData = async () =>{
         try {
@@ -270,6 +273,19 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   }
 
+  const generateDecription = async () => {
+    setIsLoadingGenerateGPT(true)
+    const imageUrls: string[] = itemPhotos.map((img: any) => {
+        return img.url
+      }
+    )
+    const response = await getGPTDescription(itemCategory, imageUrls)
+    console.log("GPTTTTTTTTTTTTTTTTTTTTTTT",response)
+    setFormData({ ...formData, postDescription: response });
+    handleValidate(response,'postdescription')
+    setIsLoadingGenerateGPT(false)
+  }
+
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -281,6 +297,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   return (
     <ScrollView style = {styles.container}>
+      <LoadingModal visible={isLoadingGenerateGPT} />
       <Text style={styles.title}>Thông tin bài đăng sản phẩm </Text>
       <TextInput
         label="Tiêu đề bài đăng"
@@ -314,7 +331,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
         }}
         style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
+        underlineColor="white" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
         multiline={true} // Cho phép nhập nhiều dòng văn bản
         numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
@@ -325,6 +342,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           },
         }}
       />  
+      <Button icon="autorenew" mode="contained" onPress={generateDecription} style={styles.button}>
+          Tạo mô tả tự động
+        </Button>
       {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
       <TouchableOpacity onPress={showStartDatePicker}>
@@ -428,11 +448,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
               // handleValidate(text,'postaddress');
 
             }}
+            multiline
             style={styles.input}
             underlineColor="gray" // Màu của gạch chân khi không focus
             activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
             error={errorMessage.postAddress? true : false}        
-            multiline={true} // Cho phép nhập nhiều dòng văn bản
 
             // textAlignVertical="top"
             // textAlign="left"

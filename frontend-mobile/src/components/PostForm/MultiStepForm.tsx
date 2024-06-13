@@ -31,7 +31,6 @@ interface FormDataStepOne {
   warehouseAddress?: string;
   warehouseAddressID?: number;
   warehouseID?: number;
-
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -109,7 +108,7 @@ const MultiStepForm = () => {
       case 1:
         return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} warehouseSelected={warehouseSelected} setWarehouseSelected={setWarehouseSelected}/>;
       case 2:
-        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos}  />;
+        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos} itemCategory={formDataStepOne.itemCategory}/>;
       // Có thể thêm các case khác cho các bước tiếp theo
       default:
         return null;
@@ -408,7 +407,7 @@ const MultiStepForm = () => {
   
       try{
         formDataStepOne.itemPhotos.map(async (image) => {
-          const data = await UploadImageToAws3(image);
+          const data = await UploadImageToAws3(image, false);
           
           const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,

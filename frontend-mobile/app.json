@@ -2,6 +2,7 @@
   "expo": {
     "name": "frontend-mobile",
     "slug": "frontend-mobile",
+    "scheme" : "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,7 +27,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.retreasure.firebase",
+      "package": "com.retreasure.frontendmobile",
       "googleServicesFile": "./android/google-services.json",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -60,6 +61,6 @@
       "eas": {
         "projectId": "3d1b1f78-a4b7-4ba8-9f74-8d08fdc8185d"
       }
-    }
+    }  
   }
 }

@@ -67,7 +67,7 @@ function UserTable(props: Props) {
           name: `${userInfo?.firstName} ${userInfo?.lastName}`,
           text: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
         })
-        toast.success(`Ban user successfully`);
+        toast.success(`Khóa tài khoản của người dùng thành công`);
       }
     } catch (error: unknown) {
       console.log(error)

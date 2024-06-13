@@ -10,6 +10,7 @@ import { fontFamilies } from '../../../constants/fontFamilies';
 import { globalStyles } from '../../../styles/globalStyles';
 import { useNavigation } from '@react-navigation/native';
 import { NotificationModel } from '../../../models/NotificationModel';
+import 'moment/locale/vi';
 
 type UserItemPros = {
     item: NotificationModel;
