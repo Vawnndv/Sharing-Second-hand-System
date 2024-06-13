@@ -42,7 +42,6 @@
     "plugins": [
       "expo-font",
       "expo-location",
-      "@react-native-firebase/app",
       [
         "expo-barcode-scanner",
         {

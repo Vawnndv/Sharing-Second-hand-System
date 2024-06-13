@@ -1,4 +1,4 @@
-package com.retreasure.firebase
+package com.retreasure.frontendmobile
 
 import android.app.Application
 import android.content.res.Configuration

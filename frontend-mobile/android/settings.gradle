@@ -1,4 +1,4 @@
-rootProject.name = 'frontendmobile'
+rootProject.name = 'frontend-mobile'
 
 dependencyResolutionManagement {
   versionCatalogs {

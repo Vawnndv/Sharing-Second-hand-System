@@ -1,4 +1,4 @@
-package com.retreasure.firebase
+package com.retreasure.frontendmobile
 
 import android.os.Build
 import android.os.Bundle
