@@ -14,6 +14,7 @@ import ImagePreview from '../../../../components/ImagePreview/ImagePreview';
 import Uploader from '../../../../components/Uploader/Uploader';
 import MapSelectAddress from '../../../../components/Map/MapSelectAddress'
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import Axios from '../../../../redux/APIs/Axios'
 
 
 const styleModalCreateCollaborator = {
@@ -132,7 +133,7 @@ function ModalCreateCollaborator(props: Props) {
       const isNewAddress = true;
       const phonenumber = data.phonenumber;
       const avatar = imageUrl;
-      const res = await axios.post(`http://localhost:3000/warehouse/createWarehouse`, {
+      const res = await Axios.post(`/warehouse/createWarehouse`, {
         warehouseName,
         phonenumber,
         avatar,

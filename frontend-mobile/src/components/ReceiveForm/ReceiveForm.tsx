@@ -805,6 +805,7 @@ const handleGive = async () =>{
           label="Kho"
           value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
           style={styles.input}
+          multiline
           underlineColor="transparent" // Màu của gạch chân khi không focus
           editable={false} // Người dùng không thể nhập trực tiếp vào trường này
           // error={errorMessage.warehouseAddress? true : false}
