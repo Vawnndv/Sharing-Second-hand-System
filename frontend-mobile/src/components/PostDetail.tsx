@@ -617,7 +617,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                             <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
                           </View>
                         </View>
-                        {isUserPost && (
+                        {isUserPost && post?.statusid === 12 && (
                           // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
                           <View>
                             <TouchableOpacity style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
