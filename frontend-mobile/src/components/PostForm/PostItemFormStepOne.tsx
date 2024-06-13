@@ -23,7 +23,7 @@ import { fetch } from '@tensorflow/tfjs-react-native';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import { decode as jpegDecode } from 'jpeg-js';
 import * as ImageManipulator from 'expo-image-manipulator';
-import * as ImageResizer from 'react-native-image-resizer';
+// import * as ImageResizer from 'react-native-image-resizer';
 
 
 

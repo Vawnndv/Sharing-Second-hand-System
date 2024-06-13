@@ -53,14 +53,14 @@ export class Account {
   }
 
   
-  public static async createItem(email: string, firstname: string, lastname: string, password: string, roleid: number): Promise<any> {
+  public static async createItem(email: string, firstname: string, lastname: string, password: string, avatar: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(firstname, lastname, email, password, roleid) 
-        VALUES($1, $2, $3, $4, $5)
+        INSERT INTO "User"(firstname, lastname, email, password, avatar, roleid) 
+        VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *;
       `;
-    const values : any = [firstname, lastname, email, password, roleid];
+    const values : any = [firstname, lastname, email, password, avatar, roleid];
     try {
       const result = await client.query(query, values);
       console.log('User inserted successfully:', result.rows[0]);

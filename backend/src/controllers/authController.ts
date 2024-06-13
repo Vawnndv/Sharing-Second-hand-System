@@ -105,6 +105,7 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
     firstname, 
     lastname,
     hashedPassword,
+    '',
     1,
   );
 
@@ -210,5 +211,64 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
   } else {
     res.status(401);
     throw new Error('User not found!!!');
+  }
+});
+
+export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
+  const userInfo = req.body;
+
+  const existingUser = await Account.findUserByEmail(userInfo.email);
+
+
+  if (existingUser) {
+    const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+
+    const data = {
+      id: existingUser.userid,
+      email: existingUser.email,
+      firstName: existingUser.firstname,
+      lastName: existingUser.lastname,
+      avatar: existingUser.avatar,
+      roleID: existingUser.roleid,
+      fcmTokens: fcmTokens ?? [],
+      accessToken: await getJsonWebToken(userInfo.email, existingUser.userid),
+    };
+
+    res.status(200).json({
+      message: 'Login with google successfully!!!',
+      data,
+    });
+  } else {
+    const newUser = await Account.createItem(
+      userInfo.email,
+      userInfo.firstname, 
+      userInfo.lastname,
+      '',
+      userInfo.avatar,
+      1,
+    );
+
+    const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
+
+    const data =  {
+      id: newUser.userid,
+      email: newUser.email,
+      firstName: newUser.firstname,
+      lastName: newUser.lastname,
+      avatar: newUser.avatar,
+      roleID: newUser.roleid,
+      fcmTokens: fcmTokens ?? [],
+      accessToken: await getJsonWebToken(userInfo.email, newUser.userid),
+    };
+
+    if (newUser) {
+      res.status(200).json({
+        message: 'Login with google successfully!!!',
+        data,
+      });
+    } else {
+      res.sendStatus(401);
+      throw new Error('fafsf');
+    }
   }
 });

@@ -8,6 +8,10 @@ import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Button, Text, View } from 'react-native'
+import authenticationAPI from '../../../apis/authApi'
+import { useDispatch } from 'react-redux'
+import { addAuth } from '../../../redux/reducers/authReducers'
+import { LoadingModal } from '../../../modals'
 // GoogleSignin.configure({
 //   webClientId: '207453487106-codnbkrd7v3mu6gljp17n9u521vm35ep.apps.googleusercontent.com',
 // });
@@ -16,7 +20,9 @@ import { Button, Text, View } from 'react-native'
 WebBrowser.maybeCompleteAuthSession();
 
 const SocialLogin = () => {
-  const [userInfo, setUserInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     expoClientId: '955016832347-mul7ulp39flkmpmmp55c9oah2er83lam.apps.googleusercontent.com',
     androidClientId: '955016832347-tccm78l1snm6hs9dt314slgq59kftdp8.apps.googleusercontent.com',
@@ -29,35 +35,17 @@ const SocialLogin = () => {
   }, [response])
   
   const handleLoginWithGoogle = async () => {
-    const user = await AsyncStorage.getItem("@user");
-    if (!user) {
-      if (response?.type === "success") {
-        console.log(response)
-        await getUserInfo(response.authentication?.accessToken);
-      }
+    if (response?.type === "success") {
+      await getUserInfo(response.authentication?.accessToken);
     } else {
-      // setUserInfo(JSON.parse(user));
-      console.log(response)
-
+      console.log('login google failed')
     }
-    // await GoogleSignin.hasPlayServices({
-    //   showPlayServicesUpdateDialog: true,
-    // });
-
-    // try {
-    //   await GoogleSignin.hasPlayServices();
-
-    //   const userInfo = await GoogleSignin.signIn();
-
-    //   console.log(userInfo.user);
-    // } catch (error) {
-    //   console.log(error);
-    // }
   };
 
   const getUserInfo = async (token: any) => {
-    console.log(token, '123313');
-    if (!token) return;
+    if (!token) {
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -68,11 +56,31 @@ const SocialLogin = () => {
       );
 
       const user = await response.json();
-      // await AsyncStorage.setItem("@user", JSON.stringify(user));
       console.log(user)
-      setUserInfo(user);
-    } catch (error) {
+      if (user) {
+        setIsLoading(true);
+        const data = {
+          firstname: user.given_name,
+          lastmame: user.family_name,
+          email: user.email,
+          avatar: user.picture,
+        };
 
+        const res: any = await authenticationAPI.HandleAuthentication(
+          '/google-signin',
+          data,
+          'post',
+        );
+
+        dispatch(addAuth(res.data));
+
+        await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
     }
   }
 
@@ -96,8 +104,6 @@ const SocialLogin = () => {
         // icon={<Google />}
         iconFlex="left"
       />
-      {/* <Button title='delete local storage' onPress={() => AsyncStorage.removeItem("@user")} /> */}
-      <Text>{JSON.stringify(userInfo)}</Text>
       {/* <ButtonComponent 
         type="primary"
         color={appColors.white}
@@ -107,6 +113,7 @@ const SocialLogin = () => {
         icon={<Facebook />}
         iconFlex="left"
       /> */}
+      <LoadingModal visible={isLoading} />
     </SectionComponent>
   )
 }
