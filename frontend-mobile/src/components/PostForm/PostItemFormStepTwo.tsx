@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -23,7 +23,8 @@ interface FormData {
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
   location?: any;
-  
+  itemPhotos?: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
+
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -35,10 +36,11 @@ interface StepTwoProps {
   setErrorMessage: (errorMessage: ErrorProps) => void;
   location: any;
   setLocation: any;
+  itemPhotos: any[];
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -53,6 +55,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const auth = useSelector(authSelector);
 
   const textInputRef = useRef<any>(null);
+
 
 
   useEffect( () => {
@@ -161,6 +164,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     setErrorMessage({...errorMessage, postEndDate: ''});
 
   };
+
+  console.log('HELLOOO   ASDASDAS', itemPhotos ? itemPhotos[0] : '')
+
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
@@ -425,7 +431,9 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             style={styles.input}
             underlineColor="gray" // Màu của gạch chân khi không focus
             activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-            error={errorMessage.postAddress? true : false}
+            error={errorMessage.postAddress? true : false}        
+            multiline={true} // Cho phép nhập nhiều dòng văn bản
+
             // textAlignVertical="top"
             // textAlign="left"
             // scrollEnabled={true}
@@ -471,7 +479,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
       />
       }
-
       {/* Thêm các trường input khác tương tự */}
     </ScrollView>
   );

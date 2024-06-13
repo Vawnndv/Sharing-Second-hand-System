@@ -5,7 +5,7 @@ import { Button } from 'react-native-paper';
 import { View, StyleSheet, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-import itemsAPI from '../../apis/itemApi'
+import itemsAPI from '../../apis/itemApi';
 import postAPI from '../../apis/postApi';
 import { appInfo } from '../../constants/appInfos';
 import axios from 'axios';
@@ -22,7 +22,7 @@ import axiosClient from '../../apis/axiosClient';
 
 interface FormDataStepOne {
   itemName: string;
-  itemPhotos: string[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
+  itemPhotos: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
   itemCategory: string;
   itemQuantity: string;
   itemDescription: string;
@@ -46,6 +46,8 @@ interface FormDataStepTwo {
   postGiveMethod?: string;
   postBringItemToWarehouse?: string;
   location?: any
+  itemPhotos?: any[]; // Sử dụng dấu '?' để biểu thị rằng thuộc tính này không bắt buộc
+
 
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -107,7 +109,7 @@ const MultiStepForm = () => {
       case 1:
         return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} warehouseSelected={warehouseSelected} setWarehouseSelected={setWarehouseSelected}/>;
       case 2:
-        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} />;
+        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos}  />;
       // Có thể thêm các case khác cho các bước tiếp theo
       default:
         return null;
