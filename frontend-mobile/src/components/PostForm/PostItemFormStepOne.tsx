@@ -357,12 +357,43 @@ const pickImage = async () => {
     setIsLoading(true);
     try {
       const imageData = pickerResult.assets.map(async (asset: any) => {
+
+
+        const {width,height} = asset;
+
+        let isHeightSmaller = width > height ? true : false;
+
+        let scaleX = width / 224;
+        let scaleY = height/ 224;
+        let h = 224;
+        let w = 224;
+        if(isHeightSmaller){
+          w = scaleX * 224 / scaleY;
+        }
+        else{
+          h = scaleY * 224 / scaleX;
+        }
+
         // Resize ảnh
         const manipulatedImage = await ImageManipulator.manipulateAsync(
           asset.uri,
-          [{ resize: { width: 224, height: 224 } }],
+          [{ resize: { width: w, height: h } }],
           { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
         );
+
+        // const cropWidth = 224;  // Chiều rộng vùng cắt
+        // const cropHeight = 224; // Chiều cao vùng cắt
+  
+        // // Tính toán vị trí vùng cắt với trung tâm ảnh
+        // let originX = Math.round(w / 2);
+        // let originY = Math.round(h / 2);
+        // const uriResize = manipulatedImage.uri
+  
+        // const croppedImage = await ImageManipulator.manipulateAsync(
+        //   uriResize,
+        //   [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
+        //   { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+        // );
 
         const file = {
           uri: asset.uri,
@@ -374,7 +405,7 @@ const pickImage = async () => {
 
         const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
         return {
-          uri: manipulatedImage.uri,
+          uri: asset.uri,
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType,
           prediction: prediction,
@@ -415,6 +446,8 @@ const imageToTensor = async (rawImageData: any) => {
 
     // Normalize the tensor
     const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+    // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+
     return tensor;
   } catch (error) {
     console.log("Error converting image to tensor:", error);
@@ -684,7 +717,7 @@ const predictImage = async (imageUri: any) => {
                   <TouchableOpacity 
                     onPress={() => {
                       removeImage(index);
-                      setErrorMessage({...errorMessage, itemPhotos: ''})
+                      setErrorMessage({...errorMessage, itemPhotos: ''});
                       handleValidate(formData.itemPhotos,'photo');
                     }} 
                     style={styles.closeButton}

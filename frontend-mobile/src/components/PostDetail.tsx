@@ -45,9 +45,9 @@ interface Post {
 
 interface Item {
   itemID: number;
-  itemName: string;
-  itemCategory: string;
-  itemQuantity: number;
+  name: string;
+  itemtypeid: string;
+  quantity: number;
   // itemDescription: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -274,6 +274,18 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
       try {
 
+        const res = await axios.get(`${appInfo.BASE_URL}/items/${itemIDs}`)
+        if (!res) {
+          throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
+        }
+        console.log(res.data);
+        setItemDetails(res.data.item); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching post receivers:', error);
+      }
+
+      try {
+
         const res = await userAPI.HandleUser(`/get-profile?userId=${owner}`);
         res && res.data && setProfile(res.data);
       } catch (error) {
@@ -376,6 +388,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
             <Text style={styles.loverCount}>Thích: {amountLike}</Text>
           </View>
 
+          
+
           <View style={styles.container}>
             {modalVisible && (
             <View style={styles.overlayContainer} />
@@ -419,10 +433,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                 </TouchableWithoutFeedback>
               </Modal>
 
-              <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
+              <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 10, alignItems: 'center'}}>
                 {(auth.id !== post?.owner) && (
                   <TouchableOpacity
-                    style={{marginRight: 10}}
+                    style={{marginRight: 10, marginLeft: 10}}
                     onPress={() => {
                       openChatRoomReceive({
                         item: {
@@ -440,55 +454,25 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                   </TouchableOpacity>
                   
                 )}
-
-                {(auth.id !== post?.owner) && (
-                  <TouchableOpacity
-                    onPress={() => 
-                      setVisibleModalReport(true)
-                    }
-                  >
-                    <Flag
-                      size="28"
-                      color={appColors.green}
-                      variant="Outline"
-                    />
-                  </TouchableOpacity>
-                  
-                )}
-              </View>
-
-              <View style={styles.userContainer}>
-                {/* Hiển thị avatar của user */}
-                <View style={styles.userContainer}>
-                  <AvatarComponent 
-                    avatar={profile?.avatar}
-                    username={ profile?.firstname + ' ' + profile?.lastname}
-                    styles={styles.avatar}
-                    onPress={() => {
-                      navigation.navigate(
-                        'ProfileScreen',
-                        {
-                          id: post.owner
-                        },
-                      );
-                    }}
-                  
-                  />
-                  <View style={[styles.username_timeContaner, {rowGap: 5}]}>
-                  {/* Hiển thị tên của user */}
-                    <Text style={styles.username_owner}><Text style={{fontWeight: 'bold', color: 'black'}}>{ profile?.firstname  + ' ' + profile?.lastname }</Text> đang muốn cho đồ</Text>
-                    <Text style={{fontFamily: fontFamilies.regular, fontSize:16}}>{post?.title}</Text>
-
-                    {/* Hiển thị ngày đăng */}
-                    <View style={styles.timeContainer}>
-                      <SimpleLineIcons name="clock" size={16} color="grey" />
-                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.time).format('DD-MM-YYYY')}</Text>
-                    </View>
-                  </View>
-
+                <View style={{flex: 1}}>
+                  {(auth.id !== post?.owner) && (
+                    <TouchableOpacity
+                      onPress={() => 
+                        setVisibleModalReport(true)
+                      }
+                    >
+                      <Flag
+                        size="28"
+                        color={appColors.green}
+                        variant="Outline"
+                      />
+                    </TouchableOpacity>
+                    
+                  )}
                 </View>
 
-                <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
+
+              <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                   {/* <View style={{flexDirection: 'column', gap: 10}}> */}
                     {isUserPost && post?.statusid === 12 && (
                       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
@@ -507,6 +491,43 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                     )}
                   {/* </View> */}
                 </View>
+              </View>
+
+              <View style={styles.userContainer}>
+                {/* Hiển thị avatar của user */}
+                <View style={[styles.userContainer, {paddingLeft: 0 }]}>
+                  <AvatarComponent 
+                    avatar={profile?.avatar}
+                    username={ profile?.firstname + ' ' + profile?.lastname}
+                    styles={styles.avatar}
+                    onPress={() => {
+                      navigation.navigate(
+                        'ProfileScreen',
+                        {
+                          id: post.owner
+                        },
+                      );
+                    }}
+                  
+                  />
+                  <View style={[styles.username_timeContaner, {rowGap: 5}]}>
+                  {/* Hiển thị tên của user */}
+                    <Text style={styles.username_owner}><Text style={{fontWeight: 'bold', color: 'black'}}>{ profile?.firstname  + ' ' + profile?.lastname }</Text> đang muốn cho đồ</Text>
+                    <Text style={{fontFamily: fontFamilies.regular, fontSize:16, fontWeight: 'bold'}}>{post?.title}</Text>
+
+
+
+                    {/* Hiển thị ngày đăng */}
+                    <View style={styles.timeContainer}>
+                      <SimpleLineIcons name="clock" size={16} color="grey" />
+                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.time).fromNow()}</Text>
+
+                    </View>
+                  </View>
+
+                </View>
+
+
                 
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
@@ -515,7 +536,14 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
               <View style = {styles.duration_descriptionContainer}>
 
-                <Text style={styles.description}>{post?.description}</Text>
+                <Text style={[styles.description, {marginBottom: 10}]}>{post?.description}</Text>
+
+                <View>
+                <Text style={styles.title}>Thông tin món đồ</Text>
+                <Text style={styles.duration}>{'Tên sản phẩm: ' + itemDetails?.name}</Text>
+                <Text style={styles.duration}>{'Số lượng: ' + itemDetails?.quantity}</Text>
+
+                </View>
 
                 <View style={styles.durationContainer}>
                   <Text style={styles.title}>Thời gian cho đồ</Text>
@@ -657,8 +685,8 @@ const styles = StyleSheet.create({
     // color: 'white'
   },
   avatar: {
-    width: 50, // Giả sử kích thước bạn muốn
-    height: 50, // Giả sử kích thước bạn muốn
+    width: 60, // Giả sử kích thước bạn muốn
+    height: 60, // Giả sử kích thước bạn muốn
     borderRadius: 50, // Để làm tròn hình ảnh
   },
 
@@ -693,12 +721,12 @@ const styles = StyleSheet.create({
   },
 
   durationContainer:{
-    // padding: 15,
+    // padding: 15
     marginTop: 10,
   },
 
   duration_descriptionContainer:{
-    padding: 15,
+    padding: 10,
     // marginTop: ,
   },
 

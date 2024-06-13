@@ -17,6 +17,7 @@ import MapSelectAddress from '../../../../components/Map/MapSelectAddress';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Uploader from '../../../../components/Uploader/Uploader'
 import ImagePreview from '../../../../components/ImagePreview/ImagePreview'
+import Axios from '../../../../redux/APIs/Axios'
 
 
 
@@ -147,7 +148,7 @@ function ModalEditWarehouse(props: Props) {
       if(imageUrl){
         avatar = imageUrl;
       }
-      const res = await axios.post(`http://localhost:3000/warehouse/updateWarehouse`, {
+      const res = await Axios.post(`/warehouse/updateWarehouse`, {
         phonenumber,
         warehouseName,
         warehouseLocation,
