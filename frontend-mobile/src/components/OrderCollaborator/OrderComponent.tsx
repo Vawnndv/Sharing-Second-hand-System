@@ -114,7 +114,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
                             <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20}/>
                                 {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text> */}
-                                <TextComponent numberOfLines={2} text={departure} />
+                                <TextComponent numberOfLines={1} text={departure} />
                             </View>
                         </View>
 
@@ -122,7 +122,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
                             <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20} color='red'/>
                                 {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text> */}
-                                <TextComponent numberOfLines={2} text={destination} />
+                                <TextComponent numberOfLines={1} text={destination} />
                             </View>
                         </View>
                     </View>
@@ -133,8 +133,8 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
             <View style={[styles.orderInfo, {marginTop: 5}]}>
                 
                 <View style={{flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style= {{fontSize: 14, marginLeft: 5, fontWeight: 'bold'}}>{itemName} - Số lượng {quantity}</Text>
-                    <IconEntypo name="chevron-right" size={25}/>
+                    <Text style= {{fontSize: 14, marginLeft: 10, fontWeight: 'bold'}}>{itemName} - Số lượng {quantity}</Text>
+                    {/* <IconEntypo name="chevron-right" size={25}/> */}
                 </View>
             </View>
 
@@ -180,7 +180,7 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
     },
     image: {
         width: '100%',
-        height: 150
+        height: 180
     }
     
 })

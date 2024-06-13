@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Axios from '../../../redux/APIs/Axios';
 import Map from '../../../components/Map/map';
 import Carousel from 'react-material-ui-carousel';
-import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme, Modal, Stack, Input } from '@mui/material';
+import { Button, Box, Container, Grid, Paper, TextField, Typography, ThemeProvider, createTheme, Modal, Stack, Input, CircularProgress } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -52,6 +52,8 @@ function EditPost() {
     const today = dayjs();
     const [date, setDate] = React.useState<[Dayjs, Dayjs]>([today, today]);
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const [location, setLocation] = useState<any>(null)
     // const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs((post.timestart).slice(0,10)), dayjs((post.timeEnd).slice(0,10))]);
     const onChangeLocation = (e: any) => {
@@ -75,6 +77,7 @@ function EditPost() {
     }, [post])
     useEffect(() => {
         const fetchAllData = async () => {
+          setIsLoading(true)
           let itemIDs = null;
           let owner = null
           let warehouseid = 0
@@ -140,6 +143,8 @@ function EditPost() {
           } catch (error) {
             console.log(error);
           } 
+
+          setIsLoading(false)
         };
     
         if (postid) {
@@ -206,7 +211,7 @@ function EditPost() {
     }
 
     const handleRepost = async () =>{
-
+        setIsLoading(true)
         const newTitle: any = title;
         const newDescription: any = description;
         let newPostid: any = null;
@@ -265,7 +270,7 @@ function EditPost() {
         }else{
             toast.success(`Lỗi đăng bài`);     
         }
-
+        setIsLoading(false)
         // try{
         //     const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
         //         postid: newPostid,
@@ -284,262 +289,270 @@ function EditPost() {
         <div style={{display: 'flex', flexDirection: 'column',
             width: '100%', justifyContent:'center', alignItems: 'center'
         }}>
-            <div style={{display: 'flex', flexDirection: 'column',
-                width: '100%'
-            }}>
-                <Stack 
-                    component="div"
-                    flexDirection='row'
-                    flexWrap='wrap'>
-                    {
-                        itemImages.length > 0 && 
-                        itemImages.map((image: any, index: number) => {
-                            return (
-                                <Paper
-                                    key={index}
-                                    sx={{
-                                        width: '300px',
-                                        height: '250px',
-                                        m: 2,
-                                        position: 'relative'
-                                    }}>
-                                    <img
-                                        style={{
+            {
+                !isLoading ?
+                <div style={{display: 'flex', flexDirection: 'column',
+                    width: '100%'
+                    }}>
+                    <Stack 
+                        component="div"
+                        flexDirection='row'
+                        flexWrap='wrap'>
+                        {
+                            itemImages.length > 0 && 
+                            itemImages.map((image: any, index: number) => {
+                                return (
+                                    <Paper
+                                        key={index}
+                                        sx={{
                                             width: '300px',
                                             height: '250px',
-                                            objectFit: 'cover'
-                                        }}
-                                        src={`${image.path}`} alt={`img ${index}`}/>
-                                    <HighlightOffTwoToneIcon
-                                        onClick={() => handleRemoveImage('itemImages', index)}
-                                        sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': {
-                                            fontSize: 40
-                                        }
-                                     }} 
-                                     />
+                                            m: 2,
+                                            position: 'relative'
+                                        }}>
+                                        <img
+                                            style={{
+                                                width: '300px',
+                                                height: '250px',
+                                                objectFit: 'cover'
+                                            }}
+                                            src={`${image.path}`} alt={`img ${index}`}/>
+                                        <HighlightOffTwoToneIcon
+                                            onClick={() => handleRemoveImage('itemImages', index)}
+                                            sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                fontSize: 40
+                                            }
+                                        }} 
+                                        />
+                                        
+                                    </Paper>
                                     
-                                </Paper>
-                                
-                            )
-                        })
-                        
-                    }
+                                )
+                            })
+                            
+                        }
 
-                    {
-                        itemNewImages.length > 0 && 
-                        itemNewImages.map((image: any, index: number) => {
-                            return (
-                                <Paper
-                                    key={index}
-                                    sx={{
-                                        width: '300px',
-                                        height: '250px',
-                                        m: 2,
-                                        position: 'relative'
-                                    }}>
-                                    <img
-                                        style={{
+                        {
+                            itemNewImages.length > 0 && 
+                            itemNewImages.map((image: any, index: number) => {
+                                return (
+                                    <Paper
+                                        key={index}
+                                        sx={{
                                             width: '300px',
                                             height: '250px',
-                                        }}
-                                        src={`${image.path}`} alt={`img ${index}`}/>
-                                    <HighlightOffTwoToneIcon 
-                                        onClick={() => handleRemoveImage('itemNewImages', index)}
-                                        sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
-                                        transition: 'all 0.2s ease',
-                                        '&:hover': {
-                                            fontSize: 40
-                                        }
-                                     }} />
+                                            m: 2,
+                                            position: 'relative'
+                                        }}>
+                                        <img
+                                            style={{
+                                                width: '300px',
+                                                height: '250px',
+                                            }}
+                                            src={`${image.path}`} alt={`img ${index}`}/>
+                                        <HighlightOffTwoToneIcon 
+                                            onClick={() => handleRemoveImage('itemNewImages', index)}
+                                            sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                fontSize: 40
+                                            }
+                                        }} />
+                                        
+                                    </Paper>
                                     
-                                </Paper>
-                                
-                            )
-                        })
-                        
-                    }
-                
-                <Paper
-                    elevation={1}
-                    sx={{
-                        width: '250px',
-                        height: '250px',
-                        overflow: 'hidden',
-                        m: 2,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        position: 'relative', // Đảm bảo input phủ lên toàn bộ Paper
-                        outline: '2px dashed #A1A1A1',
-                    }}
-                    className='paperImage'
-                    >
-                    <input
-                        type='file'
-                        accept='image/*'
-                        onChange={(e) => handleTakeImgFile(e)}
-                        style={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
-                        opacity: 0,
-                        cursor: 'pointer',
+                                )
+                            })
+                            
+                        }
+                    
+                    <Paper
+                        elevation={1}
+                        sx={{
+                            width: '250px',
+                            height: '250px',
+                            overflow: 'hidden',
+                            m: 2,
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            position: 'relative', // Đảm bảo input phủ lên toàn bộ Paper
+                            outline: '2px dashed #A1A1A1',
                         }}
-                    />
-                    <AddPhotoAlternateOutlinedIcon className='iconImage' sx={{ color: '#A1A1A1' }} />
-                </Paper>
-                </Stack>
-                
-                {
-                    post &&
-                    <Stack>
-                        <Typography
-                            sx={{
-                                mt: 2,
-                                mx: 2,
-                                color: 'black',
-                                fontWeight: 'bold'
+                        className='paperImage'
+                        >
+                        <input
+                            type='file'
+                            accept='image/*'
+                            onChange={(e) => handleTakeImgFile(e)}
+                            style={{
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%',
+                            opacity: 0,
+                            cursor: 'pointer',
                             }}
-                            variant='h6'
-                            >Tiêu đề</Typography>
-                        <TextField
-                            error={title === ""}
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            sx={{
-                                mx: 2,
-                                color: 'black'
-                            }}
-                            helperText={title === "" ? "Tiêu đề không được để trống" : ''}/>
-
-                        <Typography
-                            sx={{
-                                mt: 2,
-                                mx: 2,
-                                color: 'black',
-                                fontWeight: 'bold'
-                            }}
-                            variant='h6'
-                            >Mô tả</Typography>
-                        <TextField
-                            error={description === ""}
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            sx={{
-                                mx: 2,
-                                color: 'black'
-                            }}
-                            helperText={description === "" ? "Mô tả không được để trống" : ''}/>
-
-                        <Typography
-                            sx={{
-                                mt: 2,
-                                mx: 2,
-                                color: 'black',
-                                fontWeight: 'bold'
-                            }}
-                            variant='h6'
-                            >Số điện thoại</Typography>
-                        <TextField
-                            error={(phoneNumber.length < 10 || phoneNumber.length > 11)}
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            sx={{
-                                mx: 2,
-                                color: 'black'
-                            }}
-                            helperText={ ( phoneNumber.length < 10 || phoneNumber.length > 11 ) ? 'Sai định dạng số điện thoại' : ''}/>
+                        />
+                        <AddPhotoAlternateOutlinedIcon className='iconImage' sx={{ color: '#A1A1A1' }} />
+                    </Paper>
                     </Stack>
-                }
-
-                {
                     
-                    profile && userProfile && post && location &&
-                   
+                    {
+                        post &&
                         <Stack>
+                            <Typography
+                                sx={{
+                                    mt: 2,
+                                    mx: 2,
+                                    color: 'black',
+                                    fontWeight: 'bold'
+                                }}
+                                variant='h6'
+                                >Tiêu đề</Typography>
+                            <TextField
+                                error={title === ""}
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                sx={{
+                                    mx: 2,
+                                    color: 'black'
+                                }}
+                                helperText={title === "" ? "Tiêu đề không được để trống" : ''}/>
 
-                            {/*  profile */}
-                            <Stack
-                            sx={{
-                                mt: 2,
-                                mx: 2,
-                                color: 'black',
-                                fontWeight: 'bold'
-                            }}>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Thời gian cho đồ</Typography>
-                                {/* <Typography variant='body2' component='div'>Từ ngày <Typography variant='body2' component='span'>{format(new Date(post.timestart), 'dd/MM/yyyy')} đến ngày {format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography> */}
-                                <DatePicker date={date} setDate={setDate}/>
-                            </Stack>
+                            <Typography
+                                sx={{
+                                    mt: 2,
+                                    mx: 2,
+                                    color: 'black',
+                                    fontWeight: 'bold'
+                                }}
+                                variant='h6'
+                                >Mô tả</Typography>
+                            <TextField
+                                error={description === ""}
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                sx={{
+                                    mx: 2,
+                                    color: 'black'
+                                }}
+                                helperText={description === "" ? "Mô tả không được để trống" : ''}/>
 
-                            <Stack
-                            sx={{
-                                mt: 2,
-                                mx: 2,
-                                color: 'black',
-                                fontWeight: 'bold'
-                            }}>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
-                                {/* <Typography variant='body2' component='div'>{post.address}</Typography> */}
-                                <TextField
-                                    disabled
-                                    error={location.address === ""}
-                                    value={location.address}    
-                                    onChange={(e) => onChangeLocation(e)}
-                                    sx={{
-                                        color: 'black',
-                                        mb: 2
-                                    }}
-                                    helperText={location.address === "" ? "Địa chỉ không được để trống" : ''}/>
-
-                                <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
-                                    <Button fullWidth sx={{height: '55px', width: '100%', mb: 2}} variant="outlined" startIcon={<LocationOnIcon />}
-                                        onClick={handleOpen}
-                                        disabled>
-                                        Cập nhật vị trí cho đồ
-                                    </Button>
-                                    <Modal
-                                        open={open}
-                                        onClose={handleClose}
-                                        aria-labelledby="modal-modal-title"
-                                        aria-describedby="modal-modal-description"
-                                    >
-                                        <Box sx={style}>
-                                            {/* <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/> */}
-                                            <MapSelectAddress setLocation={setLocation} handleClose={handleClose} isUser/>
-                                        </Box>
-                                    </Modal>
-                                </Grid>
-                            </Stack>
+                            <Typography
+                                sx={{
+                                    mt: 2,
+                                    mx: 2,
+                                    color: 'black',
+                                    fontWeight: 'bold'
+                                }}
+                                variant='h6'
+                                >Số điện thoại</Typography>
+                            <TextField
+                                error={(phoneNumber.length < 10 || phoneNumber.length > 11)}
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                sx={{
+                                    mx: 2,
+                                    color: 'black'
+                                }}
+                                helperText={ ( phoneNumber.length < 10 || phoneNumber.length > 11 ) ? 'Sai định dạng số điện thoại' : ''}/>
                         </Stack>
-                    
-                }
-                {
-                    post && location &&
-                    <Map lat={location.latitude} long={location.longitude} address={location.address}/>
-                }
-
-
-                <Stack
-                    direction="row"
-                    justifyContent='flex-end'
-                    alignItems='center'
-                    gap={2}
-                    m={2}>
-                    
-
-                    {post &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={handleRepost}>
-                            <PostAddIcon color='success'/>
-                            <Typography variant='inherit' color='success'>Đăng bài</Typography>
-                        </Button>
                     }
+
+                    {
+                        
+                        profile && userProfile && post && location &&
                     
-                </Stack>
-            </div>
+                            <Stack>
+
+                                {/*  profile */}
+                                <Stack
+                                sx={{
+                                    mt: 2,
+                                    mx: 2,
+                                    color: 'black',
+                                    fontWeight: 'bold'
+                                }}>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Thời gian cho đồ</Typography>
+                                    {/* <Typography variant='body2' component='div'>Từ ngày <Typography variant='body2' component='span'>{format(new Date(post.timestart), 'dd/MM/yyyy')} đến ngày {format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography> */}
+                                    <DatePicker date={date} setDate={setDate}/>
+                                </Stack>
+
+                                <Stack
+                                sx={{
+                                    mt: 2,
+                                    mx: 2,
+                                    color: 'black',
+                                    fontWeight: 'bold'
+                                }}>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
+                                    {/* <Typography variant='body2' component='div'>{post.address}</Typography> */}
+                                    <TextField
+                                        disabled
+                                        error={location.address === ""}
+                                        value={location.address}    
+                                        onChange={(e) => onChangeLocation(e)}
+                                        sx={{
+                                            color: 'black',
+                                            mb: 2
+                                        }}
+                                        helperText={location.address === "" ? "Địa chỉ không được để trống" : ''}/>
+
+                                    <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
+                                        <Button fullWidth sx={{height: '55px', width: '100%', mb: 2}} variant="outlined" startIcon={<LocationOnIcon />}
+                                            onClick={handleOpen}
+                                            disabled>
+                                            Cập nhật vị trí cho đồ
+                                        </Button>
+                                        <Modal
+                                            open={open}
+                                            onClose={handleClose}
+                                            aria-labelledby="modal-modal-title"
+                                            aria-describedby="modal-modal-description"
+                                        >
+                                            <Box sx={style}>
+                                                {/* <MapSelectWarehouses warehouses={warehouses} warehousesSelected={warehousesSelected} handleSelectWarehouses={handleSelectWarehouses}/> */}
+                                                <MapSelectAddress setLocation={setLocation} handleClose={handleClose} isUser/>
+                                            </Box>
+                                        </Modal>
+                                    </Grid>
+                                </Stack>
+                            </Stack>
+                        
+                    }
+                    {
+                        post && location &&
+                        <Map lat={location.latitude} long={location.longitude} address={location.address}/>
+                    }
+
+
+                    <Stack
+                        direction="row"
+                        justifyContent='flex-end'
+                        alignItems='center'
+                        gap={2}
+                        m={2}>
+                        
+
+                        {post &&
+                            <Button
+                                sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                                onClick={handleRepost}>
+                                <PostAddIcon color='success'/>
+                                <Typography variant='inherit' color='success'>Đăng bài</Typography>
+                            </Button>
+                        }
+                        
+                    </Stack>
+                </div> 
+                :
+                <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center', width: '100%', height: '100vh' }}>
+                    <CircularProgress />
+                </Box>
+            } 
+            
         </div>
      );
 }

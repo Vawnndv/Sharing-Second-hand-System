@@ -218,8 +218,8 @@ const styles = StyleSheet.create({
 
   tabLabel: {
     textTransform: 'capitalize',
-    color: appColors.primary,
-    fontSize: 17,
+    color: appColors.primary2,
+    fontSize: 20,
     fontFamily: fontFamilies.bold,
   },
 

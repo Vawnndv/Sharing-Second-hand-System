@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Axios from '../../../redux/APIs/Axios';
 import Map from '../../../components/Map/map';
 import Carousel from 'react-material-ui-carousel';
-import { Avatar, Button, Card, Paper, Stack, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, CircularProgress, Paper, Stack, Typography } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -71,10 +71,13 @@ function ViewPostDetail() {
 
     const [warehouseInfo, setWarehouseInfo] = useState<any>(null);
 
+    const [isLoading, setIsLoading] = useState(false)
+
     // const [isUserPost, setIsUserPost] = useState(false);
     // const [itemID, setItemID] = useState();
     useEffect(() => {
         const fetchAllData = async () => {
+          setIsLoading(true)
           let itemIDs = null;
           let owner = null;
           let warehouseid: any = null;
@@ -145,6 +148,8 @@ function ViewPostDetail() {
           } catch (error) {
             console.log(error);
           } 
+
+          setIsLoading(false)
         };
     
         if (postid) {
@@ -163,6 +168,7 @@ function ViewPostDetail() {
     
     const approvePost = async () => {
         console.log(post);
+        setIsLoading(true)
 
         if(post.givetypeid === 1){
 
@@ -303,6 +309,7 @@ function ViewPostDetail() {
 
             }
         
+        setIsLoading(false)
     }
             
 
@@ -335,217 +342,227 @@ function ViewPostDetail() {
         <div style={{display: 'flex', flexDirection: 'column',
             width: '100%', justifyContent:'center', alignItems: 'center'
         }}>
-            <div style={{display: 'flex', flexDirection: 'column',
-                width: '100%'
-            }}>
-                {
-                    itemImages && 
-                    <ShowImages images={itemImages}/>
-                }
-                {postReceivers && post && post.statusname !== 'Chờ xét duyệt' &&
+            {
+                !isLoading ? 
+                <div style={{display: 'flex', flexDirection: 'column',
+                    width: '100%'
+                }}>
+                    {
+                        itemImages && 
+                        <ShowImages images={itemImages}/>
+                    }
+                    {postReceivers && post && post.statusname !== 'Chờ xét duyệt' &&
+                        <Stack
+                            flexDirection='row'
+                            justifyContent='flex-end'
+                            alignItems='center'
+                            gap={2}
+                            p={2}
+                            sx={{backgroundColor: '#F5F5F5'}}>
+                                <Stack
+                                    flexDirection='row'
+                                    justifyContent='flex-end'
+                                    alignItems='center'
+                                    gap={1}>
+                                        <VolunteerActivismIcon sx={{width: 40, height: 40}} color='success'/>
+                                        <Typography variant='body2'>Người nhận: {postReceivers.length}</Typography>
+                                </Stack>
+            
+                                <Stack
+                                    flexDirection='row'
+                                    justifyContent='flex-end'
+                                    alignItems='center'
+                                    gap={1}>
+                                        <FavoriteIcon sx={{width: 40, height: 40}} color='error'/>
+                                        <Typography variant='body2'>Thích: 0</Typography>
+                                </Stack>
+                        </Stack>
+                    }
+                    {
+                        post &&
+                        <Stack
+                            flexDirection='row'
+                            justifyContent='flex-end'
+                            m={2}>
+                                <Typography variant='body2' component='div' color='error'>Ngày hết hạn <Typography variant='body2' component='span'>{format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography>
+                        </Stack>
+                    }
+                    {
+                        
+                        profile && post && 
+                        <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
+                            <Stack
+                                flexDirection='column'
+                                justifyContent='flex-start'
+                                gap={3}
+                                style={{width: '95%'}}>
+    
+                                {/*  profile */}
+                                <Stack
+                                    flexDirection='row'
+                                    justifyContent='flex-start'
+                                    alignItems='center'
+                                    gap={3}
+                                    style={{width: '100%'}}>
+                                        <Avatar sx={{width: 80, height: 80}} src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
+                                        <Stack
+                                            flexDirection='column'
+                                            justifyContent='center'
+                                            alignItems='flex-start'
+                                            gap={0.5}>
+                                                <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{profile.firstname} {profile.lastname} </Typography> đang muốn cho đồ</Typography>
+                                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>{post.title}</Typography>
+                                                <Stack 
+                                                    flexDirection='row'
+                                                    justifyContent='center'
+                                                    alignItems='center'
+                                                    gap={0.5}>
+                                                    <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {format(new Date(post.createdat), 'dd/MM/yyyy HH:mm:ss')}</Typography>
+                                                </Stack>
+                                                
+                                        </Stack>
+                                </Stack>
+    
+                                <Typography variant='body2'>{post.description}</Typography>
+    
+                                <Stack>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Phương thức đăng bài</Typography>
+                                    <Typography variant='body2' component='div'>{post.give_receivetype}</Typography>
+                                </Stack>
+    
+                                <Stack>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Trạng thái</Typography>
+                                    <Typography variant='body2' component='div'>{post.statusname}</Typography>
+                                </Stack>
+    
+                                <Stack>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Thời gian cho đồ</Typography>
+                                    <Typography variant='body2' component='div'>Từ ngày <Typography variant='body2' component='span'>{format(new Date(post.timestart), 'dd/MM/yyyy')} đến ngày {format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography>
+                                </Stack>
+    
+                                <Stack>
+                                    <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
+                                    <Typography variant='body2' component='div'>{post.address}</Typography>
+                                </Stack>
+                            </Stack>
+    
+                        </div>
+                        
+                    }
+                    {
+                        post && 
+                        <Map lat={parseFloat(post.latitude)} long={parseFloat(post.longitude)} address={post.address}/>
+                    }
+                    {
+                        post && post.statusname !== 'Chờ xét duyệt' && 
+                        <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
+                            <Typography variant='h6' sx={{fontWeigth: 'bold', width: '95%', mb: 2, mt: 2}}>Danh sách người xin</Typography>
+                            <Stack
+                                flexDirection='column'
+                                justifyContent='flex-start'
+                                gap={3}
+                                style={{width: '95%'}}>
+    
+                                {/*  profile */}
+                                <Grid
+                                    container
+                                    >
+                                    {
+                                        postReceivers.map((receiver: any, index: number) => {
+                                            return (
+                                                <Grid xs={12} md={6} lg={4} >
+                                                    <Card sx={{p: 2, m: 1}}>
+                                                        <Stack
+                                                            flexDirection='row'
+                                                            justifyContent='flex-start'
+                                                            alignItems='center'
+                                                            gap={3}
+                                                            key={index}>
+                                                                <Avatar sx={{width: 70, height: 70}} src={`${receiver.avatar !== "" ? receiver.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
+                                                                <Stack
+                                                                    flexDirection='column'
+                                                                    justifyContent='center'
+                                                                    alignItems='flex-start'
+                                                                    gap={0.5}
+                                                                    >
+                                                                        <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{receiver.firstname} {receiver.lastname} </Typography></Typography>
+                                                                        <Typography variant='body2' sx={{fontWeight: 'bold'}} color='green'>{receiver.give_receivetype}</Typography>
+                                                                        <Stack 
+                                                                            flexDirection='row'
+                                                                            justifyContent='center'
+                                                                            alignItems='center'
+                                                                            gap={0.5}>
+                                                                            <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {format(new Date(receiver.time), 'dd/MM/yyyy HH:mm:ss')}</Typography>
+                                                                        </Stack>
+                                                                        
+                                                                </Stack>
+                                                        </Stack>
+                                                    </Card>
+                                                    
+                                                </Grid>
+                                            )
+                                        })
+                                    }
+                                </Grid>
+                            </Stack>
+    
+                        </div>
+                    }
+    
                     <Stack
-                        flexDirection='row'
+                        direction="row"
                         justifyContent='flex-end'
                         alignItems='center'
                         gap={2}
-                        p={2}
-                        sx={{backgroundColor: '#F5F5F5'}}>
-                            <Stack
-                                flexDirection='row'
-                                justifyContent='flex-end'
-                                alignItems='center'
-                                gap={1}>
-                                    <VolunteerActivismIcon sx={{width: 40, height: 40}} color='success'/>
-                                    <Typography variant='body2'>Người nhận: {postReceivers.length}</Typography>
-                            </Stack>
-        
-                            <Stack
-                                flexDirection='row'
-                                justifyContent='flex-end'
-                                alignItems='center'
-                                gap={1}>
-                                    <FavoriteIcon sx={{width: 40, height: 40}} color='error'/>
-                                    <Typography variant='body2'>Thích: 0</Typography>
-                            </Stack>
-                    </Stack>
-                }
-                {
-                    post &&
-                    <Stack
-                        flexDirection='row'
-                        justifyContent='flex-end'
                         m={2}>
-                            <Typography variant='body2' component='div' color='error'>Ngày hết hạn <Typography variant='body2' component='span'>{format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography>
+                        
+    
+                        {post && postState.canApproval&&
+                            <Button
+                                sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                                onClick={approvePost}>
+                                <CheckCircleOutlineOutlinedIcon color='success'/>
+                                <Typography variant='inherit' color='success'>Duyệt</Typography>
+                            </Button>
+                        }
+                        
+                        {post && postState.canDelete &&
+                            <Button
+                                sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                                onClick={declinePost}>
+                                <RemoveCircleIcon color='error'/>
+                                <Typography variant='inherit' color='error'>Xóa</Typography>
+                            </Button>
+                        }
+    
+                        {post && postState.isWaitForPost &&
+                            <Button
+                                sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                                onClick={handleClickEdit}>
+                                <ModeEditOutlineIcon color='secondary'/>
+                                <Typography variant='inherit' color='secondary'>Chỉnh sửa</Typography>
+                            </Button>
+                        }
+    
+                        {/* {post && postState.isWaitForPost &&
+                            <Button
+                                sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
+                                onClick={handleClickPost}>
+                                <PostAddIcon color='success'/>
+                                <Typography variant='inherit' color='success'>Đăng bài</Typography>
+                            </Button>
+                        } */}
+                        
                     </Stack>
-                }
-                {
-                    
-                    profile && post && 
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
-                        <Stack
-                            flexDirection='column'
-                            justifyContent='flex-start'
-                            gap={3}
-                            style={{width: '95%'}}>
+                </div>
 
-                            {/*  profile */}
-                            <Stack
-                                flexDirection='row'
-                                justifyContent='flex-start'
-                                alignItems='center'
-                                gap={3}
-                                style={{width: '100%'}}>
-                                    <Avatar sx={{width: 80, height: 80}} src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
-                                    <Stack
-                                        flexDirection='column'
-                                        justifyContent='center'
-                                        alignItems='flex-start'
-                                        gap={0.5}>
-                                            <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{profile.firstname} {profile.lastname} </Typography> đang muốn cho đồ</Typography>
-                                            <Typography variant='h6' sx={{fontWeight: 'bold'}}>{post.title}</Typography>
-                                            <Stack 
-                                                flexDirection='row'
-                                                justifyContent='center'
-                                                alignItems='center'
-                                                gap={0.5}>
-                                                <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {format(new Date(post.createdat), 'dd/MM/yyyy HH:mm:ss')}</Typography>
-                                            </Stack>
-                                            
-                                    </Stack>
-                            </Stack>
+                :
 
-                            <Typography variant='body2'>{post.description}</Typography>
-
-                            <Stack>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Phương thức đăng bài</Typography>
-                                <Typography variant='body2' component='div'>{post.give_receivetype}</Typography>
-                            </Stack>
-
-                            <Stack>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Trạng thái</Typography>
-                                <Typography variant='body2' component='div'>{post.statusname}</Typography>
-                            </Stack>
-
-                            <Stack>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Thời gian cho đồ</Typography>
-                                <Typography variant='body2' component='div'>Từ ngày <Typography variant='body2' component='span'>{format(new Date(post.timestart), 'dd/MM/yyyy')} đến ngày {format(new Date(post.timeend), 'dd/MM/yyyy')}</Typography></Typography>
-                            </Stack>
-
-                            <Stack>
-                                <Typography variant='h6' sx={{fontWeight: 'bold'}}>Địa điểm cho đồ</Typography>
-                                <Typography variant='body2' component='div'>{post.address}</Typography>
-                            </Stack>
-                        </Stack>
-
-                    </div>
-                    
-                }
-                {
-                    post && 
-                    <Map lat={parseFloat(post.latitude)} long={parseFloat(post.longitude)} address={post.address}/>
-                }
-                {
-                    post && post.statusname !== 'Chờ xét duyệt' && 
-                    <div style={{display: 'flex', flexDirection:'column', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, marginBottom: 30}}>
-                        <Typography variant='h6' sx={{fontWeigth: 'bold', width: '95%', mb: 2, mt: 2}}>Danh sách người xin</Typography>
-                        <Stack
-                            flexDirection='column'
-                            justifyContent='flex-start'
-                            gap={3}
-                            style={{width: '95%'}}>
-
-                            {/*  profile */}
-                            <Grid
-                                container
-                                >
-                                {
-                                    postReceivers.map((receiver: any, index: number) => {
-                                        return (
-                                            <Grid xs={12} md={6} lg={4} >
-                                                <Card sx={{p: 2, m: 1}}>
-                                                    <Stack
-                                                        flexDirection='row'
-                                                        justifyContent='flex-start'
-                                                        alignItems='center'
-                                                        gap={3}
-                                                        key={index}>
-                                                            <Avatar sx={{width: 70, height: 70}} src={`${receiver.avatar !== "" ? receiver.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
-                                                            <Stack
-                                                                flexDirection='column'
-                                                                justifyContent='center'
-                                                                alignItems='flex-start'
-                                                                gap={0.5}
-                                                                >
-                                                                    <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{receiver.firstname} {receiver.lastname} </Typography></Typography>
-                                                                    <Typography variant='body2' sx={{fontWeight: 'bold'}} color='green'>{receiver.give_receivetype}</Typography>
-                                                                    <Stack 
-                                                                        flexDirection='row'
-                                                                        justifyContent='center'
-                                                                        alignItems='center'
-                                                                        gap={0.5}>
-                                                                        <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {format(new Date(receiver.time), 'dd/MM/yyyy HH:mm:ss')}</Typography>
-                                                                    </Stack>
-                                                                    
-                                                            </Stack>
-                                                    </Stack>
-                                                </Card>
-                                                
-                                            </Grid>
-                                        )
-                                    })
-                                }
-                            </Grid>
-                        </Stack>
-
-                    </div>
-                }
-
-                <Stack
-                    direction="row"
-                    justifyContent='flex-end'
-                    alignItems='center'
-                    gap={2}
-                    m={2}>
-                    
-
-                    {post && postState.canApproval&&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'primary', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={approvePost}>
-                            <CheckCircleOutlineOutlinedIcon color='success'/>
-                            <Typography variant='inherit' color='success'>Duyệt</Typography>
-                        </Button>
-                    }
-                    
-                    {post && postState.canDelete &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={declinePost}>
-                            <RemoveCircleIcon color='error'/>
-                            <Typography variant='inherit' color='error'>Xóa</Typography>
-                        </Button>
-                    }
-
-                    {post && postState.isWaitForPost &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={handleClickEdit}>
-                            <ModeEditOutlineIcon color='secondary'/>
-                            <Typography variant='inherit' color='secondary'>Chỉnh sửa</Typography>
-                        </Button>
-                    }
-
-                    {/* {post && postState.isWaitForPost &&
-                        <Button
-                            sx={{px: 4, py: 2, variant:'contained', backgroundColor: 'success', boxShadow:'1px 1px 3px #A1A1A1', borderRadius: 5, gap: 1, cursor: 'ponter'}}
-                            onClick={handleClickPost}>
-                            <PostAddIcon color='success'/>
-                            <Typography variant='inherit' color='success'>Đăng bài</Typography>
-                        </Button>
-                    } */}
-                    
-                </Stack>
-            </div>
+                <Box sx={{ display: 'flex', justifyContent:'center', alignItems: 'center', width: '100%', height: '100vh' }}>
+                    <CircularProgress />
+                </Box>
+            }
+            
         </div>
      );
 }

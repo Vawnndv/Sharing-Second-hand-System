@@ -85,7 +85,7 @@ const TabNavigator = () => {
         tabBarHideOnKeyboard: true,
         tabBarIcon: ({focused, color, size}) => {
           let icon: ReactNode;
-          color = focused ? appColors.primary : appColors.gray5;
+          color = focused ? appColors.primary : appColors.gray4;
           size = 24;
           const variant = focused ? 'Bold' : 'Outline';
           
@@ -151,7 +151,7 @@ const TabNavigator = () => {
               text={text}
               flex={0}
               size={12}
-              color={focused ? appColors.primary : appColors.gray5}
+              color={focused ? appColors.primary : appColors.gray4}
               styles={{
                 marginBottom: Platform.OS === 'android' ? 12 : 0,
               }}
