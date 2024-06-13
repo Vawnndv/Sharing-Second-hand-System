@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
   StyleSheet,
   Button,
   ImageBackground,
-  Modal,
 } from "react-native";
-import { CameraView, Camera } from "expo-camera/next";
-import { ContainerComponent, SectionComponent } from "../../components";
+import { Camera, CameraType, BarCodeScanningResult } from "expo-camera";
+import { ContainerComponent } from "../../components";
 import { Ionicons } from "@expo/vector-icons";
-import { appInfo } from "../../constants/appInfos";
 import orderAPI from "../../apis/orderApi";
 import { LoadingModal } from "../../modals";
 import { IconButton } from "react-native-paper";
@@ -18,18 +16,23 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { useFocusEffect } from "@react-navigation/native";
 
-export default function ScanScreen({ navigation, route }: any) {
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const [scanned, setScanned] = useState(false);
-  const [orderID, setOrderID] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFrontCamera, setIsFrontCamera] = useState(false);
+type ScanScreenProps = {
+  navigation: any;
+  route: any;
+};
+
+const ScanScreen: React.FC<ScanScreenProps> = ({ navigation, route }) => {
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [scanned, setScanned] = useState<boolean>(false);
+  const [orderID, setOrderID] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isFrontCamera, setIsFrontCamera] = useState<boolean>(false);
 
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setScanned(false);
     }, [])
   );
@@ -43,7 +46,7 @@ export default function ScanScreen({ navigation, route }: any) {
     getCameraPermissions();
   }, []);
 
-  const verifyQRCode = async ({ data }: any) => {
+  const verifyQRCode = async ({ data }: { data: string }) => {
     try {
       const res = await orderAPI.HandleOrder(
         `/verifyOrderQR?orderID=${data}`,
@@ -69,7 +72,7 @@ export default function ScanScreen({ navigation, route }: any) {
     }
   };
 
-  const handleBarCodeScanned = ({ type, data }: any) => {
+  const handleBarCodeScanned = ({ type, data }: BarCodeScanningResult) => {
     setScanned(true);
     setIsLoading(true);
     verifyQRCode({ data });
@@ -85,13 +88,10 @@ export default function ScanScreen({ navigation, route }: any) {
   return (
     <ContainerComponent>
       <View style={styles.container}>
-        <CameraView
-          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-          barcodeScannerSettings={{
-            barcodeTypes: ["qr", "pdf417"],
-          }}
+        <Camera
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           style={StyleSheet.absoluteFillObject}
-          facing={isFrontCamera ? "front" : "back"}
+          type={isFrontCamera ? CameraType.front : CameraType.back}
         />
         {scanned && (
           <Button
@@ -99,7 +99,6 @@ export default function ScanScreen({ navigation, route }: any) {
             onPress={() => setScanned(false)}
           />
         )}
-        {/* <View style={styles.marker}/> */}
         <Ionicons
           name="arrow-back"
           size={24}
@@ -113,9 +112,8 @@ export default function ScanScreen({ navigation, route }: any) {
           <ImageBackground
             source={require("../../../assets/images/scanner.png")}
             style={{ width: 250, height: 250 }}
-          ></ImageBackground>
+          />
         </View>
-
         <View style={{ paddingBottom: 20, paddingHorizontal: 20 }}>
           <IconButton
             style={{ marginVertical: 10 }}
@@ -126,13 +124,13 @@ export default function ScanScreen({ navigation, route }: any) {
             onPress={() => {
               setIsFrontCamera(!isFrontCamera);
             }}
-          ></IconButton>
+          />
         </View>
       </View>
       <LoadingModal visible={isLoading} />
     </ContainerComponent>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -153,3 +151,5 @@ const styles = StyleSheet.create({
     zIndex: 1, // Ensure the marker is above the camera preview
   },
 });
+
+export default ScanScreen;
