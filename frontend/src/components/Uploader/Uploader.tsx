@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { FiUploadCloud } from 'react-icons/fi'
 import Loader from '../notification/Loader'
 import toast from 'react-hot-toast'
+import Axios from '../../redux/APIs/Axios'
 
 interface Props {
   imageUrl: string; 
@@ -32,8 +33,8 @@ function Uploader(props: Props) {
     });
   };
 
-  const UploadImageToAws3 = async (file: any) => {
-
+  const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
+    console.log("UploadImageToAws3", file)
     try {
       // Đọc nội dung của tệp tin bằng FileReader
       const fileReader: any = new FileReader();
@@ -50,17 +51,20 @@ function Uploader(props: Props) {
                   formData.append('file', fileContent);
                   formData.append('name', `${new Date().getTime()}${file.name}`);
                   formData.append('type', file.type);
+                  if(isLimit){
+                    formData.append('typeExpire', "expire")
+                  }
 
                   // Gửi FormData qua phương thức POST
-                  const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
-                      method: 'POST',
-                      body: formData,
+                  const serverResponse = await Axios.post('aws3/uploadImage', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
                   });
 
                   // Xử lý phản hồi từ server nếu cần
-                  const data = await serverResponse.json();
-                  console.log('Server response:', data);
-                  
+                  const data: any = serverResponse;
+                  console.log(data)
                   resolve(data);
               } catch (error) {
                   console.error('Error uploading file:', error);
@@ -78,17 +82,16 @@ function Uploader(props: Props) {
   const onDrop = useCallback(async (imageFile: any) => {
     const file = new FormData()
     file.append('file', imageFile[0])
-    
+    // console.log('OnDrop', file)
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);
       }
     }
-    console.log(file);
     // const data = await uploadImageService(file, setLoading);
     try {
       setLoading(true)
-      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
+      const responseUploadImage: any = await UploadImageToAws3(imageFile[0], false)
       setImageUrl(responseUploadImage.url);
       setLoading(false)
       toast.success('Image Upload successfully')

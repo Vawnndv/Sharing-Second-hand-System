@@ -48,14 +48,15 @@ function ForgotPassword() {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
-        const res = await forgotPasswordService(data)
+        const res: any = await forgotPasswordService(data.email)
         setSuccess(res.message)
-      console.log(data);
-    } catch (error: any) {
-      if (error.message) {
-        setErr(error.response.data.message)
+    } catch (error: unknown) {
+      console.log(error)
+      if (error instanceof Error) {
+        setErr(error.message)
       } else {
-        console.log(error);
+        // Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại sau.
+        setErr("Network Error")
       }
     } finally {
       setIsLoading(false); // Reset isLoading to false after success/error
@@ -96,7 +97,7 @@ function ForgotPassword() {
                 color: 'primary.main'
               }}
             >
-              Forgot Password
+              Quên mật khẩu
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
@@ -113,7 +114,7 @@ function ForgotPassword() {
                 </Grid>
               </Grid>
               <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ mt: 3, mb: 2, py: 1 }}>
-                Forgot Password
+                Quên mật khẩu
               </Button>
             </Box>
           </Box>

@@ -17,6 +17,8 @@ export class Collaborator extends User {
   private userManager: UserManager | undefined;
 
   private cardManager: CardManager | undefined;
+  static adminDeleteCollaboratorReducer: any;
+  static adminEditCollaboratorReducer: any;
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,

@@ -15,6 +15,7 @@ import ChatNavigator from './ChatNavigator';
 import UserLikePostsScreen from '../screens/drawers/UserLikePostsScreen';
 import MapSelectWarehouseGive from '../screens/map/MapSelectWarehouseGive';
 import FavoritesNavigator from './FavoritesNavigator';
+import PostNavigator from './PostNavigator';
 
 
 const DrawerNavigator = () => {
@@ -36,7 +37,8 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} options={{ unmountOnBlur: true }}/>
       <Drawer.Screen name="MapSelectWarehouseGiveScreen" component={MapSelectWarehouseGive} options={{ unmountOnBlur: true }}/>
       <Drawer.Screen name="Chat" component={ChatNavigator} />
-      <Drawer.Screen name="MyLike" component={FavoritesNavigator} />
+      <Drawer.Screen name="MyLike" component={FavoritesNavigator} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="MyPost" component={PostNavigator} options={{ unmountOnBlur: true }} />
     </Drawer.Navigator>
   )
 }

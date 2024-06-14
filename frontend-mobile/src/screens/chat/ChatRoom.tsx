@@ -108,15 +108,9 @@ const ChatRoom = ({ route, navigation }: any) => {
       textRef.current = "";
       if(inputRef) inputRef?.current?.clear()
       const newDoc = await addDoc(messageRef, {
-        // userid: auth?.id,
-        // text: message,
-        // avatar: auth?.avatar,
-        // firstname: auth?.firstname,
-        // lastname: auth?.lastname,
-        // createdAt: Timestamp.fromDate(new Date())
         userid: auth?.id,
         text: message,
-        username: auth?.username ? auth?.username : '',
+        username: auth?.firstName +  ' '  + auth?.lastName,
         type: 'text',
         createdAt: Timestamp.fromDate(new Date()),
         isRead: false
@@ -144,7 +138,7 @@ const ChatRoom = ({ route, navigation }: any) => {
       const newDoc = await addDoc(messageRef, {
         userid: auth?.id,
         text: 'Tôi muốn xin món đồ này',
-        username: auth?.username ? auth?.username : '',
+        username: auth?.firstName +  ' '  + auth?.lastName,
         title: post?.title,
         postid: postid,
         uri: uri,
@@ -162,7 +156,7 @@ const ChatRoom = ({ route, navigation }: any) => {
       (async () => {
         for (const img of image) {
           try {
-            const temp = await UploadImageToAws3(img);
+            const temp = await UploadImageToAws3(img, false);
             console.log('START')
 
             console.log('TEMP', temp)
@@ -178,7 +172,7 @@ const ChatRoom = ({ route, navigation }: any) => {
                 text: url,
                 type: 'image',
                 createdAt: Timestamp.fromDate(new Date()),
-                username: auth?.username ? auth?.username : '',
+                username: auth?.firstName +  ' '  + auth?.lastName,
                 isRead: false
             });
 
@@ -231,8 +225,11 @@ const ChatRoom = ({ route, navigation }: any) => {
         </View>
         <View style={{marginBottom: hp(2), paddingTop: hp(2)}}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 3}}>
-            { item.enablechat == "true" ? ( 
-
+            { item.enablechat == "false" ? ( 
+              <View style={{flex: 1, alignItems: 'center'}}>
+                  <Text style={{fontFamily: fontFamilies.light, fontStyle: 'italic', opacity:0.5}}>Đơn hàng đã hoàn tất hoặc đã được cho người khác</Text>
+              </View>
+            ) : (
               <View style={{padding: 5, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: appColors.white, borderRadius: 100, borderWidth: 0.2}}>
                 <TextInput
                   ref={inputRef}
@@ -246,10 +243,6 @@ const ChatRoom = ({ route, navigation }: any) => {
                 <TouchableOpacity onPress={() => {handleSendMessage()}} style={{padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
                   <Feather name="send" size={hp(2.7)} color={'#737373'}></Feather>
                 </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{flex: 1, alignItems: 'center'}}>
-                  <Text style={{fontFamily: fontFamilies.light, fontStyle: 'italic', opacity:0.5}}>Đơn hàng đã hoàn tất hoặc đã được cho người khác</Text>
               </View>
             )}
             </View>

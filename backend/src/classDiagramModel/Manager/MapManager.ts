@@ -45,7 +45,6 @@ export class MapManager {
 
     try {
       const resultAddressID = await client.query(queryAddressID)
-      console.log("resultAddressID",(resultAddressID).rows[0])
       const addressid = (resultAddressID).rows[0].addressid
       if(addressid !== null){
         const resultUpdateAddress = await client.query(queryUpdateAddress,[addressid])
@@ -53,7 +52,6 @@ export class MapManager {
       }else {
         const resultInsertAddress = await client.query(queryInsertAdress)
         const newAddressID = resultInsertAddress.rows[0].addressid
-        console.log("newAddressID", newAddressID)
         const resultUpdateAddressIDForUser = await client.query(queryUpdateAddressIDForUser,[newAddressID])
       }
     } catch (error) {

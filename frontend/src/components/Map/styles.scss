@@ -1,0 +1,9 @@
+.autocompleteComponent {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.autocompleteComponent:hover {
+    background-color: #441672;
+    color: white
+}

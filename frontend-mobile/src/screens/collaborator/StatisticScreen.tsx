@@ -195,6 +195,7 @@ export default function StatisticScreen({navigation}: any) {
                                             setChangeOrdersGiving={setChangeOrdersGiving}
                                             orderID={order.orderID}
                                             collboratorReceiveID={auth.id}
+                                            imagePath={order.imagePath}
                                         />
                                     </TouchableOpacity>
                                 )

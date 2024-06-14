@@ -25,22 +25,11 @@ export class Validator {
     let message = '';
 
     switch (key) {
-      case 'username':
-        if (!values.username) {
-          message = 'Username is required!!!';
-        } else if (!Validator.username(values.username)) {
-          message = 'Only contain letters!!!'
-        } 
-        else {
-          message = '';
-        }
-        break;
-  
       case 'lastname':
         if (!values.lastname) {
-          message = 'Lastname is required!!!';
+          message = 'Vui lòng nhập tên của bạn';
         } else if (!Validator.username(values.lastname)) {
-          message = 'Only contain letters!!!'
+          message = 'Tên chỉ được chứa các ký tự chữ cái'
         } 
         else {
           message = '';
@@ -49,9 +38,9 @@ export class Validator {
       
       case 'firstname':
         if (!values.firstname) {
-          message = 'Username is required!!!';
+          message = 'Vui lòng nhập họ của bạn';
         } else if (!Validator.username(values.firstname)) {
-          message = 'Only contain letters!!!'
+          message = 'Họ chỉ được chứa các ký tự chữ cái'
         } 
         else {
           message = '';
@@ -59,9 +48,9 @@ export class Validator {
         break;
       case 'email':
         if (!values.email) {
-          message = 'Email is required';
+          message = 'Vui lòng nhập địa chỉ email';
         } else if (!Validator.email(values.email)) {
-          message = 'Email is not invalid';
+          message = 'Địa chỉ email không hợp lệ';
         } else {
           message = '';
         }
@@ -69,9 +58,9 @@ export class Validator {
   
       case 'password':
         if (!values.password) {
-          message ='Password is required!!!';
+          message ='Vui lòng nhập mật khẩu';
         } else if (values.password.length < 6) {
-          message = 'Password must contain at least 6 character!!!'
+          message = 'Mật khẩu phải có ít nhất 6 ký tự'
         } else {
           message = '';
         }
@@ -79,9 +68,9 @@ export class Validator {
   
       case 'confirmPassword':
         if (!values.confirmPassword) {
-          message = 'Please type confirm password';
+          message = 'Vui lòng nhập xác nhận mật khẩu';
         } else if (values.confirmPassword !== values.password) {
-          message = 'Password is not match';
+          message = 'Xác nhận mật khẩu phải trùng khớp với mật khẩu';
         } else {
           message = '';
         }
@@ -89,9 +78,9 @@ export class Validator {
 
         case 'confirmNewPassword':
           if (!values.confirmNewPassword) {
-            message = 'Please type new confirm password';
+            message = 'Vui lòng nhập xác nhận mật khẩu mới';
           } else if (values.confirmNewPassword !== values.newPassword) {
-            message = 'New Password is not match';
+            message = 'Xác nhận mật khẩu phải trùng khớp với mật khẩu mới';
           } else {
             message = '';
           }
@@ -99,9 +88,9 @@ export class Validator {
 
       case 'oldPassword':
         if (!values.oldPassword) {
-          message ='Old Password is required!!!';
+          message ='Vui lòng nhập mật khẩu cũ';
         } else if (values.oldPassword.length < 6) {
-          message = 'Old Password must contain at least 6 character!!!'
+          message = 'Mật khẩu cũ phải có ít nhất 6 ký tự'
         } else {
           message = '';
         }
@@ -109,9 +98,9 @@ export class Validator {
 
       case 'newPassword':
         if (!values.newPassword) {
-          message ='New Password is required!!!';
+          message ='Vui lòng nhập mật khẩu mới';
         } else if (values.newPassword.length < 6) {
-          message = 'New Password must contain at least 6 character!!!'
+          message = 'Mật khẩu mới phải có ít nhất 6 ký tự'
         } else {
           message = '';
         }
@@ -119,9 +108,9 @@ export class Validator {
       
       case 'phonenumber':
         if (!values.phonenumber) {
-          message ='Phone number is required!!!';
+          message ='Vui lòng nhập số điện thoại';
         } else if (values.phonenumber.length < 12 && values.phonenumber.length > 10) {
-          message = 'Phone number must must include 11 or 12 number !!!'
+          message = 'Số điện thoại không hợp lệ'
         } else {
           message = '';
         }

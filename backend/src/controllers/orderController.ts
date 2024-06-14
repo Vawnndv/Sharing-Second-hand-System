@@ -114,10 +114,11 @@ export const createOrder = asyncHandle(async (req, res) => {
   const imgconfirmreceive = req.body.imgconfirmreceive;
   const givetype = req.body.givetype;
   const warehouseid = req.body.warehouseid;
+  const userreceiveid = req.body.userreceiveid;
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const orderCreated = await OrderManager.createOrder(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid);
+    const orderCreated = await OrderManager.createOrder(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid);
     res.status(200).json({ message: 'Create order successfully', orderCreated: orderCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -184,7 +185,7 @@ export const updateTraceStatus = asyncHandle(async (req, res) => {
 
 export const getOrderByPostID = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);
-  console.log(postID);
+ 
   try {
     const order = await OrderManager.getOrderByPostID(postID);
     if (order) {
@@ -203,6 +204,17 @@ export const getOrderListReceive = async (req: Request, res: Response) => {
   
   try {
     const orderList = await  OrderManager.getOrderListReceive(userID);
+    res.status(200).json({ message: 'Get orders list success:', data: orderList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getOrderListByStatus = async (req: Request, res: Response) => {
+  const { userid, status, method, limit, page, isOverdue, filterValue } = req.body;
+  try {
+    const orderList = await  OrderManager.getOrderListByStatus(userid, status, method, limit, page, isOverdue, filterValue);
     res.status(200).json({ message: 'Get orders list success:', data: orderList });
   } catch (error) {
     console.error(error);

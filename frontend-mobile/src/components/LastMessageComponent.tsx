@@ -25,13 +25,13 @@ const LastMessageComponent = ({firstUserID, secondUserID, postid}: any) => {
     })
     
     if (lastMessage === undefined)
-      return 'Loading...';
+      return 'Đang tải...';
     if (lastMessage) {
       let mess = lastMessage?.text
       if (lastMessage.type == 'image')
         mess = "Đã gửi ảnh"
       if(auth?.id == lastMessage.userid)
-        return "You: " + mess;
+        return "Bạn: " + mess;
       return mess;
     } else {
       return 'Gửi lời chào 👋'

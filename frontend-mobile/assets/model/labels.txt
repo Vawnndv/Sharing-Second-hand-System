@@ -1,0 +1,22 @@
+0 Búa
+1 Mát cắt cỏ
+2 Máy cưa
+3 Bàn phím
+4 Chuột máy tính
+5 Tai nghe chụp đầu
+6 Tai nghe in-ear
+7 Bàn
+8 Ghế
+9 Kệ sách
+10 Sofa
+11 Tủ
+12 Balo
+13 Gọt bút
+14 Tập, Sách
+15 Tẩy
+16 Thước
+17 Giày, dép
+18 Áo
+19 Quần
+20 Vợt cầu lông
+21 Bút

@@ -5,7 +5,7 @@ import ItemTabComponent from './components/ItemTabComponent'
 const HomeScreen = ({navigation} : any) => {
   return (
     <ContainerComponent right>
-      <ItemTabComponent />
+      <ItemTabComponent navigation={navigation}/>
     </ContainerComponent>
   )
 }

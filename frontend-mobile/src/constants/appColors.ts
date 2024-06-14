@@ -1,5 +1,6 @@
 export const appColors = {
   black: '#000000',
+  black2: '#5A5A5A',
   primary: '#321357',
   primary2: '#451979',
   white: '#FFFFFF',
@@ -16,4 +17,6 @@ export const appColors = {
   link: '#5669FF',
   danger: '#e74c3c',
   purple: '#321357',
+  heart: '#DB1045',
+  green: '#1AAE7E'
 };

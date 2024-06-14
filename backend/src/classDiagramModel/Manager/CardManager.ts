@@ -45,4 +45,27 @@ export class CardManager {
       
     }
   };
+
+  public static async createCardOutput (warehouseid: number, userreceiveid: number, orderid: number, itemid: number): Promise<boolean> {
+
+    const client = await pool.connect();
+    const query = `
+      INSERT INTO outputcard (time, warehouseid, userreceiveid, orderid, itemid)
+      VALUES (CURRENT_TIMESTAMP, $1, $2, $3, $4)
+      RETURNING *;
+      `;
+    const values : any = [warehouseid, userreceiveid, orderid, itemid];
+    
+    try {
+      const result: QueryResult = await client.query(query, values);
+      console.log('Card output inserted successfully');
+      return true;
+    } catch (error) {
+      console.error('Error inserting product:', error);
+      return false;
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+      
+    }
+  };
 }

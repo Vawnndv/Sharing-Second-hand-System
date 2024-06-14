@@ -8,7 +8,7 @@ import { appInfo } from "../../constants/appInfos";
 import moment from "moment";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { useSelector } from "react-redux";
-import { ContainerComponent } from "../../components";
+import { ContainerComponent, TextComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import * as ImagePicker from "expo-image-picker"
 import { getGallaryPermission, getCameraPermission, TakePhoto, PickImage, UploadImageToAws3, uploadImage } from "../../ImgPickerAndUpload"
@@ -35,28 +35,33 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const [confirm, setConfirm] = useState(false)
 
     const handleConfirm = async () => {
-        setIsLoading(true);
+        if(image !== null){
+            setIsLoading(true);
         
-        const data = await UploadImageToAws3(image);
-        // const urlConfirm = response.url
-        await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
-            url: data.url
-        });
-
-        await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
-            orderID: orderID,
-            statusID: 9
-        });
-
-        if(orders[0].order.giveTypeID === 5){
+            const data = await UploadImageToAws3(image, false);
+            // const urlConfirm = response.url
+            await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
+                url: data.url
+            });
+    
             await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
                 orderID: orderID,
-                statusID: 3
+                statusID: 9
             });
+    
+            if(orders[0].order.giveTypeID === 5){
+                await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+                    orderID: orderID,
+                    statusID: 3
+                });
+            }
+            setIsLoading(false);
+            Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
+            navigation.goBack();
+        }else{
+            Alert.alert('Thông báo','Bạn phải thêm ảnh xác nhận đơn hàng!')
         }
-        setIsLoading(false);
-        Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
-        navigation.goBack();
+        
     }
 
     const receiveOrder = async () => {
@@ -96,8 +101,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.data.orders)
             console.log(response.data.orders[0].imgConfirm)
-            if(response.data.orders[0].imgConfirm !== null){
-                console.log(true)
+            if(response.data.orders[0].imgConfirm !== null && response.data.orders[0].imgConfirm !== ''){
+                console.log("response.data.orders[0].imgConfirm", response.data.orders[0].imgConfirm)
                 setImage({
                     uri: response.data.orders[0].imgConfirm
                 })
@@ -119,7 +124,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         
     }, [])
     // console.log(image)
-    console.log(orders)
     return(
         <ContainerComponent back title="Chi tiết đơn hàng">
             <View style={styles.container}>
@@ -127,19 +131,28 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 {/* <View style={{height: 2, width: '100%', backgroundColor: '#F7E2CD', marginTop: 10}}></View> */}
                 {
                     
-                    <ScrollView style={{width: '95%'}} showsVerticalScrollIndicator={false}>
+                    <ScrollView style={{width: '100%'}} showsVerticalScrollIndicator={false}>
                         {
                             orders.map((order: any, index) => {
                                 return (
                                     <View key={index}>
+                                        <Image
+                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5}}
+                                                source={{
+                                                    uri: order.image
+                                                }}
+                                            />
+
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 0}}></View>
                                         <View style={styles.content}>
 
                                             <View style={styles.infoUser}>
                                                 <IconEvil name="location" size={25}/>
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người cho</Text>
-                                                    <Text>{order.order.giver.firstName} {order.order.giver.lastName} - {order.order.giver.phoneNumber}</Text>
+                                                    <Text>{order.order.giver.firstName} {order.order.giver.lastName} - {order.order.post.phonenumber}</Text>
                                                     <Text>{order.order.addressGive.address}</Text>
+                                                    {/* <TextComponent text={order.order.addressGive.address}/> */}
                                                 </View>
                                             </View>
 
@@ -148,7 +161,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 <View style={{flex: 1}}>
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Người lấy hàng</Text>
                                                     {
-                                                        (status === 'Hàng đang được đến lấy' || status === 'Hàng đã nhập kho')  &&(
+                                                        (status === 'Hàng đang được đến lấy' || status === 'Hàng đã nhập kho' )  &&(
                                                             <><Text>{order.order.receiver.firstName} {order.order.receiver.lastName} - {order.order.receiver.phoneNumber}</Text>
                                                             <Text>{order.order.addressReceive.address}</Text></>
                                                         )
@@ -158,10 +171,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View> 
                                             </View>
                                         </View>
-                                        <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
-                                                                        longitude: order.order.addressGive.longitude,
-                                                                        address: order.order.addressGive.address
-                                        }} setLocation={''}/>
+                                        
 
                                         {/* // seperate */}
                                         <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
@@ -182,7 +192,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View>
                                             </View>
 
-                                            <View style={[styles.infoUser, {alignItems:'center'}]}>
+                                            {/* <View style={[styles.infoUser, {alignItems:'center'}]}>
                                                 <Image
                                                     style={{width: 60, height: 60, marginRight: 10}}
                                                     source={
@@ -193,7 +203,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                     <Text style={{fontSize: 16, fontWeight: 'bold'}}>Xe máy</Text>
                                                     <Text>Hàng hóa tối đa 30kg (50x40x50cm)</Text>
                                                 </View>
-                                            </View>
+                                            </View> */}
 
                                             <View style={[styles.infoUser, {alignItems:'center'}]}>
                                                 <Image
@@ -208,19 +218,18 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 </View>
                                             </View>
 
-                                            <Image
-                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5, borderRadius: 10}}
-                                                source={{
-                                                    uri: order.image
-                                                }}
-                                            />
+                                            
                                         </View>
                                         
+                                        <ShowMapComponent location = {{latitude: order.order.addressGive.latitude,
+                                                                        longitude: order.order.addressGive.longitude,
+                                                                        address: order.order.addressGive.address
+                                        }} setLocation={''}/>
 
-                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 10}}></View>
+                                        <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 15}}></View>
 
                                         {
-                                            status === 'Hàng đang được đến lấy' &&
+                                            (status === 'Hàng đang được đến lấy' || status === 'Chờ người cho giao hàng') &&
                                             <View style={styles.content}>
                                                 <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
                                                 
@@ -281,7 +290,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                             </View>
                                         }
 
-{
+                                        {           
                                             status === 'Hàng đã nhập kho' &&
                                             <View style={styles.content}>
                                                 <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20}}>Xác nhận đơn</Text>
@@ -330,7 +339,9 @@ const styles = StyleSheet.create({
     content: {
         width: '100%',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        marginBottom: 10,
+        padding: 10
     },
     infoUser: {
         display: 'flex',

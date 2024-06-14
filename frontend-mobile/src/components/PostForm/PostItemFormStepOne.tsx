@@ -11,6 +11,25 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import { useNavigation } from '@react-navigation/native';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+
+import * as FileSystem  from 'expo-file-system';
+// import * as Asset from 'expo-asset';
+import * as tf from '@tensorflow/tfjs';
+import * as tfReactNative from '@tensorflow/tfjs-react-native';
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
+
+import { fetch } from '@tensorflow/tfjs-react-native';
+import * as mobilenet from '@tensorflow-models/mobilenet';
+import { decode as jpegDecode } from 'jpeg-js';
+import * as ImageManipulator from 'expo-image-manipulator';
+// import * as ImageResizer from 'react-native-image-resizer';
+
+
+
+// import * as mobilenet from '@tensorflow-models/mobilenet';
+// import * as ImageManipulator from 'expo-image-manipulator';
+
 
 // import { Picker } from '@react-native-picker/picker';
 
@@ -36,7 +55,6 @@ interface FormData {
   warehouseAddress?: string;
   warehouseAddressID?: number;
   warehouseID?: number;
-  // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
 interface ItemTypes {
@@ -64,6 +82,10 @@ interface StepOneProps {
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+
+const modelURL = 'https://teachablemachine.withgoogle.com/models/CFHkFgZd5/'
+
+
 
 
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, warehouseSelected, setWarehouseSelected }) => {
@@ -135,6 +157,20 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   const [isUploaded, setIsUpdloaded] = useState(false);
 
+  const [model, setModel] = useState<any>(null);
+
+  const [labels, setLabels] = useState<string[]>([]);
+  
+  
+const modelLocal = require('../../../assets/model/model.json');
+const metadataLocal = require('../../../assets/model/metadata.json');
+// const modelWeight = require('../../../assets/model/weights.bin');
+
+
+  const [tflite, setTflite] = useState<any>(null);
+
+  // const modelLite = require('../../../assets/model/model_unquant.tfilite')
+
 
 
 
@@ -191,6 +227,38 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
     }
 
   },[formData])
+
+  const loadModel = async () => {
+
+    try {
+      setIsLoading(true);
+      await tf.ready();  
+      // const model = await tf.loadLayersModel(bundleResourceIO(modelLocal,modelW));
+
+      const model = await tf.loadLayersModel(modelURL + 'model.json');
+      // const model = await tf.loadGraphModel
+      // console.log('MODELLL', model);  
+      const response = await fetch(modelURL + 'metadata.json');
+      const metadata = await response.json();
+      // const metadata = metadataLocal.json();
+      setLabels(metadata.labels);
+      setModel(model);
+      console.log('Model loaded successfully');
+      if( model && metadata){
+        setIsLoading(false);
+
+      }
+
+    } catch (error) {
+      console.error('Error loading the model', error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadModel();
+  }, []);
+
 
   useEffect(() =>{
     if(isUploaded){
@@ -268,43 +336,173 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
       
     };
     fetchAllData();
-}, [])
+}, []);
+
+const pickImage = async () => {
+  let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  setIsUpdloaded(true);
+
+  if (permissionResult.granted === false) {
+    alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
+    return;
+  }
+
+  let pickerResult = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsMultipleSelection: true, // Cho phép chọn nhiều ảnh
+    quality: 1,
+  });
+
+  if (!pickerResult.canceled) {
+    setIsLoading(true);
+    try {
+      const imageData = pickerResult.assets.map(async (asset: any) => {
 
 
-  const pickImage = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    setIsUpdloaded(true);
+        const {width,height} = asset;
 
-    if (permissionResult.granted === false) {
-      alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
-      return;
-    }
+        let isHeightSmaller = width > height ? true : false;
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true, // Cho phép chọn nhiều ảnh
-      quality: 1,
-    });
+        let scaleX = width / 224;
+        let scaleY = height/ 224;
+        let h = 224;
+        let w = 224;
+        if(isHeightSmaller){
+          w = scaleX * 224 / scaleY;
+        }
+        else{
+          h = scaleY * 224 / scaleX;
+        }
 
-    if (!pickerResult.canceled) {
-      const imageData = pickerResult.assets.map((asset: any) => {
-        return {
+        // Resize ảnh
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+          asset.uri,
+          [{ resize: { width: w, height: h } }],
+          { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+        );
+
+        // const cropWidth = 224;  // Chiều rộng vùng cắt
+        // const cropHeight = 224; // Chiều cao vùng cắt
+  
+        // // Tính toán vị trí vùng cắt với trung tâm ảnh
+        // let originX = Math.round(w / 2);
+        // let originY = Math.round(h / 2);
+        // const uriResize = manipulatedImage.uri
+  
+        // const croppedImage = await ImageManipulator.manipulateAsync(
+        //   uriResize,
+        //   [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
+        //   { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+        // );
+
+        const file = {
           uri: asset.uri,
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType
         }
-      });
-      // const finalResult = {
-      //   ri: result.assets[0].uri,
-      //   name: new Date().getTime(),
-      //   type: result.assets[0].mimeType,
-      // }
-      // setImage(finalResult);
+        const response: any = await UploadImageToAws3(file, true)
 
-      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
-      handleValidate('','photo');
+
+        const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
+        return {
+          uri: asset.uri,
+          name: new Date().getTime() + asset.fileName,
+          type: asset.mimeType,
+          prediction: prediction,
+          url: response.url,
+        };
+      });
+
+      Promise.all(imageData).then(completed => {
+        setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed] });
+        // console.log(completed);
+        handleValidate('', 'photo');
+      });
+    } catch (error) {
+      console.error('Error picking and predicting images:', error);
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }
+};
+
+
+const imageToTensor = async (rawImageData: any) => {
+  try {
+    setIsLoading(true);
+    const fileUri = rawImageData.uri;
+    const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+    const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
+    const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
+
+    const buffer = new Uint8Array(width * height * 3);
+    let offset = 0;
+    for (let i = 0; i < buffer.length; i += 3) {
+      buffer[i] = data[offset];
+      buffer[i + 1] = data[offset + 1];
+      buffer[i + 2] = data[offset + 2];
+      offset += 4;
+    }
+
+    // Normalize the tensor
+    const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+    // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+
+    return tensor;
+  } catch (error) {
+    console.log("Error converting image to tensor:", error);
+  } finally {
+    setIsLoading(false);
+  }
+}
+
+const predictImage = async (imageUri: any) => {
+  try {
+    setIsLoading(true);
+    console.log(imageUri);
+
+    // Chuyển đổi hình ảnh thành tensor
+    const imageTensor = await imageToTensor(imageUri);
+    if (!imageTensor) {
+      throw new Error('Failed to convert image to tensor');
+    }
+    console.log('imageTensor', imageTensor);
+
+    // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
+    const expandedTensor = imageTensor.expandDims(0);
+    console.log('expandedTensor', expandedTensor);
+
+    // Dự đoán hình ảnh sử dụng mô hình
+    const predictionTensor = await model.predict(expandedTensor);
+    if (!predictionTensor) {
+      throw new Error('Failed to make prediction');
+    }
+    console.log('predictionTensor', predictionTensor);
+
+    // Lấy giá trị dự đoán từ tensor
+    const predictionArray = await predictionTensor.array();
+    const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+
+    // Lấy nhãn tương ứng từ mảng nhãn
+    const predictedLabel = labels[maxProbabilityIndex];
+
+    // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
+    const predictionResult = {
+      label: predictedLabel,
+      probability: Math.max(...predictionArray[0])
+    };
+
+    console.log('Prediction result:', predictionResult);
+
+    return predictionResult;
+  } catch (error) {
+    console.log('Error when predicting image:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // console.log("formData.itemPhotos",formData.itemPhotos)
 
   const removeImage = (index: number) => {
     const updatedPhotos = [...formData.itemPhotos];
@@ -515,11 +713,11 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
         <ScrollView horizontal>
             {formData.itemPhotos.map((image: any, index) => (
               <View key={index} style={styles.imageContainer}>
-                  <Image source={{ uri: image.uri }} style={styles.image} />
+                  <Image source={{ uri: image.uri }} style={styles.image}/>
                   <TouchableOpacity 
                     onPress={() => {
                       removeImage(index);
-                      setErrorMessage({...errorMessage, itemPhotos: ''})
+                      setErrorMessage({...errorMessage, itemPhotos: ''});
                       handleValidate(formData.itemPhotos,'photo');
                     }} 
                     style={styles.closeButton}

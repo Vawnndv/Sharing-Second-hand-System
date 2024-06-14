@@ -48,7 +48,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -65,7 +64,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -109,11 +107,32 @@ export class ItemManager {
       const result: QueryResult = await client.query(query);
 
       
-      console.log('Product inserted successfully:', result.rows[0]);
+      console.log('Product image inserted successfully:', result.rows[0]);
       return true;
       
     } catch (error) {
       console.error('Error inserting product:', error);
+      return false
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async deleteImageItem (imgid: number): Promise<boolean> {
+
+    const client = await pool.connect();
+    const query = `
+      DELETE FROM IMAGE WHERE imgid = ${imgid};
+    `;
+    // const values : any = [name, quantity, itemtypeID];
+    
+    try {
+      const result: QueryResult = await client.query(query);
+      console.log('Image delete successfully:', result.rows[0]);
+      return true;
+      
+    } catch (error) {
+      console.error('Error deleting image:', error);
       return false
     } finally {
       client.release(); // Release client sau khi sử dụng

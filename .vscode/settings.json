@@ -1,0 +1,8 @@
+{
+  "appService.zipIgnorePattern": [
+    "node_modules{,/**}",
+    ".vscode{,/**}"
+  ],
+  "appService.defaultWebAppToDeploy": "/subscriptions/16e3a7a1-0c03-45d8-b6eb-22f4b6670de0/resourceGroups/ReTreasureAPI_group/providers/Microsoft.Web/sites/ReTreasureAPI",
+  "appService.deploySubpath": "backend"
+}

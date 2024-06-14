@@ -70,7 +70,6 @@ export const TakePhoto = async (permission: boolean, setImage: any, setModalVisi
                 name: new Date().getTime(),
                 type: result.assets[0].mimeType,
             }
-            console.log(finalResult)
             setImage(finalResult)
             setModalVisible(false);
             // setImage(result.assets[0])
@@ -104,7 +103,7 @@ export const uploadImage = async (file: any) => {
         // }
         // });
 
-        await UploadImageToAws3(file);
+        await UploadImageToAws3(file, false);
     }).catch(error => {
         console.error('error reading image', error)
     })
@@ -114,7 +113,7 @@ export const uploadImage = async (file: any) => {
         
 }
 
-export const UploadImageToAws3 = async (file: any) => {
+export const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
 
     try {
         const fileContent = await FileSystem.readAsStringAsync(file.uri, { encoding: FileSystem.EncodingType.Base64 });
@@ -124,6 +123,9 @@ export const UploadImageToAws3 = async (file: any) => {
         formData.append('file', fileContent);
         formData.append('name', file.name)
         formData.append('type', file.type)
+        if(isLimit){
+            formData.append('typeExpire', "expire")
+        }
 
         // Gửi FormData qua phương thức POST
         const serverResponse = await fetch(`${appInfo.BASE_URL}/aws3/uploadImage`, {
@@ -137,7 +139,6 @@ export const UploadImageToAws3 = async (file: any) => {
         // Xử lý phản hồi từ server nếu cần
         const data = await serverResponse.json();
 
-        console.log('Server response:', data);
         return data;
     } catch (error) {
         console.error('Error uploading file:', error);

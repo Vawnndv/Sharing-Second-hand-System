@@ -49,7 +49,7 @@ const ForgotPasswordScreen = () => {
       const res: any = await authenticationAPI.HandleAuthentication('/forgotPassword', {email: values.email}, 'post');
 
       console.log(res);
-      Alert.alert('Send mail', 'We sended a email includes new password!!!');
+      Alert.alert('Gửi email', 'Chúng tôi đã gửi một email bao gồm mật khẩu mới');
       setIsLoading(false);
       setIsDisable(true);
       setErrorForgotPassword('');
@@ -72,9 +72,9 @@ const ForgotPasswordScreen = () => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Reset Password" title  size={24} color={appColors.primary} />
+        <TextComponent text="Đặt lại mật khẩu" title  size={24} color={appColors.primary} />
         <SpaceComponent height={12} />
-        <TextComponent text="Please enter your email address to request a password reset" />
+        <TextComponent text="Vui lòng nhập địa chỉ email của bạn để yêu cầu đặt lại mật khẩu" />
         <SpaceComponent height={16} />
         <InputComponent
           value={values.email}
@@ -98,7 +98,7 @@ const ForgotPasswordScreen = () => {
         <ButtonComponent
           onPress={handleForgotPassword}
           disable={isDisable}
-          text="Send"
+          text="Gửi"
           type="primary"
           iconFlex="right"
           icon={

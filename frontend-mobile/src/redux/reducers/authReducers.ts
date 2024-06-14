@@ -5,6 +5,7 @@ interface AuthState {
   email: string;
   accessToken: string;
   roleID: string;
+  fcmTokens?: string[];
 };
 
 const initialState: AuthState = {

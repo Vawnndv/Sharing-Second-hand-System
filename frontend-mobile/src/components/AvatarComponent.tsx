@@ -27,7 +27,7 @@ interface Props {
 
 const AvatarComponent = (props: Props) => {
   const {avatar, username, size, styles, onPress, isEdit, onButtonPress, isBorder} = props;
-
+  console.log(avatar, 'avatar');
   return (
     <TouchableOpacity disabled={!onPress} onPress={onPress}>
       {avatar ? (

@@ -20,7 +20,7 @@ const ConfimReceiveModal = (props: Props) => {
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    const {url} = await UploadImageToAws3(image);
+    const {url} = await UploadImageToAws3(image, false);
     try {
       const res = await orderAPI.HandleOrder('/upload-image-confirm', 
       {

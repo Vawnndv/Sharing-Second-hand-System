@@ -10,7 +10,8 @@ import { globalStyles } from '../../styles/globalStyles';
 import { ErrorMessages } from '../../models/ErrorMessages';
 
 const initValue = {
-  username: '',
+  firstname: '',
+  lastname: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -25,8 +26,16 @@ const RegisterScreen = ({navigation}: any) => {
 
   useEffect(() => {
     if (
-      errorMessage.username ||
-      errorMessage.email || errorMessage.password || errorMessage.confirmPassword || !values.username || !values.email || !values.password || !values.confirmPassword 
+      errorMessage.firstname ||
+      errorMessage.lastname ||
+      errorMessage.email || 
+      errorMessage.password || 
+      errorMessage.confirmPassword || 
+      !values.firstname || 
+      !values.lastname || 
+      !values.email || 
+      !values.password || 
+      !values.confirmPassword 
     ) {
       setIsDisable(true);
     } else {
@@ -73,16 +82,25 @@ const RegisterScreen = ({navigation}: any) => {
     <>
       <ContainerComponent isImageBackground isScroll back>
         <SectionComponent>
-          <TextComponent text="Sign Up" title size={24} color={appColors.primary} />
+          <TextComponent text="Đăng ký" title size={24} color={appColors.primary} />
           <SpaceComponent height={21} />
           <InputComponent
-            value={values.username}
-            placeholder="Họ và tên"
-            onChange={val => handleChangeValue('username', val)}
+            value={values.lastname}
+            placeholder="Họ"
+            onChange={val => handleChangeValue('lastname', val)}
             allowClear
             affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('username')}
-            error={errorMessage['username']}
+            onEnd={() => formValidator('lastname')}
+            error={errorMessage['lastname']}
+          />
+          <InputComponent
+            value={values.firstname}
+            placeholder="Tên"
+            onChange={val => handleChangeValue('firstname', val)}
+            allowClear
+            affix={<User size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('firstname')}
+            error={errorMessage['firstname']}
           />
           <InputComponent
             value={values.email}
@@ -95,7 +113,7 @@ const RegisterScreen = ({navigation}: any) => {
           />     
           <InputComponent
             value={values.password}
-            placeholder="Password"
+            placeholder="Mật khẩu"
             onChange={val => handleChangeValue('password', val)}
             allowClear
             isPassword
@@ -105,7 +123,7 @@ const RegisterScreen = ({navigation}: any) => {
           />
           <InputComponent
             value={values.confirmPassword}
-            placeholder="Confirm password"
+            placeholder="Xác nhận mật khẩu"
             onChange={val => handleChangeValue('confirmPassword', val)}
             allowClear
             isPassword
@@ -123,7 +141,7 @@ const RegisterScreen = ({navigation}: any) => {
         <SectionComponent>
           <ButtonComponent
             onPress={handleRegister}
-            text="SIGN UP"
+            text="ĐĂNG KÝ"
             type="primary"
             iconFlex="right"
             disable={isDisable}
@@ -143,10 +161,10 @@ const RegisterScreen = ({navigation}: any) => {
         </SectionComponent>
         <SectionComponent>
           <RowComponent justify="center">
-            <TextComponent text="Don't have an account? " />
+            <TextComponent text="Bạn đã có mật khẩu? " />
             <ButtonComponent 
               type="link" 
-              text="Sign In" 
+              text="Đăng nhập" 
               onPress={() => navigation.navigate('LoginScreen')} />
           </RowComponent>
         </SectionComponent>

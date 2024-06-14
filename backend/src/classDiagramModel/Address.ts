@@ -23,7 +23,6 @@ export class Address {
             longitude: address.longitude
         }
 
-        console.log(location1, location2)
         return haversine(location1, location2, { unit: 'meter' });
     }
 }
