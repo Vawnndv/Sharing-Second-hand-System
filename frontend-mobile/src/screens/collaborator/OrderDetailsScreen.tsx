@@ -144,18 +144,21 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                             showsHorizontalScrollIndicator={false} 
                                             pagingEnabled={true}
                                             >
-                                                { orders.length > 0 &&
+                                                { 
                                                     
                                                     order.image.map((img: any, index: number) => {
-                                                        {console.log("path", img.path)}
-                                                        <Image
-                                                            key={index}
-                                                            style={{marginTop: 20, width: windowWidth,
-                                                                height: windowHeight * 0.4, aspectRatio: 8/5}}
-                                                            source={{
-                                                                uri: img.path
-                                                            }}
-                                                        />
+                                                        // {console.log("path", img.path)}
+                                                        return (
+                                                            <Image
+                                                                key={index}
+                                                                style={{marginTop: 20, width: windowWidth,
+                                                                    height: windowHeight * 0.4, aspectRatio: 8/5}}
+                                                                source={{
+                                                                    uri: img.path
+                                                                }}
+                                                            />
+                                                        )
+                                                        
                                                     })
                                                 }
                                             
