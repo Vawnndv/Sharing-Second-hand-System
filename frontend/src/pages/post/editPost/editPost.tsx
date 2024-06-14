@@ -101,7 +101,7 @@ function EditPost() {
           }
 
           try {
-            const response: any = await Axios.get(`warehouse/getWarehouse/${warehouseid}`)
+            const response: any = await Axios.get(`/warehouse/getWarehouse/${warehouseid}`)
             setLocation({addressid: response.wareHouse.addressid, 
                 address: response.wareHouse.address, longitude: parseFloat(response.wareHouse.longitude), 
                 latitude: parseFloat(response.wareHouse.latitude)});
@@ -223,7 +223,7 @@ function EditPost() {
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){
                 try{
-                    const res = await axios.post(`http://localhost:3000/posts/createPost`, {
+                    const res = await Axios.post(`/posts/createPost`, {
                         title: newTitle,
                         location: location.address,
                         description: newDescription,
@@ -251,7 +251,7 @@ function EditPost() {
                 }
         
                 try{
-                    const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+                    const res = await Axios.post(`/posts/update-post-status`, {
                         postid: post.postid,
                         statusid: 15,
                     })

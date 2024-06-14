@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, Dimensions } from "react-native";
 import IconFeather from 'react-native-vector-icons/Feather';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
@@ -16,6 +16,9 @@ import ConfirmComponent from "../../components/ConfirmComponent";
 import { Alert } from "react-native";
 import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
+
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
 
 export default function OrderDetailsScreen({navigation, route}: any) {
 
@@ -136,13 +139,28 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                             orders.map((order: any, index) => {
                                 return (
                                     <View key={index}>
-                                        <Image
-                                                style={{marginTop: 20, width: '100%', aspectRatio: 8/5}}
-                                                source={{
-                                                    uri: order.image
-                                                }}
-                                            />
-
+                                        <ScrollView
+                                            horizontal={true}
+                                            showsHorizontalScrollIndicator={false} 
+                                            pagingEnabled={true}
+                                            >
+                                                { orders.length > 0 &&
+                                                    
+                                                    order.image.map((img: any, index: number) => {
+                                                        {console.log("path", img.path)}
+                                                        <Image
+                                                            key={index}
+                                                            style={{marginTop: 20, width: windowWidth,
+                                                                height: windowHeight * 0.4, aspectRatio: 8/5}}
+                                                            source={{
+                                                                uri: img.path
+                                                            }}
+                                                        />
+                                                    })
+                                                }
+                                            
+                                        </ScrollView>
+                                        
                                         <View style={{height: 2, width: '100%', backgroundColor: appColors.gray5, marginTop: 0}}></View>
                                         <View style={styles.content}>
 

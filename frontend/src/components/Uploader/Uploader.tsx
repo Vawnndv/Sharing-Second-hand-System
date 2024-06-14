@@ -56,7 +56,7 @@ function Uploader(props: Props) {
                   }
 
                   // Gửi FormData qua phương thức POST
-                  const serverResponse = await Axios.post('aws3/uploadImage', formData, {
+                  const serverResponse = await Axios.post('/aws3/uploadImage', formData, {
                     headers: {
                       'Content-Type': 'multipart/form-data',
                     },

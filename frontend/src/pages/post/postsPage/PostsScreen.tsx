@@ -53,7 +53,7 @@ function PostsCreen() {
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
-      const response: any = await Axios.get('warehouse')
+      const response: any = await Axios.get('/warehouse')
       console.log("WAREHOUSES",response)
       const listWarehouseID: any = []
       response.wareHouses.map((warehouse: any) => {

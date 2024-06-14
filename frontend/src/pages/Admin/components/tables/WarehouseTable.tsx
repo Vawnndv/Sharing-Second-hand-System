@@ -80,7 +80,7 @@ function WarehouseTable(props: Props) {
   }
   
   const handleLockWarehouse = async (warehouseid: number, status: any) => {
-    const res = await Axios.post(`warehouse/updateWarehouseStatus`, {
+    const res = await Axios.post(`/warehouse/updateWarehouseStatus`, {
       warehouseid,
       status
     });

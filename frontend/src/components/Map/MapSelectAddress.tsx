@@ -200,7 +200,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
       // try {
       
       //   if(isUser === true) {
-      //     // const response: any = await Axios.post(`map/set_user_location`,{
+      //     // const response: any = await Axios.post(`/map/set_user_location`,{
       //     //   userID: userLogin.userInfo.id,
       //     //   latitude: center.lat(),
       //     //   longitude: center.lng(),
@@ -225,7 +225,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
   useEffect(() => {
     const fetchHomeLocation = async () => {
       try {
-        const response = await Axios.get(`user/get-user-address?userId=${userLogin.userInfo.id}`)
+        const response = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`)
         setHomeLocation({
             address: response.data.address,
             latitude: parseFloat(response.data.latitude),
