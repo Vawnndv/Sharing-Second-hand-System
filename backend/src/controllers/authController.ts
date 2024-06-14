@@ -215,10 +215,12 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
 });
 
 export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
-  const userInfo = req.body;
+  console.log(req.body, 'adasdsd');
+  const { email, firstname, lastname, avatar } = req.body;
 
-  const existingUser = await Account.findUserByEmail(userInfo.email);
+  const existingUser = await Account.findUserByEmail(email);
 
+  console.log(existingUser, 'dddddddddd');
 
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
@@ -231,7 +233,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: existingUser.avatar,
       roleID: existingUser.roleid,
       fcmTokens: fcmTokens ?? [],
-      accessToken: await getJsonWebToken(userInfo.email, existingUser.userid),
+      accessToken: await getJsonWebToken(email, existingUser.userid),
     };
 
     res.status(200).json({
@@ -240,11 +242,11 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
     });
   } else {
     const newUser = await Account.createItem(
-      userInfo.email,
-      userInfo.firstname, 
-      userInfo.lastname,
+      email,
+      firstname, 
+      lastname,
       '',
-      userInfo.avatar,
+      avatar,
       1,
     );
 
@@ -258,7 +260,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: newUser.avatar,
       roleID: newUser.roleid,
       fcmTokens: fcmTokens ?? [],
-      accessToken: await getJsonWebToken(userInfo.email, newUser.userid),
+      accessToken: await getJsonWebToken(email, newUser.userid),
     };
 
     if (newUser) {

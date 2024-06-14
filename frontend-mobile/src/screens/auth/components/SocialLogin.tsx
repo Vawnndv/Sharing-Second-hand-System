@@ -6,7 +6,7 @@ import { fontFamilies } from '../../../constants/fontFamilies'
 // import { Google } from 'iconsax-react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage'
 import { Button, Text, View } from 'react-native'
 import authenticationAPI from '../../../apis/authApi'
 import { useDispatch } from 'react-redux'
@@ -37,9 +37,7 @@ const SocialLogin = () => {
   const handleLoginWithGoogle = async () => {
     if (response?.type === "success") {
       await getUserInfo(response.authentication?.accessToken);
-    } else {
-      console.log('login google failed')
-    }
+    } 
   };
 
   const getUserInfo = async (token: any) => {
@@ -61,7 +59,7 @@ const SocialLogin = () => {
         setIsLoading(true);
         const data = {
           firstname: user.given_name,
-          lastmame: user.family_name,
+          lastname: user.family_name,
           email: user.email,
           avatar: user.picture,
         };
@@ -71,6 +69,7 @@ const SocialLogin = () => {
           data,
           'post',
         );
+        console.log(res, ';aaaaaaaaaa')
 
         dispatch(addAuth(res.data));
 

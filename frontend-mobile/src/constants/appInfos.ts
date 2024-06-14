@@ -1,9 +1,7 @@
 import { Dimensions } from "react-native";
-import { BASE_URL, REACT_APP_FIREBASE_STORAGE_BUCKET  } from "@env";
+import { BASE_URL } from "@env";
 
-console.log('_BASE___URL_', BASE_URL)
-
-console.log('firebassssassaas', REACT_APP_FIREBASE_STORAGE_BUCKET)
+console.log('_BASE_URL__', BASE_URL)
 
 export const appInfo = {
   sizes: {
