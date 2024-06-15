@@ -6,6 +6,7 @@ import { ContainerComponent } from "../../components";
 import { GetCurrentLocation } from "../../utils/GetCurrenLocation";
 import CardItemResult from "./CardItemResult";
 import FilterSearch from "./FilterSearch";
+import { category } from "../../constants/appCategories";
 
 const LIMIT = 3;
 
@@ -25,15 +26,6 @@ export interface PostData {
   path: string;
 }
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác",
-];
 
 const SearchResultScreen = ({ route, navigation }: any) => {
   const { searchQuery } = route.params;

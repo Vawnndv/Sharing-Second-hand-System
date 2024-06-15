@@ -4,16 +4,8 @@ import { Button, Checkbox, FormControl, FormControlLabel, FormLabel, Radio, Radi
 import FormGroup from '@mui/material/FormGroup';
 import React, { useEffect, useState } from 'react';
 import './styles.scss';
+import { category } from '../../constant/appCategories';
 
-const category = [
-    "Quần áo",
-    "Giày dép",
-    "Đồ nội thất",
-    "Công cụ",
-    "Dụng cụ học tập",
-    "Thể thao",
-    "Khác"
-]
 
 // const distance = [
 //     5,
@@ -34,12 +26,13 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
     const [distanceSelect, setDistanceSelect] = useState('-1')
     const [timeSelect, setTimeSelect] = useState('-1')
     const [sortSelect, setSortSelect] = useState('Mới nhất')
-    const [categories, setCategories] = useState(Array.from({length: 7}, () => true))
+    const [categories, setCategories] = useState(Array.from({length: 8}, () => true))
     const handleChangeCategory = (index: number) => {
         const tempCategories = [...categories]
         tempCategories[index] = !tempCategories[index]
         setCategories(tempCategories)
     }
+    
 
     useEffect(() => {
         // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
@@ -114,7 +107,20 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
                 <FormControl sx={{ marginTop: 2 }} component="fieldset" variant="standard">
                     <FormLabel component="legend" sx={{fontWeight: 'bold'}}>Doanh mục</FormLabel>
                     <FormGroup>
-                    <FormControlLabel
+                        {
+                            category.map((cate: any, index:number) => {
+                                return (
+                                    <FormControlLabel
+                                        key={index}
+                                        control={
+                                        <Checkbox checked={categories[index]} onChange={() => handleChangeCategory(index)} name={cate} />
+                                        }
+                                        label={cate}
+                                    />
+                                )
+                            })
+                        }
+                    {/* <FormControlLabel
                         control={
                         <Checkbox checked={categories[0]} onChange={() => handleChangeCategory(0)} name="Quần áo" />
                         }
@@ -155,7 +161,7 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
                         <Checkbox checked={categories[6]} onChange={() => handleChangeCategory(6)} name="Khác" />
                         }
                         label="Khác"
-                    />
+                    /> */}
                     </FormGroup>
                 </FormControl>
 

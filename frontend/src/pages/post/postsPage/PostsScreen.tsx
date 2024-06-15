@@ -13,16 +13,8 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import HomeWarehousePosts from "../../home/HomeWarehousePosts";
 import Axios from "../../../redux/APIs/Axios";
 import PostComponent from "../../approval/PostComponent";
+import { category } from "../../../constant/appCategories";
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 function PostsCreen() {
   // const dispatch: AppDispatch = useAppDispatch();

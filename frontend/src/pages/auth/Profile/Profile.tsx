@@ -20,6 +20,7 @@ import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
 import { getProfileAction, updateProfileAction } from '../../../redux/actions/userActions';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MapSelectAddress from '../../../components/Map/MapSelectAddress';
+import { useSearchParams } from 'react-router-dom';
 
 const defaultTheme = createTheme({
   palette: {
@@ -47,6 +48,10 @@ function Profile() {
   const [location, setLocation] = useState<any>(null)
 
   console.log(imageUpdateUrl,imageUrl, '123');
+  
+  const [searchParams] = useSearchParams();
+  const profileID = searchParams.get('profileID')
+  console.log(authInfo?.id, profileID)
 
   const {
     isLoading: updateLoading,
@@ -200,7 +205,7 @@ function Profile() {
               <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={9}>
-                    <Uploader setImageUrl={setImageUrl} imageUrl={imageUrl} imageUpdateUrl={imageUpdateUrl} />
+                    <Uploader setImageUrl={setImageUrl} imageUrl={imageUrl} imageUpdateUrl={imageUpdateUrl}/>
                   </Grid>
                   {/* image preview */}
                   <Grid item xs={12} sm={3}>
@@ -220,6 +225,8 @@ function Profile() {
                       {...register('firstName')}
                       error={!!errors.firstName}
                       helperText={errors.firstName?.message || ''}
+                      // eslint-disable-next-line eqeqeq
+                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -232,6 +239,8 @@ function Profile() {
                       {...register('lastName')}
                       error={!!errors.lastName}
                       helperText={errors.lastName?.message || ''}
+                      // eslint-disable-next-line eqeqeq
+                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
                   <Grid item xs={12} sx={{ mt: 1 }}>
@@ -242,12 +251,16 @@ function Profile() {
                       {...register('phone')}
                       error={!!errors.phone}
                       helperText={errors.phone?.message || ''}
+                      // eslint-disable-next-line eqeqeq
+                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
 
                   <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
                       <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
-                          onClick={handleOpen}>
+                          onClick={handleOpen}
+                          // eslint-disable-next-line eqeqeq
+                          disabled={profileID != authInfo?.id}>
                           Cập nhật vị trí
                       </Button>
                       <Modal
@@ -276,12 +289,16 @@ function Profile() {
                             setDate(newValue)
                           }
                           format="DD/MM/YYYY"
+                          // eslint-disable-next-line eqeqeq
+                          disabled={profileID != authInfo?.id}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
                   </Grid>
                 </Grid>
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}>
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}
+                  // eslint-disable-next-line eqeqeq
+                  disabled={profileID != authInfo?.id}>
                   {updateLoading ? 'Đang tải...' : 'Cập nhật'}
                 </Button>
               </Box>

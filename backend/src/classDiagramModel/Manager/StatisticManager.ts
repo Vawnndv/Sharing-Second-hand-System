@@ -11,6 +11,7 @@ const category = [
   "Công cụ",
   "Dụng cụ học tập",
   "Thể thao",
+  "Công nghệ",
   "Khác"
 ]
 export class StatisticManager {

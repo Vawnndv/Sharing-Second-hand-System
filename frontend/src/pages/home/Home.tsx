@@ -12,16 +12,8 @@ import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import HomeUserPosts from "./HomeUserPosts";
 import HomeWarehousePosts from "./HomeWarehousePosts";
 import Axios from "../../redux/APIs/Axios";
+import { category } from "../../constant/appCategories";
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 function Home() {
   // const dispatch: AppDispatch = useAppDispatch();

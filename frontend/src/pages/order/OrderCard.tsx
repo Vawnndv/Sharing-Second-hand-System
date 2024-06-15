@@ -22,6 +22,11 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
     }
     
   };
+
+  const handleNavigateToUserProfile = (userID: string, event: any) => {
+    event.stopPropagation();
+    navigate(`/profile?profileID=${userID}`)
+  }
   // console.log(order.give_receivetype)
 
   moment.locale();
@@ -38,15 +43,21 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
           }
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Avatar alt="Avatar" src={order.avatar} />
+              <Avatar alt="Avatar" src={order.avatar} component='div' 
+                onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}/>
               <Box sx={{ ml: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 
                   {
                     order.username === undefined ? 
-                    <Typography fontWeight="bold" variant="body1" color="initial">{order.username ? order.username : `${order.firstname} ${order.lastname}`}</Typography>
+                    <Typography fontWeight="bold" variant="body1" color="initial"
+                      component='div'
+                      onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>
+                        {order.username ? order.username : `${order.firstname} ${order.lastname}`}</Typography>
                     :
-                    <Typography fontWeight="bold" variant="body1" color="initial">{order.name ? order.name : `${order.name}`}</Typography>
+                    <Typography fontWeight="bold" variant="body1" color="initial"
+                      component='div'
+                      onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>{order.name ? order.name : `${order.name}`}</Typography>
                   }
                   
                   

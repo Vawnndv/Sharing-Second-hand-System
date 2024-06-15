@@ -30,6 +30,7 @@ export class WarehouseManager {
       const result = await client.query(`
         SELECT * FROM warehouse
         INNER JOIN address ON address.addressid = warehouse.addressid
+        WHERE warehouse.isactivated = true
       `);
       if (result.rows.length === 0) {
         return [];

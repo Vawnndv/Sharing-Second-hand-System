@@ -11,16 +11,8 @@ import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutl
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import Axios from "../../redux/APIs/Axios";
 import PostComponent from "./PostComponent";
+import { category } from "../../constant/appCategories";
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 function PostApproval() {
   // const dispatch: AppDispatch = useAppDispatch();

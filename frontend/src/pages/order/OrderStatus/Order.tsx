@@ -11,16 +11,8 @@ import FilterModal from '../../../modal/FilterModal/FilterModal';
 import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutlined';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import { useState } from 'react';
+import { category } from '../../../constant/appCategories';
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 export default function LabTabs() {
   const [value, setValue] = React.useState('1');

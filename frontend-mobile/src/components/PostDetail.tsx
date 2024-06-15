@@ -416,6 +416,14 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                                                 avatar={postReceiver?.avatar}
                                                 username={ postReceiver?.firstname ? postReceiver?.firstname : ' '}
                                                 styles={styles.avatar}
+                                                onPress={() => {
+                                                  navigation.navigate(
+                                                    'ProfileScreen',
+                                                    {
+                                                      id: postReceiver.receiverid
+                                                    },
+                                                  );
+                                                }}
                                             />
                                             <View style={styles.receiverInfo}>
                                                 <Text style={styles.username_receiver}>{postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
@@ -611,6 +619,14 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                             avatar={postReceiver.avatar}
                             username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
                             styles={styles.avatar}
+                            onPress={() => {
+                              navigation.navigate(
+                                'ProfileScreen',
+                                {
+                                  id: postReceiver.receiverid
+                                },
+                              );
+                            }}
                           />  
                           <View style={styles.receiverInfo}>
                             <Text style={styles.username_receiver}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>

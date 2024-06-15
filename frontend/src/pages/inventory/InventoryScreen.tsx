@@ -18,16 +18,8 @@ import ArrowForwardIosOutlinedIcon from '@mui/icons-material/ArrowForwardIosOutl
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import SearchIcon from '@mui/icons-material/Search';
 import { useState } from 'react';
+import { category } from '../../constant/appCategories';
 
-const category = [
-  'Quần áo',
-  'Giày dép',
-  'Đồ nội thất',
-  'Công cụ',
-  'Dụng cụ học tập',
-  'Thể thao',
-  'Khác',
-];
 
 function InventoryScreen() {
   const [value, setValue] = useState('1');

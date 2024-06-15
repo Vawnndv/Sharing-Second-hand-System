@@ -256,6 +256,7 @@ export class PostManager {
       ) img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = true AND po.givetypeid != 3 AND po.givetypeid != 4 
 	    AND (po.statusid = 12)
+      AND wh.isactivated = true
       GROUP BY
           us.userid,
           us.firstname,

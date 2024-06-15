@@ -13,6 +13,7 @@ import axios from 'axios';
 import { appInfo } from '../../../constants/appInfos';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../../redux/reducers/authReducers';
+import { category } from '../../../constants/appCategories';
 
 export interface filterValue {
   distance: number;
@@ -21,15 +22,6 @@ export interface filterValue {
   sort: string;
 }
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 const ItemTabComponent = ({navigation}: any) => {
   const auth = useSelector(authSelector)
@@ -38,8 +30,8 @@ const ItemTabComponent = ({navigation}: any) => {
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [warehousesID, setWarehousesID] = useState([])
   const [filterValue, setFilterValue] = useState<filterValue>({
-    distance: 25,
-    time: 14,
+    distance: -1,
+    time: -1,
     category: category,
     sort: "Mới nhất"
   })
