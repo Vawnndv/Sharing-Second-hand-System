@@ -39,9 +39,9 @@ export function App() {
       />
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      <Route element={<ProtectedRouter />}>
-        <Route path="/" element={<Layout />}>
-          <Route path="*" element={<NotFound />} />
+      <Route path='/' element={<Layout/>}>
+        <Route path="*" element={<NotFound />} />
+        <Route element={<ProtectedRouter />}>
           <Route index element={<Home />} />
           <Route path="/password" element={<Password />} />
           <Route path="/profile" element={<Profile />} />
@@ -51,10 +51,7 @@ export function App() {
           <Route path="/chat/:roomid" element={<ChatRoom />} />
           <Route path="/inventory" element={<InventoryScreen />} />
           <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
-          <Route
-            path="/inventory/:orderid/:typeCard"
-            element={<ViewInventoryDetail />}
-          />
+          <Route path="/inventory/:orderid/:typeCard" element={<ViewInventoryDetail />} />
           <Route path="/statistic" element={<Statistic />} />
           <Route path="/posts" element={<PostsCreen />} />
           <Route path="/approval" element={<PostApproval />} />
@@ -69,7 +66,7 @@ export function App() {
           <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
         </Route>
       </Route>
-      {/* <Route path="/order" element={<Order />} /> */}
+          {/* <Route path="/order" element={<Order />} /> */}
     </Routes>
   );
 }
