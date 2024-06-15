@@ -178,7 +178,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             </View>
           </RowComponent>
           <SpaceComponent height={8} />
-          <TextComponent styles={styles.description} text={item.description} />
+          <TextComponent numberOfLines={2} styles={styles.description} text={item.description} />
           <SpaceComponent height={8} />
           {item.path && 
             <Image
