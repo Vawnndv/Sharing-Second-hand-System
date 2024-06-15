@@ -29,8 +29,7 @@ const HomeNavigator = () => {
       <Stack.Screen name="MapSelectWarehouseGiveScreen" component={MapSelectWarehouseGive} />
       <Stack.Screen name="ChatRoomScreen" component={ChatRoom} />
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-      {/* <Stack.Screen name="NotificationScreen" component={NotificationScreen} /> */}
-
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} />
     </Stack.Navigator>
   )
 }

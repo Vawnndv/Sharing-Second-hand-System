@@ -8,6 +8,9 @@ import { fontFamilies } from '../constants/fontFamilies';
 import RowComponent from './RowComponent';
 import {globalStyles} from '../styles/globalStyles';
 import HeaderComponent from './HeaderComponent';
+import { Badge } from 'react-native-elements';
+import AvatarComponent from './AvatarComponent';
+import SpaceComponent from './SpaceComponent';
 
 interface Props {
   isImageBackground?: boolean;
@@ -16,11 +19,12 @@ interface Props {
   children: ReactNode;
   back?: boolean; 
   right?: boolean;
+  badge?: number;
 };
 
 const ContainerComponent = (props: Props) => {
-  const {children, isScroll, isImageBackground, title, back, right} = props;
-
+  const {children, isScroll, isImageBackground, title, back, right, badge} = props;
+  console.log(badge, 'aaaaaaaaaaaaa')
   const navigation: any = useNavigation();
 
   const headerComponent = () => {
@@ -28,7 +32,7 @@ const ContainerComponent = (props: Props) => {
       <View 
         style={{
           flex:1,
-          // paddingTop: 30,
+          paddingTop: 1,
         }}
       >
         {(title || back || right) ? (
@@ -52,12 +56,24 @@ const ContainerComponent = (props: Props) => {
               </TouchableOpacity>
             )}
             {title && (
+              <RowComponent>
                 <TextComponent 
                   text={title} 
                   font={fontFamilies.medium} 
                   size={20} 
-                  flex={1} 
+                  // flex={1} 
                 />
+                {badge !== null && badge !==undefined && badge > 0 && (
+                  <>
+                    <SpaceComponent width={6} />
+                    <AvatarComponent
+                      username={badge.toString()}
+                      size={26}
+                      isNumber={true} 
+                    />
+                  </>
+                )}
+              </RowComponent>
             )}
             {right && (
               <HeaderComponent />

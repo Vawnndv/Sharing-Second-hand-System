@@ -10,6 +10,7 @@ import { fontFamilies } from '../../../constants/fontFamilies';
 import { globalStyles } from '../../../styles/globalStyles';
 import { useNavigation } from '@react-navigation/native';
 import { NotificationModel } from '../../../models/NotificationModel';
+import * as Linking from 'expo-linking';
 import 'moment/locale/vi';
 
 type UserItemPros = {
@@ -51,13 +52,19 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         <RowComponent
           key={`event${index}`}
           onPress={() => {
-            if (item.link) {
-              navigation.navigate('Home', {
-                screen: item.link,
-                params: {
-                  postID: item.postid
-                },
-              });
+            // Linking.openURL(`frontend-mobile://profile`);
+              // Linking.openURL(`frontend-mobile://order/detail/${136}`)
+              Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
+              
+              
+              if (item.link) {
+                Linking.openURL(`frontend-mobile://post/detail/${item.postid}`)
+                // navigation.navigate('Home', {
+                //   screen: item.link,
+                //   params: {
+                //     postID: item.postid
+                //   },
+                // });
             }
             updateRead(item.id);
           }}

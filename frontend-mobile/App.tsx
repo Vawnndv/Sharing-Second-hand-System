@@ -1,5 +1,4 @@
 import {
-  useFonts,
   Roboto_100Thin,
   Roboto_100Thin_Italic,
   Roboto_300Light,
@@ -11,29 +10,74 @@ import {
   Roboto_700Bold,
   Roboto_700Bold_Italic,
   Roboto_900Black,
-  Roboto_900Black_Italic,
+  Roboto_900Black_Italic
 } from '@expo-google-fonts/roboto';
-import { NavigationContainer } from '@react-navigation/native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-
 import Entypo from '@expo/vector-icons/Entypo';
+import { NavigationContainer } from '@react-navigation/native';
+import { registerRootComponent } from 'expo';
 import * as Font from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
-import { Platform, StatusBar, AppState } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, StatusBar } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import AppRouters from './src/screens/auth/AppRouters';
-import { registerRootComponent } from 'expo';
-
-import {usePushNotifications}  from './src/utils/usePushNotification';
-
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { current } from '@reduxjs/toolkit';
+import * as Linking from 'expo-linking';
 import axios from 'axios';
 import { appInfo } from './src/constants/appInfos';
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+const config = {
+  screens: {
+    // NotFound: '*',
+    // SearchScreen: {
+    //   path: 'searchscreen',
+    //   screens: {
+    //     Search: 'search'
+    //   }
+    // },
+    // ItemDetailScreen: {path: 'detail/:postID', parse: {
+    //   postID: (postID: string) => `${postID}`,
+    // }},
+    Main: {
+      path: '',
+      screens: {
+        TabNavigator: {
+          path: '',
+          screens: {
+            Home: {
+              path: 'post',
+              screens: {
+                ItemDetailScreen: {
+                  path: 'detail/:postID',
+                  parse: {
+                    postID: (postID: string) => `${postID}`,
+                  },
+                }
+              }
+            },
+          },
+        },
+        MyProfile: 'profile',
+        MyOrder: {
+          path: 'order',
+          screens: {
+            ViewDetailOrder: {
+              path: 'detail/:orderid',
+              parse: {
+                orderid: (orderid: string) => `${orderid}`,
+              },
+            }
+          }
+        }
+      },
+    },
+  }
+};
+
+const prefix = Linking.createURL('/');
 
 export default function App() {
   
@@ -82,6 +126,15 @@ export default function App() {
 
   }, []);
 
+  React.useEffect(() => {
+    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+      const url = response.notification.request.content.data.url;
+      Linking.openURL(url);
+    });
+    return () => subscription.remove();
+  }, []);
+  
+
   const handleAppStateChange = async (currentState: string) => {
     // Kiểm tra trạng thái tiếp theo của ứng dụng (active, background, inactive)
     console.log('App State:', currentState);
@@ -123,7 +176,13 @@ export default function App() {
     <>
       <Provider store={store}>
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
-        <NavigationContainer onReady={onLayoutRootView}>
+        <NavigationContainer 
+          onReady={onLayoutRootView}
+          linking={{
+            prefixes: ['frontend-mobile://'],
+            config
+          }}
+        >
           <AppRouters />
         </NavigationContainer>
       </Provider>
