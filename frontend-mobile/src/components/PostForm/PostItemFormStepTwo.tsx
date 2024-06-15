@@ -15,6 +15,7 @@ import ShowMapComponent from '../ShowMapComponent';
 import getGPTDescription from '../../apis/apiChatGPT';
 import LoadingComponent from '../LoadingComponent';
 import { LoadingModal } from '../../modals';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 
 interface FormData {
   postTitle: string;
@@ -56,15 +57,17 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   const [isLoadingGenerateGPT, setIsLoadingGenerateGPT] = useState(false)
 
+  const [newItemPhotos, setNewItemPhotos] = useState<any>(null)
+  console.log("newItemPhotos", newItemPhotos)
+
   const auth = useSelector(authSelector);
 
   const textInputRef = useRef<any>(null);
 
-  console.log("itemPhotos",itemPhotos)
   useEffect( () => {
     const fetchUserData = async () =>{
         try {
-          setIsLoading(true);
+          setIsLoading(true)
           const res = await axios.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
@@ -83,13 +86,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           } catch (error) {
           console.error('Error fetching user info:', error);
         } finally {
-          setIsLoading(false);
+          setIsLoading(false)
         }
     }
 
     const fetchUserAddressData = async () =>{
       try {
-        setIsLoading(true);
+        setIsLoading(true)
         const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -110,12 +113,35 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         } catch (error) {
         console.error('Error fetching user info:', error);
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
     }
+
+    const fetchImages = async () => {
+      try {
+        setIsLoading(true)
+        let addPhotosURL = []
+        for(let i = 0; i < itemPhotos.length; i++){
+          const response: any = await UploadImageToAws3(itemPhotos[i], true)
+          addPhotosURL.push({
+            uri: itemPhotos[i].uri,
+            name: itemPhotos[i].name,
+            type: itemPhotos[i].mimeType,
+            url: response.url
+          })
+        }
+        setNewItemPhotos(addPhotosURL)
+      } catch (error) {
+        console.log("FetchImages: ",error)
+      }
+      
+      setIsLoading(false)
+    }
    
+    
     fetchUserData();
     fetchUserAddressData()
+    fetchImages()
   },[] )
 
   
@@ -168,7 +194,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   };
 
-  console.log('HELLOOO   ASDASDAS', itemPhotos ? itemPhotos[0] : '')
 
   
   const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
@@ -275,12 +300,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   const generateDecription = async () => {
     setIsLoadingGenerateGPT(true)
-    const imageUrls: string[] = itemPhotos.map((img: any) => {
+    const imageUrls: string[] = newItemPhotos.map((img: any) => {
         return img.url
       }
     )
     const response = await getGPTDescription(itemCategory, imageUrls)
-    console.log("GPTTTTTTTTTTTTTTTTTTTTTTT",response)
+    console.log("GPTTTTTTTTTTTTTTTTTTTTTTT",imageUrls)
     setFormData({ ...formData, postDescription: response });
     handleValidate(response,'postdescription')
     setIsLoadingGenerateGPT(false)
