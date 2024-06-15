@@ -19,7 +19,7 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
     useEffect(() => {
         const fetchTotalPost = async () => {
             try {
-                const response: any = await Axios.post(`posts/getTotalPost`, {
+                const response: any = await Axios.post(`/posts/getTotalPost`, {
                     userID: userLogin.userInfo.id,
                     status: statusTotalPosts
                 })
@@ -36,9 +36,9 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
         const fetchData = async () => {
             try{
                 setIsLoading(true)
-                const responseUser = await Axios.get(`user/get-user-address?userId=${userLogin.userInfo.id}`);
+                const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
                 
-                const responsePosts: any = await Axios.post('posts/get-posts-by-status', {
+                const responsePosts: any = await Axios.post('/posts/get-posts-by-status', {
                     status,
                     page: page - 1,
                     limit: LIMIT,

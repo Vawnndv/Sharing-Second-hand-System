@@ -158,7 +158,7 @@ function Statistic() {
         const fetchDataWarehouses = async () => {
             try {
                 setIsLoading(true)
-                const response: any = await Axios.get(`warehouse`)
+                const response: any = await Axios.get(`/warehouse`)
                 const tempWarehouses = response.wareHouses
                 
                 for(let i = 0; i < tempWarehouses.length; i+=1){
@@ -182,7 +182,7 @@ function Statistic() {
             if(tabValue === "Lượng đăng bài"){
                 try{
                     setIsLoading(true)
-                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                    response = await Axios.post(`/statistic/statisticAccessUser`,{
                             type: 'post',
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
@@ -195,7 +195,7 @@ function Statistic() {
             else if(tabValue === "Lượng người truy cập"){
                 try{
                     setIsLoading(true)
-                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                    response = await Axios.post(`/statistic/statisticAccessUser`,{
                             type: 'access',
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
@@ -208,7 +208,7 @@ function Statistic() {
             else if(tabValue === "Lượng sản phẩm vào/ra kho"){
                 try{
                     setIsLoading(true)
-                    response = await Axios.post(`statistic/statisticImportExport`,{
+                    response = await Axios.post(`/statistic/statisticImportExport`,{
                         userID: userLogin.userInfo.id,
                         type: typeItemInOut,
                         timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
@@ -220,7 +220,7 @@ function Statistic() {
             } else {
                 try {
                     setIsLoading(true)
-                    response = await Axios.get(`statistic/statisticInventory?userID=${userLogin.userInfo.id}`)
+                    response = await Axios.get(`/statistic/statisticInventory?userID=${userLogin.userInfo.id}`)
                 } catch (error) {
                     console.log(error)
                 }                
@@ -236,7 +236,7 @@ function Statistic() {
             if(tabValue === "Lượng đăng bài"){
                 try{
                     setIsLoading(true)
-                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                    response = await Axios.post(`/statistic/statisticAccessUser`,{
                             type: 'post',
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
@@ -249,7 +249,7 @@ function Statistic() {
             else if(tabValue === "Lượng người truy cập"){
                 try{
                     setIsLoading(true)
-                    response = await Axios.post(`statistic/statisticAccessUser`,{
+                    response = await Axios.post(`/statistic/statisticAccessUser`,{
                             type: 'access',
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`
@@ -269,14 +269,14 @@ function Statistic() {
                         }
                     }
                     if(tabImportExportValue === 'Thống kê theo loại'){
-                        response = await Axios.post(`statistic/statisticImportExportAdmin`,{
+                        response = await Axios.post(`/statistic/statisticImportExportAdmin`,{
                             type: typeItemInOut,
                             warehouses: listWarehousesSelected,
                             timeStart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`,
                             timeEnd: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`,
                         })
                     }else{
-                        response = await Axios.post(`statistic/statisticImportExportFollowTimeAdmin`,{
+                        response = await Axios.post(`/statistic/statisticImportExportFollowTimeAdmin`,{
                             type: typeItemInOut,
                             warehouses: listWarehousesSelected,
                             category: category[categoryIndex],
@@ -297,7 +297,7 @@ function Statistic() {
                             listWarehousesSelected.push(warehouses[i])
                         }
                     }
-                    response = await Axios.post(`statistic/statisticInventoryAdmin`,{
+                    response = await Axios.post(`/statistic/statisticInventoryAdmin`,{
                         warehouses: listWarehousesSelected
                     })
                 } catch (error) {

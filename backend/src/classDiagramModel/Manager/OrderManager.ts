@@ -579,10 +579,10 @@ export class OrderManager {
       order.setGiveTypeID(ordersRow.givetypeid)
       return [{
         order: order,
-        image: path.rows[0].path,
+        image: path.rows,
         imgConfirm: ordersRow.imgconfirm === ' ' ? ordersRow.imgconfirmreceive : ordersRow.imgconfirm
       }];
-
+ 
     }catch (error) {
       console.log('error:', error);
       return null;

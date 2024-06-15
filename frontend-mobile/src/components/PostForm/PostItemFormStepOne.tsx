@@ -23,6 +23,7 @@ import { fetch } from '@tensorflow/tfjs-react-native';
 import * as mobilenet from '@tensorflow-models/mobilenet';
 import { decode as jpegDecode } from 'jpeg-js';
 import * as ImageManipulator from 'expo-image-manipulator';
+import LoadingModal from '../../modals/LoadingModal';
 // import * as ImageResizer from 'react-native-image-resizer';
 
 
@@ -111,7 +112,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
   const methodsGive = [
-    { label: "  Đăng món đồ lên hệ thống ứng dụng", value: "  Đăng món đồ lên hệ thống ứng dụng" },
+    { label: "  Đăng món đồ lên hệ thống", value: "  Đăng món đồ lên hệ thống" },
     { label: "  Gửi món đồ đến kho", value: "  Gửi món đồ đến kho" },
   ];
 
@@ -175,7 +176,7 @@ const metadataLocal = require('../../../assets/model/metadata.json');
 
 
   useEffect(() => {
-    if(formData.methodGive == 'Đăng món đồ lên hệ thống ứng dụng'){
+    if(formData.methodGive == 'Đăng món đồ lên hệ thống'){
       setValidAllMethod(true);
     }
     else if(formData.methodGive == 'Gửi món đồ đến kho' && formData.methodsBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
@@ -354,7 +355,7 @@ const pickImage = async () => {
   });
 
   if (!pickerResult.canceled) {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const imageData = pickerResult.assets.map(async (asset: any) => {
 
@@ -400,7 +401,7 @@ const pickImage = async () => {
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType
         }
-        const response: any = await UploadImageToAws3(file, true)
+        // const response: any = await UploadImageToAws3(file, true)
 
 
         const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
@@ -409,7 +410,7 @@ const pickImage = async () => {
           name: new Date().getTime() + asset.fileName,
           type: asset.mimeType,
           prediction: prediction,
-          url: response.url,
+          // url: response.url,
         };
       });
 
@@ -421,15 +422,16 @@ const pickImage = async () => {
     } catch (error) {
       console.error('Error picking and predicting images:', error);
     } finally {
-      setIsLoading(false);
+      // setIsUpdloaded(false)
     }
+    setIsUpdloaded(false)
   }
 };
 
 
 const imageToTensor = async (rawImageData: any) => {
   try {
-    setIsLoading(true);
+    // setIsLoading(true);
     const fileUri = rawImageData.uri;
     const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
     const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
@@ -452,14 +454,13 @@ const imageToTensor = async (rawImageData: any) => {
   } catch (error) {
     console.log("Error converting image to tensor:", error);
   } finally {
-    setIsLoading(false);
+    // setIsLoading(false);
   }
 }
 
 const predictImage = async (imageUri: any) => {
   try {
-    setIsLoading(true);
-    console.log(imageUri);
+    // setIsLoading(true);
 
     // Chuyển đổi hình ảnh thành tensor
     const imageTensor = await imageToTensor(imageUri);
@@ -498,7 +499,7 @@ const predictImage = async (imageUri: any) => {
   } catch (error) {
     console.log('Error when predicting image:', error);
   } finally {
-    setIsLoading(false);
+    // setIsLoading(false);
   }
 };
 
@@ -674,6 +675,7 @@ const predictImage = async (imageUri: any) => {
 
   return (
     <ScrollView style = {styles.container}>
+      <LoadingModal visible={isUploaded} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
       <TextInput
         label="Tên món đồ"

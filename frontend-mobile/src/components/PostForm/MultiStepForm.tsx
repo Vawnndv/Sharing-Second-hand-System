@@ -124,13 +124,13 @@ const MultiStepForm = () => {
 
 
     if (formDataStepOne.methodsBringItemToWarehouse && formDataStepOne.methodsBringItemToWarehouse != 'Chọn phương thức mang đồ đến kho' &&  formDataStepOne.methodGive != 'Đăng món đồ lên hệ thống') {
-      console.log(formDataStepOne.methodGive);
+
       updates.postBringItemToWarehouse = formDataStepOne.methodsBringItemToWarehouse;
     }
 
     
     if (formDataStepOne.methodGive == 'Đăng món đồ lên hệ thống') {
-      console.log(formDataStepOne.methodGive);
+
       updates.postBringItemToWarehouse = '';
     }
   
@@ -225,7 +225,6 @@ const MultiStepForm = () => {
           itemtypeID,
         });
         itemID = res.data.item.itemid;
-        console.log(res.data.item.itemid);
         // Alert.alert('Success', 'Item created successfully');
         } catch (error) {
           console.log(error);
@@ -244,7 +243,23 @@ const MultiStepForm = () => {
         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
         let response : any = null;
 
+        console.log("formDataStepOne.methodGive", formDataStepOne.methodGive)
         if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống"){
+          console.log(title,
+            locationTemp,
+            description,
+            owner,
+            new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            itemid,
+            new Date(timestart).toISOString(), // Tương tự cho timestart
+            new Date(timeend).toISOString(), // Và timeend
+            location.addressid ? false : true,
+            location,
+            false,
+            statusid,
+            givetypeid,
+            formDataStepTwo.postPhoneNumber)
+
           response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
@@ -261,6 +276,7 @@ const MultiStepForm = () => {
             givetypeid: givetypeid,
             phonenumber: formDataStepTwo.postPhoneNumber
           });
+          
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
           response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
@@ -300,7 +316,6 @@ const MultiStepForm = () => {
 
           });
         }    
-        console.log(response.data.postCreated.postid);
 
         postID = response.data.postCreated.postid;
         // address = response.data.postCreated.address;
@@ -413,8 +428,7 @@ const MultiStepForm = () => {
             path: data.url,
             itemID: itemID
           })
-  
-          console.log(responseUploadImage)
+
         })
         
       } catch (error) {
@@ -433,7 +447,6 @@ const MultiStepForm = () => {
     }
   };
 
-  console.log(location)
   // if (isCompleted) {
   //   return (
   //     <ContainerComponent right>

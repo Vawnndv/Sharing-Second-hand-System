@@ -84,7 +84,7 @@ function ViewPostDetail() {
           try {
             // console.log(postID);
             // setIsLoading(true);
-            const res: any = await Axios.get(`posts/${postid}`)
+            const res: any = await Axios.get(`/posts/${postid}`)
             // const res = await postsAPI.HandlePost(
             //   `/${postID}`,
             // );
@@ -105,7 +105,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`posts/postreceivers/${postid}`)
+            const res: any = await Axios.get(`/posts/postreceivers/${postid}`)
             if (!res) {
               throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
             }
@@ -116,7 +116,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res: any = await Axios.get(`items/images/${itemIDs}`)
+            const res: any = await Axios.get(`/items/images/${itemIDs}`)
             // const res = await itemsAPI.HandleAuthentication(
             //   `/${itemID}`,
             // );
@@ -133,7 +133,7 @@ function ViewPostDetail() {
     
           try {
     
-            const res = await Axios.get(`user/get-profile?userId=${owner}`);
+            const res = await Axios.get(`/user/get-profile?userId=${owner}`);
             console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setProfile(res.data);
@@ -141,7 +141,7 @@ function ViewPostDetail() {
             console.log(error);
           } 
           try {
-            const res = await axios.get(`http://localhost:3000/warehouse/getWarehouse/${warehouseid}`);
+            const res = await Axios.get(`/warehouse/getWarehouse/${warehouseid}`);
             console.log(res.data);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             setWarehouseInfo(res.data.wareHouse);
@@ -173,7 +173,7 @@ function ViewPostDetail() {
         if(post.givetypeid === 1){
 
             try{
-                const res = await Axios.post(`posts/update-post-status`, {
+                const res = await Axios.post(`/posts/update-post-status`, {
                     postid: post.postid,
                     statusid: 12,
                     isApproveAction: true
@@ -186,7 +186,7 @@ function ViewPostDetail() {
         }
         else if (post.givetypeid === 4) {
             try{
-                const res = await Axios.post(`posts/update-post-status`, {
+                const res = await Axios.post(`/posts/update-post-status`, {
                     postid: post.postid,
                     statusid: 12,
                     isApproveAction: true
@@ -197,7 +197,7 @@ function ViewPostDetail() {
             }
                 let orderID: any = null;
                 const time = new Date();
-                const response: any = await Axios.post(`order/createOrder`, {
+                const response: any = await Axios.post(`/order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -224,7 +224,7 @@ function ViewPostDetail() {
                 
                 try{
                     const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                    const responseTrace = await Axios.post(`order/createTrace`, {
+                    const responseTrace = await Axios.post(`/order/createTrace`, {
                         currentstatus,
                         orderid: orderID,
                     });
@@ -235,7 +235,7 @@ function ViewPostDetail() {
                 }
 
                 try{
-                    const responseInputcard = await Axios.post(`card/createInputCard`, {
+                    const responseInputcard = await Axios.post(`/card/createInputCard`, {
                         itemid: post.itemid,
                         qrcode: '',
                         usergiveid: post.owner,
@@ -255,7 +255,7 @@ function ViewPostDetail() {
 
             else{
                 try{
-                    const res = await Axios.post(`posts/update-post-status`, {
+                    const res = await Axios.post(`/posts/update-post-status`, {
                         postid: post.postid,
                         statusid: 12,
                         isApproveAction: true
@@ -268,7 +268,7 @@ function ViewPostDetail() {
                 }
                 let orderID: any = null;
                 const time = new Date();
-                const response: any = await Axios.post(`order/createOrder`, {
+                const response: any = await Axios.post(`/order/createOrder`, {
                     title: post.title,
                     location: '',
                     description: post.description,
@@ -293,7 +293,7 @@ function ViewPostDetail() {
                 orderID = response.orderCreated.orderid;
 
                 try{
-                    const responseInputcard = await Axios.post(`card/createInputCard`, {
+                    const responseInputcard = await Axios.post(`/card/createInputCard`, {
                         itemid: post.itemid,
                         qrcode: '',
                         usergiveid: post.owner,
@@ -315,7 +315,7 @@ function ViewPostDetail() {
 
     const declinePost = async () => {
         try{
-            const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+            const res = await Axios.post(`/posts/update-post-status`, {
                 postid: post.postid,
                 statusid: 6,
                 isApproveAction: true
