@@ -6,7 +6,7 @@ import { Avatar, Stack, Typography, Menu, MenuItem, IconButton } from '@mui/mate
 import moment from 'moment';
 import 'moment/locale/vi';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { NotificationModel } from '../../layout/Header';
+import { NotificationModel } from './Notification';
 
 type UserItemPros = {
   item: NotificationModel;
@@ -15,6 +15,7 @@ type UserItemPros = {
 };
 
 function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
+  // eslint-disable-next-line no-unused-vars
   const [isHovered, setIsHovered] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -50,6 +51,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
 
   return (
     <Stack
+      key={item.id}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       sx={{
@@ -67,7 +69,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
         <Avatar src={item.avatar} />
         <Stack>
           <Typography variant='body1'>
-            <Typography variant='body1' sx={{ fontWeight: 'bold' }}>{item.name} </Typography>
+            <Typography variant='body1' component="span" sx={{ fontWeight: 'bold' }}>{item.name} </Typography>
             {item.text}
           </Typography>
           <Stack direction='row' alignContent="center" justifyContent="space-between">

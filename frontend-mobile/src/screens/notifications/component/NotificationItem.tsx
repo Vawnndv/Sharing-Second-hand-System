@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native'
 import React, { useRef } from 'react'
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../../components';
@@ -25,19 +25,31 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
   const swipeableRef = useRef<Swipeable>(null);
 
   const renderRightActions = (progress: any, dragX: any) => {
+    const trans = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [-10, 50],
+      extrapolate: 'clamp',
+    });
+
+    const opacity = dragX.interpolate({
+      inputRange: [-100, 0],
+      outputRange: [1, 0],
+      extrapolate: 'clamp',
+    });
+
     return (
-      <TouchableOpacity
-        onPress={() => {
-          swipeableRef.current?.close();
-          onDeletePressed(item.id);
-        }}
-      >
-        <View style={[styles.swipeContainer, {backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6'}]}>
-          <View style={styles.swipeBtn}>
+      <View style={[styles.swipeContainer, {backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6'}]}>
+        <Animated.View style={[styles.swipeBtn, {opacity, transform: [{ translateX: trans }]}]}>
+          <TouchableOpacity
+            onPress={() => {
+              swipeableRef.current?.close();
+              onDeletePressed(item.id);
+            }}
+          >
             <FontAwesome name="trash" size={24} color={appColors.white} />
-          </View>
-        </View>
-      </TouchableOpacity>
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
     );
   };
 
@@ -47,14 +59,17 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         ref={swipeableRef}
         renderRightActions={renderRightActions}
         key={`swipe-${item.createdAt}-${index}`}
-        leftThreshold={10}
+        overshootRight={false} // Disable overshoot effect
+        friction={2} // Adjust the friction to control the ease of swiping
+        rightThreshold={40} // Adjust the threshold for full swipe completion
+        containerStyle={{ borderBottomWidth: 1 }}
       >
         <RowComponent
           key={`event${index}`}
           onPress={() => {
             // Linking.openURL(`frontend-mobile://profile`);
               // Linking.openURL(`frontend-mobile://order/detail/${136}`)
-              Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
+              // Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
               
               
               if (item.link) {
@@ -72,6 +87,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         >
           <AvatarComponent
             username={item.name}
+            avatar={item.avatar}
             size={78}
           />
           <SpaceComponent width={12} />
@@ -100,7 +116,8 @@ const styles = StyleSheet.create({
   swipeContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
+    // flex: 1,
+    width: 80,
     borderBottomWidth: 1,
   },
 
@@ -111,8 +128,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
-    width: 48,
-    height: 48,
+    width: 40,
+    height: 40,
   }
 })
 

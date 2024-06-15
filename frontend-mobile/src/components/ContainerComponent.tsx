@@ -20,10 +20,11 @@ interface Props {
   back?: boolean; 
   right?: boolean;
   badge?: number;
+  option?: ReactNode;
 };
 
 const ContainerComponent = (props: Props) => {
-  const {children, isScroll, isImageBackground, title, back, right, badge} = props;
+  const {children, isScroll, isImageBackground, title, back, right, badge, option} = props;
   console.log(badge, 'aaaaaaaaaaaaa')
   const navigation: any = useNavigation();
 
@@ -56,12 +57,11 @@ const ContainerComponent = (props: Props) => {
               </TouchableOpacity>
             )}
             {title && (
-              <RowComponent>
+              <RowComponent styles={{flex: 1}}>
                 <TextComponent 
                   text={title} 
                   font={fontFamilies.medium} 
                   size={20} 
-                  // flex={1} 
                 />
                 {badge !== null && badge !==undefined && badge > 0 && (
                   <>
@@ -78,6 +78,7 @@ const ContainerComponent = (props: Props) => {
             {right && (
               <HeaderComponent />
             )}
+            {option && option}
           </RowComponent>
         ) : (
           <RowComponent>

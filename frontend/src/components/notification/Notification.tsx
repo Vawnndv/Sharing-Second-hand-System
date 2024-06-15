@@ -1,24 +1,50 @@
 import './style.scss'
-
+import * as React from 'react'
 import { Card, CardContent, Stack, Typography } from '@mui/material'
 import { teal } from '@mui/material/colors'
-import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore'
-import { useSelector } from 'react-redux'
+import { Timestamp, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
-import { NotificationModel } from '../../layout/Header'
 import { RootState } from '../../redux/store'
 import NotificationItem from './NotificationItem'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
-interface Props{
-  notificationList: NotificationModel[]; 
+export interface NotificationModel {
+  id: string;
+  userid: string;
+  text: string;
+  postid: string;
+  name: string;
+  avatar: string;
+  link: string;
+  createdAt: Timestamp;
+  isRead: boolean;
 }
 
-
-
-function Notification(props: Props) {
-  const {notificationList} = props; 
+function Notification() {
     
   const { userInfo } = useSelector( (state: RootState) => state.userLogin);
+  const [notificationList, setNotificationList] = React.useState<NotificationModel[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+  useEffect(() => {
+    if (userInfo?.id) {
+      const docRef = doc(db, "receivers", userInfo?.id.toString());
+      const messagesRef = collection(docRef, "notification");
+      const q = query(messagesRef, orderBy('createdAt', 'desc'));
+
+      onSnapshot(q, (snapshot)=> {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const list: any = snapshot.docs.map(doc=>{
+          return doc.data();      
+        })
+
+        setNotificationList(list);
+      })
+    } else {
+      console.error('User ID is not defined');
+    }
+  }, []);
 
   const handleClickAll = async () => {
     try {
@@ -60,7 +86,7 @@ function Notification(props: Props) {
     } catch(err) {
         console.error('Error updating notification:', err);
     }
-};
+  };
 
   const onDeletePressed = async (id: string) => {
     try {
@@ -82,19 +108,19 @@ function Notification(props: Props) {
     <Card>
       {/* Header */}
       <CardContent>
-        <Typography variant="h6" sx={{ fontWeight: 'bold', py: '0!important', color: teal[400] }} px={2}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', py: '0!important', color: '#321357' }} px={2}>
           Thông báo
         </Typography>
       </CardContent>
 
       {/* Body with scrolling */}
       <CardContent sx={{ overflowY: 'auto', maxHeight: '60vh', padding: '0!important' }}>
-        {/* {isLoading ? ( */}
           <Stack sx={{ width: '400px' }}>
             {notificationList.length > 0 ? (
-              notificationList.map((item) => (
+              notificationList.map((item, index) => (
                 // eslint-disable-next-line react/jsx-key
                 <NotificationItem
+                  key={index}
                   item={item} 
                   onDeletePressed={onDeletePressed} updateRead={updateRead}
                 />
@@ -108,7 +134,7 @@ function Notification(props: Props) {
                   color: '#FF0000'
                 }}
               >
-                Empty
+                Trống
               </Typography>
             )}
           </Stack>

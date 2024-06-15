@@ -1,13 +1,13 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Clock } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
-import { AvatarComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
+import { AvatarComponent, ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { appColors } from '../../constants/appColors';
 import { fontFamilies } from '../../constants/fontFamilies';
 import { globalStyles } from '../../styles/globalStyles';
 import { NotificationModel } from '../../models/NotificationModel';
-import { doc, collection, query, orderBy, onSnapshot, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, collection, query, orderBy, onSnapshot, updateDoc, deleteDoc, getDocs, getDoc } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { db } from '../../../firebaseConfig';
@@ -55,13 +55,14 @@ const NotificationScreen = () => {
       // Find the notification in the current list
       const notification = notificationList.find(notification => notification.id === id);
 
-      if (notification && !notification.isRead) {
-        // Update the document
+      const docSnap = await getDoc(docRef);
+  
+      // Check if the document exists and has isRead as false
+      if (docSnap.exists() && !docSnap.data().isRead) {
+        // Update the read count if the notification was previously unread
         await updateDoc(docRef, { isRead: true });
         
-        // Update the read count if the notification was previously unread
         setReadCount(readCount - 1);
-        
         console.log(`Notification with id ${id} has been marked as read`);
       }
     } catch (err) {
@@ -69,29 +70,69 @@ const NotificationScreen = () => {
     }
   };
 
+ 
+  const updateAllRead = async () => {
+    try {
+      // Iterate through notificationList and update documents
+      for (const notification of notificationList) {
+        if (!notification.isRead) {
+          const id = notification.id;
+          const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
+  
+          // Update the document
+          await updateDoc(docRef, { isRead: true });
+  
+          // Update the read count if needed (not specified in the original question)
+          // setReadCount(readCount - 1); // Uncomment if necessary
+  
+          console.log(`Notification with id ${id} has been marked as read`);
+        }
+      }
+    } catch (err) {
+      console.error('Error updating notifications:', err);
+    }
+  };
+  
   const onDeletePressed = async (id: string) => {
     try {
       const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
-
-      // Find the notification in the current list
-      const notification = notificationList.find(notification => notification.id === id);
-
-      if (notification && !notification.isRead) {
+  
+      // Get the document snapshot from Firestore
+      const docSnap = await getDoc(docRef);
+  
+      // Check if the document exists and has isRead as false
+      if (docSnap.exists() && !docSnap.data().isRead) {
         // Update the read count if the notification was previously unread
         setReadCount(readCount - 1);
       }
-
+  
       // Delete the document
       await deleteDoc(docRef);
-      
+  
       console.log(`Notification with id ${id} has been deleted`);
     } catch (err) {
       console.error('Error deleting notification:', err);
     }
   };
+  
 
   return (
-    <ContainerComponent back title='Thông báo' badge={readCount}>
+    <ContainerComponent 
+      back 
+      title='Thông báo' 
+      badge={readCount} 
+      option={
+        notificationList.filter(element => !element.isRead).length > 0 && (
+          <ButtonComponent
+            onPress={updateAllRead}
+            icon={
+              
+              <Feather name="check-square" size={20} color={appColors.text} />
+            }
+          />
+        )
+      }
+    >
       {isLoading ? (
         <LoadingComponent isLoading={isLoading} />
       ) : (

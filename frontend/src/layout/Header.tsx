@@ -28,57 +28,54 @@ import { logoutAction } from '../redux/actions/authActions'
 import Notification from '../components/notification/Notification'
 // import { useDispatch } from 'react-redux'
 // import { handleClickMenu } from '../redux/actions/menuActions'
-import { Timestamp, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore'
+import { collection, doc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'
 
-export interface NotificationModel {
-  id: string;
-  userid: string;
-  text: string;
-  postid: string;
-  name: string;
-  avatar: string;
-  link: string;
-  createdAt: Timestamp;
-  isRead: boolean;
-}
-
 export default function Header({setIndex}: any) {
-  
-  const { userInfo } = useSelector( (state: RootState) => state.userLogin);
   const MyDispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  const { userInfo } = useSelector( (state: RootState) => state.userLogin);
 
   const [anchorEl, setAnchorEl] = React.useState(null)
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null)
   const [isNoti, setIsNoti] = React.useState (false)
   const [anchorElNoti, setAnchorElNoti] = React.useState(null)
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [notificationList, setNotificationList] = React.useState<NotificationModel[]>([]);
 
+  const [unreadNotificationCount, setUnreadNotificationCount] = React.useState<number>(0);
+
+  // Hàm đếm số lượng tài liệu trong sub-collection "notification" của collection "receivers" với điều kiện isRead là false
+  const countUnreadNotifications = (receiverId: string, callback: (count: number) => void) => {
+    const docRef = doc(db, "receivers", receiverId);
+    const notificationsRef = collection(docRef, "notification");
+
+    // Tạo query với điều kiện isRead là false
+    const q = query(notificationsRef, where("isRead", "==", false));
+
+    // Thiết lập listener để lắng nghe các thay đổi
+    const unsubscribe = onSnapshot(q, (snapshot: { size: number }) => {
+      const count = snapshot.size;
+      callback(count);
+    });
+
+    return unsubscribe;
+  };
+  
+  React.useEffect(() => {
+    if (!userInfo?.id) return;
+    // Thiết lập listener và lưu hàm hủy đăng ký
+    const unsubscribe = countUnreadNotifications(userInfo?.id.toString(), (count) => {
+      setUnreadNotificationCount(count);
+    });
+
+    // Hủy đăng ký listener khi component unmount
+    // eslint-disable-next-line consistent-return
+    return () => unsubscribe();
+  }, [userInfo?.id]);
+
+ 
   const isMenuOpen = Boolean(anchorEl)
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
-  React.useEffect(() => {
-    setIsLoading(true);
-    if (userInfo?.id) {
-      const docRef = doc(db, "receivers", userInfo?.id.toString());
-      const messagesRef = collection(docRef, "notification");
-      const q = query(messagesRef, orderBy('createdAt', 'desc'));
-
-      onSnapshot(q, (snapshot)=> {
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        const list: any = snapshot.docs.map(doc=>{
-          return doc.data();      
-        })
-
-        setNotificationList(list);
-        console.log(notificationList)
-        setIsLoading(false);
-      })
-    } else {
-      console.error('User ID is not defined');
-    }
-  }, []);
   
   const handleProfileMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -216,7 +213,7 @@ export default function Header({setIndex}: any) {
           size="large"
           color="inherit"
         >
-          <Badge badgeContent={notificationList.length} color="error">
+          <Badge badgeContent={unreadNotificationCount} color="error">
             <NotificationsIcon onClick={( e ) => handleClickAncorEl( e ) }/>
           </Badge>
         </IconButton>
@@ -235,9 +232,7 @@ export default function Header({setIndex}: any) {
           horizontal: 'right'
         }}
       >
-        <Notification
-          notificationList={notificationList}
-        />
+        <Notification/>
       </Popover>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
@@ -328,7 +323,7 @@ export default function Header({setIndex}: any) {
               aria-label="show 17 new notifications"
               color="inherit"
             >
-              <Badge badgeContent={notificationList.length} color="error">
+              <Badge badgeContent={unreadNotificationCount} color="error">
                 <NotificationsIcon onClick={( e ) => handleClickAncorEl( e ) }/>
               </Badge>
             </IconButton>
@@ -345,9 +340,7 @@ export default function Header({setIndex}: any) {
                 horizontal: 'right'
               }}
             >
-              <Notification
-                notificationList={notificationList}
-              />
+              <Notification/>
             </Popover>
             <IconButton
               size="large"

@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import { deleteUserAction, getAllUsersAction } from '../../../redux/actions/userActions'
-// import { styled } from '@mui/system'
+import { styled } from '@mui/system'
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store'
 import UserTable from '../components/tables/UserTable'
 import { getUsersTotalService } from '../../../redux/services/userServices'
 
-// const StyledClassTable = styled('div')({
-//   transform: 'scale(0.9)',
-//   transformOrigin: 'top left',
-//   width: 'calc(100% / 0.9)'
-// })
+const StyledClassTable = styled('div')({
+  transform: 'scale(0.9)',
+  transformOrigin: 'top left',
+  width: 'calc(100% / 0.9)'
+})
 
 function Users() {
   const dispatch: AppDispatch = useAppDispatch();
@@ -85,21 +85,23 @@ function Users() {
   }
 
   return (
-        <UserTable 
-            deleteHandler={deleteUserHandler} 
-            isLoading={isLoading ?? false} 
-            users={users ?? []} 
-            total={totalUser} 
-            deleteSelectedHandler={handleDeleteSelectedRows} 
-            selectionModel={selectionModel} 
-            setSelectionModel={setSelectionModel} 
-            pageState={pageState} 
-            filterModel={filterModel}
-            sortModel={sortModel}
-            setPageState={setPageState} 
-            setFilterModel={setFilterModel}
-            setSortModel={setSortModel}
-        />
+    <StyledClassTable>
+      <UserTable 
+        deleteHandler={deleteUserHandler} 
+        isLoading={isLoading ?? false} 
+        users={users ?? []} 
+        total={totalUser} 
+        deleteSelectedHandler={handleDeleteSelectedRows} 
+        selectionModel={selectionModel} 
+        setSelectionModel={setSelectionModel} 
+        pageState={pageState} 
+        filterModel={filterModel}
+        sortModel={sortModel}
+        setPageState={setPageState} 
+        setFilterModel={setFilterModel}
+        setSortModel={setSortModel}
+      />
+    </StyledClassTable>
   )
 }
 
