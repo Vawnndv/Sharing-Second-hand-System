@@ -9,7 +9,7 @@ export const getGallaryPermission = async (setGalleryPermission: any) => {
         setGalleryPermission(true)
         console.log(`gallery permission true`)
     }else{
-        alert(`Can't get Gallery Permission`)
+        alert(`Chưa được cấp quyền vào thư viện ảnh`)
     }
 }
 
@@ -19,7 +19,7 @@ export const getCameraPermission = async (setCameraPermission: any) => {
         setCameraPermission(true)
         console.log(`camera permission true`)
     }else{
-        alert(`Can't get Camera Permission`)
+        alert(`Chưa được cấp quyền máy ảnh`)
     }
     
 }
@@ -50,7 +50,7 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
         }
     
     }else{
-        alert(`Permission hasn't granted yet`)
+        alert(`Quyền chưa được cấp`)
     }
     
 }
@@ -77,7 +77,7 @@ export const TakePhoto = async (permission: boolean, setImage: any, setModalVisi
         
     }
     else{
-        alert(`Permission hasn't granted yet`)
+        alert(`Quyền chưa được cấp`)
     }
 }
 

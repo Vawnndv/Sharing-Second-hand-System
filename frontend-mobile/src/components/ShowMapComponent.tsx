@@ -28,7 +28,7 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
     const getHowFarAway = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị tri đã bị hoãn');
             return 0;
         }
 

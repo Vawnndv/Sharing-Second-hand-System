@@ -336,6 +336,11 @@ function ViewPostDetail() {
     const handleClickPost = () => {
         console.log('post')
     }
+
+    const handleNavigateToUserProfile = (userID: string, event: any) => {
+        event.stopPropagation();
+        navigate(`/profile?profileID=${userID}`)
+    }
     
     // console.log(evenlySpacedDates);
     return ( 
@@ -404,13 +409,19 @@ function ViewPostDetail() {
                                     alignItems='center'
                                     gap={3}
                                     style={{width: '100%'}}>
-                                        <Avatar sx={{width: 80, height: 80}} src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
+                                        <Avatar sx={{width: 80, height: 80, cursor: 'pointer'}} 
+                                            component='div'
+                                            onClick={(event: any) => handleNavigateToUserProfile(post.owner, event)}
+                                            src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
                                         <Stack
                                             flexDirection='column'
                                             justifyContent='center'
                                             alignItems='flex-start'
                                             gap={0.5}>
-                                                <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{profile.firstname} {profile.lastname} </Typography> đang muốn cho đồ</Typography>
+                                                <Typography variant='body2' component='div'
+                                                    onClick={(event: any) => handleNavigateToUserProfile(post.owner, event)}>
+                                                    <Typography variant='body2' sx={{fontWeight: 'bold', cursor: 'pointer'}} component='span'>{profile.firstname} {profile.lastname} </Typography> đang muốn cho đồ
+                                                </Typography>
                                                 <Typography variant='h6' sx={{fontWeight: 'bold'}}>{post.title}</Typography>
                                                 <Stack 
                                                     flexDirection='row'
@@ -478,14 +489,20 @@ function ViewPostDetail() {
                                                             alignItems='center'
                                                             gap={3}
                                                             key={index}>
-                                                                <Avatar sx={{width: 70, height: 70}} src={`${receiver.avatar !== "" ? receiver.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
+                                                                <Avatar sx={{width: 70, height: 70, cursor: 'pointer'}} 
+                                                                    component='div'
+                                                                    onClick={(event: any) => handleNavigateToUserProfile(receiver.receiverid, event)}
+                                                                    src={`${receiver.avatar !== "" ? receiver.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
                                                                 <Stack
                                                                     flexDirection='column'
                                                                     justifyContent='center'
                                                                     alignItems='flex-start'
                                                                     gap={0.5}
                                                                     >
-                                                                        <Typography variant='body2' component='div'><Typography variant='body2' sx={{fontWeight: 'bold'}} component='span'>{receiver.firstname} {receiver.lastname} </Typography></Typography>
+                                                                        <Typography variant='body2' component='div'
+                                                                            onClick={(event: any) => handleNavigateToUserProfile(receiver.receiverid, event)}>
+                                                                            <Typography variant='body2' sx={{fontWeight: 'bold', cursor: 'pointer'}} component='span'>{receiver.firstname} {receiver.lastname} </Typography>
+                                                                        </Typography>
                                                                         <Typography variant='body2' sx={{fontWeight: 'bold'}} color='green'>{receiver.give_receivetype}</Typography>
                                                                         <Stack 
                                                                             flexDirection='row'

@@ -113,7 +113,7 @@ function Login(props: Props) {
       }
 
       if (isSuccess) {
-        toast.success(`Welcome back ${userInfo?.firstName}`)
+        toast.success(`Chào mừng quay trở lại ${userInfo?.firstName}`)
       }
       if (isError) {
         console.log(isError)

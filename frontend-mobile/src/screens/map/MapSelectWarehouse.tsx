@@ -86,7 +86,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị trí đã bị hoãn');
             return;
           }
     

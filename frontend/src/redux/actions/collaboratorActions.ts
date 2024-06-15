@@ -25,7 +25,7 @@ const deleteCollaboratorAction = (id: string): ThunkAction<void, RootState, unkn
     dispatch({ type: collaboratorConstants.DELETE_COLLABORATOR_REQUEST })
     await collaboratorApi.deleteCollaboratorService(id)
     dispatch({ type: collaboratorConstants.DELETE_COLLABORATOR_SUCCESS })
-    toast.success('collaborator Was Deleted Successfully')
+    toast.success('Đã xóa cộng tác viên thành công')
   } catch (error) {
     ErrorsAction(error, dispatch, collaboratorConstants.DELETE_COLLABORATOR_FAIL)
   }
@@ -40,7 +40,7 @@ const updateCollaboratorAction = (id: string, collaborator: any): ThunkAction<vo
       type: collaboratorConstants.UPDATE_COLLABORATOR_SUCCESS,
       payload: response
     })
-    toast.success('collaborator Edit successfully')
+    toast.success('Chỉnh sửa cộng tác viên thành công')
   } catch (error) {
     ErrorsAction(error, dispatch, collaboratorConstants.UPDATE_COLLABORATOR_FAIL)
   }
@@ -55,7 +55,7 @@ const createCollaboratorAction = (collaborator: any): ThunkAction<void, RootStat
       type: collaboratorConstants.CREATE_COLLABORATOR_SUCCESS,
       payload: response
     })
-    toast.success('collaborator Edit successfully')
+    toast.success('Chỉnh sửa cộng tác viên thành công')
   } catch (error) {
     ErrorsAction(error, dispatch, collaboratorConstants.CREATE_COLLABORATOR_FAIL)
   }

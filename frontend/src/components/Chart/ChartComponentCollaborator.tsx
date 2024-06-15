@@ -32,8 +32,8 @@ function ChartComponentCollaborator({data, title, typeChart}: any) {
     const chartInstance = new Chart(ctx, {
       type: typeChart,
       data: {
-        labels: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập') ? data.map((row: any) => row.label) : data[0].data.results.map((row: any) => row.label),
-        datasets: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập') ? 
+        labels: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập' || title === 'Lượng đăng bài') ? data.map((row: any) => row.label) : data[0].data.results.map((row: any) => row.label),
+        datasets: (userLogin.userInfo.roleID === 2 || title === 'Lượng người truy cập' || title === 'Lượng đăng bài') ? 
         [
           {
             label: title,

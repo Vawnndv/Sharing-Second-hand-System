@@ -44,7 +44,7 @@ function ChatRoom({ typeChat }: any) {
 
   const createRoomIfNotExists = async () => {
     if (userID === undefined) {
-      toast.error('Can not get user infomation')
+      toast.error('Không thể lấy thông tin người dùng')
       return
     }
     const roomID = warehouse ? `${warehouse.warehouseid}` : roomid;
@@ -68,7 +68,7 @@ function ChatRoom({ typeChat }: any) {
 
   const getWareHouse = async () => {
     if (userID === undefined) {
-      toast.error('Can not get user infomation')
+      toast.error('Không thể lấy thông tin người dùng')
       return
     }
     const res = await getWareHouseByUserID(userID);
@@ -156,12 +156,12 @@ function ChatRoom({ typeChat }: any) {
           username: "VAN NGUYEN",
           isRead: false
         });
-        toast.success('Image Upload successfully');
+        toast.success('Thêm ảnh thành công');
       } catch (error: any) {
         if (error.response && error.response.data && error.response.data.message) {
           toast.error(error.response.data.message);
         } else {
-          toast.error('Network Error');
+          toast.error('Lỗi mạng');
         }
       }
     });

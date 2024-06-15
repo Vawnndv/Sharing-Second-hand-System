@@ -74,6 +74,11 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
     }
   }, [location.pathname, index]);
 
+  const handleNavigateToUserProfile = (userID: string) => {
+    // event.stopPropagation();
+    navigate(`/profile?profileID=${userID}`)
+  }
+
   return (
     <div>
       {userLogin.userInfo.roleID === 2 ? (
@@ -87,6 +92,8 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
             alignItems="center"
             spacing={1}
             style={{ paddingLeft: '20px', cursor: 'pointer' }}
+            component='div'
+            onClick={() => handleNavigateToUserProfile(userLogin.userInfo.id)}
           >
             <Avatar
               alt="Remy Sharp"
@@ -97,7 +104,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
               variant="body1"
               sx={{ fontWeight: 'bold', color: 'rgb(50,19,87)' }}
             >
-              John
+              {userLogin.userInfo.firstName} {userLogin.userInfo.lastName} 
             </Typography>
           </Stack>
 

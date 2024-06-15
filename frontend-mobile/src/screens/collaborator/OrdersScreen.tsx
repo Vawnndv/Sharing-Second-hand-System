@@ -17,16 +17,8 @@ import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { Ionicons } from '@expo/vector-icons'
+import { category } from "../../constants/appCategories";
 
-const category = [
-    "Quần áo",
-    "Giày dép",
-    "Đồ nội thất",
-    "Công cụ",
-    "Dụng cụ học tập",
-    "Thể thao",
-    "Khác"
-  ]
 
 export default function OrdersScreen({navigation}: any) {
 

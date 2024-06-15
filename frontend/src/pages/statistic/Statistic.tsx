@@ -13,16 +13,9 @@ import DatePicker from '../../components/DatePicker';
 import ChartComponentFollowTime from '../../components/Chart/ChartComponentFollowTime';
 import ChartComponentFollowTimeCollaborator from '../../components/Chart/ChartComponentFollowTimeCollaborator';
 import Axios from '../../redux/APIs/Axios';
+import { category } from '../../constant/appCategories';
 // import MapSelectAddress from '../../components/Map/MapSelectAddress';
-const category = [
-    "Quần áo",
-    "Giày dép",
-    "Đồ nội thất",
-    "Công cụ",
-    "Dụng cụ học tập",
-    "Thể thao",
-    "Khác"
-  ]
+
 
 function ChartTypeComponent ({typeChart, setTypeChart}: any) {
     return (
@@ -362,7 +355,7 @@ function Statistic() {
                         </Stack>
                         <Stack
                             flexDirection='row'>
-                            <ChartComponent data={data} title='Lượng bài đăng' typeChart={typeChart}/>
+                            <ChartComponent data={data} title='Lượng đăng bài' typeChart={typeChart}/>
                             <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
                         </Stack>
                     </TabPanel>
@@ -441,11 +434,15 @@ function Statistic() {
                                                 <MenuItem value="export">Ra kho</MenuItem>
                                             </Select>
                                         </FormControl>
-                                        <Stack
-                                            flexDirection='row'>
-                                            <ChartComponent data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
-                                            <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
-                                        </Stack>
+                                        {
+                                            data[0].data &&
+                                            <Stack
+                                                flexDirection='row'>
+                                                <ChartComponent data={data} title='Lượng sản phẩm vào/ra kho' typeChart={typeChart}/>
+                                                <ChartTypeComponent typeChart={typeChart} setTypeChart={setTypeChart}/>
+                                            </Stack>
+                                        }
+                                        
                                     </TabPanel>
 
                                     <TabPanel value='Thống kê theo thời gian'>

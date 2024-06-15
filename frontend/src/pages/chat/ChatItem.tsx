@@ -44,7 +44,7 @@ function ChatItem({ item }: any) {
 
   const handleClickChatRoom = () => {
     if (userID === undefined) {
-      toast.error('Can not get user information');
+      toast.error('Không thể lấy thông tin người dùng');
       return;
     }
     updateRead();
@@ -53,7 +53,7 @@ function ChatItem({ item }: any) {
 
   useEffect(() => {
     if (userID === undefined) {
-      toast.error('Can not get user information');
+      toast.error('Không thể lấy thông tin người dùng');
       return;
     }
 

@@ -8,15 +8,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 
 const categoryQuery = 'Tất cả'
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 function ViewInventoryList({searchQuery, filterValue, typeCard, status} : any) {
   const [inventoryList, setInventoryList] = useState([]);

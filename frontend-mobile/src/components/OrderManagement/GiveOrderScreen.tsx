@@ -8,6 +8,7 @@ import { LoadingModal } from "../../modals";
 import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { useFocusEffect } from "@react-navigation/native";
+import { category } from "../../constants/appCategories";
 
 interface Item {
   title: string;
@@ -22,15 +23,6 @@ interface Item {
   imgconfirmreceive: string;
 }
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác",
-];
 
 export default function GiveOrderScreen({ navigation, route }: any) {
   const [isLoading, setIsLoading] = useState(false);

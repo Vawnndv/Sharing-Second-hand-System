@@ -101,7 +101,7 @@ export default function Header({setIndex}: any) {
 
   const logoutHandler = () => {
     MyDispatch(logoutAction())
-    toast.success('Logged out successfully')
+    toast.success('Đã đăng xuất thành công')
     navigate('/login')
   }
 
@@ -129,7 +129,7 @@ export default function Header({setIndex}: any) {
     >
       <MenuItem onClick={handleMenuClose}>
         <Link
-          to='/profile'
+          to={`/profile?profileID=${userInfo?.id}`}
           style={{
             textDecoration: 'none',
             display: 'flex',

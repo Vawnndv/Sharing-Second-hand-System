@@ -6,7 +6,7 @@ import axios from "axios";
 import { appInfo } from "../constants/appInfos";
 import LoadingModal from "./LoadingModal";
 
-export default function ReportModal({ visible, setVisible, title, reportType, userID, postID, reporterID }: any) {
+export default function ReportModal({ visible, setVisible, title, reportType, userID, postID, reporterID, warehouseID }: any) {
     
     const [description, setDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false)
@@ -19,7 +19,8 @@ export default function ReportModal({ visible, setVisible, title, reportType, us
                 postID,
                 description,
                 reportType,
-                reporterID
+                reporterID,
+                warehouseID
             })
             if(response.data.data === true){
                 setVisible(false)

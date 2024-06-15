@@ -7,15 +7,6 @@ import InventoryCard from '../InventoryCard';
 
 const userID = '30'
 const categoryQuery = 'Tất cả'
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
 function OutputCardScreen({searchQuery, filterValue}: any) {
   const [inventoryList, setInventoryList] = useState([]);

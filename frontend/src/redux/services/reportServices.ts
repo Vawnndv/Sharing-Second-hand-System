@@ -5,8 +5,8 @@ const getUserReports = async (): Promise<any>  => {
   return data
 }
 
-const getPostReports = async (): Promise<any>  => {
-  const { data } = await Axios.get(`/report/postReposts`)
+const getPostReports = async (userID: string): Promise<any>  => {
+  const { data } = await Axios.get(`/report/postReposts?userID=${userID}`)
   return data
 }
 
