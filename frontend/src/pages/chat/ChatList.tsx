@@ -33,7 +33,7 @@ function ChatList({ searchQuery, typeChat }: { searchQuery: string; typeChat: nu
     const fetchData = async () => {
       setIsLoading(true);
       if (userID === undefined) {
-        toast.error('Can not get user information');
+        toast.error('Không thể lấy thông tin người dùng');
         return;
       }
       try {

@@ -3,6 +3,7 @@ import { Container, CircularProgress, Box } from '@mui/material';
 import ReportCard from './ReportCard';
 import { getPostReports, putUpdateReport } from '../../redux/services/reportServices';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 interface Report {
   reportid: string;
@@ -24,11 +25,12 @@ function PostReport() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const navigate = useNavigate();
+  const userLogin = useSelector((state: any) => state.userLogin);
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const postReportsData = await getPostReports();
+        const postReportsData = await getPostReports(userLogin.userInfo.id);
         setReports([...postReportsData]);
       } catch (error) {
         console.error('Failed to fetch reports:', error);

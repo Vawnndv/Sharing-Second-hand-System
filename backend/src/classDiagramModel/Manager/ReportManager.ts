@@ -14,14 +14,14 @@ export class ReportManager {
     //code here
   }
 
-  public static async insertReport(userID: string, postID: string, reportType: string, description: string, reporterID: string) {
+  public static async insertReport(userID: string, postID: string, reportType: string, description: string, reporterID: string, warehouseID: string) {
     const client = await pool.connect();
     try {
       const query = `
-        INSERT INTO report (userid, postid, reporttype, description, reporterid)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO report (userid, postid, reporttype, description, reporterid, warehouseid)
+        VALUES ($1, $2, $3, $4, $5, $6)
       `
-      const values: any = [userID, postID, reportType, description, reporterID]
+      const values: any = [userID, postID, reportType, description, reporterID, warehouseID]
       const result: any = await client.query(query, values)
 
       return true
@@ -58,7 +58,7 @@ export class ReportManager {
     }
   }
 
-  public static async getPostReports() {
+  public static async getPostReports(userID: string) {
     const client = await pool.connect();
     try {
       const query = `
@@ -70,6 +70,11 @@ export class ReportManager {
         FROM report r
         JOIN "User" u ON u.userid = r.reporterid
         WHERE r.reporttype = '2' AND r.approvedate IS NULL
+          AND r.warehouseid = (
+            SELECT wk.warehouseid
+            FROM workat wk
+            WHERE wk.userid = ${userID}
+          )
         ORDER BY r.createdat ASC 
       `
       const result: any = await client.query(query)

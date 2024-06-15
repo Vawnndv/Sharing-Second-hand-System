@@ -401,7 +401,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                  Alert.alert('Modal has been closed.');
+                  Alert.alert('Cửa sổ đã bị đóng.');
                   setModalVisible(!modalVisible);
                 }}>
                 <TouchableWithoutFeedback onPress={() => {setModalVisible(false)}}>
@@ -642,7 +642,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
          Đi đến trang cảm ơn</Button> */}
         {
           post !== null && 
-          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id}/>
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseID}/>
         }
         
       </ScrollView>

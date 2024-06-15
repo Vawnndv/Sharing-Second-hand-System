@@ -104,7 +104,7 @@ export default function Header({setIndex}: any) {
 
   const logoutHandler = () => {
     MyDispatch(logoutAction())
-    toast.success('Logged out successfully')
+    toast.success('Đã đăng xuất thành công!')
     navigate('/login')
   }
 

@@ -94,13 +94,13 @@ function Uploader(props: Props) {
       const responseUploadImage: any = await UploadImageToAws3(imageFile[0], false)
       setImageUrl(responseUploadImage.url);
       setLoading(false)
-      toast.success('Image Upload successfully')
+      toast.success('Thêm ảnh thành công!')
     } catch (error: any) {
       // console.log(error)
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error('Network Error');
+        toast.error('Lỗi mạng');
       }
     }
     // if (data) {
@@ -131,13 +131,13 @@ function Uploader(props: Props) {
           <span className='upload-icon'>
             <FiUploadCloud />
           </span>
-          <p className='upload-text'>Drag your image here</p>
+          <p className='upload-text'>Hãy thả tệp ảnh vào đây</p>
           <em className='upload-hint'>
             {isDragActive
               ? 'Drop it like it\'s hot'
               : isDragReject
                 ? 'Unsupported file type...'
-                : 'only .jpg and .png files will be accepted'}
+                : 'chỉ các tệp .jpg và .png là được chấp nhận'}
           </em>
         </div>
       )}

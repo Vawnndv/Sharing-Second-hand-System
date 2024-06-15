@@ -46,7 +46,7 @@ function Collaborators() {
       if (error instanceof Error) {
         toast.error(error.message)
       } else {
-        toast.error("Network Error");
+        toast.error("Lỗi mạng");
       }
     }
   }

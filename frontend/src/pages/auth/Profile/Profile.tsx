@@ -207,7 +207,7 @@ function Profile() {
                     <ImagePreview image={imageUrl} name="user-image" />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField fullWidth {...register('email')} id="email" label="Email" name="email" disabled />
+                    <TextField fullWidth {...register('email')} id="email" label="Địa chỉ email" name="email" disabled />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -216,7 +216,7 @@ function Profile() {
                       fullWidth
                       autoFocus
                       id="firstName"
-                      label="First Name"
+                      label="Họ"
                       {...register('firstName')}
                       error={!!errors.firstName}
                       helperText={errors.firstName?.message || ''}
@@ -227,7 +227,7 @@ function Profile() {
                       required
                       fullWidth
                       id="lastName"
-                      label="Last Name"
+                      label="Tên"
                     //   name="lastName"
                       {...register('lastName')}
                       error={!!errors.lastName}
@@ -238,7 +238,7 @@ function Profile() {
                     <TextField
                       fullWidth
                       id="phone"
-                      label="Phone"
+                      label="Số điện thoại"
                       {...register('phone')}
                       error={!!errors.phone}
                       helperText={errors.phone?.message || ''}
@@ -270,7 +270,7 @@ function Profile() {
                       <DemoContainer components={['DatePicker']}>
                         <DatePicker
                           sx={{ width: '100%' }}
-                          label='Date of birth'
+                          label='Ngày sinh'
                           value={date}
                           onChange={newValue =>
                             setDate(newValue)

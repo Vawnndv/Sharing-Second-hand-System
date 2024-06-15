@@ -226,7 +226,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             )
           }
 
-          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={1} userID={profile.userId} postID={null} reporterID={auth.id}/>
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={1} userID={profile.userId} postID={null} reporterID={auth.id} warehouseID={null}/>
         </>
       )}
     </ContainerComponent>

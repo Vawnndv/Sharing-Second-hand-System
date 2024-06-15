@@ -46,7 +46,7 @@ const updateProfileAction = (user: any): ThunkAction<void, RootState, unknown, A
       type: userConstants.USER_UPDATE_PROFILE_SUCCESS,
       payload: response
     })
-    toast.success('Profile Updated')
+    toast.success('Đã cập nhật thông tin tài khoản')
     dispatch({
       type: authConstants.USER_LOGIN_SUCCESS,
       payload: response
@@ -75,7 +75,7 @@ const deleteUserAction = (id: string): ThunkAction<void, RootState, unknown, Act
     dispatch({ type: userConstants.DELETE_USER_REQUEST })
     await userApi.deleteUserService(id)
     dispatch({ type: userConstants.DELETE_USER_SUCCESS })
-    toast.success('User Was Deleted Successfully')
+    toast.success('Xóa người dùng thành công')
   } catch (error) {
     ErrorsAction(error, dispatch, userConstants.DELETE_USER_FAIL)
   }

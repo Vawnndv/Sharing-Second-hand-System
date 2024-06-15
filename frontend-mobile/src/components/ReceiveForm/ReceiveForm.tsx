@@ -472,7 +472,7 @@ const handleReceive = async () => {
     }
       catch (error) {
       console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
-      Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+      Alert.alert('Thất bại', 'Gửi yêu cầu nhận hàng thất bại.');
     }
   }else{
     let status = 'Chờ người nhận lấy hàng';
@@ -546,7 +546,7 @@ const handleReceive = async () => {
       navigation.navigate('Home', {screen: 'HomeScreen'})
   
     } catch(error){
-      Alert.alert('Error', 'Cho món đồ thất bại.');
+      Alert.alert('Thất bại', 'Cho món đồ thất bại.');
         setIsCompleted(false);
     }
   }
@@ -660,7 +660,7 @@ const handleGive = async () =>{
     navigation.navigate('Home', {screen: 'HomeScreen'})
 
   } catch(error){
-    Alert.alert('Error', 'Cho món đồ thất bại.');
+    Alert.alert('Thất bại', 'Cho món đồ thất bại.');
       setIsCompleted(false);
   }
 
