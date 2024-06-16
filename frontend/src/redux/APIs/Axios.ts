@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { UserInfo } from '../services/authServices';
 
 const getAccessToken = async () => {
   const res = localStorage.getItem('userInfo');

@@ -1,12 +1,13 @@
 import express from 'express';
 import { insertReport, getUserReports, getPostReports, updateReport } from '../controllers/reportController';
+import { protect } from '../middlewares/verifyMiddleware';
 
 const reportRouter = express.Router();
 
-reportRouter.post('/', insertReport);
+reportRouter.post('/', protect, insertReport);
 
-reportRouter.get('/userReports', getUserReports);
-reportRouter.get('/postReposts', getPostReports);
-reportRouter.put('/', updateReport);
+reportRouter.get('/userReports', protect, getUserReports);
+reportRouter.get('/postReposts', protect, getPostReports);
+reportRouter.put('/', protect, updateReport);
 
 export default reportRouter;

@@ -1,27 +1,28 @@
 import express from 'express';
 import { getOrderByPostID, updateOrderReceiver, createTrace, createOrder, getOrderList, getTrackingStatus, getOrderFinishList, uploadImageConfirmOrder, getOrderDetails, VerifyOrderQR, updateStatusOfOrder, updateTraceStatus, getOrderListReceive, getOrderListByStatus } from '../controllers/orderController';
 import { updateReceiveID } from '../controllers/orderCollaboratorController';
+import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
 
-router.post('/list', getOrderList);
-router.post('/listReceive', getOrderListReceive);
-router.post('/listFinish', getOrderFinishList);
+router.post('/list', protect, getOrderList);
+router.post('/listReceive', protect, getOrderListReceive);
+router.post('/listFinish', protect, getOrderFinishList);
 
-router.post('/listOrders', getOrderListByStatus);
+router.post('/listOrders', protect, getOrderListByStatus);
 
-router.get('/tracking', getTrackingStatus);
-router.post('/upload-image-confirm', uploadImageConfirmOrder);
-router.get('/verifyOrderQR', VerifyOrderQR);
-router.post('/update-status', updateStatusOfOrder);
-router.post('/createOrder', createOrder);
-router.post('/createTrace', createTrace);
+router.get('/tracking', protect, getTrackingStatus);
+router.post('/upload-image-confirm', protect, uploadImageConfirmOrder);
+router.get('/verifyOrderQR', protect, VerifyOrderQR);
+router.post('/update-status', protect, updateStatusOfOrder);
+router.post('/createOrder', protect, createOrder);
+router.post('/createTrace', protect, createTrace);
 
-router.get('/getOrder/:postID', getOrderByPostID);
-router.put('/update-receiveid', updateReceiveID);
-router.post('/updateOrderReceiver', updateOrderReceiver);
-router.post('/updateTraceStatus', updateTraceStatus);
-router.get('/:orderID', getOrderDetails);
+router.get('/getOrder/:postID', protect, getOrderByPostID);
+router.put('/update-receiveid', protect, updateReceiveID);
+router.post('/updateOrderReceiver', protect, updateOrderReceiver);
+router.post('/updateTraceStatus', protect, updateTraceStatus);
+router.get('/:orderID', protect, getOrderDetails);
 
 
 
