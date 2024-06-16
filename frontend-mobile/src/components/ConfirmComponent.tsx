@@ -1,7 +1,7 @@
 import { Button, StyleSheet, TouchableOpacity } from "react-native";
 import { Modal, Text, View } from "react-native";
 
-export default function ConfirmComponent({visible, setVisible, title, setConfirm}: any) {
+export default function ConfirmComponent({visible, setVisible, title, setConfirm, setIsLoading}: any) {
     
     return (
 
@@ -24,7 +24,7 @@ export default function ConfirmComponent({visible, setVisible, title, setConfirm
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => {setVisible(false), setConfirm(true)}}
+                                onPress={() => {setVisible(false), setConfirm(true), setIsLoading(true)}}
                                 style={[styles.button, {backgroundColor: '#26983F'}]}>
                                 <Text style={{color: 'white'}}>
                                     Có
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 30,
         borderRadius: 20,
-        backgroundColor: '#E4E4E4',
+        backgroundColor: '#ffffff',
         opacity: 500
     },
     buttonContainer: {
