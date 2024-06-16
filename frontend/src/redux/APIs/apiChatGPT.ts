@@ -28,7 +28,7 @@ async function getGPTDescription(itemType:string, imageUrls: string[]): Promise<
   const messageContent: MessageContent[] = [
     {
       type: 'text',
-      text: `Hãy xem xét những tấm ảnh sau, từ đó cho ra 1 đoạn mô tả ngắn về ${itemType} khoảng 30 từ (Dùng để điền trong bài đăng mô tả về sản phẩm đó trong ứng dụng của tôi)`
+      text: `Hãy xem xét những tấm ảnh sau, từ đó cho ra 1 đoạn mô tả trực tiếp ngắn về những món đồ thuộc loại ${itemType} khoảng 30 từ (đặc điểm món đồ... dùng để điền trong bài đăng mô tả về sản phẩm đó trong ứng dụng của tôi)`
     },
     ...imageUrls.map(url => ({
       type: 'image_url' as const,

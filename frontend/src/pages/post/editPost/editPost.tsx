@@ -15,6 +15,7 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import ModeEditOutlineIcon from '@mui/icons-material/ModeEditOutline';
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
+import CachedIcon from '@mui/icons-material/Cached';
 import { format } from 'date-fns';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -25,6 +26,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import MapSelectAddress from '../../../components/Map/MapSelectAddress';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import HighlightOffTwoToneIcon from '@mui/icons-material/HighlightOffTwoTone';
+import getGPTDescription from '../../../redux/APIs/apiChatGPT';
 
 
 function EditPost() {
@@ -41,8 +43,8 @@ function EditPost() {
     const [post, setPost] = useState<any>(null); // Sử dụng Post | null để cho phép giá trị null
     const [profile, setProfile] = useState<any>();
     const [userProfile, setUserProfile] = useState<any>();
-    const [itemImages, setItemImages] = useState([]);
-    const [itemNewImages, setItemNewImages] = useState([]);
+    const [itemImages, setItemImages] = useState<any>([]);
+    const [itemNewImages, setItemNewImages] = useState<any>([]);
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -197,16 +199,69 @@ function EditPost() {
 
     }
 
-    const handleTakeImgFile = (e: any) => {
+    const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
+        console.log("UploadImageToAws3", file)
+        try {
+          // Đọc nội dung của tệp tin bằng FileReader
+          const fileReader: any = new FileReader();
+          fileReader.readAsDataURL(file);
+    
+          return await new Promise((resolve, reject) => {
+              fileReader.onload = async () => {
+                  try {
+                      // Chuyển đổi nội dung của tệp thành dạng Base64
+                      const fileContent = fileReader.result.split(',')[1];
+    
+                      // Tạo FormData và thêm tệp tin và thông tin vào đó
+                      const formData = new FormData();
+                      formData.append('file', fileContent);
+                      formData.append('name', `${new Date().getTime()}${file.name}`);
+                      formData.append('type', file.type);
+                      if(isLimit){
+                        formData.append('typeExpire', "expire")
+                      }
+    
+                      // Gửi FormData qua phương thức POST
+                      const serverResponse = await Axios.post('/aws3/uploadImage', formData, {
+                        headers: {
+                          'Content-Type': 'multipart/form-data',
+                        },
+                      });
+    
+                      // Xử lý phản hồi từ server nếu cần
+                      const data: any = serverResponse;
+                      console.log(data)
+                      resolve(data);
+                  } catch (error) {
+                      console.error('Error uploading file:', error);
+                      reject(error);
+                  }
+              };
+          });
+        } catch (error) {
+            console.error('Error reading file:', error);
+            return null;
+        }
+      };
+
+    const handleTakeImgFile = async (e: any) => {
         const newFile: any = e.target.files[0]
         const newImages: any = [...itemNewImages]
         if (newFile) {
-            const fileUrl = URL.createObjectURL(newFile);
-            const newImage: any = newFile
-            newImage.path = fileUrl
-            console.log(newImage)
-            newImages.push(newImage)
-            setItemNewImages(newImages)
+            const fileUri = URL.createObjectURL(newFile);
+            try {
+                const uploadAWS: any = await UploadImageToAws3(newFile, true)
+                const newImage: any = newFile
+                newImage.path = uploadAWS.url
+                newImage.uri= fileUri
+                console.log("newFile",newFile)
+                newImages.push(newImage)
+                setItemNewImages(newImages)
+            } catch (error) {
+                console.log(error)
+            }
+            
+            
         }
     }
 
@@ -218,7 +273,7 @@ function EditPost() {
 
         console.log(location);
         let isSuccessRepost = true
-        // console.log('VALIDATEEEEEEEEE: ', `${itemImages.length + itemNewImages.length  } ${  title} ${ description} ${ phoneNumber.length}`)
+        console.log('VALIDATEEEEEEEEE: ', `${itemImages.length + itemNewImages.length  } ${  title} ${ description} ${ phoneNumber.length} ${ location}`)
         if((itemImages.length + itemNewImages.length > 0) &&
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){
@@ -247,7 +302,7 @@ function EditPost() {
                 }
                 catch (error) {
                     console.log(error);
-                    isSuccessRepost = false
+                    // isSuccessRepost = false
                 }
         
                 try{
@@ -282,6 +337,22 @@ function EditPost() {
         // } catch (error) {
         //     console.log(error);
         // }
+    }
+
+    const handleRenderDescriptionGPT = async () => {
+        setIsLoading(true)
+        const imageUrls = []
+        for(let i = 0; i < itemImages.length; i += 1 ){
+            imageUrls.push(itemImages[i].path)
+        }
+
+        for(let i = 0; i < itemNewImages.length; i += 1 ){
+            imageUrls.push(itemNewImages[i].path)
+        }
+
+        const generateDesciption = await getGPTDescription(title, imageUrls)
+        setDescription(generateDesciption)
+        setIsLoading(false)
     }
     
     
@@ -319,7 +390,7 @@ function EditPost() {
                                             src={`${image.path}`} alt={`img ${index}`}/>
                                         <HighlightOffTwoToneIcon
                                             onClick={() => handleRemoveImage('itemImages', index)}
-                                            sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
+                                            sx={{ cursor: 'pointer', color: 'rgb(0,0,0,0.3)', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
                                             transition: 'all 0.2s ease',
                                             '&:hover': {
                                                 fontSize: 40
@@ -350,8 +421,9 @@ function EditPost() {
                                             style={{
                                                 width: '300px',
                                                 height: '250px',
+                                                objectFit: 'cover'
                                             }}
-                                            src={`${image.path}`} alt={`img ${index}`}/>
+                                            src={`${image.uri}`} alt={`img ${index}`}/>
                                         <HighlightOffTwoToneIcon 
                                             onClick={() => handleRemoveImage('itemNewImages', index)}
                                             sx={{ cursor: 'pointer', color: '#767676', fontSize: 35, position: 'absolute', top: 0, right: 0, transform: 'translate(40%, -40%)',
@@ -421,15 +493,27 @@ function EditPost() {
                                 }}
                                 helperText={title === "" ? "Tiêu đề không được để trống" : ''}/>
 
-                            <Typography
-                                sx={{
-                                    mt: 2,
-                                    mx: 2,
-                                    color: 'black',
-                                    fontWeight: 'bold'
-                                }}
-                                variant='h6'
-                                >Mô tả</Typography>
+                            <Stack
+                                flexDirection='row'
+                                alignItems='center'
+                                mt={1}>
+                                <Typography
+                                    sx={{
+                                        mt: 2,
+                                        mx: 2,
+                                        color: 'black',
+                                        fontWeight: 'bold'
+                                    }}
+                                    variant='h6'
+                                    >Mô tả</Typography>
+
+                                <Button variant='contained'
+                                    color='success'
+                                    startIcon={<CachedIcon />}
+                                    onClick={() => handleRenderDescriptionGPT()}
+                                    sx={{}}>Tạo mô tả tự động</Button>
+                            </Stack>
+                            
                             <TextField
                                 error={description === ""}
                                 value={description}
@@ -438,7 +522,11 @@ function EditPost() {
                                     mx: 2,
                                     color: 'black'
                                 }}
-                                helperText={description === "" ? "Mô tả không được để trống" : ''}/>
+                                helperText={description === "" ? "Mô tả không được để trống" : ''}
+                                multiline/>
+
+                            
+                            
 
                             <Typography
                                 sx={{

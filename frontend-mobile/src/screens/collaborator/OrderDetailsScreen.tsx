@@ -342,7 +342,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 
             </View>
             
-            <ConfirmComponent visible={isVisibleModalConfirm} setVisible={setIsVisibleModalConfirm} title={'Bạn có thực sự muốn nhận đơn hàng này?'} setConfirm={setConfirm}/>
+            <ConfirmComponent visible={isVisibleModalConfirm} setVisible={setIsVisibleModalConfirm} title={'Bạn có thực sự muốn nhận đơn hàng này?'} setConfirm={setConfirm} setIsLoading={setIsLoading}/>
             <LoadingModal visible={isLoading}/>
         </ContainerComponent>
         
