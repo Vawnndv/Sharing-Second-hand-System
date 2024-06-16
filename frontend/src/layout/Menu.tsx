@@ -26,7 +26,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
 
   const navigate = useNavigate();
 
-  const userLogin = useSelector((state: any) => state.userLogin);
+  const {userInfo} = useSelector((state: any) => state.userLogin);
 
   const location = useLocation();
 
@@ -81,7 +81,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
 
   return (
     <div>
-      {userLogin.userInfo.roleID === 2 ? (
+      {userInfo?.roleID === 2 ? (
         <Stack
           direction="column"
           spacing={1}
@@ -93,18 +93,18 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
             spacing={1}
             style={{ paddingLeft: '20px', cursor: 'pointer' }}
             component='div'
-            onClick={() => handleNavigateToUserProfile(userLogin.userInfo.id)}
+            onClick={() => handleNavigateToUserProfile(userInfo?.id)}
           >
             <Avatar
               alt="Remy Sharp"
-              src="https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"
+              src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`}
               style={{ marginRight: '20px' }}
             />
             <Typography
               variant="body1"
               sx={{ fontWeight: 'bold', color: 'rgb(50,19,87)' }}
             >
-              {userLogin.userInfo.firstName} {userLogin.userInfo.lastName} 
+              {userInfo?.firstName} {userInfo?.lastName} 
             </Typography>
           </Stack>
 
