@@ -51,7 +51,7 @@ const stylesConfirmComponent = StyleSheet.create({
         justifyContent: 'center',
         padding: 15,
         borderRadius: 10,
-        backgroundColor: '#E4E4E4',
+        backgroundColor: '#ffffff',
         opacity: 500
     },
     buttonContainer: {

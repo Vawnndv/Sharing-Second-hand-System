@@ -242,7 +242,7 @@ export default function Header({setIndex}: any) {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar alt="Remy Sharp" src="https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg" style={{marginRight: "20px"}}/>
+          <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -351,7 +351,7 @@ export default function Header({setIndex}: any) {
               onClick={(e) => handleProfileMenuOpen(e)}
               color="inherit"
             >
-              <Avatar alt="Remy Sharp" src="https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg" style={{marginRight: "20px"}}/>
+              <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
             </IconButton>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

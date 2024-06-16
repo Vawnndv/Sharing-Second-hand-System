@@ -877,6 +877,7 @@ const predictImage = async (imageUri: any) => {
                 error: appColors.danger, 
               },
             }}
+            multiline
           />
           <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
             Chọn kho

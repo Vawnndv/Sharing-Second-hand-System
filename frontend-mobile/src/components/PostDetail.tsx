@@ -658,7 +658,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
          Đi đến trang cảm ơn</Button> */}
         {
           post !== null && 
-          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseID}/>
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseid}/>
         }
         
       </ScrollView>

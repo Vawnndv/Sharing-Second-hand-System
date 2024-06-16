@@ -141,10 +141,10 @@ function ViewPostDetail() {
             console.log(error);
           } 
           try {
-            const res = await Axios.get(`/warehouse/getWarehouse/${warehouseid}`);
-            console.log(res.data);
+            const res: any = await Axios.get(`/warehouse/getWarehouse/${warehouseid}`);
+            console.log(res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            setWarehouseInfo(res.data.wareHouse);
+            setWarehouseInfo(res.wareHouse);
           } catch (error) {
             console.log(error);
           } 
@@ -178,8 +178,7 @@ function ViewPostDetail() {
                     statusid: 12,
                     isApproveAction: true
                 })
-                toast.success(`Post apporved`);      
-                navigate(-1);
+                toast.success(`Duyệt bài thành công`);      
             } catch (error) {
                 console.log(error);
             }
@@ -195,120 +194,119 @@ function ViewPostDetail() {
             } catch (error) {
                 console.log(error);
             }
-                let orderID: any = null;
-                const time = new Date();
-                const response: any = await Axios.post(`/order/createOrder`, {
-                    title: post.title,
-                    location: '',
-                    description: post.description,
-                    departure: '',
-                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                    itemid: post.itemid,
-                    status: 'Chờ cộng tác viên lấy hàng',
-                    statusid: 7,
-                    qrcode: '',
-                    ordercode: '',
-                    usergiveid: post.owner,
-                    userreceiveid: userLogin.userInfo.id,
-                    postid: post.postid,
-                    imgconfirm: '',
-                    locationgive: post.addressid,
-                    locationreceive: warehouseInfo.addressid,
-                    givetypeid: post.givetypeid,
-                    imgconfirmreceive: '',
-                    givetype: post.give_receivetype,
-                    warehouseid: post.warehouseid,
-                }); 
-                // console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
-                orderID = response.orderCreated.orderid;
-                
-                try{
-                    const currentstatus = 'Chờ cộng tác viên lấy hàng';
-                    const responseTrace = await Axios.post(`/order/createTrace`, {
-                        currentstatus,
-                        orderid: orderID,
-                    });
-                    toast.success(`Tạo đơn hàng thành công`);
+            let orderID: any = null;
+            const time = new Date();
+            const response: any = await Axios.post(`/order/createOrder`, {
+                title: post.title,
+                location: '',
+                description: post.description,
+                departure: '',
+                time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                itemid: post.itemid,
+                status: 'Chờ cộng tác viên lấy hàng',
+                statusid: 7,
+                qrcode: '',
+                ordercode: '',
+                usergiveid: post.owner,
+                userreceiveid: userLogin.userInfo.id,
+                postid: post.postid,
+                imgconfirm: '',
+                locationgive: post.addressid,
+                locationreceive: warehouseInfo.addressid,
+                givetypeid: post.givetypeid,
+                imgconfirmreceive: '',
+                givetype: post.give_receivetype,
+                warehouseid: post.warehouseid,
+            }); 
+            // console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
+            orderID = response.orderCreated.orderid;
+            
+            try{
+                const currentstatus = 'Chờ cộng tác viên lấy hàng';
+                const responseTrace = await Axios.post(`/order/createTrace`, {
+                    currentstatus,
+                    orderid: orderID,
+                });
+                toast.success(`Tạo đơn hàng thành công`);
 
-                } catch(error){
-                    console.log(error);
-                }
-
-                try{
-                    const responseInputcard = await Axios.post(`/card/createInputCard`, {
-                        itemid: post.itemid,
-                        qrcode: '',
-                        usergiveid: post.owner,
-                        warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
-                        orderid: orderID
-                    });
-                    toast.success(`Tạo inputcard thành công`);
-                }
-                catch (error) {
-                    console.log(error);
-                // }
-                }
-                navigate(-1);
-
-
+            } catch(error){
+                console.log(error);
             }
 
-            else{
-                try{
-                    const res = await Axios.post(`/posts/update-post-status`, {
-                        postid: post.postid,
-                        statusid: 12,
-                        isApproveAction: true
-                    })
-                    toast.success(`Post apporved`);
-
-
-                } catch (error) {
-                    console.log(error);
-                }
-                let orderID: any = null;
-                const time = new Date();
-                const response: any = await Axios.post(`/order/createOrder`, {
-                    title: post.title,
-                    location: '',
-                    description: post.description,
-                    departure: '',
-                    time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+            try{
+                const responseInputcard = await Axios.post(`/card/createInputCard`, {
                     itemid: post.itemid,
-                    status: 'Chờ người cho giao hàng',
-                    statusid: 13,
                     qrcode: '',
-                    ordercode: '',
                     usergiveid: post.owner,
-                    userreceiveid: userLogin.userInfo.id,
-                    postid: post.postid,
-                    imgconfirm: '',
-                    locationgive: post.addressid,
-                    locationreceive: warehouseInfo.addressid,
-                    givetypeid: post.givetypeid,
-                    imgconfirmreceive: '',
-                    givetype: post.give_receivetype,
-                    warehouseid: post.warehouseid,
-                }); 
-                orderID = response.orderCreated.orderid;
-
-                try{
-                    const responseInputcard = await Axios.post(`/card/createInputCard`, {
-                        itemid: post.itemid,
-                        qrcode: '',
-                        usergiveid: post.owner,
-                        warehouseid: post.warehouseid,
-                        orderid: orderID
-                    }); 
-                    toast.success(`Tạo inputcard thành công`);
-                }
-                catch (error) {
-                    console.log(error);
-                }
-                navigate(-1);
-
+                    warehouseid: post.warehouseid,          // NHỚ FIX CÁI NÀY AAAAAAAAAAAAAAAAAAAAAAAAAAAAA TODO
+                    orderid: orderID
+                });
+                toast.success(`Tạo phiếu nhập thành công`);
             }
+            catch (error) {
+                console.log(error);
+            // }
+            }
+
+
+        }
+
+        else{
+            try{
+                const res = await Axios.post(`/posts/update-post-status`, {
+                    postid: post.postid,
+                    statusid: 12,
+                    isApproveAction: true
+                })
+                toast.success(`Duyệt bài thành công`);
+
+
+            } catch (error) {
+                console.log(error);
+            }
+            let orderID: any = null;
+            const time = new Date();
+            const response: any = await Axios.post(`/order/createOrder`, {
+                title: post.title,
+                location: '',
+                description: post.description,
+                departure: '',
+                time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                itemid: post.itemid,
+                status: 'Chờ người cho giao hàng',
+                statusid: 13,
+                qrcode: '',
+                ordercode: '',
+                usergiveid: post.owner,
+                userreceiveid: userLogin.userInfo.id,
+                postid: post.postid,
+                imgconfirm: '',
+                locationgive: post.addressid,
+                locationreceive: warehouseInfo.addressid,
+                givetypeid: post.givetypeid,
+                imgconfirmreceive: '',
+                givetype: post.give_receivetype,
+                warehouseid: post.warehouseid,
+            }); 
+            orderID = response.orderCreated.orderid;
+
+            try{
+                const responseInputcard = await Axios.post(`/card/createInputCard`, {
+                    itemid: post.itemid,
+                    qrcode: '',
+                    usergiveid: post.owner,
+                    warehouseid: post.warehouseid,
+                    orderid: orderID
+                }); 
+                toast.success(`Tạo phiếu nhập thành công`);
+            }
+            catch (error) {
+                console.log(error);
+            }
+
+        }
         
+        navigate(-1);
         setIsLoading(false)
     }
             
@@ -320,7 +318,7 @@ function ViewPostDetail() {
                 statusid: 6,
                 isApproveAction: true
             })
-            toast.success('Post canceled successfully!');
+            toast.success('Hủy bài đăng thành công!');
             navigate(-1);
 
         } catch (error) {
