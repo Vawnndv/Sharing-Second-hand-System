@@ -79,11 +79,11 @@ function CollaboratorTable(props: Props) {
         await HandleNotification.sendNotification({
           userReceiverId: updatedUsers[userIndex].userid,
           userSendId: userInfo?.id,
-          postid: '',
           avatar: userInfo?.avatar,
           link: '',
+          title: 'Khóa tài khoản',
           name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-          text: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+          body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
         })
         toast.success(`Khóa tài khoản của cộng tac viên dùng thành công`);
       }
@@ -100,10 +100,10 @@ function CollaboratorTable(props: Props) {
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
       {
-        field: 'photoURL',
+        field: 'avatar',
         headerName: 'Hình đại diện',
         width: 60,
-        renderCell: (params) => <Avatar src={params.row.image} />,
+        renderCell: (params) => <Avatar src={params.row.avatar} />,
         sortable: false,
         filterable: false,
       }

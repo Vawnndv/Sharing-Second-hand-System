@@ -34,7 +34,7 @@ export class HandleNotification {
         // if (fcmtokens.length > 0) {
           console.log(fcmtokens)
           fcmtokens.forEach(async (expoPushToken: string) => {
-            HandleNotification.sendPushFCMNotification(expoPushToken, data.name, data.text);
+            HandleNotification.sendPushFCMNotification(expoPushToken, data.title, data.body);
           })
         // }
       } catch(err: any) {
@@ -44,9 +44,6 @@ export class HandleNotification {
 
     static sendNotification = async (data: any) => {
         try {
-
-            await HandleNotification.sendPushNotification(data)
-
             const docRef = doc(db, "receivers", data.userReceiverId.toString());
           
             const docSnap = await getDoc(docRef);
@@ -65,16 +62,17 @@ export class HandleNotification {
             await setDoc(newNotificationRef, {
               id: newNotificationRef.id,
               userid: data.userReceiverId,
-              text: data.text,
-              postid: data.postid,
+              title: data.title,
+              body: data.body,
               name: data.name,
-              type: 'text',
+              // postid: data.postid,
               avatar: data.avatar,
               link: data.link,
               createdAt: Timestamp.fromDate(new Date()),
               isRead: false
           });
 
+          await HandleNotification.sendPushNotification(data)
           } catch(err: any) {
             console.error(err.message);
           }

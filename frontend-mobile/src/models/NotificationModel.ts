@@ -2,8 +2,9 @@ import { Timestamp } from "firebase/firestore";
 export interface NotificationModel {
   id: string;
   userid: string;
-  text: string;
-  postid: string;
+  title: string;
+  body: string;
+  // postid: string;
   name: string;
   avatar: string;
   link: string;

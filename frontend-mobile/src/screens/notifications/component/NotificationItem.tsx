@@ -70,10 +70,9 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
             // Linking.openURL(`frontend-mobile://profile`);
               // Linking.openURL(`frontend-mobile://order/detail/${136}`)
               // Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
-              
-              
               if (item.link) {
-                Linking.openURL(`frontend-mobile://post/detail/${item.postid}`)
+                Linking.openURL(`frontend-mobile://${item.link}`)
+
                 // navigation.navigate('Home', {
                 //   screen: item.link,
                 //   params: {
@@ -93,7 +92,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
           <SpaceComponent width={12} />
           <View style={[globalStyles.col]}>
             <RowComponent>
-              <TextComponent text={`${item.name} `} font={fontFamilies.medium} text2={item.text} isConcat />
+              <TextComponent text={`${item.name} `} font={fontFamilies.medium} text2={item.body} isConcat />
             </RowComponent>
             <RowComponent justify='space-between'>
               <RowComponent>

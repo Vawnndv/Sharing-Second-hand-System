@@ -70,7 +70,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
         <Stack>
           <Typography variant='body1'>
             <Typography variant='body1' component="span" sx={{ fontWeight: 'bold' }}>{item.name} </Typography>
-            {item.text}
+            {item.body}
           </Typography>
           <Stack direction='row' alignContent="center" justifyContent="space-between">
             <Typography variant='body1' sx={{ fontStyle: 'italic', opacity: '0.75' }}>

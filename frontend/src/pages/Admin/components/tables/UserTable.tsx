@@ -82,10 +82,10 @@ function UserTable(props: Props) {
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
       {
-        field: 'photoURL',
+        field: 'avatar',
         headerName: 'Hình đại diện',
         width: 60,
-        renderCell: (params) => <Avatar src={params.row.image} />,
+        renderCell: (params) => <Avatar src={params.row.avatar} />,
         sortable: false,
         filterable: false,
       }

@@ -26,58 +26,12 @@ import AppRouters from './src/screens/auth/AppRouters';
 import * as Linking from 'expo-linking';
 import axios from 'axios';
 import { appInfo } from './src/constants/appInfos';
+import linking from './linking';
 // Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
-
-const config = {
-  screens: {
-    // NotFound: '*',
-    // SearchScreen: {
-    //   path: 'searchscreen',
-    //   screens: {
-    //     Search: 'search'
-    //   }
-    // },
-    // ItemDetailScreen: {path: 'detail/:postID', parse: {
-    //   postID: (postID: string) => `${postID}`,
-    // }},
-    Main: {
-      path: '',
-      screens: {
-        TabNavigator: {
-          path: '',
-          screens: {
-            Home: {
-              path: 'post',
-              screens: {
-                ItemDetailScreen: {
-                  path: 'detail/:postID',
-                  parse: {
-                    postID: (postID: string) => `${postID}`,
-                  },
-                }
-              }
-            },
-          },
-        },
-        MyProfile: 'profile',
-        MyOrder: {
-          path: 'order',
-          screens: {
-            ViewDetailOrder: {
-              path: 'detail/:orderid',
-              parse: {
-                orderid: (orderid: string) => `${orderid}`,
-              },
-            }
-          }
-        }
-      },
-    },
-  }
-};
 
 const prefix = Linking.createURL('/');
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   
@@ -178,10 +132,7 @@ export default function App() {
         <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
         <NavigationContainer 
           onReady={onLayoutRootView}
-          linking={{
-            prefixes: ['frontend-mobile://'],
-            config
-          }}
+          linking={linking}
         >
           <AppRouters />
         </NavigationContainer>

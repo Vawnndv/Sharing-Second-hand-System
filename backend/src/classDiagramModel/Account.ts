@@ -103,8 +103,10 @@ export class Account {
         return null;
       }
 
-      return result.rows[0];
-      // return new Item(row.itemId, row.name, row.quantity);
+      const user = result.rows[0];
+      delete user.password; // Loại bỏ thuộc tính password
+  
+      return user;
     } catch(error) {
       console.log(error);
       return null;

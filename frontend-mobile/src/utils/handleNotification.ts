@@ -6,8 +6,6 @@ import { usePushNotifications } from './usePushNotification';
 export class HandleNotification {
     static sendNotification = async (data: any) => {
         try {
-            await usePushNotifications.sendPushNotification(data);
-
             const docRef = doc(db, "receivers", data.userReceiverId.toString());
 
             const docSnap = await getDoc(docRef);
@@ -27,16 +25,17 @@ export class HandleNotification {
             await setDoc(newNotificationRef, {
                 id: newNotificationRef.id,
                 userid: data.userReceiverId,
-                text: data.text,
-                postid: data.postid,
                 name: data.name,
-                type: 'text',
+                title: data.title,
+                body: data.body,
+                // postid: data.postid,
                 avatar: data.avatar,
                 link: data.link,
                 createdAt: Timestamp.fromDate(new Date()),
                 isRead: false
             });
 
+            await usePushNotifications.sendPushNotification(data);
         } catch (err: any) {
             Alert.alert('Lỗi', err.message);
             console.error(err.message);
