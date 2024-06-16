@@ -36,8 +36,6 @@ const getJsonWebToken = async (email: string, id: number) => {
     expiresIn: '7d',
   });
 
-
-
   return token;
 };
 

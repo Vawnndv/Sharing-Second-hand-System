@@ -1,17 +1,19 @@
+import { AuthenticatedRequest } from '../types/types';
 import dotenv from 'dotenv';
 dotenv.config();
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import { Account } from '../classDiagramModel/Account';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 
-const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  console.log(req.headers.authorization);
   if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
+    req.headers.authorization 
+    // && req.headers.authorization.startsWith('Bearer')
   ) {
     const token = req.headers.authorization.split(' ')[1];
-
+    console.log(token);
     if (!token) {
       res.status(401);
       throw new Error('Not authorized, no token');
@@ -27,6 +29,7 @@ const protect = asyncHandler(async (req: Request, res: Response, next: NextFunct
         if (typeof verify !== 'string' && (verify as JwtPayload).id) {
           const payload = verify as JwtPayload;
           req.user = await Account.findUserById(payload.id);
+          console.log(req.user);
           next();
         } else {
           res.status(401);
@@ -43,7 +46,7 @@ const protect = asyncHandler(async (req: Request, res: Response, next: NextFunct
   }
 });
 
-const admin = asyncHandler((req, res, next) => {
+const admin = asyncHandler((req: AuthenticatedRequest, res, next) => {
   if (req.user && req.user.roleId === 3) {
     next();
   } else {
@@ -52,7 +55,7 @@ const admin = asyncHandler((req, res, next) => {
   }
 });
 
-const collaborator = asyncHandler((req, res, next) => {
+const collaborator = asyncHandler((req: AuthenticatedRequest, res, next) => {
   if (req.user && req.user.roleId === 2) {
     next();
   } else {

@@ -1,18 +1,26 @@
 import axios from 'axios';
+import { UserInfo } from '../services/authServices';
 
+const getAccessToken = async () => {
+  const res = localStorage.getItem('userInfo');
+
+  return res ? JSON.parse(res).accessToken : '';
+};
 const Axios = axios.create({
   baseURL: 'http://localhost:3000'
 });
 
-axios.interceptors.request.use(async (config: any) => {
+Axios.interceptors.request.use(async (config: any) => {
+  const accesstoken = await getAccessToken();
+
   config.headers = {
-    Authorization: '',
+    Authorization: accesstoken ? `Bearer ${accesstoken}` : '',
     Accept: 'application/json',
     ...config.headers
-  }
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  config.data
+  config.data;
   return config;
 });
 
@@ -24,8 +32,6 @@ Axios.interceptors.response.use(
     throw new Error('Error');
   },
   error => {
-    // console.log(`Error api ${JSON.stringify(error)}`);
-    // throw new Error(error.response);
     if (error.response && error.response.data && error.response.data.message) {
       throw new Error(error.response.data.message);
     } else {
@@ -33,6 +39,5 @@ Axios.interceptors.response.use(
     }
   },
 );
-
 
 export default Axios;
