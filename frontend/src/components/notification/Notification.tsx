@@ -12,8 +12,8 @@ import { useSelector } from 'react-redux'
 export interface NotificationModel {
   id: string;
   userid: string;
-  text: string;
-  postid: string;
+  body: string;
+  title: string;
   name: string;
   avatar: string;
   link: string;

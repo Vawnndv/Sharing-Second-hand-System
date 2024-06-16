@@ -767,6 +767,7 @@ export class PostManager {
       const result = await client.query(`
       SELECT 
         POSTS.*,
+        ITEM.name,
         ADDRESS.address,
         ADDRESS.longitude,
         ADDRESS.latitude,
@@ -774,6 +775,8 @@ export class PostManager {
         GIVE_RECEIVETYPE.give_receivetype
       FROM 
           POSTS
+      INNER JOIN
+          ITEM ON ITEM.itemid = POSTS.itemid
       INNER JOIN 
           ADDRESS ON POSTS.addressid = ADDRESS.addressid
       INNER JOIN

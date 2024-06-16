@@ -130,8 +130,8 @@ export class usePushNotifications {
         const message = {
           to: expoPushToken,
           sound: "default",
-          title: data.name,
-          body: data.text,
+          title: data.title,
+          body: data.body,
         };
     
         await fetch('https://exp.host/--/api/v2/push/send', {

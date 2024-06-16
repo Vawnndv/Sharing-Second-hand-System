@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 // import { mapOrder } from './utils/sorts.ts';
 import routerItem from './routes/itemRouter';
