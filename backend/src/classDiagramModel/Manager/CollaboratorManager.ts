@@ -54,6 +54,35 @@ export class CollaboratorManager extends UserManager {
       client.release();
     }
   }
+  
+
+  public static async getCollaboratorsByWarehouse(warehouseID: string): Promise<any> {
+    const client = await pool.connect()
+  
+    const query = `SELECT 
+      u.userid,
+      u.firstname, 
+      u.lastname,
+      u.avatar,
+    FROM public."User" u LEFT JOIN workat wk ON u.userid = wk.userid LEFT JOIN warehouse w ON w.warehouseid = wk.warehouseid
+    WHERE w.warehouseid = ${warehouseID}
+    `;
+
+    try {
+      const result = await client.query(query);
+      if (result.rows.length === 0) {
+        return [];
+      }
+
+      return result.rows;
+      
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
 
   
   public static async totalAllCollaborators(whereClause: string): Promise<any> {
