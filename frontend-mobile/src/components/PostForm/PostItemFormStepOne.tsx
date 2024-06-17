@@ -237,11 +237,9 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       // const model = await tf.loadLayersModel(bundleResourceIO(modelLocal,modelW));
 
       const model = await tf.loadLayersModel(modelURL + 'model.json');
-      // const model = await tf.loadGraphModel
-      // console.log('MODELLL', model);  
+ 
       const response = await fetch(modelURL + 'metadata.json');
       const metadata = await response.json();
-      // const metadata = metadataLocal.json();
       setLabels(metadata.labels);
       setModel(model);
       console.log('Model loaded successfully');
@@ -416,8 +414,6 @@ const pickImage = async () => {
 
       Promise.all(imageData).then(completed => {
         setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed] });
-        // console.log(completed);
-        handleValidate('', 'photo');
       });
     } catch (error) {
       console.error('Error picking and predicting images:', error);
@@ -460,7 +456,7 @@ const imageToTensor = async (rawImageData: any) => {
 
 const predictImage = async (imageUri: any) => {
   try {
-    // setIsLoading(true);
+    setIsLoading(true);
 
     // Chuyển đổi hình ảnh thành tensor
     const imageTensor = await imageToTensor(imageUri);
@@ -499,7 +495,7 @@ const predictImage = async (imageUri: any) => {
   } catch (error) {
     console.log('Error when predicting image:', error);
   } finally {
-    // setIsLoading(false);
+    setIsLoading(false);
   }
 };
 
