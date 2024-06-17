@@ -77,7 +77,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           }
 
           setProfile(res.data);
-          console.log(res);
           setFormData({
             ...formData,
             postAddress: res.data.address,

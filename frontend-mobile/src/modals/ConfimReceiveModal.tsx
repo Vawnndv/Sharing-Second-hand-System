@@ -6,19 +6,27 @@ import orderAPI from '../apis/orderApi';
 import { UploadImageToAws3 } from '../ImgPickerAndUpload';
 import LoadingModal from './LoadingModal';
 import { appInfo } from '../constants/appInfos';
+import { HandleNotification } from '../utils/handleNotification';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../redux/reducers/authReducers';
+import axios from 'axios';
+import axiosClient from '../apis/axiosClient';
 
 interface Props {
   setModalConfirmVisible: any;
   modalConfirmVisible: any;
   image: any;
   orderid: any;
+  owner: any,
+  givetype: any
 }
 
 const ConfimReceiveModal = (props: Props) => {
-  const { setModalConfirmVisible, modalConfirmVisible, image, orderid } = props;
+  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, givetype } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
+    const auth = useSelector(authSelector);
     setIsLoading(true);
     const {url} = await UploadImageToAws3(image, false);
     try {
@@ -28,6 +36,35 @@ const ConfimReceiveModal = (props: Props) => {
         imgconfirmreceive: url
       }
       , 'post');
+
+      if(givetype != 1 ){
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+        resGetCollab.map(async (collab: any, index: number) => {
+          await HandleNotification.sendNotification({
+            userReceiverId: collab.userid,
+            userSendId: auth.id,
+            // postid: postID,
+            avatar: auth.avatar,
+            link: `order/${orderid}`,
+            title: ' Đã xác nhận nhận đồ',
+            body:`${auth?.firstName} ${auth.lastName} đã xác nhận nhận đồ. Nhấn vào để xem thông tin cho tiết!`
+          })
+        })
+      }else{
+        await HandleNotification.sendNotification({
+          userReceiverId: owner,
+          userSendId: auth.id,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `order/${orderid}`,
+          title: ' Đã xác nhận nhận đồ',
+          body:`${auth?.firstName} ${auth.lastName} đã xác nhận nhận đồ. Nhấn vào để xem thông tin cho tiết!`
+        })
+      }
+
+      
+
+      
       setIsLoading(false);
       setModalConfirmVisible(false);
     } catch (error: unknown) {

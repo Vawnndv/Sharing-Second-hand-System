@@ -274,7 +274,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
 
         {/* Use a light status bar on iOS to account for the black space above the modal */}
         <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
+        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid} owner={data.usergiveid} givetype={data.givetype}/>}
         <ShowImageModal visible={visible} setVisible={setVisible}>
           {
             isShowQR ? (

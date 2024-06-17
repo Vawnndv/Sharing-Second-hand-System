@@ -453,16 +453,34 @@ const handleReceive = async () => {
         receivertypeid,
       });       
 
-      await HandleNotification.sendNotification({
-        userReceiverId: post.owner,
-        userSendId: auth.id,
-        name: `${auth?.firstName} ${auth.lastName}`,
-        // postid: postID,
-        avatar: auth.avatar,
-        link: `/post/detail/${postID}`,
-        title: ' xin sản phẩm của bạn',
-        body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
-      })
+      console.log(post,'ccccccccccccccccccc');
+      
+      if(receivertypeid == 1){
+        await HandleNotification.sendNotification({
+          userReceiverId: post.owner,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `/post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body: `${auth?.firstName} ${auth.lastName} đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+        })
+      }else{
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+        resGetCollab.map(async (collab: any, index: number) => {
+          await HandleNotification.sendNotification({
+            userReceiverId: collab.userid,
+            userSendId: auth.id,
+            // postid: postID,
+            avatar: auth.avatar,
+            link: `/post/${postID}`,
+            title: ' Xin sản phẩm của bạn',
+            body:`${auth?.firstName} ${auth.lastName} đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
+          })
+        })
+      }
+      
       
       Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
 
@@ -647,16 +665,43 @@ const handleGive = async () =>{
     setIsCompleted(true);
 
     if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
-      {
-        const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/card/createInputCard`, {
-          qrcode: '',
-          warehouseid: warehouseid,
-          usergiveid: auth.id,
-          orderid: orderID,
-          itemid: post.itemid,
-        });
+    {
+      const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+        qrcode: '',
+        warehouseid: warehouseid,
+        usergiveid: auth.id,
+        orderid: orderID,
+        itemid: post.itemid,
+      });
+    }
+
+    try {
+
+      const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+      if (!res) {
+        throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
       }
-      
+      // setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+
+      res.data.postReceivers.map(async (receiver: any, index: number) => {
+        await HandleNotification.sendNotification({
+          userReceiverId: receiver.receiverid,
+          userSendId: auth.id,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `/post/${postID}`,
+          title: ' Đã cho sản phẩm',
+          body: receiver.receiverid === receiveid ? 
+            `${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
+        })
+      })
+    } catch (error) {
+      console.error('Error fetching post receivers:', error);
+    }
+
+    
+    
     setIsLoading(false);
     navigation.navigate('Home', {screen: 'HomeScreen'})
 

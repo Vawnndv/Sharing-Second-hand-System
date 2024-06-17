@@ -286,7 +286,7 @@ const metadataLocal = require('../../../assets/model/metadata.json');
         setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
+        //   `/${postID}`, 
         // );
         if (!res) {
           throw new Error('Failed to fetch item types'); // Xử lý lỗi nếu request không thành công

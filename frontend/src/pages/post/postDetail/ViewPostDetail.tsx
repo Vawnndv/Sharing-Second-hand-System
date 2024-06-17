@@ -19,6 +19,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
+import { HandleNotification } from '../../../utils/handleNotification';
+import { RootState } from '../../../redux/store';
 
 function ShowImages({ images }: any) {
     
@@ -72,6 +74,10 @@ function ViewPostDetail() {
     const [warehouseInfo, setWarehouseInfo] = useState<any>(null);
 
     const [isLoading, setIsLoading] = useState(false)
+
+    const { userInfo } = useSelector(
+        (state: RootState) => state.userLogin
+      );
 
     // const [isUserPost, setIsUserPost] = useState(false);
     // const [itemID, setItemID] = useState();
@@ -178,6 +184,16 @@ function ViewPostDetail() {
                     statusid: 12,
                     isApproveAction: true
                 })
+
+                await HandleNotification.sendNotification({
+                    userReceiverId: post.owner,
+                    userSendId: userInfo?.id,
+                    postid: '',
+                    avatar: userInfo?.avatar,
+                    link: `/post/${postid}`,
+                    name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+                    text: `Bài viết của bạn /"${post?.name}/" đã được duyệt thành công!`,
+                  })
                 toast.success(`Duyệt bài thành công`);      
             } catch (error) {
                 console.log(error);
@@ -318,6 +334,16 @@ function ViewPostDetail() {
                 statusid: 6,
                 isApproveAction: true
             })
+
+            await HandleNotification.sendNotification({
+                userReceiverId: post.owner,
+                userSendId: userInfo?.id,
+                postid: '',
+                avatar: userInfo?.avatar,
+                link: `/post/${postid}`,
+                name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+                text: `Bài viết của bạn /"${post?.name}/" đã bị hủy`,
+              })
             toast.success('Hủy bài đăng thành công!');
             navigate(-1);
 
