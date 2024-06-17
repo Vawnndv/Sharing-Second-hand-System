@@ -16,6 +16,7 @@ import getGPTDescription from '../../apis/apiChatGPT';
 import LoadingComponent from '../LoadingComponent';
 import { LoadingModal } from '../../modals';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+import axiosClient from '../../apis/axiosClient';
 
 interface FormData {
   postTitle: string;
@@ -68,7 +69,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     const fetchUserData = async () =>{
         try {
           setIsLoading(true)
-          const res = await axios.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
+          const res = await axiosClient.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
           // );
@@ -76,12 +77,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
           }
 
-          setProfile(res.data.data);
+          setProfile(res.data);
           console.log(res.data);
           setFormData({
             ...formData,
-            postAddress: res.data.data.address,
-            postPhoneNumber: res.data.data.phonenumber,
+            postAddress: res.data.address,
+            postPhoneNumber: res.data.phonenumber,
           });
           } catch (error) {
           console.error('Error fetching user info:', error);
@@ -93,7 +94,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     const fetchUserAddressData = async () =>{
       try {
         setIsLoading(true)
-        const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+        const response = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
@@ -103,10 +104,10 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
         // console.log('Location Give',response.data)
         setLocation({
-          addressid: response.data.data.addressid,
-          address: response.data.data.address,
-          latitude: parseFloat(response.data.data.latitude),
-          longitude: parseFloat(response.data.data.longitude)
+          addressid: response.data.addressid,
+          address: response.data.address,
+          latitude: parseFloat(response.data.latitude),
+          longitude: parseFloat(response.data.longitude)
         });
         // console.log(response.data)
         

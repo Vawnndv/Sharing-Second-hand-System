@@ -20,6 +20,10 @@ collaboratorRouter.post('/collaborator-list/all', protect, admin, getAllCollabor
 
 collaboratorRouter.put('/collaborator-list/:id', protect, admin, adminEditCollaborator);
 
+// collaboratorRouter.post('/collaborator-list/byWarehouse', getCollaboratorByWarehouse);
+
+collaboratorRouter.put('/collaborator-list/:id', adminEditCollaborator);
+
 collaboratorRouter.delete('/collaborator-list/:id', protect, admin, getAllCollaborator);
 
 collaboratorRouter.get('/getWarehouseAddress/:userid', protect, admin, getWarehouseInfoOfCollaborator);
