@@ -460,7 +460,7 @@ const handleReceive = async () => {
           name: `${auth?.firstName} ${auth.lastName}`,
           // postid: postID,
           avatar: auth.avatar,
-          link: `/post/${postID}`,
+          link: `post/${postID}`,
           title: ' Xin sản phẩm của bạn',
           body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
         })
@@ -473,7 +473,7 @@ const handleReceive = async () => {
             name: `${auth?.firstName} ${auth.lastName}`,
             // postid: postID,
             avatar: auth.avatar,
-            link: `/post/${postID}`,
+            link: `post/${postID}`,
             title: ' Xin sản phẩm của bạn',
             body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
           })
@@ -689,7 +689,7 @@ const handleGive = async () =>{
           name: `${auth?.firstName} ${auth.lastName}`,
           // postid: postID,
           avatar: auth.avatar,
-          link: `/post/${postID}`,
+          link: `post/${postID}`,
           title: ' Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
             `$đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
