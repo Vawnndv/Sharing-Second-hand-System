@@ -24,7 +24,7 @@ const config = {
               screens: {
                 ItemDetailScreen: {
                   // url: frontend-mobile://post/detail/${item.postid}
-                  path: 'detail/:postID',
+                  path: ':postID',
                   parse: {
                     postID: (postID: string) => `${postID}`,
                   },
@@ -39,7 +39,7 @@ const config = {
           screens: {
             ViewDetailOrder: {
               // url: frontend-mobile://order/detail/${orderid}
-              path: 'detail/:orderid',
+              path: ':orderid',
               parse: {
                 orderid: (orderid: string) => `${orderid}`,
               },

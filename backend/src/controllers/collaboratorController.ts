@@ -52,6 +52,23 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
 
 });
 
+export const getCollaboratorByWarehouse = asyncHandle(async (req: Request, res: Response) => {
+  const { warehouseID } = req.body;
+  // Build WHERE clause based on filterModel (replace with your logic)
+  
+
+  const response = await CollaboratorManager.getCollaboratorsByWarehouse(warehouseID);
+  // res.json({ Collaborators: Collaborators.rows, total: totalCollaborators.rows[0].count });
+
+  res.status(200).json({
+    message: 'get Collaborator address successfully',
+    data: {
+      collaborators: response ?? [],
+    },
+  });
+
+});
+
 export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { firstName, lastName, email, phoneNumber, warehouseId, dob } = req.body;
 
