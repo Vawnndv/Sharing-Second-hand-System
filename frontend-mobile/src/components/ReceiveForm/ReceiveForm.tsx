@@ -252,8 +252,9 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   useEffect(() => {
     const fetchAllData = async () => {
+      
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -276,11 +277,9 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       } catch (error) {
         console.error('Error fetching warehouses:', error);
       } finally {
-        setIsLoading(false);
       }
 
       try {
-        setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postowner/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -313,10 +312,8 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       } catch (error) {
         console.error('Error fetching post owner info:', error);
       } finally {
-        setIsLoading(false);
       }
       try {
-        setIsLoading(true);
         const res: any = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
 
         // const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
@@ -327,7 +324,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
       }
 
       // try {
@@ -348,7 +344,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
       try {
         // console.log(postID);
-        setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -367,7 +362,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
       if(warehouseid !== 0 && warehouseid){
         try {
-          setIsLoading(true);
           const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
@@ -385,9 +379,9 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
         } catch (error) {
           console.error('Error fetching warehouse:', error);
         } finally {
-          setIsLoading(false);
         }
       }
+      setIsLoading(false)
     };
     fetchAllData();
 }, [postID])
@@ -427,6 +421,7 @@ useEffect( () => {
 
 const handleReceive = async () => {
 
+  setIsLoading(true)
   if(!post.iswarehousepost){
     try {
       const postid = postID;
@@ -479,10 +474,10 @@ const handleReceive = async () => {
         })
 
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
-          warehouseID: warehouseid
+          warehouseID: post.warehouseid
         })
-        console.log("resGetCollab", resGetCollab)
-        resGetCollab.map(async (collab: any, index: number) => {
+        console.log("resGetCollab", resGetCollab.data.collaborators)
+        resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,
             userSendId: auth.id,
@@ -576,10 +571,10 @@ const handleReceive = async () => {
 
 
       const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
-        warehouseID: warehouseid
+        warehouseID: post.warehouseid
       })
-      console.log("resGetCollab", resGetCollab)
-      resGetCollab.map(async (collab: any, index: number) => {
+      console.log("resGetCollab", resGetCollab.data.collaborators)
+      resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
         await HandleNotification.sendNotification({
           userReceiverId: collab.userid,
           userSendId: auth.id,
@@ -602,6 +597,7 @@ const handleReceive = async () => {
         setIsCompleted(false);
     }
   }
+  setIsLoading(false)
 
 }
 
@@ -611,6 +607,7 @@ const handleGive = async () =>{
   let status = '';
   let statusid = null;
   let orderID = null;
+  setIsLoading(true)
 
   if(receivetype === 'Cho nhận trực tiếp'){
     status = 'Chờ người nhận lấy hàng';
@@ -655,7 +652,6 @@ const handleGive = async () =>{
     // let warehouseid = null;
 
     try{
-      setIsLoading(true);
       const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
         title,
         location,
