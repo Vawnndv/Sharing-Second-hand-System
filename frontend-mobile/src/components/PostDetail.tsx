@@ -26,6 +26,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'; // Đảm bảo đã
 import postsAPI from '../apis/postApi';
 import ReportModal from '../modals/ReportModal';
 import axiosClient from '../apis/axiosClient';
+import LoadingModal from '../modals/LoadingModal';
 
 
 interface Post {
@@ -313,9 +314,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingModal visible={isLoading} />
     );
   }
 

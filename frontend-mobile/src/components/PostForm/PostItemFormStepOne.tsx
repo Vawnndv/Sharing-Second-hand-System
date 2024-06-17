@@ -11,6 +11,8 @@ import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import { useNavigation } from '@react-navigation/native';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+import LoadingComponent from '../LoadingComponent';
+
 
 import * as FileSystem  from 'expo-file-system';
 // import * as Asset from 'expo-asset';
@@ -242,16 +244,16 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       const metadata = await response.json();
       setLabels(metadata.labels);
       setModel(model);
-      console.log('Model loaded successfully');
-      if( model && metadata){
-        setIsLoading(false);
-
-      }
+      console.log('Model loaded successfully'); 
 
     } catch (error) {
       console.error('Error loading the model', error);
       setIsLoading(false);
+    }finally{
+      setIsLoading(false);
+
     }
+
   };
 
   useEffect(() => {
@@ -412,8 +414,9 @@ const pickImage = async () => {
         };
       });
 
-      Promise.all(imageData).then(completed => {
-        setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed] });
+      Promise.all(imageData).then(completed  => {
+        
+        setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed]  });
       });
     } catch (error) {
       console.error('Error picking and predicting images:', error);
@@ -480,8 +483,10 @@ const predictImage = async (imageUri: any) => {
     const predictionArray = await predictionTensor.array();
     const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
 
+
+
     // Lấy nhãn tương ứng từ mảng nhãn
-    const predictedLabel = labels[maxProbabilityIndex];
+    let predictedLabel = labels[maxProbabilityIndex];
 
     // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
     const predictionResult = {
@@ -655,10 +660,8 @@ const predictImage = async (imageUri: any) => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+        <LoadingModal visible={isLoading} />
+      )
   }
   
   const handleSelectWarehouse = () => {
@@ -673,26 +676,7 @@ const predictImage = async (imageUri: any) => {
     <ScrollView style = {styles.container}>
       <LoadingModal visible={isUploaded} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
-      <TextInput
-        label="Tên món đồ"
-        value={formData.itemName}
-        onBlur={() => handleValidate(formData.itemName,'itemname')}
-        onChangeText={(text) => {
-          handleValidate(text,'itemname');
-          // setErrorMessage({...errorMessage, itemName: ''})
-        }}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        error={errorMessage.itemName? true : false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      />
-      {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
-      
+
       <TouchableOpacity onPress={() => handleValidate('','photo')}>
         <TextInput
             label="Ảnh của món đồ"
@@ -732,6 +716,28 @@ const predictImage = async (imageUri: any) => {
       </TouchableOpacity>
 
       {(errorMessage.itemPhotos) && <TextComponent text={errorMessage.itemPhotos}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+
+      <TextInput
+        label="Tên món đồ"
+        value={formData.itemName}
+        onBlur={() => handleValidate(formData.itemName,'itemname')}
+        onChangeText={(text) => {
+          handleValidate(text,'itemname');
+          // setErrorMessage({...errorMessage, itemName: ''})
+        }}
+        style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        error={errorMessage.itemName? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
+      />
+      {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      
+
 
 
       <TextInput

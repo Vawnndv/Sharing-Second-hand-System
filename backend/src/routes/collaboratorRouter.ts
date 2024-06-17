@@ -1,5 +1,5 @@
 import express from 'express';
-import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getTotalCollaborator, getWarehouseInfoOfCollaborator } from '../controllers/collaboratorController';
+import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getCollaboratorByWarehouse, getTotalCollaborator, getWarehouseInfoOfCollaborator } from '../controllers/collaboratorController';
 import { protect, admin } from '../middlewares/verifyMiddleware';
 
 const collaboratorRouter = express.Router();
@@ -20,7 +20,7 @@ collaboratorRouter.post('/collaborator-list/all', protect, admin, getAllCollabor
 
 collaboratorRouter.put('/collaborator-list/:id', protect, admin, adminEditCollaborator);
 
-// collaboratorRouter.post('/collaborator-list/byWarehouse', getCollaboratorByWarehouse);
+collaboratorRouter.post('/collaborator-list/byWarehouse', getCollaboratorByWarehouse);
 
 collaboratorRouter.put('/collaborator-list/:id', adminEditCollaborator);
 

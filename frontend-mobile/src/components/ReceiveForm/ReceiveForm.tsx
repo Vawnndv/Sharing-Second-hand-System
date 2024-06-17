@@ -19,6 +19,7 @@ import TextComponent from '../TextComponent';
 import { current } from '@reduxjs/toolkit';
 import { HandleNotification } from '../../utils/handleNotification';
 import axiosClient from '../../apis/axiosClient';
+import LoadingModal from '../../modals/LoadingModal';
 
 
 interface Props {
@@ -460,12 +461,13 @@ const handleReceive = async () => {
           name: `${auth?.firstName} ${auth.lastName}`,
           // postid: postID,
           avatar: auth.avatar,
-          link: `/post/${postID}`,
+          link: `post/${postID}`,
           title: ' Xin sản phẩm của bạn',
           body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
         })
       }else{
-        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`);
+        console.log(resGetCollab);
         resGetCollab.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,
@@ -473,7 +475,7 @@ const handleReceive = async () => {
             name: `${auth?.firstName} ${auth.lastName}`,
             // postid: postID,
             avatar: auth.avatar,
-            link: `/post/${postID}`,
+            link: `post/${postID}`,
             title: ' Xin sản phẩm của bạn',
             body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
           })
@@ -755,9 +757,8 @@ const handleGive = async () =>{
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingModal visible={isLoading} />
+
     );
   }
 
