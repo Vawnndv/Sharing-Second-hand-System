@@ -137,6 +137,12 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     throw new Error('Password is invalid!!!');
   }
 
+  if (existingUser.isbanned) {
+    res.status(400);
+    throw new Error('Tài khoản của bạn đã bị khóa');
+
+  }
+  
   const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
 
   if (platform === 'web' && existingUser.roleid > 1) {

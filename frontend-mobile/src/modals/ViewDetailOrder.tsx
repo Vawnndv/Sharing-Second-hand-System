@@ -42,6 +42,8 @@ interface Data {
 export default function ViewDetailOrder({navigation, route}: any) {
   const {orderid} = route.params;
 
+  console.log(orderid, 'orderrrrr')
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
   const [image, setImage] = useState<any>(null);

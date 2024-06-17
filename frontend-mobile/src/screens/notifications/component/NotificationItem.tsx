@@ -62,7 +62,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         overshootRight={false} // Disable overshoot effect
         friction={2} // Adjust the friction to control the ease of swiping
         rightThreshold={40} // Adjust the threshold for full swipe completion
-        containerStyle={{ borderBottomWidth: 1 }}
+        // containerStyle={{ borderBottomWidth: 1 }}
       >
         <RowComponent
           key={`event${index}`}
@@ -71,18 +71,27 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
               // Linking.openURL(`frontend-mobile://order/detail/${136}`)
               // Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
               if (item.link) {
-                Linking.openURL(`frontend-mobile://${item.link}`)
-
-                // navigation.navigate('Home', {
-                //   screen: item.link,
-                //   params: {
-                //     postID: item.postid
-                //   },
-                // });
+                // Linking.openURL(`frontend-mobile://${item.link}`)
+                const parts = item.link.split('/');
+                if( parts[0] === 'order') {
+                  navigation.navigate('MyOrder', {
+                    screen: 'ViewDetailOrder',
+                    params: {
+                      orderid: parts[1]
+                    },
+                  });
+                } else {
+                  navigation.navigate('Home', {
+                    screen: 'ItemDetailScreen',
+                    params: {
+                      postID: parts[1]
+                    },
+                  });
+                }
             }
             updateRead(item.id);
           }}
-          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6', borderBottomWidth: 1}}
+          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6' }}
         >
           <AvatarComponent
             username={item.name}
@@ -117,7 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // flex: 1,
     width: 80,
-    borderBottomWidth: 1,
+    // borderBottomWidth: 1,
   },
 
   swipeBtn: {
