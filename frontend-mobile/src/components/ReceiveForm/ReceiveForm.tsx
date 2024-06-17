@@ -482,6 +482,16 @@ const handleReceive = async () => {
         })
       }
       
+      await HandleNotification.sendNotification({
+        userReceiverId: post.owner,
+        userSendId: auth.id,
+        name: `${auth?.firstName} ${auth.lastName}`,
+        // postid: postID,
+        avatar: auth.avatar,
+        link: `/post/detail/${postID}`,
+        title: ' xin sản phẩm của bạn',
+        body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+      })
       
       Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
 

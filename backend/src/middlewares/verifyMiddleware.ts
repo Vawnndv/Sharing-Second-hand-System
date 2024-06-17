@@ -27,8 +27,7 @@ const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, ne
         const verify = jwt.verify(token, secretKey);
 
         if (typeof verify !== 'string' && (verify as JwtPayload).id) {
-          const payload = verify as JwtPayload;
-          req.user = await Account.findUserById(payload.id);
+          req.user = await Account.findUserById(verify.id);
           console.log(req.user);
           next();
         } else {
@@ -47,7 +46,7 @@ const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, ne
 });
 
 const admin = asyncHandler((req: AuthenticatedRequest, res, next) => {
-  if (req.user && req.user.roleId === 3) {
+  if (req.user && req.user.roleid === 3) {
     next();
   } else {
     res.status(401);
@@ -56,7 +55,7 @@ const admin = asyncHandler((req: AuthenticatedRequest, res, next) => {
 });
 
 const collaborator = asyncHandler((req: AuthenticatedRequest, res, next) => {
-  if (req.user && req.user.roleId === 2) {
+  if (req.user && req.user.roleid === 2) {
     next();
   } else {
     res.status(401);

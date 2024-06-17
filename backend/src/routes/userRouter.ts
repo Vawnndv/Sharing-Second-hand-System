@@ -1,6 +1,6 @@
 import express from 'express';
 import { changeUserPassword, getProfile, changeUserProfile, getUserLikePosts, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser, updateFcmToken, removeFcmToken, getUserFcmTokens } from '../controllers/userController';
-import { protect } from '../middlewares/verifyMiddleware';
+import { protect, admin } from '../middlewares/verifyMiddleware';
 
 const userRouter = express.Router();
 
@@ -18,13 +18,13 @@ userRouter.delete('/delete-like-post', protect, deleteUserLikePosts);
 
 userRouter.get('/get-user-address', protect, getUserAddress);
 
-userRouter.post('/user-list/all', protect, getAllUser);
+userRouter.post('/user-list/all', protect, admin, getAllUser);
 
-userRouter.post('/user-list/total', protect, getTotalUser);
+userRouter.post('/user-list/total', protect, admin, getTotalUser);
 
-userRouter.delete('/user-list/:id', protect, adminDeleteUser);
+userRouter.delete('/user-list/:id', protect, admin, adminDeleteUser);
 
-userRouter.put('/user-list/banned/:id', protect, adminBanUser);
+userRouter.put('/user-list/banned/:id', protect, admin, adminBanUser);
 
 userRouter.post('/add-fcmtoken', protect, updateFcmToken);
 

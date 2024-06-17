@@ -1,30 +1,32 @@
 import express from 'express';
-import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getCollaboratorByWarehouse, getTotalCollaborator, getWarehouseInfoOfCollaborator } from '../controllers/collaboratorController';
+import { adminBanCollaborator, adminCreateNewCollaborator, adminDeleteCollaborator, adminEditCollaborator, adminResetCollaboratorPassword, getAllCollaborator, getTotalCollaborator, getWarehouseInfoOfCollaborator } from '../controllers/collaboratorController';
+import { protect, admin } from '../middlewares/verifyMiddleware';
 
 const collaboratorRouter = express.Router();
 
-collaboratorRouter.post('/collaborator-list/all', getAllCollaborator);
+collaboratorRouter.post('/collaborator-list/all', protect, admin, getAllCollaborator);
 
+collaboratorRouter.post('/collaborator-list/total', protect, admin, getTotalCollaborator);
 
-collaboratorRouter.post('/collaborator-list/total', getTotalCollaborator);
+collaboratorRouter.delete('/collaborator-list/:id', protect, admin, adminDeleteCollaborator);
 
-collaboratorRouter.delete('/collaborator-list/:id', adminDeleteCollaborator);
+collaboratorRouter.put('/collaborator-list/banned/:id', protect, admin, adminBanCollaborator);
 
-collaboratorRouter.put('/collaborator-list/banned/:id', adminBanCollaborator);
+collaboratorRouter.post('/collaborator-list/create', protect, admin, adminCreateNewCollaborator);
 
-collaboratorRouter.post('/collaborator-list/create', adminCreateNewCollaborator);
+collaboratorRouter.post('/collaborator-list/reset-password', protect, admin, adminResetCollaboratorPassword);
 
-collaboratorRouter.post('/collaborator-list/reset-password', adminResetCollaboratorPassword);
+collaboratorRouter.post('/collaborator-list/all', protect, admin, getAllCollaborator);
 
-collaboratorRouter.post('/collaborator-list/all', getAllCollaborator);
+collaboratorRouter.put('/collaborator-list/:id', protect, admin, adminEditCollaborator);
 
-collaboratorRouter.post('/collaborator-list/byWarehouse', getCollaboratorByWarehouse);
+// collaboratorRouter.post('/collaborator-list/byWarehouse', getCollaboratorByWarehouse);
 
 collaboratorRouter.put('/collaborator-list/:id', adminEditCollaborator);
 
-collaboratorRouter.delete('/collaborator-list/:id', getAllCollaborator);
+collaboratorRouter.delete('/collaborator-list/:id', protect, admin, getAllCollaborator);
 
-collaboratorRouter.get('/getWarehouseAddress/:userid', getWarehouseInfoOfCollaborator);
+collaboratorRouter.get('/getWarehouseAddress/:userid', protect, admin, getWarehouseInfoOfCollaborator);
 
 
 export default collaboratorRouter;
