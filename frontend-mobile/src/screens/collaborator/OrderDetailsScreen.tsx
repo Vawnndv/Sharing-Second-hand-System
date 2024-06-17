@@ -80,11 +80,11 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             orderID: orderID,
             statusID: 11
         });
-        const response = await axiosClient.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
+        const response: any = await axiosClient.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
             collaboratorReceiveID: collabID
         });
         console.log(collabID)
-        if(response.data.statusPin === false){
+        if(response.statusPin === false){
             Alert.alert('Thông báo','Đơn hàng đã được người khác chọn!')
         }else{
             Alert.alert('Thông báo','Chọn đơn hàng thành công!')

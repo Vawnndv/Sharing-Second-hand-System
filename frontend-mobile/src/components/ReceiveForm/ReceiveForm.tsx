@@ -478,7 +478,9 @@ const handleReceive = async () => {
           body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
         })
 
-        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+          warehouseID: warehouseid
+        })
         console.log("resGetCollab", resGetCollab)
         resGetCollab.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
@@ -573,7 +575,9 @@ const handleReceive = async () => {
     });
 
 
-      const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+      const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+        warehouseID: warehouseid
+      })
       console.log("resGetCollab", resGetCollab)
       resGetCollab.map(async (collab: any, index: number) => {
         await HandleNotification.sendNotification({
