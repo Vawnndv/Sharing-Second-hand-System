@@ -5,8 +5,6 @@ import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollV
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
 import { EvilIcons, Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import axios from 'axios'
-
 import { useDebounce } from '../../hooks/useDebounce';
 import { appInfo } from '../../constants/appInfos';
 import { useSelector } from 'react-redux';
@@ -15,6 +13,7 @@ import { LoadingModal } from '../../modals';
 import { isLoading } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { GOOGLE_MAP_API_KEY, BING_MAP_API_KEY } from '@env';
+import axiosClient from '../../apis/axiosClient';
 
 
 const getUrlRequest = (query: string) => {
@@ -66,12 +65,12 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     useEffect(() => {
         const fetchHomeLocation = async () => {
-            const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
-            if(response.data.data !== null){
+            const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+            if(response.data !== null){
                 setHomeLocation({
-                    address: response.data.data.address,
-                    latitude: parseFloat(response.data.data.latitude),
-                    longitude: parseFloat(response.data.data.longitude)
+                    address: response.data.address,
+                    latitude: parseFloat(response.data.latitude),
+                    longitude: parseFloat(response.data.longitude)
                 })
             }
         }
@@ -113,8 +112,8 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     const searchLocation = async (text: string) => {
         try {
-            const response = await axios.get(getUrlRequest(text));
-            setDataSearch(response.data)
+            const response: any = await axiosClient.get(getUrlRequest(text));
+            setDataSearch(response)
         } catch (error) {
             console.error('Lỗi khi tìm kiếm địa điểm:', error);
         }
@@ -193,7 +192,7 @@ export default function MapSettingAddress({navigation, route}: any) {
                 setIsLoading(true)
                 const address = await getAddressFromLatLng(center.latitude, center.longitude)
                 console.log(address)
-                const response: any = await axios.post(`${appInfo.BASE_URL}/map/set_user_location`,{
+                const response: any = await axiosClient.post(`${appInfo.BASE_URL}/map/set_user_location`,{
                     userID: auth.id,
                     latitude: center.latitude,
                     longitude: center.longitude,

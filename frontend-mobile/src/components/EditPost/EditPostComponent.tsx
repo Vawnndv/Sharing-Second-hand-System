@@ -18,13 +18,13 @@ import { ScrollView } from 'react-native-gesture-handler';
 
 import Icon from 'react-native-vector-icons/AntDesign'; // Import Icon
 import { ProfileModel } from '../../models/ProfileModel';
-import axios from 'axios';
 import userAPI from '../../apis/userApi';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 import ShowMapComponent from '../ShowMapComponent';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 import ContainerComponent from '../ContainerComponent';
+import axiosClient from '../../apis/axiosClient';
 
 
 interface EditPostComponent  {
@@ -140,22 +140,22 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
       try {
         // console.log(postID);
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
-        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        setItemID(res.data.postDetail.itemid);
-        itemIDs = res.data.postDetail.itemid;
-        owner = res.data.postDetail.owner;
-        setNewTitle(res.data.postDetail.title);
-        setNewDescription(res.data.postDetail.description);
+        setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setItemID(res.postDetail.itemid);
+        itemIDs = res.postDetail.itemid;
+        owner = res.postDetail.owner;
+        setNewTitle(res.postDetail.title);
+        setNewDescription(res.postDetail.description);
 
-        // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-        setIsUserPost(res.data.postDetail.owner == auth.id);
+        // console.log(post?.title +  ' ' + res.postDetail.latitude);
+        setIsUserPost(res.postDetail.owner == auth.id);
 
 
       } catch (error) {
@@ -164,25 +164,25 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
-        setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+        setPostReceivers(res.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);
       }
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
         // const res = await itemsAPI.HandleAuthentication(
         //   `/${itemID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
-        setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+        setItemImages(res.itemImages); // Cập nhật state với dữ liệu nhận được từ API
         // setItemID(data.id);
       
       } catch (error) {
@@ -326,7 +326,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
     console.log('THISS ISSS ADDDRESSSSS', itemImagesAdd);
 
     try{
-    const res = await axios.post(`${appInfo.BASE_URL}/posts/editPost`, {
+    const res: any = await axiosClient.post(`${appInfo.BASE_URL}/posts/editPost`, {
       postid: post.postid,
       // isAddImage: isAddImage,
       isDeleteImage: isDeleteImage,
@@ -347,7 +347,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
           const imgTemp = {uri: image.path, name: image.name, type: image.type};
           const data = await UploadImageToAws3(imgTemp, false);
           
-          const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
+          const responseUploadImage: any = await axiosClient.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,
             itemID: itemID
           })
@@ -359,7 +359,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
         console.log(error)
       }
     }
-    console.log(res.data.postUpdated);
+    console.log(res.postUpdated);
     Alert.alert('Thông báo', 'Cập nhật bài đăng thành công');
 
     navigation.navigate('PostScreen');

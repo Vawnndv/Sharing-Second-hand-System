@@ -24,9 +24,9 @@ import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import AppRouters from './src/screens/auth/AppRouters';
 import * as Linking from 'expo-linking';
-import axios from 'axios';
 import { appInfo } from './src/constants/appInfos';
 import linking from './linking';
+import axiosClient from './src/apis/axiosClient';
 // Keep the splash screen visible while we fetch resources
 
 const prefix = Linking.createURL('/');
@@ -98,7 +98,7 @@ export default function App() {
       if(count.current === 0){
         try {
           count.current += 1;
-          const response = await axios.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
+          const response = await axiosClient.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
             type: 'access'
           })
           // console.log("Response ACCESSSSSSS", response)

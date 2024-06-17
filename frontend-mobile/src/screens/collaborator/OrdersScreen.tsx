@@ -5,7 +5,6 @@ import IconEvil from 'react-native-vector-icons/EvilIcons';
 import OrderComponent from "../../components/OrderCollaborator/OrderComponent";
 import { useState } from "react";
 import FilterModal from "../../modals/FilterModal";
-import axios from "axios";
 import { appInfo } from "../../constants/appInfos";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -18,6 +17,7 @@ import { appColors } from "../../constants/appColors";
 import { fontFamilies } from "../../constants/fontFamilies";
 import { Ionicons } from '@expo/vector-icons'
 import { category } from "../../constants/appCategories";
+import axiosClient from "../../apis/axiosClient";
 
 
 export default function OrdersScreen({navigation}: any) {
@@ -53,8 +53,8 @@ export default function OrdersScreen({navigation}: any) {
         const fetchAPI = async () => {
             try{
                 setIsLoading(true)
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=Hàng đang được đến lấy&distance=-1&time=-1&category=Tất cả&sort=Mới nhất`)
-                setOrdersGiving(response.data.orders)
+                const response: any = await axiosClient.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=Hàng đang được đến lấy&distance=-1&time=-1&category=Tất cả&sort=Mới nhất`)
+                setOrdersGiving(response.orders)
                 setIsLoading(false)
             }catch(error){
                 console.log(error)
@@ -84,9 +84,9 @@ export default function OrdersScreen({navigation}: any) {
                 }
                 console.log(filterValue.category.length, categoryQuery)
                 setIsLoading(true)
-                const response = await axios.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}&distance=${filterValue.distance}
+                const response: any = await axiosClient.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}&distance=${filterValue.distance}
                     &time=${filterValue.time}&category=${categoryQuery}&sort=${filterValue.sort}`)
-                setOrders(response.data.orders)
+                setOrders(response.orders)
                 setIsLoading(false)
             }catch(error){
                 console.log(error)

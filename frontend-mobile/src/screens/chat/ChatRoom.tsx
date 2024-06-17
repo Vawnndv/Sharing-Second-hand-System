@@ -15,10 +15,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload'
 import chatAPI from '../../apis/chatApi'
 import postsAPI from '../../apis/postApi'
-import axios from 'axios'
 import itemsAPI from '../../apis/itemApi'
 import { appInfo } from '../../constants/appInfos'
 import { fontFamilies } from '../../constants/fontFamilies'
+import axiosClient from '../../apis/axiosClient'
 
 const ChatRoom = ({ route, navigation }: any) => {
   const { item, postid } = route.params;
@@ -129,12 +129,12 @@ const ChatRoom = ({ route, navigation }: any) => {
       textRef.current = "";
       if(inputRef) inputRef?.current?.clear()
 
-      const res = await axios.get(`${appInfo.BASE_URL}/posts/${postid}`)
+      const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postid}`)
       
-      const res_image = await axios.get(`${appInfo.BASE_URL}/items/images/${res.data.postDetail.itemid}`)
+      const res_image: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${res.postDetail.itemid}`)
 
-      const post = res.data.postDetail;
-      const uri = res_image.data.itemImages[0].path
+      const post = res.postDetail;
+      const uri = res_image.itemImages[0].path
       const newDoc = await addDoc(messageRef, {
         userid: auth?.id,
         text: 'Tôi muốn xin món đồ này',

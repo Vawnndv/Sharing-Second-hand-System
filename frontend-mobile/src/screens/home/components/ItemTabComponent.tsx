@@ -9,11 +9,11 @@ import UserPostComponent from './UserPostComponent';
 import WarehouseComponent from './WarehouseComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import postsAPI from '../../../apis/postApi';
-import axios from 'axios';
 import { appInfo } from '../../../constants/appInfos';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../../redux/reducers/authReducers';
 import { category } from '../../../constants/appCategories';
+import axiosClient from '../../../apis/axiosClient';
 
 export interface filterValue {
   distance: number;
@@ -40,9 +40,9 @@ const ItemTabComponent = ({navigation}: any) => {
 
   useEffect(() => {
     const getUserAddress = async () => {
-      const response: any = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+      const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
       console.log('getUserAddress', response.data)
-      if(response.data.data === null){
+      if(response.data === null){
         // setIsNewUser(true)
         // console.log('getUserAddress true', response.data)
         navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
@@ -59,11 +59,11 @@ const ItemTabComponent = ({navigation}: any) => {
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
-      const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
-      setWarehouses(response.data.wareHouses)
-      // console.log("WAREHOUSES",response.data.wareHouses)
+      const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
+      setWarehouses(response.wareHouses)
+      // console.log("WAREHOUSES",response.wareHouses)
       let listWarehouseID: any = []
-      response.data.wareHouses.map((warehouse: any) => {
+      response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)
       })
       setWarehousesID(listWarehouseID)

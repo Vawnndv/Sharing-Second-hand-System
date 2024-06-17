@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Alert, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { Modal, Text, View } from "react-native";
 import { appColors } from "../constants/appColors";
-import axios from "axios";
 import { appInfo } from "../constants/appInfos";
 import LoadingModal from "./LoadingModal";
+import axiosClient from "../apis/axiosClient";
 
 export default function ReportModal({ visible, setVisible, title, reportType, userID, postID, reporterID, warehouseID }: any) {
     
@@ -14,7 +14,7 @@ export default function ReportModal({ visible, setVisible, title, reportType, us
     const handleReport = async () => {
         try {
             setIsLoading(true)
-            const response: any = await axios.post(`${appInfo.BASE_URL}/report`,{
+            const response: any = await axiosClient.post(`${appInfo.BASE_URL}/report`,{
                 userID,
                 postID,
                 description,
@@ -22,7 +22,7 @@ export default function ReportModal({ visible, setVisible, title, reportType, us
                 reporterID,
                 warehouseID
             })
-            if(response.data.data === true){
+            if(response.data === true){
                 setVisible(false)
                 Alert.alert("Thông báo", "Bạn đã báo cáo thành công!")
             }

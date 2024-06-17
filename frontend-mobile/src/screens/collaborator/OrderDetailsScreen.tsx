@@ -3,7 +3,6 @@ import IconFeather from 'react-native-vector-icons/Feather';
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { appInfo } from "../../constants/appInfos";
 import moment from "moment";
 import { authSelector } from "../../redux/reducers/authReducers";
@@ -16,6 +15,7 @@ import ConfirmComponent from "../../components/ConfirmComponent";
 import { Alert } from "react-native";
 import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
+import axiosClient from "../../apis/axiosClient";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -43,17 +43,17 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         
             const data = await UploadImageToAws3(image, false);
             // const urlConfirm = response.url
-            await axios.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
+            await axiosClient.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
                 url: data.url
             });
     
-            await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+            await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
                 orderID: orderID,
                 statusID: 9
             });
     
             if(orders[0].order.giveTypeID === 5){
-                await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+                await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
                     orderID: orderID,
                     statusID: 3
                 });
@@ -76,11 +76,11 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         const collabID = status === 'Chờ cộng tác viên lấy hàng' ? auth.id : null
         const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
         console.log(collabID, statusOrder)
-        await axios.post(`${appInfo.BASE_URL}/order/update-status`,{
+        await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
             orderID: orderID,
             statusID: 11
         });
-        const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
+        const response = await axiosClient.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
             collaboratorReceiveID: collabID
         });
         console.log(collabID)
@@ -101,13 +101,13 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     useEffect(() => {
         const fetchAPI = async () => {
             setIsLoading(true)
-            const response = await axios.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
-            setOrders(response.data.orders)
-            console.log(response.data.orders[0].imgConfirm)
-            if(response.data.orders[0].imgConfirm !== null && response.data.orders[0].imgConfirm !== ''){
-                console.log("response.data.orders[0].imgConfirm", response.data.orders[0].imgConfirm)
+            const response: any = await axiosClient.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
+            setOrders(response.orders)
+            console.log(response.orders[0].imgConfirm)
+            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ''){
+                console.log("response.orders[0].imgConfirm", response.orders[0].imgConfirm)
                 setImage({
-                    uri: response.data.orders[0].imgConfirm
+                    uri: response.orders[0].imgConfirm
                 })
             }
             setIsLoading(false)

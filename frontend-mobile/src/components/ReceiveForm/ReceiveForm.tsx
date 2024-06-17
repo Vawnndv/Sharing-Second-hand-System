@@ -453,8 +453,6 @@ const handleReceive = async () => {
         receivertypeid,
       });       
 
-      console.log(post,'ccccccccccccccccccc');
-      
       if(receivertypeid == 1){
         await HandleNotification.sendNotification({
           userReceiverId: post.owner,
@@ -464,7 +462,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `/post/${postID}`,
           title: ' Xin sản phẩm của bạn',
-          body: `${auth?.firstName} ${auth.lastName} đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
         })
       }else{
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
@@ -472,11 +470,12 @@ const handleReceive = async () => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,
             userSendId: auth.id,
+            name: `${auth?.firstName} ${auth.lastName}`,
             // postid: postID,
             avatar: auth.avatar,
             link: `/post/${postID}`,
             title: ' Xin sản phẩm của bạn',
-            body:`${auth?.firstName} ${auth.lastName} đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
           })
         })
       }
@@ -677,22 +676,23 @@ const handleGive = async () =>{
 
     try {
 
-      const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+      const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
       if (!res) {
         throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
       }
       // setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
 
-      res.data.postReceivers.map(async (receiver: any, index: number) => {
+      res.postReceivers.map(async (receiver: any, index: number) => {
         await HandleNotification.sendNotification({
           userReceiverId: receiver.receiverid,
           userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
           // postid: postID,
           avatar: auth.avatar,
           link: `/post/${postID}`,
           title: ' Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
-            `${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `$đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
             `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
         })
       })
