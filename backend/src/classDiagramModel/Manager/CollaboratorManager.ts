@@ -63,7 +63,7 @@ export class CollaboratorManager extends UserManager {
       u.userid,
       u.firstname, 
       u.lastname,
-      u.avatar,
+      u.avatar
     FROM public."User" u LEFT JOIN workat wk ON u.userid = wk.userid LEFT JOIN warehouse w ON w.warehouseid = wk.warehouseid
     WHERE w.warehouseid = ${warehouseID}
     `;

@@ -465,7 +465,20 @@ const handleReceive = async () => {
           body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
         })
       }else{
+
+        await HandleNotification.sendNotification({
+          userReceiverId: post.owner,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+        })
+
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+        console.log("resGetCollab", resGetCollab)
         resGetCollab.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,
@@ -557,6 +570,22 @@ const handleReceive = async () => {
         statusid: 14,
         isApproveAction: false
     });
+
+
+      const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`)
+      console.log("resGetCollab", resGetCollab)
+      resGetCollab.map(async (collab: any, index: number) => {
+        await HandleNotification.sendNotification({
+          userReceiverId: collab.userid,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
+        })
+      })
   
   
       Alert.alert('Thành công', 'Nhận món đồ thành công.');
