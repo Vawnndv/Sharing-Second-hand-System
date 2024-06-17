@@ -8,7 +8,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import itemsAPI from '../../apis/itemApi';
 import postAPI from '../../apis/postApi';
 import { appInfo } from '../../constants/appInfos';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
@@ -219,12 +218,15 @@ const MultiStepForm = () => {
         const name = formDataStepOne.itemName;
         const quantity = parseInt(formDataStepOne.itemQuantity);
         const itemtypeID = parseInt(formDataStepOne.itemCategory)
-        const res = await axios.post(`${appInfo.BASE_URL}/items`, {
+        const res: any = await axiosClient.post(`${appInfo.BASE_URL}/items`, {
           name,
           quantity,
           itemtypeID,
         });
-        itemID = res.data.item.itemid;
+        console.log(res, 'itemitem')
+
+        itemID = res.item.itemid;
+        console.log(itemID, 'itemitem')
         // Alert.alert('Success', 'Item created successfully');
         } catch (error) {
           console.log(error);
@@ -260,7 +262,7 @@ const MultiStepForm = () => {
             givetypeid,
             formDataStepTwo.postPhoneNumber)
 
-          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+          response = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
             description,
@@ -279,7 +281,7 @@ const MultiStepForm = () => {
           
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Tự đem đến kho"){
-          response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+          response = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
             description,
@@ -298,7 +300,7 @@ const MultiStepForm = () => {
           });
         }
         else if(formDataStepOne.methodsBringItemToWarehouse === "Nhân viên kho sẽ đến lấy"){
-            response = await axios.post(`${appInfo.BASE_URL}/posts/createPost`, {
+            response = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
             location: locationTemp,
             description,
@@ -315,9 +317,10 @@ const MultiStepForm = () => {
             phonenumber: formDataStepTwo.postPhoneNumber
 
           });
-        }    
+        }     
 
-        postID = response.data.postCreated.postid;
+        postID = response.postCreated.postid;
+        console.log(response)
         // address = response.data.postCreated.address;
         // addressid = response.data.postCreated.addressid;
 
@@ -338,93 +341,11 @@ const MultiStepForm = () => {
 
       }
   
-      // try {
-      //   const title = formDataStepTwo.postTitle;
-      //   const location = ' ';
-      //   const description = ' ';
-      //   const departure = address;
-      //   const time = new Date();
-      //   const itemid = itemID;
-      //   const status = 'Chờ xét duyệt';
-      //   const qrcode = ' ';
-      //   const ordercode = ' ';
-      //   const usergiveid = auth.id;
-      //   const postid = postID;
-      //   const imgconfirm = ' ';
-      //   const locationgive = addressid;
-      //   let locationreceive = null;
-      //   let givetypeid = 1;
-      //   const imgconfirmreceive = ' ';
-      //   let givetype = 'Cho nhận trực tiếp';
-      //   let warehouseid = null;
-      //   // let givetype = 'Cho nhận trực tiếp';
-      //   // if(formDataStepOne.methodsBringItemToWarehouse )
-      //   if( formDataStepOne.methodGive == "Gửi món đồ đến kho"){
-      //     givetype = 'Cho kho';
-      //     givetypeid = 3;
-      //     if(formDataStepOne.methodsBringItemToWarehouse == "Nhân viên kho sẽ đến lấy"){
-      //       // locationreceive = formDataStepOne.warehouseAddressID;
-      //       givetype = 'Cho kho (kho đến lấy)';
-      //       givetypeid = 4;
-      //     }
-      //     else{
-      //       warehouseid = warehouseSelected.warehouseid;
-      //     }
-      //   }
-  
-      //   // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-      //   const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
-      //     title,
-      //     location,
-      //     description,
-      //     departure,
-      //     time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-      //     itemid,
-      //     status,
-      //     qrcode,
-      //     ordercode,
-      //     usergiveid,
-      //     postid,
-      //     imgconfirm,
-      //     locationgive,
-      //     locationreceive,
-      //     givetypeid,
-      //     imgconfirmreceive,
-      //     givetype,
-      //     warehouseid
-      //   });       
-      //   // console.log(response.data.orderCreated);
-      //   orderID = response.data.orderCreated.orderid;
-      //   // Alert.alert('Success', 'Item, Post, Order created successfully');
-      // } catch (error) {
-      //   console.error('Error creating order:', error);
-      //   Alert.alert('Error', 'Failed to create Item, Post, Order. Please try again later.');
-      //   setIsCompleted(false);
-      // }
-  
-      // try {
-      //   const currentstatus = 'Chờ xét duyệt';
-      //   const orderid = orderID;
-      //   // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-      //   const response = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
-      //     currentstatus,
-      //     orderid,
-      //   });
-      //   console.log(response.data.traceCreated)
-      //   // Alert.alert('Success', 'Item, Post, Order, Trace created successfully');
-
-        // navigation.goBack();
-      // } catch (error) {
-      //   console.error('Error creating Trace:', error);
-      //   Alert.alert('Error', 'Failed to create Item, Post, Order, Trace. Please try again later.');
-      //   setIsCompleted(false);
-      // }
-  
       try{
         formDataStepOne.itemPhotos.map(async (image) => {
           const data = await UploadImageToAws3(image, false);
-          
-          const responseUploadImage = await axios.post(`${appInfo.BASE_URL}/items/upload-image`,{
+          console.log(data, itemID, 'aaaaaaaaa');
+          const responseUploadImage = await axiosClient.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,
             itemID: itemID
           })
@@ -436,7 +357,7 @@ const MultiStepForm = () => {
       }
 
       try{
-        const response = await axios.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
+        const response = await axiosClient.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
           type: 'post'
         })
       }catch(error){

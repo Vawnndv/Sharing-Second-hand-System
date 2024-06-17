@@ -4,7 +4,7 @@ import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
 
-router.post('/', protect, postNewItem);
+router.post('/', postNewItem);
 // Route to get all items
 router.get('/', protect, getAllItems);
 

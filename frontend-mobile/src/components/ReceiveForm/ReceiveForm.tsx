@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, StyleSheet, Alert } from 'react-native';
 import { appInfo } from '../../constants/appInfos';
@@ -19,6 +18,7 @@ import ShowMapComponent from '../ShowMapComponent';
 import TextComponent from '../TextComponent';
 import { current } from '@reduxjs/toolkit';
 import { HandleNotification } from '../../utils/handleNotification';
+import axiosClient from '../../apis/axiosClient';
 
 
 interface Props {
@@ -253,24 +253,24 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     const fetchAllData = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        let count = res.data.wareHouses.length;
+        let count = res.wareHouses.length;
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.wareHouses[i].warehousename + ', ' + res.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
           })
         }
-        setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+        setWarehouses(res.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
         setWarehouseDropdown(warehouseArray);
       } catch (error) {
         console.error('Error fetching warehouses:', error);
@@ -280,7 +280,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postowner/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postowner/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
@@ -288,25 +288,25 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
         setLocation({
-          address: res.data.postOwnerInfos.address,
-          latitude: parseFloat(res.data.postOwnerInfos.latitude),
-          longitude: parseFloat(res.data.postOwnerInfos.longitude)
+          address: res.postOwnerInfos.address,
+          latitude: parseFloat(res.postOwnerInfos.latitude),
+          longitude: parseFloat(res.postOwnerInfos.longitude)
         })
-        setPostOwnerInfo(res.data.postOwnerInfos);
+        setPostOwnerInfo(res.postOwnerInfos);
         setFormData({
           ...formData,
-          address: res.data.postOwnerInfos.address,
-          owmerName: res.data.postOwnerInfos.firstname + ' ' + res.data.postOwnerInfos.lastname,
-          ownerPhone: res.data.postOwnerInfos.phonenumber,
-          ownerID: res.data.postOwnerInfos.owner,
-          postDate: moment(res.data.postOwnerInfos.timestart).format('DD/MM/YYYY') + ' - ' + moment(res.data.postOwnerInfos.timeend).format('DD/MM/YYYY'),
+          address: res.postOwnerInfos.address,
+          owmerName: res.postOwnerInfos.firstname + ' ' + res.postOwnerInfos.lastname,
+          ownerPhone: res.postOwnerInfos.phonenumber,
+          ownerID: res.postOwnerInfos.owner,
+          postDate: moment(res.postOwnerInfos.timestart).format('DD/MM/YYYY') + ' - ' + moment(res.postOwnerInfos.timeend).format('DD/MM/YYYY'),
           // giveType: method,
-          postTitle: res.data.postOwnerInfos.title,
-          addressGiveID: res.data.postOwnerInfos.addressid,
+          postTitle: res.postOwnerInfos.title,
+          addressGiveID: res.postOwnerInfos.addressid,
           postid: postID,
-          itemid: res.data.postOwnerInfos.itemid,
+          itemid: res.postOwnerInfos.itemid,
         });
-        if(auth.id == res.data.postOwnerInfos.owner){
+        if(auth.id == res.postOwnerInfos.owner){
           setIsUserPost(true);
         }
       } catch (error) {
@@ -316,12 +316,12 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       }
       try {
         setIsLoading(true);
-        const res = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
+        const res: any = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
 
         // const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
         setFormData({
           ...formData,
-          addressReceiveID: res.data.addressid
+          addressReceiveID: res.addressid
         });
       } catch (error) {
         console.log(error);
@@ -348,16 +348,16 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       try {
         // console.log(postID);
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
-        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-        setIsUserPost(res.data.postDetail.owner == auth.id);
+        setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        // console.log(post?.title +  ' ' + res.postDetail.latitude);
+        setIsUserPost(res.postDetail.owner == auth.id);
         setIsLoading(false);
 
       } catch (error) {
@@ -367,7 +367,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       if(warehouseid !== 0 && warehouseid){
         try {
           setIsLoading(true);
-          const res = await axios.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
+          const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
           // );
@@ -375,11 +375,11 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
             throw new Error('Failed to fetch warehouse'); // Xử lý lỗi nếu request không thành công
           }
           
-          setWarehouse(res.data.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
+          setWarehouse(res.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
           setFormData({
             ...formData,
-            warehouseInfo: res.data.wareHouse.warehousename + ', ' + res.data.wareHouse.address,
-            warehouseID: res.data.wareHouse.warehouseid,
+            warehouseInfo: res.wareHouse.warehousename + ', ' + res.wareHouse.address,
+            warehouseID: res.wareHouse.warehouseid,
           });
         } catch (error) {
           console.error('Error fetching warehouse:', error);
@@ -444,7 +444,7 @@ const handleReceive = async () => {
       }
       
       // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-      const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
+      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
         postid,
         receiverid,
         comment,
@@ -503,7 +503,7 @@ const handleReceive = async () => {
       // let warehouseid = null;
   
       try{
-        const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+        const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
           title,
           location,
           description,
@@ -525,17 +525,17 @@ const handleReceive = async () => {
           userreceiveid: auth.id
         });
   
-        console.log(response.data.orderCreated);
+        console.log(response.orderCreated);
   
-        orderID = response.data.orderCreated.orderid;    
+        orderID = response.orderCreated.orderid;    
         // if(receivetype === )
   
-      const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+      const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
         currentstatus: status,
         orderid: orderID,
       });
 
-      const resUpdatePost = await axios.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+      const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
         postid: post.postid,
         statusid: 14,
         isApproveAction: false
@@ -605,7 +605,7 @@ const handleGive = async () =>{
 
     try{
       setIsLoading(true);
-      const response = await axios.post(`${appInfo.BASE_URL}/order/createOrder`, {
+      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
         title,
         location,
         description,
@@ -627,17 +627,17 @@ const handleGive = async () =>{
         userreceiveid
       });
 
-      console.log(response.data.orderCreated);
+      console.log(response.orderCreated);
 
-      orderID = response.data.orderCreated.orderid;    
+      orderID = response.orderCreated.orderid;    
       // if(receivetype === )
 
-    const responseTrace = await axios.post(`${appInfo.BASE_URL}/order/createTrace`, {
+    const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
       currentstatus: status,
       orderid: orderID,
     });
 
-    const resUpdatePost = await axios.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+    const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
         postid: post.postid,
         statusid: 14,
         isApproveAction: false
@@ -648,7 +648,7 @@ const handleGive = async () =>{
 
     if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
       {
-        const responseTrace = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+        const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/card/createInputCard`, {
           qrcode: '',
           warehouseid: warehouseid,
           usergiveid: auth.id,

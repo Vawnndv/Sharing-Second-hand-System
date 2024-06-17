@@ -4,7 +4,6 @@ import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity, ActivityIn
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons từ thư viện
 import RNPickerSelect from 'react-native-picker-select';
-import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 import { Dropdown } from 'react-native-element-dropdown';
 import { ProfileModel } from '../../models/ProfileModel';
@@ -24,6 +23,7 @@ import * as mobilenet from '@tensorflow-models/mobilenet';
 import { decode as jpegDecode } from 'jpeg-js';
 import * as ImageManipulator from 'expo-image-manipulator';
 import LoadingModal from '../../modals/LoadingModal';
+import axiosClient from '../../apis/axiosClient';
 // import * as ImageResizer from 'react-native-image-resizer';
 
 
@@ -284,7 +284,7 @@ const metadataLocal = require('../../../assets/model/metadata.json');
     const fetchAllData = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/items/types`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
@@ -292,16 +292,16 @@ const metadataLocal = require('../../../assets/model/metadata.json');
           throw new Error('Failed to fetch item types'); // Xử lý lỗi nếu request không thành công
         }
 
-        let count = res.data.itemTypes.length;
+        let count = res.itemTypes.length;
         let itemTypesArray = [];
         for(let i = 0; i< count; i++){
           itemTypesArray.push({
-            value: res.data.itemTypes[i].itemtypeid,
-            label: '  ' + res.data.itemTypes[i].nametype
+            value: res.itemTypes[i].itemtypeid,
+            label: '  ' + res.itemTypes[i].nametype
           })
         }
         setItemTypesDropdown(itemTypesArray);
-        setItemTypes(res.data.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
+        setItemTypes(res.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching item types:', error);
       } finally {
@@ -310,24 +310,24 @@ const metadataLocal = require('../../../assets/model/metadata.json');
 
       try {
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        let count = res.data.wareHouses.length;
+        let count = res.wareHouses.length;
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.wareHouses[i].warehousename + ', ' + res.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
           })
         }
-        setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+        setWarehouses(res.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
         setWarehouseDropdown(warehouseArray);
       } catch (error) {
         console.error('Error fetching warehouses:', error);

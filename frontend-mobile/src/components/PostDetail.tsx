@@ -25,6 +25,7 @@ import { DirectboxReceive, Flag, Heart } from 'iconsax-react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Đảm bảo đã cài đặt thư viện này
 import postsAPI from '../apis/postApi';
 import ReportModal from '../modals/ReportModal';
+import axiosClient from '../apis/axiosClient';
 
 
 interface Post {
@@ -218,8 +219,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
       try{
         setIsLoading(true);
-        const res: any = await axios.get(`${appInfo.BASE_URL}/posts/get-amount-user-like-post?postID=${postID}`)
-        setAmountLike(res.data.amount)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/get-amount-user-like-post?postID=${postID}`)
+        setAmountLike(res.amount)
 
       }catch(error){
         console.log(error)
@@ -227,45 +228,45 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
       try {
         // console.log(postID);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
-        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        setItemID(res.data.postDetail.itemid);
-        itemIDs = res.data.postDetail.itemid;
-        owner = res.data.postDetail.owner;
-        // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-        setIsUserPost(res.data.postDetail.owner == auth.id);
+        setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setItemID(res.postDetail.itemid);
+        itemIDs = res.postDetail.itemid;
+        owner = res.postDetail.owner;
+        // console.log(post?.title +  ' ' + res.postDetail.latitude);
+        setIsUserPost(res.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
       }
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
-        setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+        setPostReceivers(res.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);
       }
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
         // const res = await itemsAPI.HandleAuthentication(
         //   `/${itemID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
-        setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
-        setShowRightArrow(res.data.itemImages > 1 ? true : false)
+        setItemImages(res.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+        setShowRightArrow(res.itemImages > 1 ? true : false)
         // setItemID(data.id);
       
       } catch (error) {
@@ -274,12 +275,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/items/${itemIDs}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/${itemIDs}`)
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
-        console.log(res.data);
-        setItemDetails(res.data.item); // Cập nhật state với dữ liệu nhận được từ API
+        console.log(res);
+        setItemDetails(res.item); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);
       }

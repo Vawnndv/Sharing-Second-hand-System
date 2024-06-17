@@ -152,7 +152,7 @@ export const createPost = asyncHandle(async (req, res) => {
   const warehouseid = req.body.warehouseid;
   const phonenumber = req.body.phonenumber;
 
-
+  console.log(req.body);
 
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu

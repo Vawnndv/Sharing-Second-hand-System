@@ -81,10 +81,11 @@ export const getAllItemTypes = asyncHandle(async (req, res) => {
 
 export const postNewItem = asyncHandle(async (req, res) => {
   const { name, quantity, itemtypeID } = req.body;
-  
+  console.log(req.body, 'âfaf');
   try {
     const newItem = await ItemManager.createItem(name, quantity, itemtypeID);
-    res.status(201).json({ message: 'Item created successfully', item: newItem });
+    console.log(newItem, '....................');
+    res.status(200).json({ message: 'Item created successfully', item: newItem });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

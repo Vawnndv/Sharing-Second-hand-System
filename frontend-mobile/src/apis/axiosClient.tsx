@@ -30,7 +30,7 @@ axiosClient.interceptors.request.use(async (config: any) => {
 
 axiosClient.interceptors.response.use(
   res => {
-    if (res.data && res.status === 200) {
+    if (res.data && (res.status === 200 || res.status === 201)) {
       return res.data;
     }
     throw new Error('Error');

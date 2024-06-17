@@ -74,7 +74,7 @@ export class ItemManager {
   } 
 
   public static async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
-
+    console.log(quantity, 'quantityquantity');
     const client = await pool.connect();
     const query = `
         INSERT INTO item(name, quantity, itemtypeID)
@@ -95,7 +95,7 @@ export class ItemManager {
   };
 
   public static async uploadImageItem (path: string, itemID: string): Promise<boolean> {
-
+    console.log(path, itemID, 'cccccccc');
     const client = await pool.connect();
     const query = `
         INSERT INTO "image" (path, itemid)
