@@ -52,6 +52,7 @@ export class usePushNotifications {
             projectId,
           })
         ).data;
+        console.log(pushTokenString, 'token token');
 
         this.getExpoPushToken(pushTokenString);
 
@@ -64,6 +65,7 @@ export class usePushNotifications {
   }
 
   static getExpoPushToken = async (token: string) => {
+    console.log(token, 'token token');
     const fcmtoken = await AsyncStorage.getItem('fcmtoken');
     if (!fcmtoken) {
       if (token) {
