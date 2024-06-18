@@ -12,7 +12,7 @@ import { viVN } from '@mui/x-data-grid/locales';
 import { banUserService } from '../../../../redux/services/userServices'
 import toast from 'react-hot-toast'
 import dayjs from 'dayjs';
-import { HandleNotification } from '../../../../utils/handleNotification'
+// import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -48,27 +48,31 @@ function UserTable(props: Props) {
     setSelectionModel(newSelectionModel)
   }
 
-  const handleBanUser = async (id: number, isBanned: any) => {
+  const handleBanUser = async (id: number, firstname: string, lastname: string, isBanned: any) => {
     try {
-      await banUserService(id, {userId: id, isBanned});
-      const userIndex = data.findIndex((user:any) => user.userid === id);
-      if (userIndex !== -1) {
-        const updatedUsers = [...data];
-        updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-        // Create a new array with the user replaced with updated data
-        console.log(updatedUsers[userIndex], '12313');
-        setData(updatedUsers);
-        await HandleNotification.sendNotification({
-          userReceiverId: updatedUsers[userIndex].userid,
-          userSendId: userInfo?.id,
-          postid: '',
-          avatar: userInfo?.avatar,
-          link: '',
-          title: 'ban acc',
-          name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-          body: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
-        })
-        toast.success(`Khóa tài khoản của người dùng thành công`);
+      console.log(users)
+      const text: string = isBanned ? 'khóa' : 'mở khóa'
+      if (window.confirm(`Bạn có chắc chắn muốn ${text} người dùng ${lastname} ${firstname}?`)) {
+        await banUserService(id, {userId: id, isBanned});
+        const userIndex = data.findIndex((user:any) => user.userid === id);
+        if (userIndex !== -1) {
+          const updatedUsers = [...data];
+          // Create a new array with the user replaced with updated data
+          updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
+          console.log(updatedUsers[userIndex], '12313');
+          setData(updatedUsers);
+        //   await HandleNotification.sendNotification({
+        //     userReceiverId: updatedUsers[userIndex].userid,
+        //     userSendId: userInfo?.id,
+        //     postid: '',
+        //     avatar: userInfo?.avatar,
+        //     link: '',
+        //     title: 'ban acc',
+        //     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+        //     body: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+        //   })
+          toast.success(`${text} tài khoản của người dùng ${lastname} ${firstname} thành công`);
+        }
       }
     } catch (error: unknown) {
       console.log(error)
@@ -120,7 +124,7 @@ function UserTable(props: Props) {
         renderCell: (params: any) => (
           <Box>
             <Tooltip title="Khóa người dùng">
-              <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
+              <IconButton onClick={() => {handleBanUser(params.row.userid, params.row.firstname, params.row.lastname, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
             </Tooltip>

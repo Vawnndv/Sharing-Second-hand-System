@@ -4,12 +4,14 @@ import { getUserTokensService } from '../redux/services/userServices';
 
 export class HandleNotification {
 
-    static sendPushFCMNotification = async (fcmtoken: string, title: string, body: string) => {
+    static sendPushFCMNotification = async (fcmtoken: string, title: string, body: string, link: string) => {
       const message = {
         to: fcmtoken,
         sound: "default",
         title,
         body,
+        data: { url: link }
+
       };
     
       await fetch("https://exp.host/--/api/v2/push/send", {
@@ -35,7 +37,7 @@ export class HandleNotification {
         // if (fcmtokens.length > 0) {
           console.log(fcmtokens)
           fcmtokens.forEach(async (expoPushToken: string) => {
-            HandleNotification.sendPushFCMNotification(expoPushToken, data.title, body);
+            HandleNotification.sendPushFCMNotification(expoPushToken, data.title, body, data.link);
           })
         // }
       } catch(err: any) {

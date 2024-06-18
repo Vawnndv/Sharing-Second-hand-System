@@ -134,6 +134,7 @@ export class usePushNotifications {
           sound: "default",
           title: data.title,
           body: data.name ? `${data.name} ${data.body}` : `${data.body}`,
+          data: { url: data.link }
         };
     
         await fetch('https://exp.host/--/api/v2/push/send', {

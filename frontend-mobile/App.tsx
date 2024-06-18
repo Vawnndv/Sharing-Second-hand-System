@@ -13,10 +13,9 @@ import {
   Roboto_900Black_Italic
 } from '@expo-google-fonts/roboto';
 import Entypo from '@expo/vector-icons/Entypo';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { registerRootComponent } from 'expo';
 import * as Font from 'expo-font';
-import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, StatusBar } from 'react-native';
@@ -27,6 +26,7 @@ import * as Linking from 'expo-linking';
 import { appInfo } from './src/constants/appInfos';
 import linking from './linking';
 import axiosClient from './src/apis/axiosClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // Keep the splash screen visible while we fetch resources
 
 const prefix = Linking.createURL('/');
@@ -36,6 +36,7 @@ SplashScreen.preventAutoHideAsync();
 export default function App() {
   
   const [appIsReady, setAppIsReady] = useState(false);
+
   // const [fontsLoaded, setFontsLoaded] = useState(false);
   const count = useRef(0);
 
@@ -62,6 +63,7 @@ export default function App() {
         // Artificially delay for two seconds to simulate a slow loading
         // experience. Please remove this if you copy and paste the code!
         await new Promise(resolve => setTimeout(resolve, 2000));
+
       } catch (e) {
         console.warn(e);
       } finally {
@@ -80,13 +82,16 @@ export default function App() {
 
   }, []);
 
-  React.useEffect(() => {
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      const url = response.notification.request.content.data.url;
-      Linking.openURL(url);
-    });
-    return () => subscription.remove();
-  }, []);
+
+
+  // React.useEffect(() => {
+  //   const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+  //     console.log(response);
+  //     const url = response.notification.request.content.data.url;
+  //     Linking.openURL(url);
+  //   });
+  //   return () => subscription.remove();
+  // }, []);
   
 
   const handleAppStateChange = async (currentState: string) => {
