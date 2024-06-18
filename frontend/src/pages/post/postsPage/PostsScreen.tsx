@@ -88,6 +88,8 @@ function PostsCreen() {
             >
               <Tab label="Bài đăng của kho" value="1" sx={{paddingX: 3}}/>
               <Tab label="Chờ được đăng" value="2" sx={{paddingX: 3}} />
+              <Tab label="Đang được nhận" value="3" sx={{paddingX: 3}} />
+              <Tab label="Đã cho thành công" value="4" sx={{paddingX: 3}} />
             </TabList>
           </Box>
           <TabPanel value="1">
@@ -95,6 +97,12 @@ function PostsCreen() {
           </TabPanel>
           <TabPanel value="2">
             <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Chờ được đăng" statusTotalPosts="waitForPost" isWaitForPost/>
+          </TabPanel>
+          <TabPanel value="3">
+            <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Đang được nhận" statusTotalPosts="received" isWaitForPost/>
+          </TabPanel>
+          <TabPanel value="4">
+            <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Đã cho thành công" statusTotalPosts="given" isWaitForPost/>
           </TabPanel>
         </TabContext>
 
