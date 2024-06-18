@@ -155,6 +155,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   const [model, setModel] = useState<any>(null);
 
   const [labels, setLabels] = useState<string[]>([]);
+
+  const [isGenerateItemName, setIsGenerateItemName] = useState(false);
+  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);
+
   
   
 const metadataLocal = require('../../../assets/model/metadata.json');
@@ -222,35 +226,27 @@ const metadataLocal = require('../../../assets/model/metadata.json');
     const metadata = require('../../../assets/model/metadata.json');
     if (metadata && metadata.labels) {
       setLabels(metadata.labels);
-      console.log(metadata.labels);
     }
   };
 
-
+  useEffect(() => {
   const loadModel = async () => {
-
     try {
       setIsLoading(true);
-
       await tf.ready();  
-      const model = await tf.loadLayersModel(modelURL + 'model.json');
- 
-      // const response = await fetch(modelURL + 'metadata.json');
-      // const metadata = await response.json();
-      // setLabels(metadata.labels);
-      setModel(model);
+      setModel(await tf.loadLayersModel(modelURL + 'model.json'));
       console.log('Model loaded successfully'); 
-      setIsLoading(false);
-
+      setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
 
     } catch (error) {
       console.error('Error loading the model', error);
       setIsLoading(false);
     }
   };
+  loadModel();
+},[])
 
   useEffect(() => {
-    loadModel();
     loadLabels();
 
   }, []);
@@ -300,7 +296,6 @@ const metadataLocal = require('../../../assets/model/metadata.json');
         setItemTypes(res.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching item types:', error);
-      } finally {
       }
 
       try {
@@ -325,7 +320,6 @@ const metadataLocal = require('../../../assets/model/metadata.json');
         setWarehouseDropdown(warehouseArray);
       } catch (error) {
         console.error('Error fetching warehouses:', error);
-      } finally {
       }
       
       setIsLoading(false);
@@ -351,10 +345,7 @@ const pickImage = async () => {
     if(pickerResult.assets.length > 0){
       try {
         setIsLoading(true);
-
         const imageData = pickerResult.assets.map(async (asset: any) => {
-
-
           const {width,height} = asset;
 
           let isHeightSmaller = width > height ? true : false;
@@ -424,6 +415,19 @@ const pickImage = async () => {
 
         let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
         console.log(highestProbabilityImage);
+
+        let categoryID: any = null;
+        let categoryLabel: any = null;
+
+        itemTypesDropdown.map( (itemtype: any, index: any) => {
+            if(itemtype.label === '  ' + itemCategory){
+              categoryID = itemtype.value;
+              categoryLabel = itemCategory;
+            }
+          }
+        )
+
+        console.log('categoryID', categoryID + ' ' + categoryLabel);
         
         if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
           Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
@@ -432,16 +436,24 @@ const pickImage = async () => {
           setFormData({
             ...formData,
             itemPhotos: [...formData.itemPhotos, ...completedImages],
-            itemCategory: 'Khác'});
+            itemCategory: '8'});
           setSelectedItemTypeDropdown('Khác');
+          setIsGenerateItemCategory(true);
         }
         else{
           setFormData({
             ...formData,
             itemName: itemName, 
             itemPhotos: [...formData.itemPhotos, ...completedImages],
-            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' });
-          setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' );
+            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? categoryID : '8' });
+          setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? categoryLabel : 'Khác' );
+          setIsGenerateItemName(true);
+          setIsGenerateItemCategory(true);
+
+
+        }
+        if(completedImages.length > 0){
+          handleValidate(true, 'photo');
         }
         setIsLoading(false);
 
@@ -546,9 +558,10 @@ const predictImage = async (imageUri: any) => {
     updatedPhotos.splice(index, 1);
     setFormData({ ...formData, itemPhotos: updatedPhotos });
     handleValidate('','photo');
-    // if(formData.itemPhotos.length < 1){
-    //   setFormData({ ...formData, itemName: '', });
-    // }
+    if(updatedPhotos.length < 1){
+      handleValidate('false','photo');
+
+    }
   };
 
   const handleWarehouseChange = (warehouseID: number) => {
@@ -585,7 +598,13 @@ const predictImage = async (imageUri: any) => {
     }
 
     if(typeCheck == 'photo'){
-      if (formData.itemPhotos.length < 1) {
+      if(text === 'false'){
+        updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
+      }
+      else if(text){
+        updatedErrorMessage.itemPhotos = '';
+      }
+      else if (formData.itemPhotos.length < 1) {
         updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
       } else {
         updatedErrorMessage.itemPhotos = '';
@@ -712,7 +731,6 @@ const predictImage = async (imageUri: any) => {
 
   return (
     <ScrollView style = {styles.container}>
-      <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
 
       <TouchableOpacity onPress={() => handleValidate('','photo')}>
@@ -730,7 +748,7 @@ const predictImage = async (imageUri: any) => {
             }}
           />
           {/* Hiển thị ảnh đã chọn */}
-        <ScrollView horizontal>
+        <ScrollView horizontal={true}>
             {formData.itemPhotos.map((image: any, index) => (
               <View key={index} style={styles.imageContainer}>
                   <Image source={{ uri: image.uri }} style={styles.image}/>
@@ -738,11 +756,11 @@ const predictImage = async (imageUri: any) => {
                     onPress={() => {
                       removeImage(index);
                       setErrorMessage({...errorMessage, itemPhotos: ''});
-                      handleValidate(formData.itemPhotos,'photo');
+                      handleValidate('', 'photo');
                     }} 
                     style={styles.closeButton}
                   >
-                    <MaterialIcons name="close" size={24} color="white" />
+                    <MaterialIcons name="close" size={20} color="white" />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -761,6 +779,7 @@ const predictImage = async (imageUri: any) => {
         onBlur={() => handleValidate(formData.itemName,'itemname')}
         onChangeText={(text) => {
           handleValidate(text,'itemname');
+          setIsGenerateItemName(false);
           // setErrorMessage({...errorMessage, itemName: ''})
         }}
         style={styles.input}
@@ -774,9 +793,7 @@ const predictImage = async (imageUri: any) => {
         }}
       />
       {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
-      
-
-
+      {(isGenerateItemName) && <TextComponent text= 'Tên món đồ được hệ thống tạo tự động'  color={appColors.green} styles={{marginBottom: 5, textAlign: 'right'}}/>}
 
       <TextInput
         label="Số lượng"
@@ -803,7 +820,7 @@ const predictImage = async (imageUri: any) => {
       />
       {(errorMessage.itemQuantity) && <TextComponent text={errorMessage.itemQuantity}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
-
+      <Text style={styles.labelDropdown}>Loại món đồ</Text>
         <Dropdown
           style={[styles.dropdown, isFocusSelectedItemType ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.itemCategory ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
@@ -821,6 +838,8 @@ const predictImage = async (imageUri: any) => {
           onFocus={() => {
             setIsFocusSelectedItemType(true);             
             handleValidate('', 'itemtype');
+            setIsGenerateItemCategory(false);
+
           }}
           onBlur={() => setIsFocusSelectedItemType(false)}
           onChange={item => {
@@ -834,7 +853,7 @@ const predictImage = async (imageUri: any) => {
       
         />
       {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
-
+      {(isGenerateItemCategory) && <TextComponent text= 'Loại món đồ được hệ thống tự phân loại'  color={appColors.green} styles={{marginBottom: 5, textAlign: 'right'}}/>}
 
     <Dropdown
         style={[styles.dropdown, isFocusMethodGive ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodGive ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
@@ -944,6 +963,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold'
   },
+  labelDropdown: {
+    fontSize: 12,
+    marginLeft: 14,
+    marginBottom: -6
+  },
   input: {
     width: '100%',
     marginBottom: 20,
@@ -978,6 +1002,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: 'white',
     fontWeight: 'bold',
+    justifyContent: 'center'
   },
   dropdownContainer: {
     flexDirection: 'row',
