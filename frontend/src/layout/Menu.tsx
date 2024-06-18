@@ -172,7 +172,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
           >
             <ArticleIcon className="icon" />
             <Typography variant="body1" component="h2" className="text">
-              Bài đăng
+              Bài đăng của kho
             </Typography>
           </Stack>
 
