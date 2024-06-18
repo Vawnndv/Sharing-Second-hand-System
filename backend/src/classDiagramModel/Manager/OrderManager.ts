@@ -706,26 +706,27 @@ export class OrderManager {
           ROW_NUMBER() OVER (PARTITION BY o.orderid ORDER BY th.Time DESC) AS row_num
       FROM 
           Orders o
-      JOIN 
+      LEFT JOIN 
           Image i ON o.ItemID = i.ItemID
-      JOIN 
+      LEFT JOIN 
           Trace t ON o.OrderID = t.OrderID
-      JOIN 
+      LEFT JOIN 
           Trace_History th ON t.TraceID = th.TraceID
-      JOIN 
+      LEFT JOIN 
           Trace_Status ts ON th.StatusID = ts.StatusID
-      JOIN 
+      LEFT JOIN 
           Address adg ON adg.AddressID = o.LocationGive
-      JOIN 
+      LEFT JOIN 
           Address adr ON adr.AddressID = o.LocationReceive
-      JOIN 
+      LEFT JOIN 
           Posts po ON po.PostID = o.PostID
-      JOIN 
+      LEFT JOIN 
           Item it ON it.ItemID = po.ItemID
-      JOIN 
+      LEFT JOIN 
           Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
       WHERE 
       {placeholder}
+      
   )
   SELECT *,
         CASE
@@ -739,8 +740,14 @@ export class OrderManager {
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND t.currentstatus <> 'Hoàn tất'`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND t.currentstatus <> 'Hoàn tất'`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+          )`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+          )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
@@ -781,26 +788,26 @@ export class OrderManager {
             o.imgconfirmreceive
               FROM 
                   Orders o
-              JOIN 
+              LEFT JOIN 
                   Image i ON o.ItemID = i.ItemID
-              JOIN 
+              LEFT JOIN 
                   Trace t ON o.OrderID = t.OrderID
-              JOIN 
+              LEFT JOIN 
                   Trace_History th ON t.TraceID = th.TraceID
-              JOIN 
+              LEFT JOIN 
                   Trace_Status ts ON th.StatusID = ts.StatusID
-              JOIN 
+              LEFT JOIN 
                   Address adg ON adg.AddressID = o.LocationGive
-              JOIN 
+              LEFT JOIN 
                   Address adr ON adr.AddressID = o.LocationReceive
-              JOIN 
+              LEFT JOIN 
                   Posts po ON po.PostID = o.PostID
-              JOIN 
+              LEFT JOIN 
                   Item it ON it.ItemID = po.ItemID
-              JOIN 
+              LEFT JOIN 
                   Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
               WHERE 
-                {placeholder}
+                  {placeholder}
               ORDER BY
                   th.Time DESC
           ) AS oo
@@ -810,8 +817,14 @@ export class OrderManager {
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND o.Status = 'Hoàn tất'`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND o.Status = 'Hoàn tất'`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+          )`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+          )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)

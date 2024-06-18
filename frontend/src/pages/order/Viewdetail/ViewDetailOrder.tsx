@@ -1,6 +1,6 @@
 import { Avatar, Box, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import moment from 'moment';
 import 'moment/locale/vi';
@@ -21,6 +21,7 @@ function ViewDetailOrder() {
   const [itemImages, setItemImages] = useState<any>([]);
   // const [activeStep, setActiveStep] = React.useState(0);
   const [data, setData] = useState<any>([]);
+  const location = useLocation()
 
   const fetchData = async () => {
     try {
@@ -50,7 +51,7 @@ function ViewDetailOrder() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [location.pathname]);
   
   return (
     <Box sx={{flex: 1, mx: 5, my: 5}}>

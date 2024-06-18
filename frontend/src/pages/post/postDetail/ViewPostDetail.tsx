@@ -162,7 +162,7 @@ function ViewPostDetail() {
           fetchAllData();
         }
     
-    }, [])
+    }, [location.pathname])
 
     console.log('post', post);
     // console.log('postReceivers', postReceivers)
@@ -317,6 +317,18 @@ function ViewPostDetail() {
                 toast.success(`Tạo phiếu nhập thành công`);
             }
             catch (error) {
+                console.log(error);
+            }
+
+            try{
+                const currentstatus = 'Chờ người cho giao hàng';
+                const responseTrace = await Axios.post(`/order/createTrace`, {
+                    currentstatus,
+                    orderid: orderID,
+                });
+                toast.success(`Tạo đơn hàng thành công`);
+
+            } catch(error){
                 console.log(error);
             }
 
