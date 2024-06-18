@@ -38,7 +38,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
     });
 
     return (
-      <View style={[styles.swipeContainer, {backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6'}]}>
+      <View style={[styles.swipeContainer, {backgroundColor: item.isRead ? '#ffffff' : '#d0e3ff'}]}>
         <Animated.View style={[styles.swipeBtn, {opacity, transform: [{ translateX: trans }]}]}>
           <TouchableOpacity
             onPress={() => {
@@ -91,12 +91,12 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
             }
             updateRead(item.id);
           }}
-          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6' }}
+          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#d0e3ff' }}
         >
           <AvatarComponent
             username={item.name}
             avatar={item.avatar}
-            size={78}
+            size={70}
           />
           <SpaceComponent width={12} />
           <View style={[globalStyles.col]}>
