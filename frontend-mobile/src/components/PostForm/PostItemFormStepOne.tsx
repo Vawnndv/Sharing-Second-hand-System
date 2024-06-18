@@ -21,20 +21,13 @@ import * as tfReactNative from '@tensorflow/tfjs-react-native';
 import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
 
 import { fetch } from '@tensorflow/tfjs-react-native';
-import * as mobilenet from '@tensorflow-models/mobilenet';
+import '@tensorflow/tfjs-react-native/dist/platform_react_native';
 import { decode as jpegDecode } from 'jpeg-js';
 import * as ImageManipulator from 'expo-image-manipulator';
 import LoadingModal from '../../modals/LoadingModal';
 import axiosClient from '../../apis/axiosClient';
-// import * as ImageResizer from 'react-native-image-resizer';
+import { Alert } from 'react-native';
 
-
-
-// import * as mobilenet from '@tensorflow-models/mobilenet';
-// import * as ImageManipulator from 'expo-image-manipulator';
-
-
-// import { Picker } from '@react-native-picker/picker';
 
 interface ErrorProps  {
   itemName: string;
@@ -86,7 +79,7 @@ interface StepOneProps {
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const modelURL = 'https://teachablemachine.withgoogle.com/models/CFHkFgZd5/'
+const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/'
 
 
 
@@ -150,7 +143,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   const [isFocusSelectedItemType, setIsFocusSelectedItemType] = useState(false);
 
-  const [isFocusSelectedWarehouse, setIsFocusSelectedWarehouse] = useState<any>();
 
   const navigation: any = useNavigation();
 
@@ -165,14 +157,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   const [labels, setLabels] = useState<string[]>([]);
   
   
-const modelLocal = require('../../../assets/model/model.json');
 const metadataLocal = require('../../../assets/model/metadata.json');
-// const modelWeight = require('../../../assets/model/weights.bin');
 
-
-  const [tflite, setTflite] = useState<any>(null);
-
-  // const modelLite = require('../../../assets/model/model_unquant.tfilite')
 
 
 
@@ -229,35 +215,44 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
     }
 
-  },[formData])
+  },[formData, formData.itemCategory])
+
+
+  const loadLabels = () => {
+    const metadata = require('../../../assets/model/metadata.json');
+    if (metadata && metadata.labels) {
+      setLabels(metadata.labels);
+      console.log(metadata.labels);
+    }
+  };
+
 
   const loadModel = async () => {
 
     try {
       setIsLoading(true);
-      await tf.ready();  
-      // const model = await tf.loadLayersModel(bundleResourceIO(modelLocal,modelW));
 
+      await tf.ready();  
       const model = await tf.loadLayersModel(modelURL + 'model.json');
  
-      const response = await fetch(modelURL + 'metadata.json');
-      const metadata = await response.json();
-      setLabels(metadata.labels);
+      // const response = await fetch(modelURL + 'metadata.json');
+      // const metadata = await response.json();
+      // setLabels(metadata.labels);
       setModel(model);
       console.log('Model loaded successfully'); 
+      setIsLoading(false);
+
 
     } catch (error) {
       console.error('Error loading the model', error);
       setIsLoading(false);
-    }finally{
-      setIsLoading(false);
-
     }
-
   };
 
   useEffect(() => {
     loadModel();
+    loadLabels();
+
   }, []);
 
 
@@ -382,26 +377,6 @@ const pickImage = async () => {
           { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
         );
 
-        // const cropWidth = 224;  // Chiều rộng vùng cắt
-        // const cropHeight = 224; // Chiều cao vùng cắt
-  
-        // // Tính toán vị trí vùng cắt với trung tâm ảnh
-        // let originX = Math.round(w / 2);
-        // let originY = Math.round(h / 2);
-        // const uriResize = manipulatedImage.uri
-  
-        // const croppedImage = await ImageManipulator.manipulateAsync(
-        //   uriResize,
-        //   [{ crop: { originX, originY, width: cropWidth, height: cropHeight } }],
-        //   { compress: 1, format: ImageManipulator.SaveFormat.PNG }
-        // );
-
-        const file = {
-          uri: asset.uri,
-          name: new Date().getTime() + asset.fileName,
-          type: asset.mimeType
-        }
-        // const response: any = await UploadImageToAws3(file, true)
 
 
         const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
@@ -414,10 +389,34 @@ const pickImage = async () => {
         };
       });
 
-      Promise.all(imageData).then(completed  => {
-        
-        setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...completed]  });
+      const completedImages = await Promise.all(imageData);
+      // Tìm ảnh có probability cao nhất
+      let highestProbabilityImage: any = completedImages[0];
+      completedImages.forEach(image => {
+        if(image.prediction){
+          if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+            highestProbabilityImage = image;
+          }
+        }
       });
+
+      const [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
+      console.log(itemCategory);
+      
+      if(itemCategory === 'Nhạy cảm'){
+        Alert.alert('Bạn không thể sử dụng ảnh này lý do: ', ' Ảnh được phân loại là ảnh nhạy cảm ( ' + itemName + ' )');
+      }
+      else{
+        setFormData({
+          ...formData,
+           itemName: itemName, 
+          itemPhotos: [...formData.itemPhotos, ...completedImages],
+          itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' });
+        setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' );
+      }
+    
+      // Gán label của ảnh có probability cao nhất vào formData.itemName
+
     } catch (error) {
       console.error('Error picking and predicting images:', error);
     } finally {
@@ -511,6 +510,9 @@ const predictImage = async (imageUri: any) => {
     updatedPhotos.splice(index, 1);
     setFormData({ ...formData, itemPhotos: updatedPhotos });
     handleValidate('','photo');
+    // if(formData.itemPhotos.length < 1){
+    //   setFormData({ ...formData, itemName: '', });
+    // }
   };
 
   const handleWarehouseChange = (warehouseID: number) => {
@@ -777,7 +779,7 @@ const predictImage = async (imageUri: any) => {
           maxHeight={windowHeight*0.2}
           labelField="label"
           valueField="value"
-          placeholder={!isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
+          placeholder={selectedItemTypeDropdown ? '  ' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={selectedItemTypeDropdown}
           onFocus={() => {
@@ -793,7 +795,7 @@ const predictImage = async (imageUri: any) => {
             setIsFocusSelectedItemType(false);
           }}
 
-          
+      
         />
       {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
