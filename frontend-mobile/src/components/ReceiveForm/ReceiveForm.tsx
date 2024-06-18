@@ -476,7 +476,7 @@ const handleReceive = async () => {
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
           warehouseID: post.warehouseid
         })
-        console.log("resGetCollab", resGetCollab.data.collaborators)
+        // console.log("resGetCollab", resGetCollab.data.collaborators)
         resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,

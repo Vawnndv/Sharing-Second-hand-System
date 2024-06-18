@@ -87,6 +87,7 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
       );
 
       setIsLoading(false);
+      // console.log("res.data.orderReceive", res.data.orderReceive)
       setOrderReceive(res.data.orderReceive);
     } catch (error) {
       console.log(error);
@@ -100,7 +101,7 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
       title={item.title}
       location={item.location}
       givetype={item.givetype}
-      statusname={item.statusname}
+      statusname={item.status}
       image={item.image}
       status={item.status}
       createdat={item.createdat}

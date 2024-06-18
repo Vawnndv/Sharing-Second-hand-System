@@ -739,8 +739,8 @@ export class OrderManager {
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND ts.StatusName <> 'Hoàn tất'`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND ts.StatusName <> 'Hoàn tất'`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND t.currentstatus <> 'Hoàn tất'`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND t.currentstatus <> 'Hoàn tất'`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)

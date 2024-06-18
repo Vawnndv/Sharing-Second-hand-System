@@ -335,7 +335,6 @@ const metadataLocal = require('../../../assets/model/metadata.json');
 
 const pickImage = async () => {
   let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  setIsUpdloaded(true);
 
   if (permissionResult.granted === false) {
     alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
@@ -349,107 +348,111 @@ const pickImage = async () => {
   });
 
   if (!pickerResult.canceled) {
-    // setIsLoading(true);
-    try {
-      const imageData = pickerResult.assets.map(async (asset: any) => {
+    if(pickerResult.assets.length > 0){
+      try {
+        setIsLoading(true);
+
+        const imageData = pickerResult.assets.map(async (asset: any) => {
 
 
-        const {width,height} = asset;
+          const {width,height} = asset;
 
-        let isHeightSmaller = width > height ? true : false;
+          let isHeightSmaller = width > height ? true : false;
 
-        let scaleX = width / 224;
-        let scaleY = height/ 224;
-        let h = 224;
-        let w = 224;
-        if(isHeightSmaller){
-          w = scaleX * 224 / scaleY;
-        }
-        else{
-          h = scaleY * 224 / scaleX;
-        }
-
-        // Resize ảnh
-        const manipulatedImage = await ImageManipulator.manipulateAsync(
-          asset.uri,
-          [{ resize: { width: w, height: h } }],
-          { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
-        );
-
-
-
-        const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
-        return {
-          uri: asset.uri,
-          name: new Date().getTime() + asset.fileName,
-          type: asset.mimeType,
-          prediction: prediction,
-          // url: response.url,
-        };
-      });
-
-      const completedImages = await Promise.all(imageData);
-      // Tìm ảnh có probability cao nhất
-      let highestProbabilityImage: any = completedImages[0];
-      await completedImages.forEach(image => {
-        if(image.prediction){
-          const [name, category] = image.prediction.label.split('-');
-          console.log(category)
-          if(category !== 'Nhạy cảm'){
-            console.log('bbb');
-            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
-              highestProbabilityImage = image;
-            }
-          }
-          else if(category === 'Nhạy cảm' && image.prediction.probability > 0.8){
-            console.log('cccc');
-
-            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
-              highestProbabilityImage = image;
-            }
+          let scaleX = width / 224;
+          let scaleY = height/ 224;
+          let h = 224;
+          let w = 224;
+          if(isHeightSmaller){
+            w = scaleX * 224 / scaleY;
           }
           else{
-            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
-              console.log('aaaa');
-              image.prediction.label = 'Khác-Khác';
-              console.log(image);
-              highestProbabilityImage.prediction.label = 'Khác-Khác';
-              highestProbabilityImage.prediction.probability = image.prediction.probability;
-            }
+            h = scaleY * 224 / scaleX;
           }
 
+          // Resize ảnh
+          const manipulatedImage = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [{ resize: { width: w, height: h } }],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+          );
+
+
+
+          const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
+          return {
+            uri: asset.uri,
+            name: new Date().getTime() + asset.fileName,
+            type: asset.mimeType,
+            prediction: prediction,
+            // url: response.url,
+          };
+        });
+
+        const completedImages = await Promise.all(imageData);
+        // Tìm ảnh có probability cao nhất
+        let highestProbabilityImage: any = completedImages[0];
+        await completedImages.forEach(image => {
+          if(image.prediction){
+            const [name, category] = image.prediction.label.split('-');
+            console.log(category)
+            if(category !== 'Nhạy cảm'){
+              console.log('bbb');
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                highestProbabilityImage = image;
+              }
+            }
+            else if(category === 'Nhạy cảm' && image.prediction.probability > 0.8){
+              console.log('cccc');
+
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                highestProbabilityImage = image;
+              }
+            }
+            else{
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                console.log('aaaa');
+                image.prediction.label = 'Khác-Khác';
+                console.log(image);
+                highestProbabilityImage.prediction.label = 'Khác-Khác';
+                highestProbabilityImage.prediction.probability = image.prediction.probability;
+              }
+            }
+
+          }
+        });
+
+        let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
+        console.log(highestProbabilityImage);
+        
+        if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
+          Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
         }
-      });
+        else if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability < 0.8){
+          setFormData({
+            ...formData,
+            itemPhotos: [...formData.itemPhotos, ...completedImages],
+            itemCategory: 'Khác'});
+          setSelectedItemTypeDropdown('Khác');
+        }
+        else{
+          setFormData({
+            ...formData,
+            itemName: itemName, 
+            itemPhotos: [...formData.itemPhotos, ...completedImages],
+            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' });
+          setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' );
+        }
+        setIsLoading(false);
 
-      let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
-      console.log(highestProbabilityImage);
       
-      if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
-        Alert.alert('Bạn không thể sử dụng ảnh này lý do: ', ' Ảnh được phân loại là ảnh nhạy cảm');
+      } catch (error) {
+        console.error('Error picking and predicting images:', error);
+      } finally {
+        setIsLoading(false);
       }
-      else if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability < 0.8){
-        setFormData({
-          ...formData,
-          itemPhotos: [...formData.itemPhotos, ...completedImages],
-          itemCategory: 'Khác'});
-        setSelectedItemTypeDropdown('Khác');
-      }
-      else{
-        setFormData({
-          ...formData,
-          itemName: itemName, 
-          itemPhotos: [...formData.itemPhotos, ...completedImages],
-          itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' });
-        setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' );
-      }
-
-    
-    } catch (error) {
-      console.error('Error picking and predicting images:', error);
-    } finally {
-      // setIsUpdloaded(false)
-    }
-    setIsUpdloaded(false)
+  }
+    setIsLoading(false);
   }
 };
 
@@ -481,8 +484,6 @@ const imageToTensor = async (rawImageData: any) => {
 
   } catch (error) {
     console.log("Error converting image to tensor:", error);
-  } finally {
-    // setIsLoading(false);
   }
 }
 
@@ -524,6 +525,8 @@ const predictImage = async (imageUri: any) => {
       };
 
       console.log('Prediction result:', predictionResult);
+      setIsLoading(false);
+
 
       return predictionResult;
     }
@@ -533,8 +536,6 @@ const predictImage = async (imageUri: any) => {
     }
   } catch (error) {
     console.log('Error when predicting image:', error);
-  } finally {
-    setIsLoading(false);
   }
 };
 
@@ -711,7 +712,7 @@ const predictImage = async (imageUri: any) => {
 
   return (
     <ScrollView style = {styles.container}>
-      <LoadingModal visible={isUploaded} />
+      <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
 
       <TouchableOpacity onPress={() => handleValidate('','photo')}>
