@@ -426,7 +426,7 @@ const pickImage = async () => {
         console.log(highestProbabilityImage);
         
         if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
-          Alert.alert('Bạn không thể sử dụng ảnh này lý do: ', ' Ảnh được phân loại là ảnh nhạy cảm');
+          Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
         }
         else if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability < 0.8){
           setFormData({
