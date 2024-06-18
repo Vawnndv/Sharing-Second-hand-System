@@ -7,6 +7,7 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { NotificationModel } from './Notification';
+import { useNavigate } from 'react-router-dom';
 
 type UserItemPros = {
   item: NotificationModel;
@@ -18,6 +19,8 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
   // eslint-disable-next-line no-unused-vars
   const [isHovered, setIsHovered] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     moment.locale('vi'); // Set locale to Vietnamese
@@ -54,6 +57,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
       key={item.id}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={() => navigate(`${item.link}`)}
       sx={{
         cursor: 'pointer', /* Add a pointer cursor for hover indication */
         '&:hover': { /* Apply styles on hover */

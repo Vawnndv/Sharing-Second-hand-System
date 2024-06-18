@@ -2,6 +2,40 @@ import axios from "axios";
 import queryString from "query-string";
 import { appInfo } from "../constants/appInfos";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch, useSelector } from "react-redux";
+import { authSelector, removeAuth } from "../redux/reducers/authReducers";
+import { usePushNotifications } from "../utils/usePushNotification";
+import store from "../redux/store";
+
+
+const handleLogout = async () => {
+  console.log('1111111111111');
+  
+  const state = store.getState();
+  const auth = state.authReducer.authData;
+  const dispatch = store.dispatch;
+  console.log(auth, '3333333333333333');
+
+  const fcmtoken = await AsyncStorage.getItem('fcmtoken');
+
+  if (fcmtoken) {
+    if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
+      console.log(fcmtoken, '22222222');
+      await axios.post(`${appInfo.BASE_URL}/user/remove-fcmtoken`, {
+        userid: auth.id, fcmtoken
+      })
+    }
+  }
+
+  const hello = await AsyncStorage.getItem('auth');
+  console.log(hello, '1111111111111');
+
+  await AsyncStorage.clear();
+
+  const hello2 = await AsyncStorage.getItem('auth');
+  console.log(hello2, '1111111111111');
+  dispatch(removeAuth({}));
+};
 
 
 const getAccessToken = async () => {
@@ -33,12 +67,19 @@ axiosClient.interceptors.response.use(
     if (res.data && (res.status === 200 || res.status === 201)) {
       return res.data;
     }
+   
     throw new Error('Error');
   },
   error => {
+    console.log(error, 'xxxxxxxxxx');
+
     // console.log(`Error api ${JSON.stringify(error)}`);
     // throw new Error(error.response);
     if (error.response && error.response.data && error.response.data.message) {
+      if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
+        console.log(error.response.data.message, 'xxxxxxxxxx');
+        handleLogout();
+      }
       throw new Error(error.response.data.message);
     } else {
       throw new Error('Network Error');

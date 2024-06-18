@@ -8,9 +8,10 @@ import { Response, NextFunction } from 'express';
 
 const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   console.log(req.headers.authorization);
+
   if (
     req.headers.authorization 
-    // && req.headers.authorization.startsWith('Bearer')
+    && req.headers.authorization.startsWith('Bearer')
   ) {
     const token = req.headers.authorization.split(' ')[1];
     console.log(token);
@@ -18,25 +19,26 @@ const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, ne
       res.status(401);
       throw new Error('Not authorized, no token');
     } else {
-      try {
-        const secretKey = process.env.SECRET_KEY;
-        if (!secretKey) {
-          throw new Error('Secret key is not defined');
-        }
+      const secretKey = process.env.SECRET_KEY;
+      if (!secretKey) {
+        throw new Error('Secret key is not defined');
+      }
 
-        const verify = jwt.verify(token, secretKey);
+      const verify = jwt.verify(token, secretKey);
 
-        if (typeof verify !== 'string' && (verify as JwtPayload).id) {
-          req.user = await Account.findUserById(verify.id);
-          console.log(req.user);
-          next();
-        } else {
-          res.status(401);
-          throw new Error('Not authorized, invalid token');
+      if (typeof verify !== 'string' && (verify as JwtPayload).id) {
+        req.user = await Account.findUserById(verify.id);
+        if (req.user.isbanned) {
+          console.log('bạn đã bị ban');
+          res.status(403);
+          throw new Error('Tài khoản của bạn đã bị khóa');
+      
         }
-      } catch (error) {
+        console.log(req.user);
+        next();
+      } else {
         res.status(401);
-        throw new Error('Not authorized, token failed');
+        throw new Error('Not authorized, invalid token');
       }
     }
   } else {

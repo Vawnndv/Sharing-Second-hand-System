@@ -64,6 +64,7 @@ function UserTable(props: Props) {
           postid: '',
           avatar: userInfo?.avatar,
           link: '',
+          title: 'ban acc',
           name: `${userInfo?.firstName} ${userInfo?.lastName}`,
           body: 'Tài khoảng của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
         })

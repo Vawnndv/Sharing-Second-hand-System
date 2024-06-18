@@ -133,7 +133,7 @@ export class usePushNotifications {
           to: expoPushToken,
           sound: "default",
           title: data.title,
-          body: data.body,
+          body: data.name ? `${data.name} ${data.body}` : `${data.body}`,
         };
     
         await fetch('https://exp.host/--/api/v2/push/send', {

@@ -73,6 +73,7 @@ const NotificationScreen = () => {
  
   const updateAllRead = async () => {
     try {
+      
       // Iterate through notificationList and update documents
       for (const notification of notificationList) {
         if (!notification.isRead) {

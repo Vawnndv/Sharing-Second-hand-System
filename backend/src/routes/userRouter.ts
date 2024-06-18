@@ -28,7 +28,7 @@ userRouter.put('/user-list/banned/:id', protect, admin, adminBanUser);
 
 userRouter.post('/add-fcmtoken', protect, updateFcmToken);
 
-userRouter.post('/remove-fcmtoken', protect, removeFcmToken);
+userRouter.post('/remove-fcmtoken', removeFcmToken);
 
 userRouter.get('/get-fcmtokens', protect, getUserFcmTokens);
 
