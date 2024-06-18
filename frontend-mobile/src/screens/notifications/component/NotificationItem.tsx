@@ -60,9 +60,9 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         renderRightActions={renderRightActions}
         key={`swipe-${item.createdAt}-${index}`}
         overshootRight={false} // Disable overshoot effect
-        friction={2} // Adjust the friction to control the ease of swiping
-        rightThreshold={40} // Adjust the threshold for full swipe completion
-        // containerStyle={{ borderBottomWidth: 1 }}
+        friction={1} // Lower friction to increase swipe speed and sensitivity
+        rightThreshold={20} // Decrease threshold for easier and faster swipe completion
+        containerStyle={{ borderBottomWidth: 1 }}
       >
         <RowComponent
           key={`event${index}`}

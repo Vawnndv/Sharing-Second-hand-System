@@ -7,7 +7,7 @@ import { appColors } from '../../constants/appColors';
 import { fontFamilies } from '../../constants/fontFamilies';
 import { globalStyles } from '../../styles/globalStyles';
 import { NotificationModel } from '../../models/NotificationModel';
-import { doc, collection, query, orderBy, onSnapshot, updateDoc, deleteDoc, getDocs, getDoc } from 'firebase/firestore';
+import { doc, collection, query, orderBy, onSnapshot, updateDoc, deleteDoc, getDocs, getDoc, writeBatch } from 'firebase/firestore';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { db } from '../../../firebaseConfig';
@@ -52,9 +52,6 @@ const NotificationScreen = () => {
     try {
       const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
 
-      // Find the notification in the current list
-      const notification = notificationList.find(notification => notification.id === id);
-
       const docSnap = await getDoc(docRef);
   
       // Check if the document exists and has isRead as false
@@ -70,27 +67,35 @@ const NotificationScreen = () => {
     }
   };
 
- 
   const updateAllRead = async () => {
+    setIsLoading(true);
+    const batch = writeBatch(db);
+
     try {
-      
-      // Iterate through notificationList and update documents
-      for (const notification of notificationList) {
+      // Iterate through notificationList and add update operations to the batch
+      notificationList.forEach(notification => {
         if (!notification.isRead) {
-          const id = notification.id;
-          const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
-  
-          // Update the document
-          await updateDoc(docRef, { isRead: true });
-  
-          // Update the read count if needed (not specified in the original question)
-          // setReadCount(readCount - 1); // Uncomment if necessary
-  
-          console.log(`Notification with id ${id} has been marked as read`);
+          console.log(notification);
+          const docRef = doc(db, "receivers", auth.id.toString(), "notification", notification.id);
+          batch.update(docRef, { isRead: true });
         }
-      }
+      });
+
+      // Commit the batch
+      await batch.commit();
+
+      // Update the state only after all updates are completed
+      setNotificationList(prevList => 
+        prevList.map(notification => ({
+          ...notification,
+          isRead: true
+        }))
+      );
+      setReadCount(0);
     } catch (err) {
       console.error('Error updating notifications:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
   

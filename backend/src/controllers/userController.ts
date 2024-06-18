@@ -5,6 +5,27 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { Account } from '../classDiagramModel/Account';
 import { UserManager } from '../classDiagramModel/Manager/UserManager';
+import nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.USERNAME_EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+export const handleSendMail = async (val: {}) => {
+  try {
+    await transporter.sendMail(val);
+
+    return 'Send banned or unbanned mail successfully!!!';
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
@@ -308,11 +329,24 @@ export const getTotalUser = asyncHandle(async (req: Request, res: Response) => {
 
 export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => {
   const { userId, isBanned } = req.body;
+
+ 
   // find user in DB
   const user = await Account.findUserById(userId);
+  const currentTime = new Date().toLocaleString();
+  console.log(currentTime);
 
   if (user) {
+    const data = {
+      from: `"Ứng dụng ReTreasure" <${process.env.USERNAME_EMAIL}>`,
+      to: user.email,
+      subject: user.isbanned ? 'Thông báo về việc mở khóa tài khoản' : 'Thông báo về việc khóa tài khoản', // Chủ đề email được thay đổi thành "Ban tài khoản"
+      text: user.isbanned ? `Tài khoản của bạn đã bị khóa vào lúc ${currentTime}` : `Tài khoản của bạn đã bị khóa vào lúc ${currentTime}`,
+      html:  user.isbanned ? `<h3 style="font-weight: normal;">Tài khoản của bạn đã được mở khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>` : `<h3 style="font-weight: normal;">Tài khoản của bạn đã bị khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>`,
+    };
+
     await UserManager.adminBanUser(userId, isBanned);
+    await handleSendMail(data);
     res.json( { message: 'User was Banned successfully' });
   } else {
     res.status(400);

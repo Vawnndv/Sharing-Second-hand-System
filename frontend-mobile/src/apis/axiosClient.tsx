@@ -6,7 +6,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { authSelector, removeAuth } from "../redux/reducers/authReducers";
 import { usePushNotifications } from "../utils/usePushNotification";
 import store from "../redux/store";
+import { Platform, ToastAndroid } from "react-native";
 
+
+const showToast = (message: string) => {
+  if (Platform.OS === 'android') {
+    ToastAndroid.showWithGravity(
+      message,
+      ToastAndroid.SHORT,
+      ToastAndroid.BOTTOM
+    );
+  } else {
+    // For iOS or other platforms, you can handle differently if needed
+    alert(message);
+  }
+}
 
 const handleLogout = async () => {
   console.log('1111111111111');
@@ -71,16 +85,22 @@ axiosClient.interceptors.response.use(
     throw new Error('Error');
   },
   error => {
-    console.log(error, 'xxxxxxxxxx');
+    console.log(error, 'qqqqqqqqqqqqq');
 
     // console.log(`Error api ${JSON.stringify(error)}`);
     // throw new Error(error.response);
+    console.log(error.response.data.message, 'xxxxxxxxxx');
     if (error.response && error.response.data && error.response.data.message) {
-      if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
-        console.log(error.response.data.message, 'xxxxxxxxxx');
+      if (error.response.status === 403 && error.response.data.message === 'Not authorized, invalid token') {
         handleLogout();
+        showToast('Phiên đăng nhập đã hết hạn');
       }
-      throw new Error(error.response.data.message);
+      else if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
+        handleLogout();
+        showToast(error.response.data.message);
+      } else {
+        throw new Error(error.response.data.message);
+      }
     } else {
       throw new Error('Network Error');
     }

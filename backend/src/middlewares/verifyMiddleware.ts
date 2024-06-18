@@ -6,52 +6,52 @@ import asyncHandler from 'express-async-handler';
 import { Account } from '../classDiagramModel/Account';
 import { Response, NextFunction } from 'express';
 
-const protect = asyncHandler(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   console.log(req.headers.authorization);
 
-  if (
-    req.headers.authorization 
-    && req.headers.authorization.startsWith('Bearer')
-  ) {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     const token = req.headers.authorization.split(' ')[1];
-    console.log(token);
     if (!token) {
-      res.status(401);
-      throw new Error('Not authorized, no token');
+      return res.status(401).json({ message: 'Not authorized, no token' });
     } else {
       const secretKey = process.env.SECRET_KEY;
       if (!secretKey) {
-        throw new Error('Secret key is not defined');
+        return res.status(500).json({ message: 'Secret key is not defined' });
       }
 
-      const verify = jwt.verify(token, secretKey);
-
-      if (typeof verify !== 'string' && (verify as JwtPayload).id) {
-        req.user = await Account.findUserById(verify.id);
-        if (req.user.isbanned) {
-          console.log('bạn đã bị ban');
-          res.status(403);
-          throw new Error('Tài khoản của bạn đã bị khóa');
-      
+      jwt.verify(token, secretKey, async (err, decoded) => {
+        if (err) {
+          return res.status(403).json({ message: 'Not authorized, invalid token' });
         }
-        console.log(req.user);
-        next();
-      } else {
-        res.status(401);
-        throw new Error('Not authorized, invalid token');
-      }
+
+        if (decoded && typeof decoded !== 'string' && (decoded as JwtPayload).id) {
+          const user = await Account.findUserById((decoded as JwtPayload).id);
+          if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+          }
+
+          if (user.isbanned) {
+            console.log('bạn đã bị ban');
+            return res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa' });
+          }
+
+          req.user = user;
+          next();
+        } else {
+          return res.status(403).json({ message: 'Not authorized, invalid token' });
+        }
+      });
     }
   } else {
-    res.status(401);
-    throw new Error('Not authorized, no token');
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
-});
+};
 
 const admin = asyncHandler((req: AuthenticatedRequest, res, next) => {
   if (req.user && req.user.roleid === 3) {
     next();
   } else {
-    res.status(401);
+    res.status(403);
     throw new Error('Not authorized as an admin');
   }
 });
@@ -60,7 +60,7 @@ const collaborator = asyncHandler((req: AuthenticatedRequest, res, next) => {
   if (req.user && req.user.roleid === 2) {
     next();
   } else {
-    res.status(401);
+    res.status(403);
     throw new Error('Not authorized as an collaborator');
   }
 });

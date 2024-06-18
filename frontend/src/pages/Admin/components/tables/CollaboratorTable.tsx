@@ -14,7 +14,7 @@ import toast from 'react-hot-toast'
 import { TbLock, TbLockOpen } from "react-icons/tb";
 import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
 import dayjs from 'dayjs';
-import { HandleNotification } from '../../../../utils/handleNotification'
+// import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -67,25 +67,28 @@ function CollaboratorTable(props: Props) {
     setSelectionModel(newSelectionModel)
   }
   
-  const handleBanUser = async (id: number, isBanned: any) => {
+  const handleBanUser = async (id: number, firstname: string, lastname: string, isBanned: any) => {
     try {
-      await banUserService(id, {userId: id, isBanned});
-      const userIndex = data.findIndex((user:any) => user.userid === id);
-      if (userIndex !== -1) {
-        const updatedUsers = [...data];
-        updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-        // Create a new array with the user replaced with updated data
-        setData(updatedUsers);
-        await HandleNotification.sendNotification({
-          userReceiverId: updatedUsers[userIndex].userid,
-          userSendId: userInfo?.id,
-          avatar: userInfo?.avatar,
-          link: '',
-          title: 'Khóa tài khoản',
-          name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-          body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
-        })
-        toast.success(`Khóa tài khoản của cộng tac viên dùng thành công`);
+      const text: string = isBanned ? 'khóa' : 'mở khóa'
+      if (window.confirm(`Bạn có chắc chắn muốn ${text} cộng tác viên ${lastname} ${firstname}?`)) {
+        await banUserService(id, {userId: id, isBanned});
+        const userIndex = data.findIndex((user:any) => user.userid === id);
+        if (userIndex !== -1) {
+          const updatedUsers = [...data];
+          // Create a new array with the user replaced with updated data
+          updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
+          setData(updatedUsers);
+        //   await HandleNotification.sendNotification({
+        //     userReceiverId: updatedUsers[userIndex].userid,
+        //     userSendId: userInfo?.id,
+        //     avatar: userInfo?.avatar,
+        //     link: '',
+        //     title: 'Khóa tài khoản',
+        //     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+        //     body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+        //   })
+          toast.success(`${text} tài khoản của cộng tác viên ${lastname} ${firstname} thành công`);
+        }
       }
     } catch (error: unknown) {
       console.log(error)
@@ -139,7 +142,7 @@ function CollaboratorTable(props: Props) {
         renderCell: (params: any) => (
           <Box>
             <Tooltip title="Khóa cộng tác viên">
-              <IconButton onClick={() => {handleBanUser(params.row.userid, !params.row.isbanned) }}>
+              <IconButton onClick={() => {handleBanUser(params.row.userid, params.row.firstname, params.row.lastname, !params.row.isbanned) }}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
             </Tooltip>

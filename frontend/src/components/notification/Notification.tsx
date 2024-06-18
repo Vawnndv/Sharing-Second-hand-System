@@ -2,7 +2,7 @@ import './style.scss'
 import * as React from 'react'
 import { Card, CardContent, Stack, Typography } from '@mui/material'
 import { teal } from '@mui/material/colors'
-import { Timestamp, collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore'
+import { Timestamp, collection, deleteDoc, doc, onSnapshot, orderBy, query, updateDoc, writeBatch } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
 import { RootState } from '../../redux/store'
 import NotificationItem from './NotificationItem'
@@ -48,20 +48,29 @@ function Notification() {
 
   const handleClickAll = async () => {
     try {
-      if (userInfo?.id) {
-        const notificationRef = collection(db, "receivers", userInfo.id.toString(), "notification");
       
-        // Get all documents in the notification subcollection
-        const querySnapshot = await getDocs(notificationRef);
-  
-        // Iterate over each document and delete it
-        // eslint-disable-next-line @typescript-eslint/no-shadow
-        querySnapshot.forEach(async (doc) => {
-          await deleteDoc(doc.ref);
-          console.log(`Notification with ID ${doc.id} has been deleted`);
+      if (userInfo?.id) {
+        const batch = writeBatch(db);
+
+       // Iterate through notificationList and add update operations to the batch
+        notificationList.forEach(notification => {
+          if (!notification.isRead) {
+            console.log(notification);
+            const docRef = doc(db, "receivers", userInfo?.id.toString(), "notification", notification.id);
+            batch.update(docRef, { isRead: true });
+          }
         });
-        
-        console.log('All notifications have been cleared');
+
+        // Commit the batch
+        await batch.commit();
+
+        // Update the state only after all updates are completed
+        setNotificationList(prevList => 
+          prevList.map(notification => ({
+            ...notification,
+            isRead: true
+          }))
+        );
       } else {
         console.error('User ID is not defined');
       }
