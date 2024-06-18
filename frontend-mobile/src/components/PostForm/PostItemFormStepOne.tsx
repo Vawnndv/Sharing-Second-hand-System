@@ -277,8 +277,9 @@ const metadataLocal = require('../../../assets/model/metadata.json');
 
   useEffect(() => {
     const fetchAllData = async () => {
+      
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`, 
@@ -300,11 +301,9 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       } catch (error) {
         console.error('Error fetching item types:', error);
       } finally {
-        setIsLoading(false);
       }
 
       try {
-        setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -327,9 +326,9 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       } catch (error) {
         console.error('Error fetching warehouses:', error);
       } finally {
-        setIsLoading(false);
       }
       
+      setIsLoading(false);
     };
     fetchAllData();
 }, []);

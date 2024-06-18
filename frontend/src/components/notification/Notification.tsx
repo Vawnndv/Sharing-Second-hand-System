@@ -157,7 +157,7 @@ function Notification() {
             }}
             onClick={handleClickAll}
           >
-            Clear All
+            Đọc hết
           </Typography>
         )}
       </CardContent>

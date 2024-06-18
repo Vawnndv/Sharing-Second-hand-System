@@ -61,7 +61,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
           color: '#FFFFFF'
         },
         transition: 'background-color 0.1s linear',
-        backgroundColor: item.isRead ? '#ffffff' : '#A2C3F6'
+        backgroundColor: item.isRead ? '#ffffff' : '#d0e3ff'
       }}
       px={2}
     >
@@ -73,7 +73,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
             {item.body}
           </Typography>
           <Stack direction='row' alignContent="center" justifyContent="space-between">
-            <Typography variant='body1' sx={{ fontStyle: 'italic', opacity: '0.75' }}>
+            <Typography variant='body1' sx={{ opacity: '0.75' }}>
               {moment(item.createdAt.seconds * 1000 + item.createdAt.nanoseconds / 1000000).fromNow()}
             </Typography>
             <IconButton

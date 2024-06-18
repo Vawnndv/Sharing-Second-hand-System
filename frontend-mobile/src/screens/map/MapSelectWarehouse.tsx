@@ -7,6 +7,9 @@ import { useEffect, useRef, useState } from 'react';
 import { EvilIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Checkbox } from 'react-native-paper';
 import { fontFamilies } from '../../constants/fontFamilies';
+import axiosClient from '../../apis/axiosClient';
+import { appInfo } from '../../constants/appInfos';
+import React from 'react';
 
 const { width, height } = Dimensions.get("window")
 
@@ -71,7 +74,9 @@ const stylesConfirmComponent = StyleSheet.create({
 
 export default function MapSelectWarehouse({navigation, route}: any) {
 
-    const {warehouses, checkWarehouses, setCheckWarehouses}: any = route.params;
+    const {checkWarehouses, setCheckWarehouses}: any = route.params;
+
+    const [warehouses, setWarehouses] = useState<any>([])
     // console.log("setWarehousesID", setWarehousesID)
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
@@ -101,9 +106,19 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         //   setLocation(location);
     }
 
+    const getWarehouses = async () => {
+        try {
+            const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
+            setWarehouses(response.wareHouses)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     // thực hiện hiển thị tại vị trí người dùng trước
     useEffect(() => {
         handleGetMyLocation()
+        getWarehouses() 
     },[])
 
     // dùng để di chuyển camera khi click vào 1 kết quả
@@ -212,6 +227,50 @@ export default function MapSelectWarehouse({navigation, route}: any) {
             
         )
     }
+
+    interface WarehouseMarkerProps {
+        item: {
+            latitude: string;
+            longitude: string;
+            warehousename: string;
+            address: string;
+        };
+        index: number;
+        onPress: () => void;
+        isChecked: boolean;
+    }
+    
+
+    const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
+        return (
+            <Marker
+                coordinate={{
+                    latitude: parseFloat(item.latitude),
+                    longitude: parseFloat(item.longitude),
+                }}
+                onPress={onPress}
+                key={index}
+            >
+                <View style={styles.boxLocation}>
+                    <View style={{ backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B' />
+                            <TouchableOpacity onPress={() => console.log('checkbox')}>
+                                <Checkbox
+                                    status={isChecked ? 'checked' : 'unchecked'}
+                                    uncheckedColor='#693F8B'
+                                    color='#693F8B'
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.warehousename}</Text>
+                        <Text style={{ maxWidth: 150, textAlign: 'center' }}>{item.address}</Text>
+                    </View>
+                    <Ionicons name='location' size={50} style={{ color: '#693F8B' }} />
+                </View>
+            </Marker>
+        );
+    });
     
     return (
         <ContainerComponent back>
@@ -228,40 +287,14 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     {
                         warehouses.map((item: any, index: number) => {
                             return(
-                                <Marker
-                                    coordinate={{
-                                        latitude: parseFloat(item.latitude),
-                                        longitude: parseFloat(item.longitude)
-                                    }}
-                                    onPress={() => handleClickWarehouse(index)}
+                                <WarehouseMarker
                                     key={index}
-                                >
-                    
-                                    <View style={styles.boxLocation}>
-                                        <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
-                                            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                                <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B'/>
-                                                <TouchableOpacity
-                                                    onPress={() => console.log('checkbox')}>
-                                                    <Checkbox
-                                                        status={checkWarehousesOnMap[index] === false ? 'unchecked' : 'checked'}
-                                                        uncheckedColor='#693F8B'
-                                                        color='#693F8B'
-                                                        />
-                                                </TouchableOpacity>
-                                                
-                                            </View>
-                                            <Text style={{fontSize: 15, fontWeight: 'bold'}}>{item.warehousename}</Text>
-                                            <Text style={{maxWidth: 150, textAlign: 'center'}}>{item.address}</Text>
-                                        </View>
-                                        
-                                        <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
-                                    </View>
-                                
-                                    
-                                    
-                                </Marker>
-                            )
+                                    item={item}
+                                    index={index}
+                                    onPress={() => handleClickWarehouse(index)}
+                                    isChecked={checkWarehousesOnMap[index] !== false}
+                                />
+                                )
                         })
                     }
                 </MapView>

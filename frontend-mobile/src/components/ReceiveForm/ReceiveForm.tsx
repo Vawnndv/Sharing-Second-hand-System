@@ -458,7 +458,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: ' Xin sản phẩm của bạn',
-          body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
         })
       }else{
 
@@ -470,7 +470,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: ' Xin sản phẩm của bạn',
-          body: `đã xin món đồ ${post.name} của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
         })
 
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
@@ -486,7 +486,7 @@ const handleReceive = async () => {
             avatar: auth.avatar,
             link: `post/${postID}`,
             title: ' Xin sản phẩm của bạn',
-            body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin cho tiết!`
           })
         })
       }
@@ -583,7 +583,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: ' Xin sản phẩm của bạn',
-          body:`đã xin món đồ ${post.name} của kho. Nhấn vào để xem thông tin cho tiết!`
+          body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
         })
       })
   
