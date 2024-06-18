@@ -392,31 +392,59 @@ const pickImage = async () => {
       const completedImages = await Promise.all(imageData);
       // Tìm ảnh có probability cao nhất
       let highestProbabilityImage: any = completedImages[0];
-      completedImages.forEach(image => {
+      await completedImages.forEach(image => {
         if(image.prediction){
-          if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
-            highestProbabilityImage = image;
+          const [name, category] = image.prediction.label.split('-');
+          console.log(category)
+          if(category !== 'Nhạy cảm'){
+            console.log('bbb');
+            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+              highestProbabilityImage = image;
+            }
           }
+          else if(category === 'Nhạy cảm' && image.prediction.probability > 0.8){
+            console.log('cccc');
+
+            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+              highestProbabilityImage = image;
+            }
+          }
+          else{
+            if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+              console.log('aaaa');
+              image.prediction.label = 'Khác-Khác';
+              console.log(image);
+              highestProbabilityImage.prediction.label = 'Khác-Khác';
+              highestProbabilityImage.prediction.probability = image.prediction.probability;
+            }
+          }
+
         }
       });
 
-      const [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
-      console.log(itemCategory);
+      let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
+      console.log(highestProbabilityImage);
       
-      if(itemCategory === 'Nhạy cảm'){
-        Alert.alert('Bạn không thể sử dụng ảnh này lý do: ', ' Ảnh được phân loại là ảnh nhạy cảm ( ' + itemName + ' )');
+      if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
+        Alert.alert('Bạn không thể sử dụng ảnh này lý do: ', ' Ảnh được phân loại là ảnh nhạy cảm');
+      }
+      else if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability < 0.8){
+        setFormData({
+          ...formData,
+          itemPhotos: [...formData.itemPhotos, ...completedImages],
+          itemCategory: 'Khác'});
+        setSelectedItemTypeDropdown('Khác');
       }
       else{
         setFormData({
           ...formData,
-           itemName: itemName, 
+          itemName: itemName, 
           itemPhotos: [...formData.itemPhotos, ...completedImages],
           itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' });
         setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? itemCategory : 'Khác' );
       }
-    
-      // Gán label của ảnh có probability cao nhất vào formData.itemName
 
+    
     } catch (error) {
       console.error('Error picking and predicting images:', error);
     } finally {
@@ -429,26 +457,29 @@ const pickImage = async () => {
 
 const imageToTensor = async (rawImageData: any) => {
   try {
-    // setIsLoading(true);
-    const fileUri = rawImageData.uri;
-    const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
-    const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
-    const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
+    if(rawImageData){
+      // setIsLoading(true);
+      const fileUri = rawImageData.uri;
+      const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+      const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
+      const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
 
-    const buffer = new Uint8Array(width * height * 3);
-    let offset = 0;
-    for (let i = 0; i < buffer.length; i += 3) {
-      buffer[i] = data[offset];
-      buffer[i + 1] = data[offset + 1];
-      buffer[i + 2] = data[offset + 2];
-      offset += 4;
+      const buffer = new Uint8Array(width * height * 3);
+      let offset = 0;
+      for (let i = 0; i < buffer.length; i += 3) {
+        buffer[i] = data[offset];
+        buffer[i + 1] = data[offset + 1];
+        buffer[i + 2] = data[offset + 2];
+        offset += 4;
+      }
+
+      // Normalize the tensor
+      const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+      // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+
+      return tensor;
     }
 
-    // Normalize the tensor
-    const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
-    // const tensor = tf.tensor3d(buffer, [height, width, 3]);
-
-    return tensor;
   } catch (error) {
     console.log("Error converting image to tensor:", error);
   } finally {
@@ -458,44 +489,49 @@ const imageToTensor = async (rawImageData: any) => {
 
 const predictImage = async (imageUri: any) => {
   try {
-    setIsLoading(true);
+    if(imageUri){
+      setIsLoading(true);
+      // Chuyển đổi hình ảnh thành tensor
+      const imageTensor = await imageToTensor(imageUri);
+      if (!imageTensor) {
+        throw new Error('Failed to convert image to tensor');
+      }
+      console.log('imageTensor', imageTensor);
 
-    // Chuyển đổi hình ảnh thành tensor
-    const imageTensor = await imageToTensor(imageUri);
-    if (!imageTensor) {
-      throw new Error('Failed to convert image to tensor');
+      // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
+      const expandedTensor = imageTensor.expandDims(0);
+      console.log('expandedTensor', expandedTensor);
+
+      // Dự đoán hình ảnh sử dụng mô hình
+      const predictionTensor = await model.predict(expandedTensor);
+      if (!predictionTensor) {
+        throw new Error('Failed to make prediction');
+      }
+      console.log('predictionTensor', predictionTensor);
+
+      // Lấy giá trị dự đoán từ tensor
+      const predictionArray = await predictionTensor.array();
+      const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+
+
+
+      // Lấy nhãn tương ứng từ mảng nhãn
+      let predictedLabel = labels[maxProbabilityIndex];
+
+      // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
+      const predictionResult = {
+        label: predictedLabel,
+        probability: Math.max(...predictionArray[0])
+      };
+
+      console.log('Prediction result:', predictionResult);
+
+      return predictionResult;
     }
-    console.log('imageTensor', imageTensor);
+    else{
+      setIsLoading(false);
 
-    // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
-    const expandedTensor = imageTensor.expandDims(0);
-    console.log('expandedTensor', expandedTensor);
-
-    // Dự đoán hình ảnh sử dụng mô hình
-    const predictionTensor = await model.predict(expandedTensor);
-    if (!predictionTensor) {
-      throw new Error('Failed to make prediction');
     }
-    console.log('predictionTensor', predictionTensor);
-
-    // Lấy giá trị dự đoán từ tensor
-    const predictionArray = await predictionTensor.array();
-    const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
-
-
-
-    // Lấy nhãn tương ứng từ mảng nhãn
-    let predictedLabel = labels[maxProbabilityIndex];
-
-    // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
-    const predictionResult = {
-      label: predictedLabel,
-      probability: Math.max(...predictionArray[0])
-    };
-
-    console.log('Prediction result:', predictionResult);
-
-    return predictionResult;
   } catch (error) {
     console.log('Error when predicting image:', error);
   } finally {
