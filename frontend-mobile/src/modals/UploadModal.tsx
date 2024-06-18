@@ -44,7 +44,7 @@ const UploadModal = (props: Props) => {
                 onPress={onCameraPress}
               >
                 <MaterialCommunityIcons name='camera-outline' size={30} color={appColors.primary} />
-                <StyledText small>Camera</StyledText>
+                <StyledText small>Máy ảnh</StyledText>
               </TouchableOpacity>
               <SpaceComponent width={24} />
               <TouchableOpacity
@@ -52,7 +52,7 @@ const UploadModal = (props: Props) => {
                 onPress={onGalleryPress}
               >
                 <MaterialCommunityIcons name='image-outline' size={30} color={appColors.primary} />
-                <StyledText small>Gallery</StyledText>
+                <StyledText small>Thư viện</StyledText>
               </TouchableOpacity>
               <SpaceComponent width={24} />
               <TouchableOpacity
@@ -60,7 +60,7 @@ const UploadModal = (props: Props) => {
                 onPress={onRemovePress}
               >
                 <MaterialCommunityIcons name='trash-can-outline' size={30} color={appColors.danger} />
-                <StyledText small>Remove</StyledText>
+                <StyledText small>Xóa</StyledText>
               </TouchableOpacity>
             </View>
           </View>

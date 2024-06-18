@@ -16,6 +16,7 @@ import UserLikePostsScreen from '../screens/drawers/UserLikePostsScreen';
 import MapSelectWarehouseGive from '../screens/map/MapSelectWarehouseGive';
 import FavoritesNavigator from './FavoritesNavigator';
 import PostNavigator from './PostNavigator';
+import HistoryNavigator from './HistoryNavigator';
 
 
 const DrawerNavigator = () => {
@@ -31,7 +32,7 @@ const DrawerNavigator = () => {
     >
       <Drawer.Screen name="TabNavigator" component={TabNavigator} />
       <Drawer.Screen name="MyOrder" component={OrderNavigator} />
-      <Drawer.Screen name="History" component={HistoryScreen} />
+      <Drawer.Screen name="History" component={HistoryNavigator} />
       <Drawer.Screen name="Notification" component={NotificationScreen} />
       <Drawer.Screen name="MyProfile" component={AccountScreen} />
       <Drawer.Screen name="MapSettingAddressScreen" component={MapSettingAddress} options={{ unmountOnBlur: true }}/>
