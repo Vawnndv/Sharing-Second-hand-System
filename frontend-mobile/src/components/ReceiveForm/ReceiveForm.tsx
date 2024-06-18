@@ -674,11 +674,11 @@ const handleGive = async () =>{
         userreceiveid
       });
 
-      console.log(response.orderCreated);
+      console.log("response.orderCreated", response.orderCreated);
 
       orderID = response.orderCreated.orderid;    
       // if(receivetype === )
-
+    
     const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
       currentstatus: status,
       orderid: orderID,
@@ -722,7 +722,7 @@ const handleGive = async () =>{
           link: `post/${postID}`,
           title: ' Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
-            `$đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
             `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
         })
       })
