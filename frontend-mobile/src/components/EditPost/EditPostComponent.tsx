@@ -25,6 +25,7 @@ import ShowMapComponent from '../ShowMapComponent';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 import ContainerComponent from '../ContainerComponent';
 import axiosClient from '../../apis/axiosClient';
+import LoadingModal from '../../modals/LoadingModal';
 
 
 interface EditPostComponent  {
@@ -135,6 +136,7 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
 
   useEffect(() => {
     const fetchAllData = async () => {
+      setIsLoading(true);
       let itemIDs = null;
       let owner = null
       try {
@@ -195,9 +197,9 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
         res && res.data && setProfile(res.data);
       } catch (error) {
         console.log(error);
-      } finally {
-        setIsLoading(false);
       }
+      setIsLoading(false);
+
     };
 
     if (postID) {
@@ -288,6 +290,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
   let tempLocation: any = location;
 
   const handleEdit = async () =>{
+
     if(!newTitle){
       if(!newTitle.trim()){
         tempTitle = post.title;
@@ -325,6 +328,8 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
     console.log('THISS ISSS ADDDRESSSSS', itemImagesAdd);
 
+    setIsLoading(true);
+
     try{
     const res: any = await axiosClient.post(`${appInfo.BASE_URL}/posts/editPost`, {
       postid: post.postid,
@@ -359,11 +364,10 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
         console.log(error)
       }
     }
-    console.log(res.postUpdated);
     Alert.alert('Thông báo', 'Cập nhật bài đăng thành công');
 
     navigation.navigate('PostScreen');
-      } catch(error){
+    } catch(error){
     console.error('Lỗi cập nhật:', error);
     }
   }
@@ -408,6 +412,12 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
     }
   };
 
+
+  if(isLoading){
+    return(
+      <LoadingModal visible={isLoading}/>
+    )
+  }
 
 
   return(
@@ -577,7 +587,7 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
                     label="Địa chỉ"
                     value={(location ? location.address : post?.address)} // Hiển thị 10 ký tự đầu tiên
                     style={styles.input}
-                    editable={true} // Người dùng không thể chỉnh sửa trực tiếp
+                    editable={false} // Người dùng không thể chỉnh sửa trực tiếp
                     error={false}
                     onBlur={() => {
                       // handleValidate('', 'postaddress');
@@ -588,8 +598,9 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
                         error: appColors.danger, 
                       },
                     }}
-                    disabled={true}
-                    selection={{start: 0, end: 0}}
+                    // disabled={true}
+                    // selection={{start: 0, end: 0}}
+                    multiline={true}
                   />
                   <ShowMapComponent
                     location={location ? location : {address: post?.address, longitude: parseFloat(post?.longitude), latitude: parseFloat( post?.latitude)}}
