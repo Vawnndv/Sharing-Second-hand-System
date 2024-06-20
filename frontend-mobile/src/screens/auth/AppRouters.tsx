@@ -21,7 +21,6 @@ const AppRouters = () => {
     let isMounted = true;
 
     function redirect(notification: Notifications.Notification) {
-      console.log(notification)
       const url = notification.request.content.data?.url;
       if (url) {
         // Linking.openURL(`frontend-mobile://${url}`)

@@ -48,7 +48,6 @@ const ForgotPasswordScreen = () => {
     try {
       const res: any = await authenticationAPI.HandleAuthentication('/forgotPassword', {email: values.email}, 'post');
 
-      console.log(res);
       Alert.alert('Gửi email', 'Chúng tôi đã gửi một email bao gồm mật khẩu mới');
       setIsLoading(false);
       setIsDisable(true);

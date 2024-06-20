@@ -34,7 +34,6 @@ function Uploader(props: Props) {
   };
 
   const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
-    console.log("UploadImageToAws3", file)
     try {
       // Đọc nội dung của tệp tin bằng FileReader
       const fileReader: any = new FileReader();
@@ -64,7 +63,6 @@ function Uploader(props: Props) {
 
                   // Xử lý phản hồi từ server nếu cần
                   const data: any = serverResponse;
-                  console.log(data)
                   resolve(data);
               } catch (error) {
                   console.error('Error uploading file:', error);

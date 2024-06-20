@@ -267,7 +267,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
     const updatedPhotos = [...itemImages];
     if(updatedPhotos[index].imgid){
       setItemImagesDelete( [...itemImagesDelete, itemImages[index]] ); // Cập nhật đường dẫn của các ảnh vào formData
-      console.log('XÓA ẢNHHHHHHH',itemImages[index]);
     }
     if(!updatedPhotos[index].imgid){
       for( let i=0; i < itemImagesAdd.length; i++){
@@ -278,7 +277,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
         }
       }
     }
-    console.log('Addddd IMGGGGG', isAddImage);
     updatedPhotos.splice(index, 1);
     setItemImages(updatedPhotos);
   };
@@ -326,7 +324,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
     }
 
 
-    console.log('THISS ISSS ADDDRESSSSS', itemImagesAdd);
 
     setIsLoading(true);
 
@@ -357,7 +354,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
             itemID: itemID
           })
   
-          console.log(responseUploadImage)
         })
         
       } catch (error) {
@@ -408,7 +404,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
 
       setItemImages( [...itemImages, ...imageData] ); // Cập nhật đường dẫn của các ảnh vào formData
       setItemImagesAdd( [...itemImagesAdd, ...imageData] ); // Cập nhật đường dẫn của các ảnh vào formData
-      console.log('Addddd IMGGGGG', itemImagesAdd);
     }
   };
 

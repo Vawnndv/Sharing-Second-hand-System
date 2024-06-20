@@ -23,7 +23,6 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
                     userID: userLogin.userInfo.id,
                     status: statusTotalPosts
                 })
-                console.log(response.totalPosts)
                 setTotalItems(response.totalPosts)
             } catch (error) {
                 console.log(error)
@@ -69,9 +68,7 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
     };
 
     const isEmpty = () => {
-        console.log(posts)
         if(posts === null || posts.length === 0){
-            console.log(false)
             return false
         }
         return true

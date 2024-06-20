@@ -55,7 +55,6 @@ function Notification() {
        // Iterate through notificationList and add update operations to the batch
         notificationList.forEach(notification => {
           if (!notification.isRead) {
-            console.log(notification);
             const docRef = doc(db, "receivers", userInfo?.id.toString(), "notification", notification.id);
             batch.update(docRef, { isRead: true });
           }
@@ -88,7 +87,6 @@ function Notification() {
         await updateDoc(docRef, {
             isRead: true
         });
-        console.log(`Notification with id ${id} has been marked as read`);
       } else {
         console.error('User ID is not defined');
       }
@@ -104,7 +102,6 @@ function Notification() {
 
         // Delete the document
         await deleteDoc(docRef);
-        console.log(`Notification with id ${id} has been deleted`);
       } else {
         console.error('User ID is not defined');
       }

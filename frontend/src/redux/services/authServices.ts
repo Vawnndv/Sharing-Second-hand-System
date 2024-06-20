@@ -23,7 +23,6 @@ export interface UserInfo {
 const loginService = async (user: AuthData): Promise<any> => {
   const {data} = await Axios.post('/auth/login', {...user, platform: 'web'});
   
-  console.log(data);
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
@@ -34,7 +33,6 @@ const loginService = async (user: AuthData): Promise<any> => {
 // Forgot password API
 const forgotPasswordService = async (email: string) => {
     const data = await Axios.post('/auth/forgotPassword', {email})
-    console.log(data);
     return data;
 }
 

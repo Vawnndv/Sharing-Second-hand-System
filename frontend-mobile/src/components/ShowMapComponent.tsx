@@ -67,7 +67,6 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         const fetchData = async () => {
             const distance = await getHowFarAway();
             setDistance(Math.round(distance));
-            console.log(distance)
         };
 
         fetchData()
@@ -80,7 +79,6 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         return meter + 'm'
     }
     
-    console.log(initalPosition)
     
     // console.log(width, height)
     return (

@@ -71,7 +71,6 @@ export class ChatManager {
     
     try {
       const result: QueryResult = await client.query(query, [userID]);
-      console.log('Get users list success:', result.rows);
       return result.rows
     } catch (error) {
       console.error('Error get users chat:', error);
@@ -103,7 +102,6 @@ export class ChatManager {
     
     try {
       const result: QueryResult = await client.query(query, [userID]);
-      console.log('Get users list success:', result.rows);
       return result.rows
     } catch (error) {
       console.error('Error get users chat:', error);

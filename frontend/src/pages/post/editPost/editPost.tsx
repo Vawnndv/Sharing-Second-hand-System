@@ -32,7 +32,6 @@ import getGPTDescription from '../../../redux/APIs/apiChatGPT';
 function EditPost() {
     const locationHook = useLocation();
     const postState: any = locationHook.state || {}; // Phòng trường hợp state không tồn tại
-    console.log(postState)
 
     const {postid}= useParams();
 
@@ -66,7 +65,6 @@ function EditPost() {
 
     useEffect(() => {
         if(post != null){
-            console.log('true')
             setDate([dayjs((post.timestart).slice(0,10)), dayjs((post.timeend).slice(0,10))])
             // setLocation({
             //     address: post.address,
@@ -127,7 +125,6 @@ function EditPost() {
           try {
     
             const res = await Axios.get(`/user/get-profile?userId=${owner}`);
-            console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setProfile(res.data);
           } catch (error) {
@@ -137,7 +134,6 @@ function EditPost() {
           try {
     
             const res = await Axios.get(`/user/get-profile?userId=${userLogin.userInfo.id}`);
-            console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setUserProfile(res.data);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -154,10 +150,6 @@ function EditPost() {
         }
     
     }, [])
-
-    console.log('post', post)
-    console.log('profile', profile)
-    console.log('itemImages', itemImages)
 
 
     const [open, setOpen] = React.useState(false);
@@ -176,13 +168,8 @@ function EditPost() {
         boxShadow: '1px 1px 2px #CAC9C8',
     };
 
-    console.log("location", location)
 
     const handleRemoveImage = (type: string, index: number) => {
-        console.log("handleRemoveImage")
-        console.log('itemImages', itemImages)
-        console.log('itemNewImages', itemNewImages)
-        console.log(type, index)
         if(itemImages.length + itemNewImages.length === 1){
             return;
         }
@@ -200,7 +187,6 @@ function EditPost() {
     }
 
     const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
-        console.log("UploadImageToAws3", file)
         try {
           // Đọc nội dung của tệp tin bằng FileReader
           const fileReader: any = new FileReader();
@@ -254,7 +240,6 @@ function EditPost() {
                 const newImage: any = newFile
                 newImage.path = uploadAWS.url
                 newImage.uri= fileUri
-                console.log("newFile",newFile)
                 newImages.push(newImage)
                 setItemNewImages(newImages)
             } catch (error) {
@@ -273,7 +258,6 @@ function EditPost() {
 
         console.log(location);
         let isSuccessRepost = true
-        console.log('VALIDATEEEEEEEEE: ', `${itemImages.length + itemNewImages.length  } ${  title} ${ description} ${ phoneNumber.length} ${ location}`)
         if((itemImages.length + itemNewImages.length > 0) &&
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){

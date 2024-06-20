@@ -55,7 +55,6 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
     try {
       let location = await GetCurrentLocation();
       if (!location) {
-        console.log("Failed to get location.");
         return;
       }
       

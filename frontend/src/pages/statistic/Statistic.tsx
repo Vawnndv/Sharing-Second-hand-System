@@ -300,7 +300,6 @@ function Statistic() {
             if(response){
                 setData(response.data);
                 setIsLoading(false)
-                console.log(response.data)
             }
         }
 
@@ -328,7 +327,6 @@ function Statistic() {
         border: '2px solid #CAC9C8',
         boxShadow: '1px 1px 2px #CAC9C8',
     };
-    console.log("DATA", data)
 
     // const [location, setLocation] = useState<any>(null)
     return ( 

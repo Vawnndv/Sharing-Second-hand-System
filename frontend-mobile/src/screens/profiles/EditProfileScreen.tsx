@@ -97,7 +97,6 @@ const EditProfileScreen = ({navigation, route}: any) => {
           dob: values.dob,
         }
         , 'post');
-      console.log(res, 'abcdddddd');
       dispatch(updateAuth(res.data));
       setIsLoading(false);
       navigation.navigate('ProfileScreen', {

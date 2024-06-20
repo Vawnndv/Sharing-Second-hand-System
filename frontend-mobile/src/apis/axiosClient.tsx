@@ -23,18 +23,15 @@ const showToast = (message: string) => {
 }
 
 const handleLogout = async () => {
-  console.log('1111111111111');
   
   const state = store.getState();
   const auth = state.authReducer.authData;
   const dispatch = store.dispatch;
-  console.log(auth, '3333333333333333');
 
   const fcmtoken = await AsyncStorage.getItem('fcmtoken');
 
   if (fcmtoken) {
     if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
-      console.log(fcmtoken, '22222222');
       await axios.post(`${appInfo.BASE_URL}/user/remove-fcmtoken`, {
         userid: auth.id, fcmtoken
       })
@@ -42,12 +39,10 @@ const handleLogout = async () => {
   }
 
   const hello = await AsyncStorage.getItem('auth');
-  console.log(hello, '1111111111111');
 
   await AsyncStorage.clear();
 
   const hello2 = await AsyncStorage.getItem('auth');
-  console.log(hello2, '1111111111111');
   dispatch(removeAuth({}));
 };
 
@@ -85,11 +80,9 @@ axiosClient.interceptors.response.use(
     throw new Error('Error');
   },
   error => {
-    console.log(error, 'qqqqqqqqqqqqq');
 
     // console.log(`Error api ${JSON.stringify(error)}`);
     // throw new Error(error.response);
-    console.log(error.response.data.message, 'xxxxxxxxxx');
     if (error.response && error.response.data && error.response.data.message) {
       if (error.response.status === 403 && error.response.data.message === 'Not authorized, invalid token') {
         handleLogout();

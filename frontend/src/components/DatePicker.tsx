@@ -10,7 +10,6 @@ export default function DatePicker({date, setDate}: any) {
 
   const handleDateChange = (newValue: [Dayjs | null, Dayjs | null]) => {
     setDate(newValue);
-    console.log('Selected date range:', newValue);
   };
 
   return (

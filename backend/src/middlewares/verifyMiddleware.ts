@@ -7,7 +7,6 @@ import { Account } from '../classDiagramModel/Account';
 import { Response, NextFunction } from 'express';
 
 const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  console.log(req.headers.authorization);
 
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     const token = req.headers.authorization.split(' ')[1];
@@ -31,7 +30,6 @@ const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunct
           }
 
           if (user.isbanned) {
-            console.log('bạn đã bị ban');
             return res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa' });
           }
 

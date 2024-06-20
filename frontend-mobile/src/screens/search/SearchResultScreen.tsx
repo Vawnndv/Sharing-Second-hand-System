@@ -52,7 +52,6 @@ const SearchResultScreen = ({ route, navigation }: any) => {
     setData([]);
     setIsEndOfData(false);
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    console.log(data.length);
   }, [filterValue, isPosts, warehousesID]);
 
   useEffect(() => {
@@ -70,7 +69,6 @@ const SearchResultScreen = ({ route, navigation }: any) => {
     try {
       let location = await GetCurrentLocation();
       if (!location) {
-        console.log("Failed to get location.");
         return;
       }
 

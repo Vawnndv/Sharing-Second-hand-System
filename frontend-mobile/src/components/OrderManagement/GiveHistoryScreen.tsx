@@ -61,7 +61,6 @@ export default function GiveHistoryScreen({ navigation, route }: any) {
       setIsLoading(true);
       let location = await GetCurrentLocation();
       if (!location) {
-        console.log("Failed to get location.");
         return;
       }
 

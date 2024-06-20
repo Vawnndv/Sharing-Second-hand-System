@@ -82,7 +82,6 @@ export default function OrdersScreen({navigation}: any) {
                 }else{
                     categoryQuery = 'Tất cả'
                 }
-                console.log(filterValue.category.length, categoryQuery)
                 setIsLoading(true)
                 const response: any = await axiosClient.get(`${appInfo.BASE_URL}/ordersCollab?userID=${auth.id}&type=${tab}&distance=${filterValue.distance}
                     &time=${filterValue.time}&category=${categoryQuery}&sort=${filterValue.sort}`)
@@ -127,7 +126,6 @@ export default function OrdersScreen({navigation}: any) {
           setRefreshing(false);
         }, 1000);
       }, []);
-    console.log(ordersGiving)
     return(
         <ContainerComponent>
             {/* <ShowMapComponent location={{latitude: 10.768879, longitude: 106.656034, address: 'Nhà thi đấu Phú Thọ'}} setLocation={''}/> */}

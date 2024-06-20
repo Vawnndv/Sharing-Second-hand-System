@@ -31,11 +31,9 @@ export class HandleNotification {
       try {
         
         const fcmtokens: string[] = await await getUserTokensService(data.userReceiverId);
-        console.log(fcmtokens.length)
           
           const body = data.name ? `${data.name} ${data.body}` : `${data.body}`; 
         // if (fcmtokens.length > 0) {
-          console.log(fcmtokens)
           fcmtokens.forEach(async (expoPushToken: string) => {
             HandleNotification.sendPushFCMNotification(expoPushToken, data.title, body, data.link);
           })

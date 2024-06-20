@@ -189,7 +189,6 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
 export const updateFcmToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, fcmtoken } = req.body;
 
-  console.log(userid, fcmtoken, 'ádasd');
   await UserManager.addFcmTokenToUser(userid, fcmtoken);
 
   res.status(200).json({
@@ -201,7 +200,6 @@ export const updateFcmToken = asyncHandle(async (req: Request, res: Response) =>
 export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, fcmtoken } = req.body;
 
-  console.log(userid, fcmtoken, 'bbbbbb');
   await UserManager.removeFcmTokenToUser(userid, fcmtoken);
 
   res.status(200).json({
@@ -212,10 +210,8 @@ export const removeFcmToken = asyncHandle(async (req: Request, res: Response) =>
 
 export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) => {
   const { userid } = req.query;
-  console.log(userid, '11111111');
   if (typeof userid === 'string' && userid) {
     const fcmTokens = await Account.getFcmTokenListOfUser(userid);  
-    console.log(fcmTokens);
     res.status(200).json({
       message: 'get user fcmtoken list successfully',
       data: {
@@ -334,7 +330,6 @@ export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => 
   // find user in DB
   const user = await Account.findUserById(userId);
   const currentTime = new Date().toLocaleString();
-  console.log(currentTime);
 
   if (user) {
     const data = {

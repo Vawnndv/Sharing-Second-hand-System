@@ -7,7 +7,6 @@ const getAllCollaboratorServices = async (page: number, pageSize: number, filter
   const { data } = await Axios.post(`/collaborator/collaborator-list/all`, {
     page, pageSize, filterModel, sortModel
   })
-  console.log(data);
   return data
 }
 
@@ -15,7 +14,6 @@ const getCollaboratorTotalService = async (page: number, pageSize: number, filte
   const { data } = await Axios.post(`/collaborator/collaborator-list/total`, {
     page, pageSize, filterModel, sortModel
   })
-  console.log(data);
   return data.total;
 }
 

@@ -45,7 +45,6 @@ interface Data {
 export default function ViewDetailOrder({navigation, route}: any) {
   const {orderid} = route.params;
 
-  console.log(orderid, 'orderrrrr')
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
@@ -82,7 +81,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
       
       setIsLoading(false);
       setData(res.data)
-      console.log('test',res.data)
     } catch (error) {
       console.log(error);
     }

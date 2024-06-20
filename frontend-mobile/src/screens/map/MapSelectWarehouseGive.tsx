@@ -133,15 +133,12 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
         }
         setWarehouseSelected(warehouseSeleted)
         navigation.goBack()
-        console.log(warehouseSeleted)
         // navigation.goBack()
     }
     
     const handleSelectWarehouse = (whid: any) => {
-        console.log(whid)
         setRadioSelect(whid)
     }   
-    console.log(radioSelect)
 
     const ConfirmComponent = ({}: any) => {
         const [tempSelectedWarehouse, setTempSelectedWarehouse] = useState(radioSelect)
@@ -239,8 +236,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                         <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
                                             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                                                 <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B'/>
-                                                <TouchableOpacity
-                                                    onPress={() => console.log('checkbox')}>
+                                                <TouchableOpacity>
                                                     <RadioButton
                                                         value={item.warehouseid}
                                                         status={radioSelect === item.warehouseid ? 'checked' : 'unchecked'}

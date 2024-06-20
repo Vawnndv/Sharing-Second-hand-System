@@ -33,7 +33,6 @@ export default function FilterSearch({navigation, filterValue, setFilterValue, i
     }
     fetchDataWarehouses()
   }, [])
-  console.log("warehousesID", warehousesID)
   const handleNavigateMapSelectWarehouses = () => {
     navigation.navigate('MapSelectWarehouseScreen', {
       warehouses: warehouses,

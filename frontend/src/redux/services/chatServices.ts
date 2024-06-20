@@ -26,7 +26,6 @@ const getChatWarehouse = async (userID: string): Promise<any>  => {
 
 // Get Order API call
 const createNewChatUser = async (firstuserid: string, seconduserid: string): Promise<any>  => {
-  console.log('API', firstuserid, seconduserid)
   const { data } = await Axios.post(`/chat/createNewChatUser`, {
     firstuserid,
     seconduserid

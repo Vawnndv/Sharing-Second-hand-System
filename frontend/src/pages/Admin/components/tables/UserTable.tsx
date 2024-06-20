@@ -37,7 +37,6 @@ function UserTable(props: Props) {
     (state: RootState) => state.userLogin
   );
 
-  console.log(userInfo)
   const [data, setData] = useState<any>([]); 
 
   useEffect(() => {
@@ -50,7 +49,6 @@ function UserTable(props: Props) {
 
   const handleBanUser = async (id: number, firstname: string, lastname: string, isBanned: any) => {
     try {
-      console.log(users)
       const text: string = isBanned ? 'khóa' : 'mở khóa'
       if (window.confirm(`Bạn có chắc chắn muốn ${text} người dùng ${lastname} ${firstname}?`)) {
         await banUserService(id, {userId: id, isBanned});
@@ -59,7 +57,6 @@ function UserTable(props: Props) {
           const updatedUsers = [...data];
           // Create a new array with the user replaced with updated data
           updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
-          console.log(updatedUsers[userIndex], '12313');
           setData(updatedUsers);
         //   await HandleNotification.sendNotification({
         //     userReceiverId: updatedUsers[userIndex].userid,

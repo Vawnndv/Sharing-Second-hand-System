@@ -21,7 +21,6 @@ import NotificationItem from './component/NotificationItem';
 
 const NotificationScreen = () => {
   const auth = useSelector(authSelector);
-  console.log(auth.id);
   const [isLoading, setIsLoading] = useState(false);
   const [notificationList, setNotificationList] = useState<NotificationModel[]>([]);
   const [readCount, setReadCount] = useState<number>(0);
@@ -60,7 +59,6 @@ const NotificationScreen = () => {
         await updateDoc(docRef, { isRead: true });
         
         setReadCount(readCount - 1);
-        console.log(`Notification with id ${id} has been marked as read`);
       }
     } catch (err) {
       console.error('Error updating notification:', err);
@@ -75,7 +73,6 @@ const NotificationScreen = () => {
       // Iterate through notificationList and add update operations to the batch
       notificationList.forEach(notification => {
         if (!notification.isRead) {
-          console.log(notification);
           const docRef = doc(db, "receivers", auth.id.toString(), "notification", notification.id);
           batch.update(docRef, { isRead: true });
         }
@@ -115,7 +112,6 @@ const NotificationScreen = () => {
       // Delete the document
       await deleteDoc(docRef);
   
-      console.log(`Notification with id ${id} has been deleted`);
     } catch (err) {
       console.error('Error deleting notification:', err);
     }

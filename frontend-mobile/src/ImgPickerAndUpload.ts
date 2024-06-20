@@ -7,7 +7,6 @@ export const getGallaryPermission = async (setGalleryPermission: any) => {
     const result = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if(result.granted){
         setGalleryPermission(true)
-        console.log(`gallery permission true`)
     }else{
         alert(`Chưa được cấp quyền vào thư viện ảnh`)
     }
@@ -17,7 +16,6 @@ export const getCameraPermission = async (setCameraPermission: any) => {
     const result = await ImagePicker.requestCameraPermissionsAsync();
     if(result.granted){
         setCameraPermission(true)
-        console.log(`camera permission true`)
     }else{
         alert(`Chưa được cấp quyền máy ảnh`)
     }

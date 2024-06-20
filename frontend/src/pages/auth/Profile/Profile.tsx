@@ -46,12 +46,9 @@ function Profile() {
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
   const [location, setLocation] = useState<any>(null)
-
-  console.log(imageUpdateUrl,imageUrl, '123');
   
   const [searchParams] = useSearchParams();
   const profileID = searchParams.get('profileID')
-  console.log(authInfo?.id, profileID)
 
   const {
     isLoading: updateLoading,
@@ -104,7 +101,6 @@ function Profile() {
 
   useEffect(() => {
     if (userInfo) {
-      console.log(userInfo, '123')
       setValue('firstName', userInfo?.firstName);
       setValue('lastName', userInfo?.lastName);
       setValue('email', userInfo?.email);
@@ -116,7 +112,6 @@ function Profile() {
     }
 
     if (editUserInfo) {
-      console.log(editUserInfo);
       setValue('firstName', editUserInfo?.firstName);
       setValue('lastName', editUserInfo?.lastName);
       setValue('email', editUserInfo?.email);
@@ -161,7 +156,6 @@ function Profile() {
       boxShadow: '1px 1px 2px #CAC9C8',
   };
 
-  console.log('imageUrl', imageUrl)
 
   return (
     <ThemeProvider theme={defaultTheme}>

@@ -80,8 +80,6 @@ function ModalEditCollaborator(props: Props) {
 
   useEffect(() => {
     if (userRow) {
-      console.log(userRow.warehousename, 'userROw')
-      console.log(warehouseNameList)
       setValue('firstName', userRow?.firstname)
       setValue('lastName', userRow?.lastname)
       setValue('email', userRow?.email)

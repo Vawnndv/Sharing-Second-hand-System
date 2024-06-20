@@ -25,7 +25,6 @@ interface Props {
 
 const ContainerComponent = (props: Props) => {
   const {children, isScroll, isImageBackground, title, back, right, badge, option} = props;
-  console.log(badge, 'aaaaaaaaaaaaa')
   const navigation: any = useNavigation();
 
   const headerComponent = () => {

@@ -159,12 +159,10 @@ export class WarehouseManager {
         
         const values : any = [warehouseName, phonenumber, avatar, resultInsertAddress.rows[0].addressid];
         const result: QueryResult = await client.query(query, values);
-        console.log('Warehouse inserted successfully:', result.rows[0]);
         return result.rows[0];
       }else{
         const values : any = [warehouseName, phonenumber, avatar, warehouseLocation.addressid];
         const result: QueryResult = await client.query(query, values);
-        console.log('Warehouse inserted successfully:', result.rows[0]);
         return result.rows[0];
       }
       
@@ -186,7 +184,6 @@ export class WarehouseManager {
       `
       try{
         const resultUpdateWarehouseStatus: QueryResult = await client.query(updateWarehouseStatus);
-        console.log('Warehouse status updated sucessfully:', resultUpdateWarehouseStatus.rows[0]);
         return resultUpdateWarehouseStatus.rows[0];
       } catch (error) {
         console.error('Error updating warehouse status:', error);

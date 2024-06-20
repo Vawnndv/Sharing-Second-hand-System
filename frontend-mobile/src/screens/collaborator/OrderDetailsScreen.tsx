@@ -75,7 +75,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const updateReceiver = async () => {
         const collabID = status === 'Chờ cộng tác viên lấy hàng' ? auth.id : null
         const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
-        console.log(collabID, statusOrder)
         await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
             orderID: orderID,
             statusID: 11
@@ -83,7 +82,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         const response: any = await axiosClient.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
             collaboratorReceiveID: collabID
         });
-        console.log(collabID)
         if(response.statusPin === false){
             Alert.alert('Thông báo','Đơn hàng đã được người khác chọn!')
         }else{
@@ -103,9 +101,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             setIsLoading(true)
             const response: any = await axiosClient.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.orders)
-            console.log(response.orders[0].imgConfirm)
             if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ''){
-                console.log("response.orders[0].imgConfirm", response.orders[0].imgConfirm)
                 setImage({
                     uri: response.orders[0].imgConfirm
                 })

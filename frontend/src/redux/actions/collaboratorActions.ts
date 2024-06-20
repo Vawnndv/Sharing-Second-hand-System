@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 // admin get all collaborators action
 const getAllCollaboratorsAction = (page: number, pageSize: number, filterModel: any, sortModel: any): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch =>  {
   try {
-    console.log(page, pageSize)
     dispatch({ type: collaboratorConstants.GET_ALL_COLLABORATORS_REQUEST })
     const response = await collaboratorApi.getAllCollaboratorServices(page, pageSize, filterModel, sortModel)
     dispatch({ type: collaboratorConstants.GET_ALL_COLLABORATORS_SUCCESS, payload: response })

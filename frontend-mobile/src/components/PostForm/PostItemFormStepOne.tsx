@@ -235,7 +235,6 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       setIsLoading(true);
       await tf.ready();  
       setModel(await tf.loadLayersModel(modelURL + 'model.json'));
-      console.log('Model loaded successfully'); 
       setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
 
     } catch (error) {
@@ -386,15 +385,12 @@ const pickImage = async () => {
         await completedImages.forEach(image => {
           if(image.prediction){
             const [name, category] = image.prediction.label.split('-');
-            console.log(category)
             if(category !== 'Nhạy cảm'){
-              console.log('bbb');
               if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
                 highestProbabilityImage = image;
               }
             }
             else if(category === 'Nhạy cảm' && image.prediction.probability > 0.8){
-              console.log('cccc');
 
               if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
                 highestProbabilityImage = image;
@@ -402,9 +398,7 @@ const pickImage = async () => {
             }
             else{
               if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
-                console.log('aaaa');
                 image.prediction.label = 'Khác-Khác';
-                console.log(image);
                 highestProbabilityImage.prediction.label = 'Khác-Khác';
                 highestProbabilityImage.prediction.probability = image.prediction.probability;
               }
@@ -414,7 +408,6 @@ const pickImage = async () => {
         });
 
         let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
-        console.log(highestProbabilityImage);
 
         let categoryID: any = null;
         let categoryLabel: any = null;
@@ -427,7 +420,6 @@ const pickImage = async () => {
           }
         )
 
-        console.log('categoryID', categoryID + ' ' + categoryLabel);
         
         if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
           Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
@@ -508,18 +500,15 @@ const predictImage = async (imageUri: any) => {
       if (!imageTensor) {
         throw new Error('Failed to convert image to tensor');
       }
-      console.log('imageTensor', imageTensor);
 
       // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
       const expandedTensor = imageTensor.expandDims(0);
-      console.log('expandedTensor', expandedTensor);
 
       // Dự đoán hình ảnh sử dụng mô hình
       const predictionTensor = await model.predict(expandedTensor);
       if (!predictionTensor) {
         throw new Error('Failed to make prediction');
       }
-      console.log('predictionTensor', predictionTensor);
 
       // Lấy giá trị dự đoán từ tensor
       const predictionArray = await predictionTensor.array();
@@ -536,7 +525,6 @@ const predictImage = async (imageUri: any) => {
         probability: Math.max(...predictionArray[0])
       };
 
-      console.log('Prediction result:', predictionResult);
       setIsLoading(false);
 
 

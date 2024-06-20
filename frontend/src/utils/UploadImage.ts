@@ -28,7 +28,6 @@ const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
 
           // Xử lý phản hồi từ server nếu cần
           const data = await serverResponse.json();
-          console.log('Server response:', data);
 
           resolve(data);
         } catch (error) {

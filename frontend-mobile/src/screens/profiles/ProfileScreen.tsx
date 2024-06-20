@@ -28,7 +28,6 @@ const ProfileScreen = ({navigation, route}: any) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       // Thực hiện các hành động cần thiết khi màn hình được focus
-      console.log('Home Screen Reloaded:');
       setRefresh(prevRefresh => !prevRefresh);
     });
     return unsubscribe;
@@ -63,7 +62,6 @@ const ProfileScreen = ({navigation, route}: any) => {
 
     try {
       const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
-      console.log(res, '12366')
       res && res.data && setProfile(res.data);
       setIsLoading(false);
     } catch (error) {

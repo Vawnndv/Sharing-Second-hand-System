@@ -157,9 +157,6 @@ const ChatRoom = ({ route, navigation }: any) => {
         for (const img of image) {
           try {
             const temp = await UploadImageToAws3(img, false);
-            console.log('START')
-
-            console.log('TEMP', temp)
             const url = temp.url
             if (!url) continue;
 

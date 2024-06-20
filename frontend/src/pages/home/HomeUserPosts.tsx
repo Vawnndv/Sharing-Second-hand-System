@@ -24,7 +24,6 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
                     userID: userLogin.userInfo.id,
                     status: 'userPost'
                 })
-                console.log(response.totalPosts)
                 setTotalItems(response.totalPosts)
             } catch (error) {
                 console.log(error)
@@ -37,7 +36,6 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
             try{
                 setIsLoading(true)
                 const responseUser = await Axios.get(`/user/get-user-address?userId=${userLogin.userInfo.id}`);
-                console.log(responseUser)
                 
                 const responsePosts: any = await Axios.post('/posts/user-post', {
                     page: page -1,
@@ -51,7 +49,6 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
                     warehouses: warehousesID
                       
                 })
-                console.log(responsePosts)
                 setPosts(responsePosts.allPosts)
                 setIsLoading(false)
             }catch(error){

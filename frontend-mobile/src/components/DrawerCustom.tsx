@@ -125,7 +125,6 @@ const DrawerCustom = ({navigation}: any) => {
       //   });
       //   break;
       default:
-        console.log(key);
         navigation.navigate(key);
         break;
     }

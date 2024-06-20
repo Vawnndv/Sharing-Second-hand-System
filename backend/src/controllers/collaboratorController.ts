@@ -106,7 +106,6 @@ export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: 
       2,
     );
     if (newUser) {
-      console.log(warehouseId, 'abcd');
       await CollaboratorManager.adminCreateWarehouseWorkCollaborator(newUser.userid, warehouseId);
       res.status(200).json({
         message: 'Register new collaborator successfully',

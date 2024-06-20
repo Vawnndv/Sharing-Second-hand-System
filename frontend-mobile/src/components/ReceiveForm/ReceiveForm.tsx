@@ -553,8 +553,6 @@ const handleReceive = async () => {
           userreceiveid: auth.id
         });
   
-        console.log(response.orderCreated);
-  
         orderID = response.orderCreated.orderid;    
         // if(receivetype === )
   
@@ -573,7 +571,6 @@ const handleReceive = async () => {
       const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
         warehouseID: post.warehouseid
       })
-      console.log("resGetCollab", resGetCollab.data.collaborators)
       resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
         await HandleNotification.sendNotification({
           userReceiverId: collab.userid,
@@ -674,7 +671,6 @@ const handleGive = async () =>{
         userreceiveid
       });
 
-      console.log("response.orderCreated", response.orderCreated);
 
       orderID = response.orderCreated.orderid;    
       // if(receivetype === )
@@ -767,7 +763,6 @@ const handleGive = async () =>{
 
 
   const handleBringItemToWareHouseChange = (methodBringItemToWarehouse: string) => {
-    console.log('ĐEM ĐỒ ĐẾN KHO:', methodBringItemToWarehouse)
     setFormData({
       ...formData,
       methodBringItemToWarehouse: methodBringItemToWarehouse
@@ -790,7 +785,6 @@ const handleGive = async () =>{
     );
   }
 
-  console.log(location)
 
 
 

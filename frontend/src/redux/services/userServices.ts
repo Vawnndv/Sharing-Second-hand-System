@@ -8,7 +8,6 @@ const changePasswordService = async (password: string): Promise<any>  => {
 
 // update profile API call
 const updateProfileService = async (user: any): Promise<any>  => {
-  console.log(user);
   const { data } = await Axios.post('/user/change-profile', {
     email: user.email,
     firstname: user.firstName,
@@ -21,13 +20,11 @@ const updateProfileService = async (user: any): Promise<any>  => {
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
-  console.log(data);
   return data;
 }
 
 // Get profile API call
 const getProfileService = async (id: string): Promise<any>  => {
-  console.log(id);
   const { data } = await Axios.get(`/user/get-profile?userId=${id}`)
 
   return {
@@ -57,7 +54,6 @@ const getAllUsersService = async (page: number, pageSize: number, filterModel: a
   const { data } = await Axios.post(`/user/user-list/all`, {
     page, pageSize, filterModel, sortModel
   })
-  console.log(data);
   return data
 }
 
@@ -65,7 +61,6 @@ const getUsersTotalService = async (filterModel: any): Promise<any> => {
   const { data } = await Axios.post(`/user/user-list/total`, {
     filterModel,
   })
-  console.log(data);
   return data.total;
 }
 

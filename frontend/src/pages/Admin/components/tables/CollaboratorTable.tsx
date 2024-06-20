@@ -58,9 +58,7 @@ function CollaboratorTable(props: Props) {
   }
 
   useEffect(() => {
-  console.log(collaborators);
     setData(collaborators);
-  console.log(data);
   }, [collaborators]);
   
   const handleRowSelection = (newSelectionModel: any) => {

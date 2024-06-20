@@ -59,7 +59,6 @@ function ShowImages({ images }: any) {
 function ViewPostDetail() {
     const location = useLocation();
     const postState: any = location.state || {}; // Phòng trường hợp state không tồn tại
-    console.log(postState)
 
     const {postid}= useParams();
     const userLogin = useSelector((state: any) => state.userLogin);
@@ -140,7 +139,6 @@ function ViewPostDetail() {
           try {
     
             const res = await Axios.get(`/user/get-profile?userId=${owner}`);
-            console.log('getProfile', res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             res && res.data && setProfile(res.data);
           } catch (error) {
@@ -148,7 +146,6 @@ function ViewPostDetail() {
           } 
           try {
             const res: any = await Axios.get(`/warehouse/getWarehouse/${warehouseid}`);
-            console.log(res);
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             setWarehouseInfo(res.wareHouse);
           } catch (error) {
@@ -164,7 +161,6 @@ function ViewPostDetail() {
     
     }, [location.pathname])
 
-    console.log('post', post);
     // console.log('postReceivers', postReceivers)
     // console.log('profile', profile)
     // console.log('itemImages', itemImages)
@@ -173,7 +169,6 @@ function ViewPostDetail() {
 
     
     const approvePost = async () => {
-        console.log(post);
         setIsLoading(true)
 
         if(post.givetypeid === 1){
@@ -367,10 +362,6 @@ function ViewPostDetail() {
 
     const handleClickEdit = () => {
         navigate(`/post/edit/${postid}`)
-    }
-
-    const handleClickPost = () => {
-        console.log('post')
     }
 
     const handleNavigateToUserProfile = (userID: string, event: any) => {

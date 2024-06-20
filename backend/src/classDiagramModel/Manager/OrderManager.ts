@@ -299,7 +299,6 @@ export class OrderManager {
             )
   
             orderObj.setTime(row.timestart, row.timeend);
-            console.log(row.itemid)
             orderObj.setImagePath(path.rows[0].path)
             result.push(
               orderObj
@@ -752,7 +751,6 @@ export class OrderManager {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
       };
-      console.log('Get orders list success:', mergedResults);
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
@@ -829,7 +827,6 @@ export class OrderManager {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
     };
-      console.log('Get orders finish list success:', mergedResults);
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
@@ -1060,7 +1057,6 @@ export class OrderManager {
 
   public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
     const client = await pool.connect();
-    console.log(orderID, statusID)
     try {
         const query = `
         -- Khai báo biến và gán giá trị cho nó
@@ -1121,7 +1117,6 @@ export class OrderManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Order inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting order:', error);
@@ -1141,7 +1136,6 @@ export class OrderManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Trace inserted successfully:', result.rows[0]);
       // const statusid_postItem = '1';
       // const statusid_waitForApporve = '2';
       // const statusid_approved = '12';
@@ -1158,21 +1152,18 @@ export class OrderManager {
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
-        console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForGiverResult);
       }
 
       if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForCollaboratorResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
-        console.log('Trace History Wait For Giver inserted successfully:', createTraceHistoryWaitForCollaboratorResult);
       }
 
       if(currentstatus == 'Chờ người nhận lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForReceiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
-        console.log('Trace History Wait For Receiver inserted successfully:', createTraceHistoryWaitForReceiverResult);
       }
       return result.rows[0];
     } catch (error) {
@@ -1196,7 +1187,6 @@ export class OrderManager {
     try {
       const result: QueryResult = await client.query(query);
       const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
-      console.log('Trace History inserted successfully:', createTraceHistoryPostItemResult);
 
       return result.rows[0];
     } catch (error) {

@@ -727,7 +727,6 @@ export class StatisticManager {
           INSERT INTO postanalytic DEFAULT VALUES
         `
       }
-      console.log(query)
 
       const result = await client.query(query)
       return true;

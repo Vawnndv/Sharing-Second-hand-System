@@ -78,7 +78,6 @@ const VerificationScreen = ({navigation, route}: any) => {
 
   const handleVerification = async () => {
     if (limit > 0) {
-      console.log(parseInt(newCode), parseInt(currentCode))
       if (parseInt(newCode) !== parseInt(currentCode)) {
         setErrorMessage('Mã xác minh không hợp lệ!!!');
       } else {
@@ -90,7 +89,6 @@ const VerificationScreen = ({navigation, route}: any) => {
 
         try {
           const res: any = await authenticationAPI.HandleAuthentication('/register', data, 'post');
-          console.log(res);
           dispatch(addAuth(res.data));
 
           await AsyncStorage.setItem('auth', JSON.stringify(res.data));

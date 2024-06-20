@@ -280,7 +280,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
-        console.log(res);
         setItemDetails(res.item); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);

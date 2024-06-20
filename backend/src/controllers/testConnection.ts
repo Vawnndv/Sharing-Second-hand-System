@@ -89,7 +89,6 @@ const deleteProductById = async (id: number): Promise<any> => {
   try {
     const res = await pool.query(query, [id]);
     if (res.rows.length > 0) {
-      console.log('Deleted product:', res.rows[0]);
       return res.rows[0];
     } else {
       console.log('Product not found or already deleted.');

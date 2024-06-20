@@ -94,7 +94,6 @@ export class UserManager {
     FROM public."User" u LEFT JOIN address a ON u.addressid 
     = a.addressid WHERE u.roleid = 1 AND u.email is not null` + whereClause + orderByClause + ` LIMIT ${pageSize} OFFSET ${page} * ${pageSize}`;
 
-    console.log(query);
 
     try {
       const result = await client.query(query);
@@ -120,7 +119,6 @@ export class UserManager {
       FROM public."User" u
       WHERE u.roleid = 1 AND u.email is not null` + whereClause;
 
-      console.log(query)
     try {
       const result = await client.query(query);
       if (result.rows.length === 0) {
@@ -140,7 +138,6 @@ export class UserManager {
 
   
   public static async totalGiveAndReceiveOrder(userid: string): Promise<any> {
-    console.log(userid)
     const client = await pool.connect()
     const query = 
       `SELECT
@@ -211,7 +208,6 @@ export class UserManager {
     const values : any = [userid, fcmtoken];
     try {
       const result = await client.query(query, values);
-      console.log('FcmToken inserted successfully:', result.rows[0]);
 
       return result.rows[0];
     } catch (error) {

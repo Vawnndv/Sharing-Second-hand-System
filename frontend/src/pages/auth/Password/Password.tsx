@@ -42,7 +42,6 @@ function Password() {
   const { isLoading, isError, message, isSuccess } = useSelector( (state: RootState) => state.userChangePassword);
 
   const { userInfo } = useSelector( (state: RootState) => state.userLogin);
-  console.log(userInfo)
 
   const {
     register,
@@ -55,7 +54,6 @@ function Password() {
 
   // on submit
   const onSubmit = (data: any) => {
-    console.log({...data, email: userInfo?.email});
     dispatch(changePasswordAction({...data, email: userInfo?.email}))
   };
 

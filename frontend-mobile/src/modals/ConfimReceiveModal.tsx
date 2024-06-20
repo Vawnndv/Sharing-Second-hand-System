@@ -43,7 +43,6 @@ const ConfimReceiveModal = (props: Props) => {
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
           warehouseID
         })
-        console.log("resGetCollab.data.collaborators", resGetCollab.data.collaborators)
         resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,

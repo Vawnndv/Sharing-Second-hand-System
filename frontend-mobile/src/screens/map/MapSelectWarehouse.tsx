@@ -139,7 +139,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         let newData = [...checkWarehousesOnMap]
         newData[index] = !newData[index]
         setCheckWarehousesOnMap(newData)
-        console.log(checkWarehousesOnMap)
         // console.log('press check box')
     }
 

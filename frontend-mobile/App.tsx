@@ -96,8 +96,6 @@ export default function App() {
 
   const handleAppStateChange = async (currentState: string) => {
     // Kiểm tra trạng thái tiếp theo của ứng dụng (active, background, inactive)
-    console.log('App State:', currentState);
-    console.log(count.current,count.current)
     // Xử lý tương ứng với các trạng thái ứng dụng
     if (currentState === 'active') {
       if(count.current === 0){

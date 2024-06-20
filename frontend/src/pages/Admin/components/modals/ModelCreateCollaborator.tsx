@@ -88,7 +88,6 @@ function ModalCreateCollaborator(props: Props) {
     const selectedWarehouse = warehouseNameList.find((warehouse: any) => warehouse.warehousename === data.warehouseName);
     // Check if warehouse is found and then access its warehouseid
     const warehouseId = selectedWarehouse ? selectedWarehouse.warehouseid : null;
-    console.log(warehouseId, 'abcdef')
         dispatch(createCollaboratorAction({...data, warehouseId, dob: date ? date.format('YYYY/MM/DD') : '',}))
   }
 

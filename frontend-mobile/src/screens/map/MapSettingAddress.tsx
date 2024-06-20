@@ -175,7 +175,6 @@ export default function MapSettingAddress({navigation, route}: any) {
           return data.display_name
           
           // setAddress(data.display_name);
-          console.log(data.display_name);
         } else {
           console.log('No results found');
         }
@@ -191,7 +190,6 @@ export default function MapSettingAddress({navigation, route}: any) {
             try {
                 setIsLoading(true)
                 const address = await getAddressFromLatLng(center.latitude, center.longitude)
-                console.log(address)
                 const response: any = await axiosClient.post(`${appInfo.BASE_URL}/map/set_user_location`,{
                     userID: auth.id,
                     latitude: center.latitude,
@@ -212,7 +210,6 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     const handleGetCenterGiveLocation = async () => {
         const center = await getCenterCoordinates();
-        console.log(center)
         if (center) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây

@@ -1080,7 +1080,6 @@ export class PostManager {
         values = [title, location, description, owner, time, itemid, timestart, timeend, postLocation.addressid, isWarehousePost, statusid, givetypeid, warehouseSelected, phonenumber];
       }
       const result: QueryResult = await client.query(query, values);
-      console.log('Posts inserted successfully:', result.rows[0]);
       return result.rows[0];
       
     } catch (error) {
@@ -1103,7 +1102,6 @@ export class PostManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Post receicer inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting post receiver:', error);
@@ -1147,7 +1145,6 @@ export class PostManager {
     
     try {
       const result: QueryResult = await client.query(query);
-      console.log('Post updated successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error when updating post:', error);

@@ -162,7 +162,6 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     res.status(400);
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
-    console.log(fcmTokens);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
@@ -219,7 +218,6 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
 });
 
 export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
-  console.log(req.body, 'adasdsd');
   const { email, firstname, lastname, avatar } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);

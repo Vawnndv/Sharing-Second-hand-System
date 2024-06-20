@@ -74,7 +74,6 @@ export class ItemManager {
   } 
 
   public static async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
-    console.log(quantity, 'quantityquantity');
     const client = await pool.connect();
     const query = `
         INSERT INTO item(name, quantity, itemtypeID)
@@ -85,7 +84,6 @@ export class ItemManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Product inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting product:', error);
@@ -95,7 +93,6 @@ export class ItemManager {
   };
 
   public static async uploadImageItem (path: string, itemID: string): Promise<boolean> {
-    console.log(path, itemID, 'cccccccc');
     const client = await pool.connect();
     const query = `
         INSERT INTO "image" (path, itemid)
@@ -106,8 +103,7 @@ export class ItemManager {
     try {
       const result: QueryResult = await client.query(query);
 
-      
-      console.log('Product image inserted successfully:', result.rows[0]);
+    
       return true;
       
     } catch (error) {
@@ -128,7 +124,6 @@ export class ItemManager {
     
     try {
       const result: QueryResult = await client.query(query);
-      console.log('Image delete successfully:', result.rows[0]);
       return true;
       
     } catch (error) {

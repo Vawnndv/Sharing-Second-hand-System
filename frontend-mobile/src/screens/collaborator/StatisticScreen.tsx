@@ -126,7 +126,6 @@ export default function StatisticScreen({navigation}: any) {
         
     }, [tab])
 
-    console.log(orders)
     
 
     const dataDropdown = [

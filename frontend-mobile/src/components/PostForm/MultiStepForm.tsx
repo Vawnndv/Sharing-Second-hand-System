@@ -223,10 +223,8 @@ const MultiStepForm = () => {
           quantity,
           itemtypeID,
         });
-        console.log(res, 'itemitem')
 
         itemID = res.item.itemid;
-        console.log(itemID, 'itemitem')
         // Alert.alert('Success', 'Item created successfully');
         } catch (error) {
           console.log(error);
@@ -245,22 +243,7 @@ const MultiStepForm = () => {
         // console.log({title, location, description, owner, time, itemid, timestart, timeend})
         let response : any = null;
 
-        console.log("formDataStepOne.methodGive", formDataStepOne.methodGive)
         if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống"){
-          console.log(title,
-            locationTemp,
-            description,
-            owner,
-            new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-            itemid,
-            new Date(timestart).toISOString(), // Tương tự cho timestart
-            new Date(timeend).toISOString(), // Và timeend
-            location.addressid ? false : true,
-            location,
-            false,
-            statusid,
-            givetypeid,
-            formDataStepTwo.postPhoneNumber)
 
           response = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPost`, {
             title,
@@ -320,7 +303,6 @@ const MultiStepForm = () => {
         }     
 
         postID = response.postCreated.postid;
-        console.log(response)
         // address = response.data.postCreated.address;
         // addressid = response.data.postCreated.addressid;
 
@@ -344,7 +326,6 @@ const MultiStepForm = () => {
       try{
         formDataStepOne.itemPhotos.map(async (image) => {
           const data = await UploadImageToAws3(image, false);
-          console.log(data, itemID, 'aaaaaaaaa');
           const responseUploadImage = await axiosClient.post(`${appInfo.BASE_URL}/items/upload-image`,{
             path: data.url,
             itemID: itemID

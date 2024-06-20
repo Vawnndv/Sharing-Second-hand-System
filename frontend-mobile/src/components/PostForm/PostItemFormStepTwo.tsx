@@ -58,7 +58,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [isLoadingGenerateGPT, setIsLoadingGenerateGPT] = useState(false)
 
   const [newItemPhotos, setNewItemPhotos] = useState<any>(null)
-  console.log("newItemPhotos", newItemPhotos)
 
   const auth = useSelector(authSelector);
 
@@ -304,7 +303,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       }
     )
     const response = await getGPTDescription(itemCategory, imageUrls)
-    console.log("GPTTTTTTTTTTTTTTTTTTTTTTT",imageUrls)
     setFormData({ ...formData, postDescription: response });
     handleValidate(response,'postdescription')
     setIsLoadingGenerateGPT(false)

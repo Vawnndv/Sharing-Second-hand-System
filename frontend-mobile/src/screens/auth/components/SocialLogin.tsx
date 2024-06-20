@@ -54,7 +54,6 @@ const SocialLogin = () => {
       );
 
       const user = await response.json();
-      console.log(user)
       if (user) {
         setIsLoading(true);
         const data = {
@@ -69,7 +68,6 @@ const SocialLogin = () => {
           data,
           'post',
         );
-        console.log(res, ';aaaaaaaaaa')
 
         dispatch(addAuth(res.data));
 

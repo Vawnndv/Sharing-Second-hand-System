@@ -81,7 +81,6 @@ function Collaborators() {
       toast.error(isError || deleteError)
       dispatch({ type: isError ? 'GET_ALL_COLLABORATORS_RESET' : 'DELETE_COLLABORATORS_RESET' })
     }
-    console.log(pageState)
   }, [dispatch, pageState, sortModel, filterModel, isSuccess])
   
    // delete user handler
