@@ -10,7 +10,8 @@ const colorArrayBackground = [
   'rgba(75, 192, 192, 0.2)',
   'rgba(54, 162, 235, 0.2)',
   'rgba(153, 102, 255, 0.2)',
-  'rgba(201, 203, 207, 0.2)'
+  'rgba(201, 203, 207, 0.2)',
+  'rgb(0, 0, 0, 0.2)'
 ]
 
 const colorArrayBorder = [
@@ -20,7 +21,8 @@ const colorArrayBorder = [
   'rgb(75, 192, 192)',
   'rgb(54, 162, 235)',
   'rgb(153, 102, 255)',
-  'rgb(201, 203, 207)'
+  'rgb(201, 203, 207)',
+  'rgb(0, 0, 0)'
 ]
 
 function ChartComponentFollowTime({data, title, typeChart}: any) {
@@ -38,24 +40,8 @@ function ChartComponentFollowTime({data, title, typeChart}: any) {
           {
             label: title,
             data: data.map((row: any) => row.quantity),
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 205, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(201, 203, 207, 0.2)'
-              ],
-              borderColor: [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-                'rgb(201, 203, 207)'
-              ],
+            backgroundColor: colorArrayBackground,
+            borderColor: colorArrayBorder,
             borderWidth: 3,
             tension: 0.2
           },
@@ -64,39 +50,25 @@ function ChartComponentFollowTime({data, title, typeChart}: any) {
           return {
             label: wh.warehousename,
             data: wh.data.results.map((row: any) => row.quantity),
-            backgroundColor: typeChart === 'pie' ? [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(255, 159, 64, 0.2)',
-              'rgba(255, 205, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(201, 203, 207, 0.2)'
-              ] : [
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7]
+            backgroundColor: typeChart === 'pie' ? colorArrayBackground : [
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
               ],
-              borderColor: typeChart === 'pie' ? [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-                'rgb(201, 203, 207)'
-              ] : [
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7]
+              borderColor: typeChart === 'pie' ? colorArrayBorder : [
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
               ],
             borderWidth: 3,
             tension: 0.2

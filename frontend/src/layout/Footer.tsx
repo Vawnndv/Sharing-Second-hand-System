@@ -27,7 +27,7 @@ function Footer() {
             <Box display="flex" flexDirection="column" alignItems="flex-start">
               <Stack>
                 <Typography variant='body1' sx={{ fontSize: '20px', fontWeight: 'bold' }}>
-              Contact us
+              Liên hệ
                 </Typography>
                 <Typography variant='body1' sx={{ fontSize: '20px',
                   wordWrap: 'break-word'
@@ -43,7 +43,7 @@ function Footer() {
           <Grid item xs={12} sm={6} >
             <Stack>
               <Typography variant='body1' sx={{ fontSize: '20px', fontWeight: 'bold' }}>
-              About us
+              Thông tin về chúng tôi
               </Typography>
               <Typography variant='body1' sx={{ fontSize: '20px' }}>
               20127425 - Lê Trần Phi Hùng

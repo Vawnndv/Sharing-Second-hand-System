@@ -146,7 +146,7 @@ export class StatisticManager {
     const daysDiff = dateEnd.diff(dateStart, 'day')
     
     // console.log(dateStart, dateEnd, daysDiff, maxDay)
-    const finalResults = []
+    const finalResults: any = []
     if(type === 'import'){
       for(let i = 0; i < category.length; i+=1){
         let results = [];
@@ -155,6 +155,7 @@ export class StatisticManager {
           label: dateStart.format('MMMM DD, YYYY'),
           quantity: resultStart.rows[0].quantity
         })
+        currentDateBrow = dayjs(timeStart)
         for(let j = 1; j < daysDiff + 1 ; j+=1){
           currentDateBrow = currentDateBrow.add(1, 'day')
    
@@ -163,6 +164,7 @@ export class StatisticManager {
             label: currentDateBrow.format('MMMM DD, YYYY'),
             quantity: result.rows[0].quantity
           })
+          console.log(`${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`)
         }
         const resultEnd : QueryResult = await client.query(queryImport, [category[i], timeEnd]);
         results.push({
@@ -176,7 +178,9 @@ export class StatisticManager {
             results
           }
         })
+        
       }
+      // console.log(finalResults[6].data)
       
     }else{
       for(let i = 0; i < category.length; i+=1){
@@ -186,6 +190,7 @@ export class StatisticManager {
           label: dateStart.format('MMMM DD, YYYY'),
           quantity: resultStart.rows[0].quantity
         })
+        currentDateBrow = dayjs(timeStart)
         for(let j = 1; j < daysDiff + 1 ; j+=1){
           currentDateBrow = currentDateBrow.add(1, 'day')
    
@@ -482,6 +487,7 @@ export class StatisticManager {
           label: dateStart.format('MMMM DD, YYYY'),
           quantity: resultStart.rows[0].quantity
         })
+        currentDateBrow = dayjs(timeStart)
         for(let j = 1; j < daysDiff ; j+=1){
           currentDateBrow = currentDateBrow.add(1, 'day')
        
@@ -513,6 +519,7 @@ export class StatisticManager {
           label: dateStart.format('MMMM DD, YYYY'),
           quantity: resultStart.rows[0].quantity
         })
+        currentDateBrow = dayjs(timeStart)
         for(let j = 1; j < daysDiff ; j += 1){
           currentDateBrow = currentDateBrow.add(1, 'day')
           const result : QueryResult = await client.query(queryExport, [category, warehouses[i].warehouseid, `${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`]);

@@ -489,7 +489,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                       <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                         {
                           postReceivers.some(postReceiver => postReceiver.receiverid === auth.id) ?
-                          <TouchableOpacity style={styles.button} onPress={() => {handleCancelReceive();}} ><Text style={{color: 'white'}}>Hủy</Text></TouchableOpacity>
+                          <TouchableOpacity style={styles.button} onPress={() => {handleCancelReceive();}} ><Text style={{color: 'white'}}>Hủy xin</Text></TouchableOpacity>
                           :
                           <TouchableOpacity style={styles.button} onPress={() => {handleReceiveForm();}} ><Text style={{color: 'white'}}>Xin nhận</Text></TouchableOpacity>
                         }

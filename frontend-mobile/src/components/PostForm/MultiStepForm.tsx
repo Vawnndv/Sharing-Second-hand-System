@@ -89,6 +89,8 @@ const MultiStepForm = () => {
   
   const [warehouseSelected, setWarehouseSelected] = useState<any>(null);
 
+  const [countClickGenerate, setCountClickGenerate] = useState(0);
+
   const [errorMessage, setErrorMessage] = useState<ErrorProps>({
     postTitle: '',
     postDescription: '',
@@ -107,7 +109,7 @@ const MultiStepForm = () => {
       case 1:
         return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} warehouseSelected={warehouseSelected} setWarehouseSelected={setWarehouseSelected}/>;
       case 2:
-        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos} itemCategory={formDataStepOne.itemCategory}/>;
+        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos} itemCategory={formDataStepOne.itemCategory} countClickGenerate={countClickGenerate} setCountClickGenerate={setCountClickGenerate}/>;
       // Có thể thêm các case khác cho các bước tiếp theo
       default:
         return null;

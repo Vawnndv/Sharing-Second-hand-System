@@ -9,7 +9,8 @@ const colorArrayBackground = [
   'rgba(75, 192, 192, 0.2)',
   'rgba(54, 162, 235, 0.2)',
   'rgba(153, 102, 255, 0.2)',
-  'rgba(201, 203, 207, 0.2)'
+  'rgba(201, 203, 207, 0.2)',
+  'rgb(0, 0, 0, 0.5)'
 ]
 
 const colorArrayBorder = [
@@ -19,7 +20,8 @@ const colorArrayBorder = [
   'rgb(75, 192, 192)',
   'rgb(54, 162, 235)',
   'rgb(153, 102, 255)',
-  'rgb(201, 203, 207)'
+  'rgb(201, 203, 207)',
+  'rgb(0, 0, 0)'
 ]
 
 function ChartComponentFollowTimeCollaborator({data, typeChart}: any) {
@@ -36,39 +38,25 @@ function ChartComponentFollowTimeCollaborator({data, typeChart}: any) {
           return {
             label: category.label,
             data: category.data.results.map((row: any) => row.quantity),
-            backgroundColor: typeChart === 'pie' ? [
-              'rgba(255, 99, 132, 0.2)',
-              'rgba(255, 159, 64, 0.2)',
-              'rgba(255, 205, 86, 0.2)',
-              'rgba(75, 192, 192, 0.2)',
-              'rgba(54, 162, 235, 0.2)',
-              'rgba(153, 102, 255, 0.2)',
-              'rgba(201, 203, 207, 0.2)'
-              ] : [
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7],
-                colorArrayBackground[index % 7]
+            backgroundColor: typeChart === 'pie' ? colorArrayBackground : [
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
+                colorArrayBackground[index % 8],
               ],
-              borderColor: typeChart === 'pie' ? [
-                'rgb(255, 99, 132)',
-                'rgb(255, 159, 64)',
-                'rgb(255, 205, 86)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-                'rgb(201, 203, 207)'
-              ] : [
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7],
-                colorArrayBorder[index % 7]
+              borderColor: typeChart === 'pie' ? colorArrayBorder : [
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
+                colorArrayBorder[index % 8],
               ],
             borderWidth: 3,
             tension: 0.2

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView, ActivityIndicator, Image, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ import LoadingComponent from '../LoadingComponent';
 import { LoadingModal } from '../../modals';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
 import axiosClient from '../../apis/axiosClient';
+import { category } from '../../constants/appCategories';
 
 interface FormData {
   postTitle: string;
@@ -39,11 +40,13 @@ interface StepTwoProps {
   location: any;
   setLocation: any;
   itemPhotos: any[],
-  itemCategory: string
+  itemCategory: string,
+  countClickGenerate: number,
+  setCountClickGenerate: any
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory, countClickGenerate, setCountClickGenerate }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -298,13 +301,25 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   const generateDecription = async () => {
     setIsLoadingGenerateGPT(true)
-    const imageUrls: string[] = newItemPhotos.map((img: any) => {
-        return img.url
+    if(countClickGenerate < 3){
+      try {
+        const imageUrls: string[] = newItemPhotos.map((img: any) => {
+          return img.url
+        })
+        const categoryName = category[parseInt(itemCategory) - 1]
+        console.log(imageUrls, categoryName)
+        const response = await getGPTDescription(categoryName, imageUrls)
+        setFormData({ ...formData, postDescription: response });
+        handleValidate(response,'postdescription')
+        setCountClickGenerate(countClickGenerate + 1);
+      } catch (error) {
+        Alert.alert("Thông báo", "Tạo mô tả tự động đã gặp vấn đề, xin vui lòng thử lại!")
+        setIsLoadingGenerateGPT(false)
       }
-    )
-    const response = await getGPTDescription(itemCategory, imageUrls)
-    setFormData({ ...formData, postDescription: response });
-    handleValidate(response,'postdescription')
+    }else{
+      Alert.alert("Thông báo", "Bạn đã đạt giới hạn tối đa tạo mô tả tự động cho bài đăng này!")
+    }
+    
     setIsLoadingGenerateGPT(false)
   }
 
