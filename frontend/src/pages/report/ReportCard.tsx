@@ -4,6 +4,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { getRoomId } from '../../utils/GetRoomID';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
+import { format } from 'date-fns';
 
 interface ReportCardProps {
   report: {
@@ -39,7 +40,7 @@ function ReportCard({ report, onNavigateToChat, onViewPostDetails, onResolve }: 
           <Avatar src={report.avatar} alt={`${report.firstname} ${report.lastname}`} />
           <Box sx={{ marginLeft: 2 }}>
             <Typography variant="h6">{`${report.firstname} ${report.lastname}`}</Typography>
-            <Typography variant="body2" color="textSecondary">{report.createdat}</Typography>
+            <Typography variant="body2" color="textSecondary">{format(new Date(report.createdat), 'dd/MM/yyyy HH:mm:ss')}</Typography>
           </Box>
           <IconButton onClick={() => {
             if(userID !== undefined)

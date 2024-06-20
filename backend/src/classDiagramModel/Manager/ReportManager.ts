@@ -45,7 +45,7 @@ export class ReportManager {
         FROM report r
         JOIN "User" u ON u.userid = r.reporterid
         WHERE r.reporttype = '1' AND r.approvedate IS NULL
-        ORDER BY r.createdat ASC 
+        ORDER BY r.createdat DESC 
       `
       const result: any = await client.query(query)
 
@@ -75,7 +75,7 @@ export class ReportManager {
             FROM workat wk
             WHERE wk.userid = ${userID}
           )
-        ORDER BY r.createdat ASC 
+        ORDER BY r.createdat DESC 
       `
       const result: any = await client.query(query)
 
