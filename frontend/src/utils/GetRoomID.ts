@@ -5,8 +5,9 @@ export const getRoomId = (userID1: string, userID2: string) => {
 }
 
 export const getRoomIdWithPost = (userID1: string, userID2: string, postID: string) => {
-  const sortedIDs = [userID1, userID2, postID].sort();
-  const roomID = sortedIDs.join('-');
+  const sortedIDs = [userID1, userID2].sort();
+  // Combine sortedIDs with postID
+  const roomID = `${sortedIDs.join('-')}-${postID}`;
   return roomID;
 }
 

@@ -153,7 +153,7 @@ function ChatRoom({ typeChat }: any) {
           text: responseUploadImage.url,
           type: 'image',
           createdAt: Timestamp.fromDate(new Date()),
-          username: "VAN NGUYEN",
+          username: `${userInfo?.firstName} ${userInfo?.lastName}`,
           isRead: false
         });
         toast.success('Thêm ảnh thành công');

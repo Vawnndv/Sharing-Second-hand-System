@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { AddSquare, Home, Message, Scan, User } from 'iconsax-react-native';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 import { CircleComponent, TextComponent } from '../components';
 import { appColors } from '../constants/appColors';
@@ -12,65 +12,25 @@ import ScanNavigator from './ScanNavigator';
 import ChatNavigator from './ChatNavigator';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { Badge } from 'react-native-elements';
-import { getRoomId, getRoomIdWithPost } from '../utils/GetRoomID';
-import { collection, doc, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, doc, getDocs, onSnapshot, orderBy, query, updateDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../redux/reducers/authReducers';
-import chatAPI from '../apis/chatApi';
-let countUnread = 0;
+import { processRooms } from '../utils/messageUtils';
+
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const auth = useSelector(authSelector);
-  const [isGetBadge, setIsGetBadge] = useState(false);
-
-  const processMessages = (item: any) => {
-    let roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
-    const docRef = doc(db, "rooms", roomID);
-    const messagesRef = collection(docRef, "messages");
-    const q = query(messagesRef, orderBy('createdAt', 'desc'));
-
-    onSnapshot(q, (snapshot) => {
-      const allMessages = snapshot.docs.map(doc => doc.data());
-      if (allMessages.length === 0 || allMessages[0].userid === auth?.id)
-        return;
-      if (allMessages[0].isRead === false) {
-        countUnread += 1
-        setUnreadMessagesCount(countUnread)
-      }
-    });
-  };
-
-  const getUsers = async ()=> {
-    try {
-      const res = await chatAPI.HandleChat(
-        `/list?userID=${auth?.id}`,
-        'get'
-      );
-      res.data.forEach((item: any) => processMessages(item));
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const getPosts = async ()=> {
-    try {
-      const res = await chatAPI.HandleChat(
-        `/listUser?userID=${auth?.id}`,
-        'get'
-      );
-      res.data.forEach((item: any) => processMessages(item));
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   useEffect(() => {
-    countUnread = 0;
-    getUsers()
-    getPosts()
-  }, [])
+    console.log('Rooms collection changed');
+    processRooms(auth.id, setUnreadMessagesCount);
+  }, [auth.id]);
+
+  const setUnreadCount = useCallback((count: any) => {
+    setUnreadMessagesCount(count);
+  }, []);
 
   return (
     <Tab.Navigator 
@@ -182,22 +142,23 @@ const TabNavigator = () => {
       <Tab.Screen name="Add" component={AddNavigator} />
       <Tab.Screen 
         name="Message" 
-        component={ChatNavigator}
         options={({ route }) => ({
           tabBarStyle: ((route) => {
-            const routeName = getFocusedRouteNameFromRoute(route) ?? "ChatScreen"
+            const routeName = getFocusedRouteNameFromRoute(route) ?? "ChatScreen";
             if (routeName !== 'ChatScreen') {
-              return { display: "none" }
+              return { display: "none" };
             }
             return {
               height: Platform.OS === 'ios' ? 88 : 68,
               justifyContent: 'center',
               alignItems: 'center',
               backgroundColor: appColors.white,
-            }
+            };
           })(route),
-        })} 
-      />
+        })}
+      >
+        {props => <ChatNavigator {...props} setUnreadCount={setUnreadCount} />}
+      </Tab.Screen>
 
       <Tab.Screen 
         name="Profile" 
@@ -218,7 +179,7 @@ const TabNavigator = () => {
         })} 
       />  
     </Tab.Navigator>
-  )
+  );
 }
 
-export default TabNavigator
+export default TabNavigator;

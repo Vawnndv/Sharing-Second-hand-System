@@ -1,7 +1,7 @@
 import moment from 'moment';
 import 'moment/locale/vi';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AvatarComponent, TextComponent } from '../../components';
 import { fontFamilies } from '../../constants/fontFamilies';
@@ -10,8 +10,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
 import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData, updateDoc, getDocs, limit, Firestore } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
+import { processRooms } from '../../utils/messageUtils';
+import { UnreadCountContext } from './UnreadCountContext';
 
 const ChatItem = ({item, route, navigation, noBorder}: any) => {
+  const { setUnreadCount } = useContext(UnreadCountContext) ?? { setUnreadCount: () => {} };
   moment.locale();
   const auth = useSelector(authSelector);
   const [lastMessage, setLastMessage] = useState<DocumentData | null | undefined>(undefined);
@@ -23,6 +26,13 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
     });
   }
 
+  useEffect(() => {
+    if (lastMessage?.isRead  || auth?.id == lastMessage?.userid)
+      return;
+
+    processRooms(auth.id, setUnreadCount!);
+
+  }, [lastMessage]);
 
   useEffect(() => {
 
@@ -109,10 +119,6 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
         openChatRoom()
       }}
     >
-      {/* <Image
-        source={{uri: item?.avatar}}
-        style={{height: hp(9), width: hp(9), borderRadius: 100}}
-      /> */}
       <AvatarComponent 
           avatar={item?.avatar}
           username={item?.username ? item?.username : item?.firstname + ' ' + item?.lastname}

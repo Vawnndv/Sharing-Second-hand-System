@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import ChatList from './ChatList';
 import { ActivityIndicator } from 'react-native-paper';
@@ -8,8 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { useFocusEffect } from '@react-navigation/native';
 import { getRoomId, getRoomIdWithPost } from '../../utils/GetRoomID';
-import { collection, doc, getDocs, limit, orderBy, query } from 'firebase/firestore';
+import { collection, doc, getDocs, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../../../firebaseConfig';
+import { processRooms } from '../../utils/messageUtils';
+import { UnreadCountContext } from './UnreadCountContext';
 
 interface User {
   userid: string;
@@ -19,7 +21,8 @@ interface User {
   };
 }
 
-const ChatScreen = ({ router, navigation }: any) => {
+const ChatScreen = ({ router, navigation  }: any) => {
+  const { setUnreadCount } = useContext(UnreadCountContext) ?? { setUnreadCount: () => {} };
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const auth = useSelector(authSelector);
@@ -27,6 +30,13 @@ const ChatScreen = ({ router, navigation }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       getUsers();
+      // const unsubscribeRooms = onSnapshot(collection(db, "rooms"), () => {
+        processRooms(auth.id, setUnreadCount!);
+      // });
+  
+      // return () => {
+      //   unsubscribeRooms();
+      // };
     }, [])
   );
 

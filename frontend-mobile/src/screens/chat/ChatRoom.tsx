@@ -84,8 +84,8 @@ const ChatRoom = ({ route, navigation }: any) => {
     if (!roomDoc.exists()) {
       // Nếu room chưa tồn tại, tạo room mới
       await setDoc(roomRef, {
-          roomID,
-          createdAt: Timestamp.fromDate(new Date())
+        roomID,
+        createdAt: Timestamp.fromDate(new Date())
       });
 
       postid && await handleSendPost()

@@ -84,6 +84,7 @@
     "react-native-screens": "~3.29.0",
     "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "14.1.0",
+    "react-native-tab-view": "^3.5.2",
     "react-native-tflite": "^0.0.2",
     "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.19.6",
