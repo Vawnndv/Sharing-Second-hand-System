@@ -104,7 +104,6 @@ export default function App() {
           const response = await axiosClient.post(`${appInfo.BASE_URL}/statistic/insertAnalytic`,{
             type: 'access'
           })
-          // console.log("Response ACCESSSSSSS", response)
         } catch (error) {
           console.log(error)
         }

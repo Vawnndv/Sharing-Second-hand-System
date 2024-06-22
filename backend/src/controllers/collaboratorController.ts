@@ -162,7 +162,6 @@ export const adminResetCollaboratorPassword = asyncHandle(async (req: Request, r
 
 export const getTotalCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {} } = req.body;
-  // console.log(filterModel)
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {

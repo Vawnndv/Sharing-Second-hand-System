@@ -190,8 +190,6 @@ const MultiStepForm = () => {
       formDataStepTwo.postPhoneNumber && 
       formDataStepTwo.postAddress 
     ) {
-      // console.log(errorMessage);
-      // console.log(formDataStepTwo);
 
       let itemID = 0;
       let postID = 0;
@@ -242,7 +240,6 @@ const MultiStepForm = () => {
         const timestart = new Date(formDataStepTwo.postStartDate);
         const timeend = new Date(formDataStepTwo.postEndDate);
         
-        // console.log({title, location, description, owner, time, itemid, timestart, timeend})
         let response : any = null;
 
         if(formDataStepOne.methodGive === "Đăng món đồ lên hệ thống"){

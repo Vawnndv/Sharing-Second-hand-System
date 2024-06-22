@@ -22,7 +22,7 @@ const handleLogout = async () => {
 };
 
 const Axios = axios.create({
-  baseURL: 'http://localhost:3000'
+  baseURL: process.env.BASE_URL
 });
 
 Axios.interceptors.request.use(async (config: any) => {

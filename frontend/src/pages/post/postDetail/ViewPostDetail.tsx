@@ -97,7 +97,6 @@ function ViewPostDetail() {
               throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-            console.log(res.postDetail);
             // setItemID(res.postDetail.itemid);
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
@@ -160,14 +159,7 @@ function ViewPostDetail() {
         }
     
     }, [location.pathname])
-
-    // console.log('postReceivers', postReceivers)
-    // console.log('profile', profile)
-    // console.log('itemImages', itemImages)
-    // console.log('isUserPost', isUserPost)
-    // console.log('itemID', itemID)
-
-    
+ 
     const approvePost = async () => {
         setIsLoading(true)
 
@@ -229,7 +221,6 @@ function ViewPostDetail() {
                 givetype: post.give_receivetype,
                 warehouseid: post.warehouseid,
             }); 
-            // console.log("RESPONSE.DATAAAAAAAAAAAAAAAAAAAAAAAAAAAA",response)
             orderID = response.orderCreated.orderid;
             
             try{
@@ -369,7 +360,6 @@ function ViewPostDetail() {
         navigate(`/profile?profileID=${userID}`)
     }
     
-    // console.log(evenlySpacedDates);
     return ( 
         <div style={{display: 'flex', flexDirection: 'column',
             width: '100%', justifyContent:'center', alignItems: 'center'

@@ -54,7 +54,6 @@ function Home() {
     }
     fetchDataWarehouses()
   }, [])
-  // console.log("WAREHOUSES", warehousesID)
   return( 
 
     <Stack

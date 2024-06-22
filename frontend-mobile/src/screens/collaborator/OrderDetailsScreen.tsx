@@ -122,7 +122,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         getPermission()
         
     }, [])
-    // console.log(image)
     return(
         <ContainerComponent back title="Chi tiết đơn hàng">
             <View style={styles.container}>
@@ -143,7 +142,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                                                 { 
                                                     
                                                     order.image.map((img: any, index: number) => {
-                                                        // {console.log("path", img.path)}
                                                         return (
                                                             <Image
                                                                 key={index}

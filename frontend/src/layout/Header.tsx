@@ -253,7 +253,6 @@ export default function Header({setIndex}: any) {
   const handleSetMenu = () => {
       dispatch(handleClickMenu())
   }
-//   console.log(isOpenMenu)
 
   const handleNavigateToHome = () => {
     setIndex(0)

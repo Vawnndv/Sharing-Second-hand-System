@@ -173,7 +173,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
         longitude: lng,
         address: data.display_name
       })
-      // setAddress(data.display_name);
       console.log(data.display_name);
     } else {
       console.log('No results found');
@@ -182,7 +181,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
 
   const getCenter = () => {
     const center = map.getCenter();
-    // console.log(center)
     return center
   };
 

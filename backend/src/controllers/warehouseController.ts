@@ -23,7 +23,6 @@ export const getAllWarehouses = asyncHandle(async (req, res) => {
 export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
   try {
     const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-    // console.log(filterModel)
     // Build WHERE clause based on filterModel (replace with your logic)
     let whereClause = '';
     if (filterModel.items && filterModel.items.length > 0) {

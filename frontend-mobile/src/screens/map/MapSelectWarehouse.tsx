@@ -77,7 +77,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
     const {checkWarehouses, setCheckWarehouses}: any = route.params;
 
     const [warehouses, setWarehouses] = useState<any>([])
-    // console.log("setWarehousesID", setWarehousesID)
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(checkWarehouses)
@@ -86,7 +85,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
     const [visible, setVisible] = useState(false)
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    // console.log(location)
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -96,7 +94,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
@@ -139,7 +136,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         let newData = [...checkWarehousesOnMap]
         newData[index] = !newData[index]
         setCheckWarehousesOnMap(newData)
-        // console.log('press check box')
     }
 
     const handleConfirmSelect = () => {

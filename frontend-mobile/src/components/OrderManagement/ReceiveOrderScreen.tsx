@@ -87,7 +87,6 @@ export default function ReceiveOrderScreen({ navigation, route }: any) {
       );
 
       setIsLoading(false);
-      // console.log("res.data.orderReceive", res.data.orderReceive)
       setOrderReceive(res.data.orderReceive);
     } catch (error) {
       console.log(error);

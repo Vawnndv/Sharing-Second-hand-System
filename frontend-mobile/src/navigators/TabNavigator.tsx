@@ -24,7 +24,6 @@ const TabNavigator = () => {
   const auth = useSelector(authSelector);
 
   useEffect(() => {
-    console.log('Rooms collection changed');
     processRooms(auth.id, setUnreadMessagesCount);
   }, [auth.id]);
 

@@ -102,14 +102,12 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
         }
 
-        // console.log('Location Give',response.data)
         setLocation({
           addressid: response.data.addressid,
           address: response.data.address,
           latitude: parseFloat(response.data.latitude),
           longitude: parseFloat(response.data.longitude)
         });
-        // console.log(response.data)
         
         } catch (error) {
         console.error('Error fetching user info:', error);
@@ -307,7 +305,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           return img.url
         })
         const categoryName = category[parseInt(itemCategory) - 1]
-        console.log(imageUrls, categoryName)
         const response = await getGPTDescription(categoryName, imageUrls)
         setFormData({ ...formData, postDescription: response });
         handleValidate(response,'postdescription')

@@ -236,8 +236,6 @@ export class WarehouseManager {
         
         const values : any = [resultInsertAddress.rows[0].addressid, warehouseid];
         const result: QueryResult = await client.query(updateWarehouseAddress, values);
-        // console.log('Warehouse updated successfully:', result.rows[0]);
-        // return result.rows[0];
       }
       
       if(warehousename){

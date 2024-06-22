@@ -539,7 +539,6 @@ const predictImage = async (imageUri: any) => {
   }
 };
 
-  // console.log("formData.itemPhotos",formData.itemPhotos)
 
   const removeImage = (index: number) => {
     const updatedPhotos = [...formData.itemPhotos];

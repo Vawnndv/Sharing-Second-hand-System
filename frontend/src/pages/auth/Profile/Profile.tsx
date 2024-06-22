@@ -57,7 +57,6 @@ function Profile() {
     isSuccess: editSuccess
   } = useSelector((state: RootState) => state.userUpdateProfile);
 
-  // console.log(editUserInfo);
   // validate user
   const {
     register,

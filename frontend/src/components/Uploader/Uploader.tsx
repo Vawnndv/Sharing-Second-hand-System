@@ -80,7 +80,6 @@ function Uploader(props: Props) {
   const onDrop = useCallback(async (imageFile: any) => {
     const file = new FormData()
     file.append('file', imageFile[0])
-    // console.log('OnDrop', file)
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);
@@ -94,7 +93,6 @@ function Uploader(props: Props) {
       setLoading(false)
       toast.success('Thêm ảnh thành công!')
     } catch (error: any) {
-      // console.log(error)
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
       } else {

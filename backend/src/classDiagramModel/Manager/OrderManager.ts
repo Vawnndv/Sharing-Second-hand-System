@@ -510,7 +510,6 @@ export class OrderManager {
   
       }
 
-      // console.log(orders)
       return result;
     }catch (error) {
       console.log('error:', error);

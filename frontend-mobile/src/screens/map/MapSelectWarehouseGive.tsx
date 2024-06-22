@@ -76,7 +76,6 @@ const stylesConfirmComponent = StyleSheet.create({
 export default function MapSelectWarehouseGive({navigation, route}: any) {
 
     const {warehouses, setWarehouseSelected}: any = route.params;
-    // console.log("setWarehousesID", setWarehousesID)
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [radioSelect, setRadioSelect] = useState(warehouses[0].warehouseid)
@@ -85,7 +84,6 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
     const [visible, setVisible] = useState(false)
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    // console.log(location)
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -95,7 +93,6 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude

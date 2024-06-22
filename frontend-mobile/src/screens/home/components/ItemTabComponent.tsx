@@ -41,12 +41,9 @@ const ItemTabComponent = ({navigation}: any) => {
   useEffect(() => {
     const getUserAddress = async () => {
       const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
-      console.log('getUserAddress', response.data)
       if(response.data === null){
         // setIsNewUser(true)
-        // console.log('getUserAddress true', response.data)
         navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
-        // console.log("navigate to map")
       }
     }
     getUserAddress()
@@ -61,7 +58,6 @@ const ItemTabComponent = ({navigation}: any) => {
     const fetchDataWarehouses = async () => {
       const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
       setWarehouses(response.wareHouses)
-      // console.log("WAREHOUSES",response.wareHouses)
       let listWarehouseID: any = []
       response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)
@@ -78,7 +74,6 @@ const ItemTabComponent = ({navigation}: any) => {
   //     navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
   //   }
   // }, [isNewUser])
-  // console.log("warehousesID", warehousesID)
 
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {

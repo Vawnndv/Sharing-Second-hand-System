@@ -100,7 +100,7 @@ export default function MapSettingAddress({navigation, route}: any) {
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
+        //   (location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude

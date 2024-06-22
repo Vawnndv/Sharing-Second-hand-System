@@ -222,8 +222,6 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 
   const existingUser = await Account.findUserByEmail(email);
 
-  console.log(existingUser, 'dddddddddd');
-
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
 

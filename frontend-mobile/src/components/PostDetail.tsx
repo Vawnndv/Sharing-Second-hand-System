@@ -89,7 +89,6 @@ const windowHeight = Dimensions.get('window').height;
 const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
-  // console.log(postID)
 
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
@@ -228,7 +227,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
       }
 
       try {
-        // console.log(postID);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -240,7 +238,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
         setItemID(res.postDetail.itemid);
         itemIDs = res.postDetail.itemid;
         owner = res.postDetail.owner;
-        // console.log(post?.title +  ' ' + res.postDetail.latitude);
         setIsUserPost(res.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);

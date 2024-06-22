@@ -3,7 +3,6 @@ import { collection, doc, query, orderBy, getDocs, onSnapshot } from 'firebase/f
 import { db } from '../../firebaseConfig';
 
 export const checkMessages = async (roomID: string, authId: string) => {
-  console.log('roomID', roomID, 'userId', authId);
   const parts = roomID.split('-');
   
   if (parts.length === 1) {
@@ -25,7 +24,6 @@ export const checkMessages = async (roomID: string, authId: string) => {
     onSnapshot(q, (snapshot) => {
       const allMessages = snapshot.docs.map(doc => doc.data());
       let unreadCount = 0;
-      console.log('EVENT-SUB')
       if (allMessages.length > 0) {
         if (allMessages[0] && allMessages[0].isRead === undefined) {
         } else if (!allMessages[0].isRead && allMessages[0].userid !== currentUserId) {
@@ -43,7 +41,6 @@ export const processRooms = (authId: string, setUnreadMessagesCount: (count: num
 
     onSnapshot(roomsCollection, async (roomsSnapshot) => {
       try {
-        roomsSnapshot.docs.map(doc => console.log('ROOMS', doc.id));
         
         const promises = roomsSnapshot.docs.map(doc => checkMessages(doc.id, authId));
         const results = await Promise.all(promises);

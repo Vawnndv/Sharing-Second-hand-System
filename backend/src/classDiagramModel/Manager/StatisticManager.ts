@@ -145,7 +145,6 @@ export class StatisticManager {
     let currentDateBrow = dayjs(timeStart)
     const daysDiff = dateEnd.diff(dateStart, 'day')
     
-    // console.log(dateStart, dateEnd, daysDiff, maxDay)
     const finalResults: any = []
     if(type === 'import'){
       for(let i = 0; i < category.length; i+=1){
@@ -164,7 +163,6 @@ export class StatisticManager {
             label: currentDateBrow.format('MMMM DD, YYYY'),
             quantity: result.rows[0].quantity
           })
-          console.log(`${currentDateBrow.year()}-${currentDateBrow.month() + 1}-${currentDateBrow.date()}`)
         }
         const resultEnd : QueryResult = await client.query(queryImport, [category[i], timeEnd]);
         results.push({
@@ -180,7 +178,6 @@ export class StatisticManager {
         })
         
       }
-      // console.log(finalResults[6].data)
       
     }else{
       for(let i = 0; i < category.length; i+=1){
@@ -477,7 +474,6 @@ export class StatisticManager {
     let currentDateBrow = dayjs(timeStart)
     const daysDiff = dateEnd.diff(dateStart, 'day')
     
-    // console.log(dateStart, dateEnd, daysDiff, maxDay)
     const finalResults = []
     if(type === 'import'){
       for(let i = 0; i < warehouses.length; i+=1){
@@ -676,7 +672,6 @@ export class StatisticManager {
       // Tính toán ngày bắt đầu của tháng hiện tại
       const startOfMonth = currentDate
       startOfMonth.setMonth(currentDate.getMonth() - timeValue)
-      // console.log(`${startOfMonth.toLocaleString('en', { month: 'long'})} ${startOfMonth.getDate()}, ${startOfMonth.getFullYear()}`)
 
       // Tính toán các ngày cách đều trong tháng
       const evenlySpacedDates = [];

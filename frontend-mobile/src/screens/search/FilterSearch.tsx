@@ -24,7 +24,6 @@ export default function FilterSearch({navigation, filterValue, setFilterValue, i
     const fetchDataWarehouses = async () => {
       const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
       setWarehouses(response.wareHouses)
-      // console.log("WAREHOUSES",response.wareHouses)
       let listWarehouseID: any = []
       response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)

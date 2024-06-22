@@ -89,12 +89,10 @@ function EditPost() {
               throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-            // console.log('Time Start',(res.postDetail.timestart).slice(0,10))
             // setLocation({addressid: res.postDetail.adressid, address: res.postDetail.address, longitude: res.postDetail.longitude, latitude: res.postDetail.latitude});
             warehouseid = res.postDetail.warehouseid
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
-            console.log(res.postDetail)
             
           } catch (error) {
             console.error('Error fetching post details:', error);
@@ -105,7 +103,6 @@ function EditPost() {
             setLocation({addressid: response.wareHouse.addressid, 
                 address: response.wareHouse.address, longitude: parseFloat(response.wareHouse.longitude), 
                 latitude: parseFloat(response.wareHouse.latitude)});
-            // console.log(response)
           }catch(error){
             console.log(error)
           }
@@ -216,7 +213,6 @@ function EditPost() {
     
                       // Xử lý phản hồi từ server nếu cần
                       const data: any = serverResponse;
-                      console.log(data)
                       resolve(data);
                   } catch (error) {
                       console.error('Error uploading file:', error);
@@ -256,7 +252,6 @@ function EditPost() {
         const newDescription: any = description;
         let newPostid: any = null;
 
-        console.log(location);
         let isSuccessRepost = true
         if((itemImages.length + itemNewImages.length > 0) &&
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
@@ -279,7 +274,6 @@ function EditPost() {
                         warehouseid: post.warehouseid,
                         phonenumber: phoneNumber
                     });
-                    console.log(res)
                     newPostid = res.data.postCreated.postid;
                     
                     

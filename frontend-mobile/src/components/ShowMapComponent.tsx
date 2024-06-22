@@ -33,7 +33,6 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         }
 
         let currentLocationResult: any = await Location.getCurrentPositionAsync({});
-    //   console.log(location)
         const currentLocation = {
             latitude: currentLocationResult.coords.latitude,
             longitude: currentLocationResult.coords.longitude
@@ -79,8 +78,6 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         return meter + 'm'
     }
     
-    
-    // console.log(width, height)
     return (
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>

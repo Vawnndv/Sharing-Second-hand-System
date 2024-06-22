@@ -140,7 +140,6 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
       let itemIDs = null;
       let owner = null
       try {
-        // console.log(postID);
         setIsLoading(true);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
@@ -156,7 +155,6 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
         setNewTitle(res.postDetail.title);
         setNewDescription(res.postDetail.description);
 
-        // console.log(post?.title +  ' ' + res.postDetail.latitude);
         setIsUserPost(res.postDetail.owner == auth.id);
 
 

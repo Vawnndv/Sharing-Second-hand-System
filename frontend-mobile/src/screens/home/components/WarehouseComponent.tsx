@@ -100,7 +100,6 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   };
 
   const handleEndReached = () => {
-    console.log(isLoading, isEmpty, isEndOfData)
     if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }

@@ -281,7 +281,6 @@ export class PostManager {
       `;
 
       const result: QueryResult = await client.query(postsQuery);
-      // console.log(result.rows)
       if (result.rows.length === 0) {
         return null;
       }

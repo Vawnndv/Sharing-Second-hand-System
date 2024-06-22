@@ -33,7 +33,6 @@ export const uploadImage = async (req: Request, res: Response) => {
     //     console.error('Error uploading file to AWS S3:', err);
     //     res.status(500).send('Error uploading file to AWS S3');
     //   } else {
-    //     console.log('File uploaded successfully:', data);
     //     res.status(201).json({
     //       url: `${URL}${file.originalname}`,
     //     });

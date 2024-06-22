@@ -27,7 +27,6 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
     event.stopPropagation();
     navigate(`/profile?profileID=${userID}`)
   }
-  // console.log(order.give_receivetype)
 
   moment.locale();
   return (

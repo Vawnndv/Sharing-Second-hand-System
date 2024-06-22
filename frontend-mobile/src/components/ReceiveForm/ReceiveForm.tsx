@@ -343,7 +343,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       // }
 
       try {
-        // console.log(postID);
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -352,7 +351,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
         setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        // console.log(post?.title +  ' ' + res.postDetail.latitude);
         setIsUserPost(res.postDetail.owner == auth.id);
         setIsLoading(false);
 
@@ -439,7 +437,6 @@ const handleReceive = async () => {
         setIsShowAddress(true);
       }
       
-      // console.log({title, location, description, owner, time, itemid, timestart, timeend})
       const response: any = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
         postid,
         receiverid,
@@ -476,7 +473,6 @@ const handleReceive = async () => {
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
           warehouseID: post.warehouseid
         })
-        // console.log("resGetCollab", resGetCollab.data.collaborators)
         resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
           await HandleNotification.sendNotification({
             userReceiverId: collab.userid,

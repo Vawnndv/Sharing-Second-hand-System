@@ -43,7 +43,6 @@ export default function OrdersScreen({navigation}: any) {
         sort: 'Mới nhất'
     })
 
-    // console.log(filterValue)
 
     // dùng để load lại dữ liệu những order mà người dùng pick
     const [changeOrdersGiving, setChangeOrdersGiving] = useState(false)
@@ -91,7 +90,6 @@ export default function OrdersScreen({navigation}: any) {
                 console.log(error)
             }
         }
-        console.log("TAGGGGGGGGGGGGGGGGGGGGG", tab)
         fetchAPI()
     },[tab, filterValue, changeOrdersGiving, refreshing])
 
