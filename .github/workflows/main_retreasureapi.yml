@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Backend app to Azure Web App - retreasureapi
+name: Build and deploy Node.js app to Azure Web App - retreasureapi
 
 on:
   push:
@@ -62,4 +62,4 @@ jobs:
           app-name: 'retreasureapi'
           slot-name: 'production'
           package: .
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_c6accd51b65a42d588c6713ef6c678fd }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
