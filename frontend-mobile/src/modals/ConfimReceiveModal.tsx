@@ -21,56 +21,58 @@ interface Props {
   isWarehousePost: boolean,
   warehouseID: string,
   auth: any,
-  name: string
+  name: string,
+  visibleRatingModal: any;
+  setVisibleRatingModal: any;
 }
 
 const ConfimReceiveModal = (props: Props) => {
-  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name } = props;
+  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name, visibleRatingModal, setVisibleRatingModal } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    const {url} = await UploadImageToAws3(image, false);
+    // const {url} = await UploadImageToAws3(image, false);
     try {
-      const res = await orderAPI.HandleOrder('/upload-image-confirm', 
-      {
-        orderid: orderid,
-        imgconfirmreceive: url
-      }
-      , 'post');
+      // const res = await orderAPI.HandleOrder('/upload-image-confirm', 
+      // {
+      //   orderid: orderid,
+      //   imgconfirmreceive: url
+      // }
+      // , 'post');
 
-      if( isWarehousePost ){
-        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
-          warehouseID
-        })
-        resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
-          await HandleNotification.sendNotification({
-            userReceiverId: collab.userid,
-            userSendId: auth.id,
-            name: `${auth?.firstName} ${auth.lastName}`,
-            // postid: postID,
-            avatar: auth.avatar,
-            link: `order/${orderid}`,
-            title: 'Đã xác nhận nhận đồ',
-            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
-          })
-        })
-      }else{
-        await HandleNotification.sendNotification({
-          userReceiverId: owner,
-          userSendId: auth.id,
-          name: `${auth?.firstName} ${auth.lastName}`,
-          // postid: postID,
-          avatar: auth.avatar,
-          link: `order/${orderid}`,
-          title: 'Đã xác nhận nhận đồ',
-          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
-        })
-      }
-
-      
+      // if( isWarehousePost ){
+      //   const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+      //     warehouseID
+      //   })
+      //   resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
+      //     await HandleNotification.sendNotification({
+      //       userReceiverId: collab.userid,
+      //       userSendId: auth.id,
+      //       name: `${auth?.firstName} ${auth.lastName}`,
+      //       // postid: postID,
+      //       avatar: auth.avatar,
+      //       link: `order/${orderid}`,
+      //       title: 'Đã xác nhận nhận đồ',
+      //       body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+      //     })
+      //   })
+      // }else{
+      //   await HandleNotification.sendNotification({
+      //     userReceiverId: owner,
+      //     userSendId: auth.id,
+      //     name: `${auth?.firstName} ${auth.lastName}`,
+      //     // postid: postID,
+      //     avatar: auth.avatar,
+      //     link: `order/${orderid}`,
+      //     title: 'Đã xác nhận nhận đồ',
+      //     body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+      //   })
+      // }
 
       
+
+      setVisibleRatingModal(true)
       setIsLoading(false);
       setModalConfirmVisible(false);
     } catch (error: unknown) {
