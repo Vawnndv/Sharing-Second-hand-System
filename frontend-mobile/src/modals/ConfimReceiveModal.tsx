@@ -51,8 +51,8 @@ const ConfimReceiveModal = (props: Props) => {
             // postid: postID,
             avatar: auth.avatar,
             link: `order/${orderid}`,
-            title: ' Đã xác nhận nhận đồ',
-            body:` đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+            title: 'Đã xác nhận nhận đồ',
+            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
           })
         })
       }else{
@@ -63,8 +63,8 @@ const ConfimReceiveModal = (props: Props) => {
           // postid: postID,
           avatar: auth.avatar,
           link: `order/${orderid}`,
-          title: ' Đã xác nhận nhận đồ',
-          body:` đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+          title: 'Đã xác nhận nhận đồ',
+          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
         })
       }
 

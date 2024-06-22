@@ -739,12 +739,12 @@ export class OrderManager {
     
     try {
       const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
-              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
-              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+              (po.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (po.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
           )`), values);
       const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
-              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
-              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+              (po.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (po.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
           )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
@@ -815,12 +815,12 @@ export class OrderManager {
     
     try {
       const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
-              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
-              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+              (po.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (po.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
           )`), values);
       const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
-              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
-              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+              (po.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (po.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
           )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
