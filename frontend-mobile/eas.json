@@ -5,12 +5,40 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "image": "ubuntu-20.04-android-30"
+      },
+      "ios": {
+        "image": "default"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "android": {
+        "image": "ubuntu-20.04-android-30"
+      },
+      "ios": {
+        "image": "default"
+      }
     },
-    "production": {}
+    "production": {
+      "android": {
+        "image": "ubuntu-20.04-android-30"
+      },
+      "ios": {
+        "image": "default"
+      }
+    },
+    "production-apk": {
+      "android": {
+        "buildType": "apk",
+        "image": "ubuntu-20.04-android-30"
+      },
+      "ios": {
+        "image": "default"
+      }
+    }
   },
   "submit": {
     "production": {}
