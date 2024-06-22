@@ -5,11 +5,7 @@ import PostDetail from '../../components/PostDetail';
 
 
 const ItemDetailScreen = ({navigation, route}: any) => {
-  // console.log('Alo',route.params)
   const postID = route.params.postID;
-  console.log(postID, 
-    'aaaaaaaaaaaaaaa'
-  )
   return (
     <ContainerComponent title='Bài đăng' isScroll back>
       {/* <SectionComponent> */}

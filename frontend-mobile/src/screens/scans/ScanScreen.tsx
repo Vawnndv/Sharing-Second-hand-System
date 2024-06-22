@@ -14,7 +14,7 @@ import { LoadingModal } from "../../modals";
 import { IconButton } from "react-native-paper";
 import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 type ScanScreenProps = {
   navigation: any;
@@ -29,7 +29,9 @@ const ScanScreen: React.FC<ScanScreenProps> = ({ navigation, route }) => {
   const [isFrontCamera, setIsFrontCamera] = useState<boolean>(false);
 
   const auth = useSelector(authSelector);
-  const userID = auth.id;
+  const userID = auth?.id;
+
+  const isFocused = useIsFocused();
 
   useFocusEffect(
     useCallback(() => {
@@ -52,18 +54,15 @@ const ScanScreen: React.FC<ScanScreenProps> = ({ navigation, route }) => {
         `/verifyOrderQR?orderID=${data}`,
         "get"
       );
-      if (res.data == null) {
+      if (!res.data) {
         alert(`Không tìm thấy bài đăng hay đơn hàng của bạn`);
-      } else if (
-        res.data.userreceiveid === userID ||
-        res.data.usergiveid === userID
-      ) {
+      } else if (res.data.userreceiveid === userID || res.data.usergiveid === userID) {
         setOrderID(data);
         setIsLoading(false);
         navigation.navigate("ViewDetailOrder", { orderid: data });
       } else {
         navigation.navigate("ItemDetailScreen", {
-          postId: res.data.postid,
+          postID: res.data.postid,
         });
       }
     } catch (error) {
@@ -88,11 +87,13 @@ const ScanScreen: React.FC<ScanScreenProps> = ({ navigation, route }) => {
   return (
     <ContainerComponent>
       <View style={styles.container}>
-        <Camera
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={StyleSheet.absoluteFillObject}
-          type={isFrontCamera ? CameraType.front : CameraType.back}
-        />
+        {isFocused && (
+          <Camera
+            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+            style={StyleSheet.absoluteFillObject}
+            type={isFrontCamera ? CameraType.front : CameraType.back}
+          />
+        )}
         {scanned && (
           <Button
             title={"Chạm để quét lại lần nữa"}
