@@ -36,13 +36,11 @@ const getJsonWebToken = async (email: string, id: number) => {
     expiresIn: '7d',
   });
 
-  console.log(token);
-
   return token;
 };
 
 
-const handleSendMail = async (val: {}) => {
+export const handleSendMail = async (val: {}) => {
   try {
     await transporter.sendMail(val);
 
@@ -88,7 +86,7 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const register = asyncHandle(async (req: Request, res: Response) => {
-  const { email, username, password } = req.body;
+  const { email, firstname, lastname, password } = req.body;
 
   const existingUser = await Account.findUserByEmail(email);
 
@@ -101,9 +99,11 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = await Account.createItem(
-    username,
     email,
+    firstname, 
+    lastname,
     hashedPassword,
+    '',
     1,
   );
 
@@ -114,7 +114,6 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
       id: newUser.userid,
       firstName: newUser.firstname,
       lastName: newUser.lastname,
-      userName: newUser.username,
       avatar: newUser.avatar,
       roleID: newUser.roleid, 
       accessToken: await getJsonWebToken(email, newUser.userid),
@@ -137,6 +136,14 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     res.status(400);
     throw new Error('Password is invalid!!!');
   }
+
+  if (existingUser.isbanned) {
+    res.status(400);
+    throw new Error('Tài khoản của bạn đã bị khóa');
+
+  }
+  
+  const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
 
   if (platform === 'web' && existingUser.roleid > 1) {
     res.status(200).json({
@@ -164,6 +171,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
         lastName: existingUser.lastname,
         avatar: existingUser.avatar,
         roleID: existingUser.roleid,
+        fcmTokens: fcmTokens ?? [],
         accessToken: await getJsonWebToken(email, existingUser.userid),
       },
     });
@@ -171,6 +179,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 });
 
 export const forgotPassword = asyncHandle(async (req: Request, res: Response) => {
+
   const { email } = req.body;
 
   const randomPassword = Math.round(100000 + Math.random() * 99000);
@@ -184,7 +193,7 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
   };
 
   const user = await Account.findUserByEmail(email);
-  
+
   if (user) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(`${randomPassword}`, salt);
@@ -205,5 +214,63 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
   } else {
     res.status(401);
     throw new Error('User not found!!!');
+  }
+});
+
+export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
+  const { email, firstname, lastname, avatar } = req.body;
+
+  const existingUser = await Account.findUserByEmail(email);
+
+  if (existingUser) {
+    const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+
+    const data = {
+      id: existingUser.userid,
+      email: existingUser.email,
+      firstName: existingUser.firstname,
+      lastName: existingUser.lastname,
+      avatar: existingUser.avatar,
+      roleID: existingUser.roleid,
+      fcmTokens: fcmTokens ?? [],
+      accessToken: await getJsonWebToken(email, existingUser.userid),
+    };
+
+    res.status(200).json({
+      message: 'Login with google successfully!!!',
+      data,
+    });
+  } else {
+    const newUser = await Account.createItem(
+      email,
+      firstname, 
+      lastname,
+      '',
+      avatar,
+      1,
+    );
+
+    const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
+
+    const data =  {
+      id: newUser.userid,
+      email: newUser.email,
+      firstName: newUser.firstname,
+      lastName: newUser.lastname,
+      avatar: newUser.avatar,
+      roleID: newUser.roleid,
+      fcmTokens: fcmTokens ?? [],
+      accessToken: await getJsonWebToken(email, newUser.userid),
+    };
+
+    if (newUser) {
+      res.status(200).json({
+        message: 'Login with google successfully!!!',
+        data,
+      });
+    } else {
+      res.sendStatus(401);
+      throw new Error('fafsf');
+    }
   }
 });

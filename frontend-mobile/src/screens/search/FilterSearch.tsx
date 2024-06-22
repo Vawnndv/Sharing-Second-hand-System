@@ -5,8 +5,8 @@ import React, { useState, useEffect } from 'react';
 import { Chip } from 'react-native-paper';
 import { appColors } from '../../constants/appColors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
+import axiosClient from '../../apis/axiosClient';
 
 export default function FilterSearch({navigation, filterValue, setFilterValue, isPosts, setIsPosts, warehousesID, setWarehousesID}: any) {
   const [visible, setVisible] = useState(false);
@@ -22,18 +22,16 @@ export default function FilterSearch({navigation, filterValue, setFilterValue, i
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
-      const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
-      setWarehouses(response.data.wareHouses)
-      // console.log("WAREHOUSES",response.data.wareHouses)
+      const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
+      setWarehouses(response.wareHouses)
       let listWarehouseID: any = []
-      response.data.wareHouses.map((warehouse: any) => {
+      response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)
       })
       setWarehousesID(listWarehouseID)
     }
     fetchDataWarehouses()
   }, [])
-  console.log("warehousesID", warehousesID)
   const handleNavigateMapSelectWarehouses = () => {
     navigation.navigate('MapSelectWarehouseScreen', {
       warehouses: warehouses,

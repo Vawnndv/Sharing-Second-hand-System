@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { FiUploadCloud } from 'react-icons/fi'
 import Loader from '../notification/Loader'
 import toast from 'react-hot-toast'
+import Axios from '../../redux/APIs/Axios'
 
 interface Props {
   imageUrl: string; 
@@ -32,8 +33,7 @@ function Uploader(props: Props) {
     });
   };
 
-  const UploadImageToAws3 = async (file: any) => {
-
+  const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
     try {
       // Đọc nội dung của tệp tin bằng FileReader
       const fileReader: any = new FileReader();
@@ -50,17 +50,19 @@ function Uploader(props: Props) {
                   formData.append('file', fileContent);
                   formData.append('name', `${new Date().getTime()}${file.name}`);
                   formData.append('type', file.type);
+                  if(isLimit){
+                    formData.append('typeExpire', "expire")
+                  }
 
                   // Gửi FormData qua phương thức POST
-                  const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
-                      method: 'POST',
-                      body: formData,
+                  const serverResponse = await Axios.post('/aws3/uploadImage', formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data',
+                    },
                   });
 
                   // Xử lý phản hồi từ server nếu cần
-                  const data = await serverResponse.json();
-                  console.log('Server response:', data);
-                  
+                  const data: any = serverResponse;
                   resolve(data);
               } catch (error) {
                   console.error('Error uploading file:', error);
@@ -78,26 +80,23 @@ function Uploader(props: Props) {
   const onDrop = useCallback(async (imageFile: any) => {
     const file = new FormData()
     file.append('file', imageFile[0])
-    
     if (imageUrl !== '') {
       if (imageUrl !== imageUpdateUrl) {
         // await deleteImageService(imageUrl);
       }
     }
-    console.log(file);
     // const data = await uploadImageService(file, setLoading);
     try {
       setLoading(true)
-      const responseUploadImage: any = await UploadImageToAws3(imageFile[0])
+      const responseUploadImage: any = await UploadImageToAws3(imageFile[0], false)
       setImageUrl(responseUploadImage.url);
       setLoading(false)
-      toast.success('Image Upload successfully')
+      toast.success('Thêm ảnh thành công!')
     } catch (error: any) {
-      // console.log(error)
       if (error.response && error.response.data && error.response.data.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error('Network Error');
+        toast.error('Lỗi mạng');
       }
     }
     // if (data) {
@@ -128,13 +127,13 @@ function Uploader(props: Props) {
           <span className='upload-icon'>
             <FiUploadCloud />
           </span>
-          <p className='upload-text'>Drag your image here</p>
+          <p className='upload-text'>Hãy thả tệp ảnh vào đây</p>
           <em className='upload-hint'>
             {isDragActive
               ? 'Drop it like it\'s hot'
               : isDragReject
                 ? 'Unsupported file type...'
-                : 'only .jpg and .png files will be accepted'}
+                : 'chỉ các tệp .jpg và .png là được chấp nhận'}
           </em>
         </div>
       )}

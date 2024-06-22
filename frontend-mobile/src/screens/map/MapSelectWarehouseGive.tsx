@@ -55,7 +55,7 @@ const stylesConfirmComponent = StyleSheet.create({
         justifyContent: 'center',
         padding: 15,
         borderRadius: 10,
-        backgroundColor: '#E4E4E4',
+        backgroundColor: '#ffffff',
         opacity: 500
     },
     buttonContainer: {
@@ -76,7 +76,6 @@ const stylesConfirmComponent = StyleSheet.create({
 export default function MapSelectWarehouseGive({navigation, route}: any) {
 
     const {warehouses, setWarehouseSelected}: any = route.params;
-    // console.log("setWarehousesID", setWarehousesID)
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [radioSelect, setRadioSelect] = useState(warehouses[0].warehouseid)
@@ -85,17 +84,15 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
     const [visible, setVisible] = useState(false)
     const showModal = () => setVisible(true);
     const hideModal = () => setVisible(false);
-    // console.log(location)
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị trí đã bị hoãn');
             return;
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
@@ -133,15 +130,12 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
         }
         setWarehouseSelected(warehouseSeleted)
         navigation.goBack()
-        console.log(warehouseSeleted)
         // navigation.goBack()
     }
     
     const handleSelectWarehouse = (whid: any) => {
-        console.log(whid)
         setRadioSelect(whid)
     }   
-    console.log(radioSelect)
 
     const ConfirmComponent = ({}: any) => {
         const [tempSelectedWarehouse, setTempSelectedWarehouse] = useState(radioSelect)
@@ -239,8 +233,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                         <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
                                             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                                                 <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B'/>
-                                                <TouchableOpacity
-                                                    onPress={() => console.log('checkbox')}>
+                                                <TouchableOpacity>
                                                     <RadioButton
                                                         value={item.warehouseid}
                                                         status={radioSelect === item.warehouseid ? 'checked' : 'unchecked'}

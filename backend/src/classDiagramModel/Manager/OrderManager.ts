@@ -12,6 +12,7 @@ import { PostManager } from './PostManager';
 import { Post } from '../Post';
 import { Address } from '../Address';
 import { statusOrder } from '../../utils/statusOrder';
+import { CardManager } from './CardManager';
 
 
 interface FilterOrder {
@@ -30,6 +31,11 @@ interface FilterOrder {
   latitudereceive: string;
   nametype: string;
   row_num: string;
+}
+
+enum QueryType {
+  Status = 'status',
+  Method = 'method'
 }
 
 function filterOrders(distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, IsGiver: boolean, data: FilterOrder[]): FilterOrder[] {
@@ -101,6 +107,33 @@ function filterOrders(distance: string, time: string, category: string[], sort: 
   return filteredData;
 }
 
+function buildStatusQuery(statusArray: string[], type: QueryType) {
+  // Kiểm tra xem mảng trống không
+  if (statusArray.length === 0) {
+      return '';
+  }
+
+  let prefix: string;
+  if (type === QueryType.Status) {
+      prefix = 'o.status';
+  } else if (type === QueryType.Method) {
+      prefix = 'o.givetypeid';
+  } else {
+      throw new Error('Invalid query type');
+  }
+
+  // Tạo chuỗi truy vấn từ mảng status
+  const statusQuery = 'AND (' + statusArray.map(status => {
+      if (type === QueryType.Status) {
+          return `${prefix} = '${status}'`;
+      } else if (type === QueryType.Method) {
+          return `${prefix} = ${status}`;
+      }
+  }).join(' OR ');
+
+  return statusQuery + ')';
+}
+
 export class OrderManager {
   public constructor() {
 
@@ -113,21 +146,24 @@ export class OrderManager {
     return true;
   }
 
-  public static async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any): Promise<Order[]> {
+  public static async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any, search:any, typeCard: any): Promise<Order[]> {
     // code here
     const client = await pool.connect();
 
     try {
       let values: any = [userID]
       let queryType =`AND o.status = '${type}'`
-      if(type === 'Hàng đã nhập kho'){
-        queryType = `
-          AND o.status != 'Hàng đang được đến lấy'
-          AND o.collaboratorreceiveid IS NOT NULL
-        `
+      // if(type === 'Hàng đã nhập kho'){
+      //   queryType = `
+      //     AND o.status != 'Hàng đang được đến lấy'
+      //     AND o.collaboratorreceiveid IS NOT NULL
+      //   `
+      // }
+      if(typeCard === "outputcard"){
+        queryType = ''
       }
       let queryTime =``
-      if(time !== 'Tất cả'){
+      if(parseInt(time) !== -1){
         queryTime = `AND p.timeend >= NOW()
                       AND p.timeend <= NOW() + INTERVAL '${time} days'`
       }
@@ -143,7 +179,6 @@ export class OrderManager {
         for(let i = 1; i < listCategory.length; i++){
           listCategoryQuery += ` OR it.nametype = '${listCategory[i]}'`
         }
-        console.log(listCategoryQuery)
         
         categoryQuery = `AND EXISTS (
           SELECT it.nametype
@@ -155,12 +190,18 @@ export class OrderManager {
           ) AND it.nametype = ${listCategoryQuery}
         )` 
       }
+
+      const searchQuery = search ? `
+        AND o.orderid = ${search}
+      ` :
+      ''
+      
       const ordersQuery = `
             SELECT o.*, p.timestart, p.timeend
             FROM "orders" o
             JOIN "posts" p ON o.postid = p.postid
             WHERE o.orderid IN (
-              SELECT ic.orderid FROM "inputcard" ic
+              SELECT ic.orderid FROM  ${(typeCard === "inputcard" || typeCard === undefined) ? "inputcard" : "outputcard"} ic
               WHERE ic.warehouseid = (
                 SELECT w.warehouseid FROM "workat" w
                 WHERE $1 = w.userid
@@ -169,20 +210,35 @@ export class OrderManager {
             `+queryType+`
             `+queryTime+`
             `+categoryQuery+`
+            `+searchQuery+`
             ORDER BY o.createdat DESC
           `;
+
+
+      
+
+      const ordersResult: QueryResult = await client.query(ordersQuery, values);
+      
+      const ordersRow: any = ordersResult.rows;
 
       const addressQuery = `
         SELECT * FROM "address"
         WHERE addressid = $1
       `
 
-      const ordersResult: QueryResult = await client.query(ordersQuery, values);
+      const queryImageItem = `
+        SELECT path 
+        FROM "image"
+        WHERE itemid = $1
+        LIMIT 1;
+      `
+
       
-      const ordersRow = ordersResult.rows;
       let result: any = []
       if(ordersRow.length > 0) {
+        
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
+
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
     
         
@@ -194,7 +250,9 @@ export class OrderManager {
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
 
-          if(distance !== 'Tất cả'){
+          const path = await client.query(queryImageItem, [row.itemid])
+
+          if(parseInt(distance) !== -1){
             if(addressGive.getDistance(addressReceive)/1000 <= parseInt(distance)){
 
               const orderObj = new Order(
@@ -216,6 +274,7 @@ export class OrderManager {
               )
     
               orderObj.setTime(row.timestart, row.timeend);
+              orderObj.setImagePath(path.rows[0].path)
               result.push(
                 orderObj
               )
@@ -240,6 +299,7 @@ export class OrderManager {
             )
   
             orderObj.setTime(row.timestart, row.timeend);
+            orderObj.setImagePath(path.rows[0].path)
             result.push(
               orderObj
             )
@@ -389,6 +449,13 @@ export class OrderManager {
         SELECT * FROM "address"
         WHERE addressid = $1
       `
+
+      const queryImageItem = `
+        SELECT path 
+        FROM "image"
+        WHERE itemid = $1
+        LIMIT 1;
+      `
       
       const values: any = [userID]
   
@@ -398,7 +465,6 @@ export class OrderManager {
 
       let result: any = []
   
-      console.log(ordersRow);
       if(ordersRow.length > 0) {
         let addressReceiveDB = await client.query(addressQuery, [ordersRow[0].locationreceive]);
         const addressReceive = new Address(addressReceiveDB.rows[0].addressid, addressReceiveDB.rows[0].address, addressReceiveDB.rows[0].longitude, addressReceiveDB.rows[0].latitude)
@@ -412,6 +478,8 @@ export class OrderManager {
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
           
+          const path = await client.query(queryImageItem, [row.itemid])
+
           const orderObj = new Order(
             row.orderid,
             row.title,
@@ -431,6 +499,7 @@ export class OrderManager {
           )
 
           orderObj.setTime(row.timestart, row.timeend);
+          orderObj.setImagePath(path.rows[0].path)
           result.push(
             orderObj
           )
@@ -441,7 +510,6 @@ export class OrderManager {
   
       }
 
-      // console.log(orders)
       return result;
     }catch (error) {
       console.log('error:', error);
@@ -451,7 +519,7 @@ export class OrderManager {
     }
   }
 
-  public static async showOrderDetails(orderID: string | undefined): Promise<any | null> {
+  public static async showOrderDetails(orderID: string | undefined, typeCard: string | undefined): Promise<any | null> {
     // code here
     const client = await pool.connect();
 
@@ -466,7 +534,7 @@ export class OrderManager {
       const ordersRow = ordersResult.rows[0];
   
       const giver: User | undefined = await UserManager.getUser(ordersRow.usergiveid);
-      const receive: User | undefined = await UserManager.getUser(ordersRow.collaboratorreceiveid);
+      const receive: User | undefined = await UserManager.getUser(typeCard === "outputcard" && (ordersRow.givetypeid === 2 || ordersRow.givetypeid === 5) ? ordersRow.userreceiveid : ordersRow.collaboratorreceiveid);
       const item: Item | null = await ItemManager.viewDetailsItem(ordersRow.itemid);
       const post: Post | null = await PostManager.getDetailsPost(ordersRow.postid);
 
@@ -509,10 +577,10 @@ export class OrderManager {
       order.setGiveTypeID(ordersRow.givetypeid)
       return [{
         order: order,
-        image: path.rows[0].path,
-        imgConfirm: ordersRow.imgconfirm
+        image: path.rows,
+        imgConfirm: ordersRow.imgconfirm === ' ' ? ordersRow.imgconfirmreceive : ordersRow.imgconfirm
       }];
-
+ 
     }catch (error) {
       console.log('error:', error);
       return null;
@@ -531,7 +599,7 @@ export class OrderManager {
     `
 
     let status = (collaboratorReceiveID === null ? 'Chờ cộng tác viên lấy hàng' : 'Hàng đang được đến lấy')
-    console.log(status)
+
 
     let query = `
       UPDATE "orders"
@@ -543,7 +611,7 @@ export class OrderManager {
 
     try {
       const resultQueryOrder: QueryResult = await client.query(queryGetOrder)
-      console.log(resultQueryOrder.rows[0])
+
       if(resultQueryOrder.rows[0].collaboratorreceiveid !== null && resultQueryOrder.rows[0].collaboratorreceiveid != collaboratorReceiveID){
         return false
       }
@@ -556,114 +624,132 @@ export class OrderManager {
     }
   }
 
-
-  // public getOrderDetails(orderID: string): Order {
-  //   // code here
-  //   return new Order('');
-  // }
-
   public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     // let query = `
-    //   SELECT *
+    //   SELECT *,
+    //   CASE
+    //       WHEN UserReceiveID IS NULL THEN false
+    //       ELSE true
+    //   END AS isReciever
     //   FROM (
-    //       SELECT *,
-    //             ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-    //       FROM (
-    //           SELECT 
-    //               o.Title, 
-    //               o.Location, 
-    //               o.Status,
-    //               o.CreatedAt,
-    //               i.Path AS Image, 
-    //               o.OrderID,
-    //               ts.StatusName,
-    //               th.Time AS StatusCreatedAt,
-    //               o.GiveType
-    //           FROM 
-    //               Orders o
-    //           JOIN 
-    //               Image i ON o.ItemID = i.ItemID
-    //           JOIN 
-    //               Trace t ON o.OrderID = t.OrderID
-    //           JOIN 
-    //               Trace_History th ON t.TraceID = th.TraceID
-    //           JOIN 
-    //               Trace_Status ts ON th.StatusID = ts.StatusID
-    //           WHERE 
-    //             {placeholder}
-    //           ORDER BY
-    //               th.Time DESC
-    //       ) AS oo
+    //   SELECT *,
+    //           ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
+    //   FROM (
+    //       SELECT 
+    //           po.Title, 
+    //           adg.address AS Location, 
+    //           o.Status,
+    //           o.CreatedAt,
+    //           i.Path AS Image, 
+    //           o.OrderID,
+    //           ts.StatusName,
+    //           th.Time AS StatusCreatedAt,
+    //           o.GiveType,
+    //           adg.Longitude AS LongitudeGive,
+    //           adg.Latitude AS LatitudeGive,
+    //           adr.Longitude AS LongitudeReceive,
+    //           adr.Latitude AS LatitudeReceive,
+    //           itt.NameType,
+    //           o.imgconfirmreceive,
+    //           o.UserReceiveID AS UserReceiveID
+    //       FROM 
+    //           Orders o
+    //       JOIN 
+    //           Image i ON o.ItemID = i.ItemID
+    //       JOIN 
+    //           Trace t ON o.OrderID = t.OrderID
+    //       JOIN 
+    //           Trace_History th ON t.TraceID = th.TraceID
+    //       JOIN 
+    //           Trace_Status ts ON th.StatusID = ts.StatusID
+    //       JOIN 
+    //           Address adg ON adg.AddressID = o.LocationGive
+    //       JOIN 
+    //           Address adr ON adr.AddressID = o.LocationReceive
+    //       JOIN 
+    //           Posts po ON po.PostID = o.PostID
+    //       JOIN 
+    //           Item it ON it.ItemID = po.ItemID
+    //       JOIN 
+    //           Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    //       WHERE 
+    //           {placeholder}
+    //       ORDER BY
+    //           th.Time DESC
+    //   ) AS oo
     //   ) AS ranked_orders
     //   WHERE row_num = 1;
-    //   `;
+    // `
     let query = `
-      SELECT *,
-      CASE
-          WHEN UserReceiveID IS NULL THEN false
-          ELSE true
-      END AS isReciever
-      FROM (
-      SELECT *,
-              ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-      FROM (
-          SELECT 
-              po.Title, 
-              adg.address AS Location, 
-              o.Status,
-              o.CreatedAt,
-              i.Path AS Image, 
-              o.OrderID,
-              ts.StatusName,
-              th.Time AS StatusCreatedAt,
-              o.GiveType,
-              adg.Longitude AS LongitudeGive,
-              adg.Latitude AS LatitudeGive,
-              adr.Longitude AS LongitudeReceive,
-              adr.Latitude AS LatitudeReceive,
-              itt.NameType,
-              o.imgconfirmreceive,
-              o.UserReceiveID AS UserReceiveID
-          FROM 
-              Orders o
-          JOIN 
-              Image i ON o.ItemID = i.ItemID
-          JOIN 
-              Trace t ON o.OrderID = t.OrderID
-          JOIN 
-              Trace_History th ON t.TraceID = th.TraceID
-          JOIN 
-              Trace_Status ts ON th.StatusID = ts.StatusID
-          JOIN 
-              Address adg ON adg.AddressID = o.LocationGive
-          JOIN 
-              Address adr ON adr.AddressID = o.LocationReceive
-          JOIN 
-              Posts po ON po.PostID = o.PostID
-          JOIN 
-              Item it ON it.ItemID = po.ItemID
-          JOIN 
-              Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-          WHERE 
-              {placeholder}
-          ORDER BY
-              th.Time DESC
-      ) AS oo
-      ) AS ranked_orders
-      WHERE row_num = 1;
+    WITH RankedOrders AS (
+      SELECT 
+          po.Title, 
+          adg.address AS Location, 
+          o.Status,
+          o.CreatedAt,
+          i.Path AS Image, 
+          o.OrderID,
+          ts.StatusName,
+          th.Time AS StatusCreatedAt,
+          o.GiveType,
+          adg.Longitude AS LongitudeGive,
+          adg.Latitude AS LatitudeGive,
+          adr.Longitude AS LongitudeReceive,
+          adr.Latitude AS LatitudeReceive,
+          itt.NameType,
+          o.imgconfirmreceive,
+          o.UserReceiveID,
+          ROW_NUMBER() OVER (PARTITION BY o.orderid ORDER BY th.Time DESC) AS row_num
+      FROM 
+          Orders o
+      LEFT JOIN 
+          Image i ON o.ItemID = i.ItemID
+      LEFT JOIN 
+          Trace t ON o.OrderID = t.OrderID
+      LEFT JOIN 
+          Trace_History th ON t.TraceID = th.TraceID
+      LEFT JOIN 
+          Trace_Status ts ON th.StatusID = ts.StatusID
+      LEFT JOIN 
+          Address adg ON adg.AddressID = o.LocationGive
+      LEFT JOIN 
+          Address adr ON adr.AddressID = o.LocationReceive
+      LEFT JOIN 
+          Posts po ON po.PostID = o.PostID
+      LEFT JOIN 
+          Item it ON it.ItemID = po.ItemID
+      LEFT JOIN 
+          Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+      WHERE 
+      {placeholder}
+      
+  )
+  SELECT *,
+        CASE
+            WHEN UserReceiveID IS NULL THEN false
+            ELSE true
+        END AS isReceiver
+  FROM RankedOrders
+  WHERE row_num = 1;
     `
+
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND ts.StatusName <> 'Hoàn tất'`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND ts.StatusName <> 'Hoàn tất'`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+          )`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND t.CurrentStatus <> 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND t.CurrentStatus <> 'Hàng đã nhập kho')
+          )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
       };
-      console.log('Get orders list success:', mergedResults);
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
@@ -699,26 +785,26 @@ export class OrderManager {
             o.imgconfirmreceive
               FROM 
                   Orders o
-              JOIN 
+              LEFT JOIN 
                   Image i ON o.ItemID = i.ItemID
-              JOIN 
+              LEFT JOIN 
                   Trace t ON o.OrderID = t.OrderID
-              JOIN 
+              LEFT JOIN 
                   Trace_History th ON t.TraceID = th.TraceID
-              JOIN 
+              LEFT JOIN 
                   Trace_Status ts ON th.StatusID = ts.StatusID
-              JOIN 
+              LEFT JOIN 
                   Address adg ON adg.AddressID = o.LocationGive
-              JOIN 
+              LEFT JOIN 
                   Address adr ON adr.AddressID = o.LocationReceive
-              JOIN 
+              LEFT JOIN 
                   Posts po ON po.PostID = o.PostID
-              JOIN 
+              LEFT JOIN 
                   Item it ON it.ItemID = po.ItemID
-              JOIN 
+              LEFT JOIN 
                   Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
               WHERE 
-                {placeholder}
+                  {placeholder}
               ORDER BY
                   th.Time DESC
           ) AS oo
@@ -728,13 +814,18 @@ export class OrderManager {
     const values : any = [userID];
     
     try {
-      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND ts.StatusName = 'Hoàn tất'`), values);
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1)  AND ts.StatusName = 'Hoàn tất'`), values);
+      const resultGive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserGiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+          )`), values);
+      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1) AND (
+              (o.GiveTypeID IN (1, 5) AND o.Status = 'Hoàn tất') OR
+              (o.GiveTypeID NOT IN (1, 5) AND o.Status = 'Hàng đã nhập kho')
+          )`), values);
       const mergedResults = {
         orderGive: filterOrders(distance, time, category, sort, latitude, longitude, true, resultGive.rows),
         orderReceive: filterOrders(distance, time, category, sort, latitude, longitude, false, resultReceive.rows)
     };
-      console.log('Get orders finish list success:', mergedResults);
       return mergedResults
     } catch (error) {
       console.error('Error get orders:', error);
@@ -775,7 +866,7 @@ export class OrderManager {
   };
 
   public static async updateCompleteOrder (orderID: string, url: string) : Promise<boolean> {
-    console.log('updateCompleteOrder')
+
     const client = await pool.connect()
 
     try{
@@ -828,7 +919,6 @@ export class OrderManager {
 
   public static async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
     const client = await pool.connect()
-    console.log('QUERY', orderid, imgconfirmreceive)
     try{
       const query = `
         UPDATE "orders"
@@ -837,6 +927,23 @@ export class OrderManager {
       `
       const result: QueryResult = await client.query(query, [imgconfirmreceive, orderid])
       const res = await this.updateStatusOfOrder(orderid, statusOrder.COMPLETED.statusid)
+
+      // Create output card
+      const queryOrder = `
+      SELECT 
+        o.giveTypeid,
+        o.Warehouseid,
+        o.userreceiveid,
+        po.itemid
+      FROM Orders o
+      LEFT JOIN Posts po ON po.postid = o.postid
+      WHERE o.orderid = $1
+      `
+      const resultOrder: QueryResult = await client.query(queryOrder, [orderid])
+
+      if (resultOrder.rows[0].givetypeid == 2 || resultOrder.rows[0].givetypeid == 3 || resultOrder.rows[0].givetypeid == 4 || resultOrder.rows[0].givetypeid == 5)
+        await CardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
+
       return true;
     }catch(error){
       console.log(error)
@@ -849,7 +956,7 @@ export class OrderManager {
   
   public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
     const client = await pool.connect()
-    console.log('QUERY',  userreceiveid, orderid, givetypeid, givetype)
+
     try{
       const query = `
         UPDATE "orders"
@@ -887,13 +994,30 @@ export class OrderManager {
                 i.Path AS Image,
                 th.Time AS StatusCreatedAt,
                 o.imgconfirmreceive,
-                o.postid
+                o.postid,
+                u.avatar,
+                u.firstname,
+                u.lastname,
+                o.createdat,
+                po.description,
+                po.itemid,
+                us.avatar AS avatarreceive,
+                us.firstname AS firstnamereceive,
+                us.lastname AS lastnamereceive,
+                us.phonenumber AS phonenumberreceive,
+                po.iswarehousepost,
+                po.warehouseid,
+                it.name
               FROM orders AS o
               JOIN Address ad ON ad.AddressID = o.LocationGive
               JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
               JOIN Image i ON o.ItemID = i.ItemID
               JOIN Trace t ON o.OrderID = t.OrderID
               JOIN Trace_History th ON t.TraceID = th.TraceID
+              LEFT JOIN "User" u ON u.userid = o.usergiveid
+              LEFT JOIN "User" us ON us.userid = o.userreceiveid
+              LEFT JOIN Posts po ON po.postid = o.postid
+              LEFT JOIN item it ON o.itemid = it.itemid
               WHERE o.orderid = $1
           LIMIT 1)AS ranked_orders
         
@@ -918,7 +1042,7 @@ export class OrderManager {
           o.usergiveid,
           o.postid
         FROM orders AS o
-        WHERE o.orderid = $1 AND o.givetypeid != 3 AND o.givetypeid != 4
+        WHERE o.orderid = $1
       `, [orderID]);
       if (result.rows.length === 0) {
         return null;
@@ -932,7 +1056,6 @@ export class OrderManager {
 
   public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
     const client = await pool.connect();
-    console.log(orderID, statusID)
     try {
         const query = `
         -- Khai báo biến và gán giá trị cho nó
@@ -980,20 +1103,19 @@ export class OrderManager {
 
 
   
-  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number): Promise<void> {
+  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `
-      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid)
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid)
+      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
       RETURNING *;
       `;
       // TODO sửa lại locationgive and locationreceive
-    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, 3, 4, givetypeid, imgconfirmreceive, warehouseid];
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid];
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Order inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting order:', error);
@@ -1013,16 +1135,35 @@ export class OrderManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Trace inserted successfully:', result.rows[0]);
-      const statusid_postItem = '1';
-      const statusid_waitForApporve = '2';
+      // const statusid_postItem = '1';
+      // const statusid_waitForApporve = '2';
+      // const statusid_approved = '12';
+      const statusid_waitForGiver = '13';
+      const statusid_waitForCollaborator = '7';
+      const statusid_waitForReceiver = '3';
 
 
-      const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
-      console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
-      const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
-      console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
+      // const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
+      // console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
+      // const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
+      // console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
+      if(currentstatus == 'Chờ người cho giao hàng'){
+        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
+      }
 
+      if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
+        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForCollaboratorResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
+      }
+
+      if(currentstatus == 'Chờ người nhận lấy hàng'){
+        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
+        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
+        const createTraceHistoryWaitForReceiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
+      }
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting trace:', error);
@@ -1045,7 +1186,6 @@ export class OrderManager {
     try {
       const result: QueryResult = await client.query(query);
       const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
-      console.log('Trace History inserted successfully:', createTraceHistoryPostItemResult);
 
       return result.rows[0];
     } catch (error) {
@@ -1099,72 +1239,133 @@ export class OrderManager {
 
     const client = await pool.connect();
     let query = `
-      SELECT *,
-      CASE
-          WHEN UserReceiveID IS NULL THEN false
-          ELSE true
-      END AS isReciever
-      FROM (
-      SELECT *,
-              ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-      FROM (
-          SELECT 
-              po.Title, 
-              adg.address AS Location, 
-              o.Status,
-              o.CreatedAt,
-              i.Path AS Image, 
-              o.OrderID,
-              ts.StatusName,
-              th.Time AS StatusCreatedAt,
-              o.GiveType,
-              adg.Longitude AS LongitudeGive,
-              adg.Latitude AS LatitudeGive,
-              adr.Longitude AS LongitudeReceive,
-              adr.Latitude AS LatitudeReceive,
-              itt.NameType,
-              o.imgconfirmreceive,
-              o.UserReceiveID AS UserReceiveID
-          FROM 
-              Orders o
-          JOIN 
-              Image i ON o.ItemID = i.ItemID
-          JOIN 
-              Trace t ON o.OrderID = t.OrderID
-          JOIN 
-              Trace_History th ON t.TraceID = th.TraceID
-          JOIN 
-              Trace_Status ts ON th.StatusID = ts.StatusID
-          JOIN 
-              Address adg ON adg.AddressID = o.LocationGive
-          JOIN 
-              Address adr ON adr.AddressID = o.LocationReceive
-          JOIN 
-              Posts po ON po.PostID = o.PostID
-          JOIN 
-              Item it ON it.ItemID = po.ItemID
-          JOIN 
-              Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-          LEFT JOIN 
-              Postreceiver por ON po.PostID = por.PostID
-          WHERE 
-              {placeholder}
-          ORDER BY
-              th.Time DESC
-      ) AS oo
-      ) AS ranked_orders
-      WHERE row_num = 1;
+    SELECT
+      po.postid,
+      po.Title, 
+      adg.address AS Location, 
+      po.CreatedAt,
+      (
+        SELECT i.Path
+        FROM Image i
+        WHERE i.ItemID = po.ItemID
+        ORDER BY i.CreatedAt ASC -- or any other criteria to pick the first image
+        LIMIT 1
+      ) AS Image, 
+      ts.StatusName,
+      adg.Longitude AS LongitudeGive,
+      adg.Latitude AS LatitudeGive,
+      itt.NameType,
+      grt.Give_receivetype AS givetype
+    FROM 
+      Posts po
+    LEFT JOIN 
+      Address adg ON adg.AddressID = po.AddressID
+    LEFT JOIN
+      Item it ON it.ItemID = po.ItemID
+    LEFT JOIN 
+      Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN 
+      Postreceiver por ON po.PostID = por.PostID
+    LEFT JOIN 
+      Trace_Status ts ON po.StatusID = ts.StatusID
+    LEFT JOIN
+      Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid
+    JOIN 
+      postreceiver pr ON pr.postid = po.postid
+    WHERE 
+      pr.receiverid = $1 AND ts.StatusName = 'Đã duyệt'
+    ORDER BY
+      po.CreatedAt DESC;
+
     `
     const values : any = [userID];
     
     try {
-      const resultReceive: QueryResult = await client.query(query.replace('{placeholder}', `(o.UserReceiveID = $1 OR por.receiverid = $1) AND (ts.StatusName = 'Đã duyệt' OR ts.StatusName = 'Chờ xét duyệt')`), values);
+      const resultReceive: QueryResult = await client.query(query, values);
       return resultReceive.rows
     } catch (error) {
-      console.error('Error get orders:', error);
+      console.error('Error get posts:', error);
     } finally {
       client.release(); // Release client sau khi sử dụng
     }
   };
+
+  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean, filterValue: any): Promise<any> {
+
+    const client = await pool.connect();
+    let query = `
+    SELECT
+        u.avatar,
+        u.firstname,
+        u.lastname,
+        po.postid,
+        po.title,
+        po.createdat,
+        po.description,
+        o.orderid,
+        o.status,
+        adg.Longitude AS LongitudeGive,
+        adg.Latitude AS LatitudeGive,
+        adr.Longitude AS LongitudeReceive,
+        adr.Latitude AS LatitudeReceive,
+        o.CreatedAt,
+        itt.NameType,
+        o.CreatedAt AS StatusCreatedAt,
+        MIN(img.path) AS path
+    FROM
+        Orders o
+    LEFT JOIN Posts po ON po.postid = o.postid
+    LEFT JOIN "User" u ON po.owner = u.userid
+    LEFT JOIN Item it ON it.itemid = po.itemid
+    LEFT JOIN Image img ON img.itemid = it.itemid
+    LEFT JOIN Address ad ON ad.addressid = po.addressid
+    LEFT JOIN Address adg ON adg.AddressID = o.LocationGive
+    LEFT JOIN Address adr ON adr.AddressID = o.LocationReceive
+		LEFT JOIN Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN Workat w ON w.userid = ${userID}
+    LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
+    WHERE
+      wh.warehouseid = o.warehouseid
+      {placeholder1}
+      {placeholder2}
+    ${isOverdue === true ? 'AND po.timeend < CURRENT_TIMESTAMP' : ''}
+    GROUP BY
+        u.avatar,
+        u.firstname,
+        u.lastname,
+        po.postid,
+        po.title,
+        po.createdat,
+        po.description,
+        o.orderid,
+        o.status,
+        adg.Longitude,
+        adg.Latitude,
+        adr.Longitude,
+        adr.Latitude,
+        o.CreatedAt,
+        itt.NameType
+    `;
+    
+    try {
+        // Thực hiện truy vấn chính để lấy dữ liệu theo phân trang
+        const result = await client.query(query
+          .replace('{placeholder1}', buildStatusQuery(status, QueryType.Status))
+          .replace('{placeholder2}', buildStatusQuery(method, QueryType.Method))
+        );
+
+        const resultAfterFilter = filterOrders(filterValue.distance, filterValue.time, filterValue.category, filterValue.sort, filterValue.latitude, filterValue.longitude, false, result.rows)
+        
+        const totalItems = resultAfterFilter.length;
+
+        // Trả về cả dữ liệu và tổng số lượng item trong một đối tượng
+        return { orders: resultAfterFilter.slice(parseInt(page) * parseInt(limit), parseInt(page) * parseInt(limit) + parseInt(limit)), totalItems: totalItems };
+    } catch (error) {
+        console.error('Error get orders:', error);
+    } finally {
+        client.release(); // Release client sau khi sử dụng
+    }
+  }
+
 
 }

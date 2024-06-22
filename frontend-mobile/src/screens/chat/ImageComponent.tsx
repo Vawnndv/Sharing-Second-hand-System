@@ -16,7 +16,6 @@ const ImageComponent = ({ uri }: any) => {
   });
 
   const toggleModal = () => {
-    console.log('PESS CLOESE')
     setModalVisible(!isModalVisible);
   };
 

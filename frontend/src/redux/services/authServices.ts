@@ -11,17 +11,18 @@ export interface UserInfo {
   id: string;
   token: string;
   isAdmin: boolean;
-  roleId: number;
+  roleID: number;
   firstName: string;
   lastName: string;
   phoneNumber: string;
+  accessToken: string;
+  dob: string;
 }
 
 // Login user API
 const loginService = async (user: AuthData): Promise<any> => {
   const {data} = await Axios.post('/auth/login', {...user, platform: 'web'});
   
-  console.log(data);
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
@@ -31,8 +32,8 @@ const loginService = async (user: AuthData): Promise<any> => {
 
 // Forgot password API
 const forgotPasswordService = async (email: string) => {
-    const { data } = await Axios.post('/auth/forgot', {email})
-    return data
+    const data = await Axios.post('/auth/forgotPassword', {email})
+    return data;
 }
 
 const logoutService = async (): Promise<any> => {

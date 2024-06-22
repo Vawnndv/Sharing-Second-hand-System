@@ -12,7 +12,7 @@ function Home() {
 
   const logoutHandler = () => {
     dispatch(logoutAction())
-    toast.success('Logged out successfully')
+    toast.success('Đăng xuất thành công')
     navigate('login')
   }
 

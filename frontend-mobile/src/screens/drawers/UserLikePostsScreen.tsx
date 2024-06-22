@@ -6,7 +6,7 @@ import CardItemResult from '../search/CardItemResult';
 import postsAPI from '../../apis/postApi';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
-import { MyData } from '../search/SearchResultScreen';
+import { PostData } from '../search/SearchResultScreen';
 import { ContainerComponent } from '../../components';
 
 const UserLikePostsScreen = () => {

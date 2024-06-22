@@ -10,23 +10,24 @@ import {
   updateCompleteOrder,
   showOrdersStatistic,
 } from '../controllers/orderCollaboratorController';
+import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
 
-router.get('/ordersCollab', getOrdersCollaborator); 
+router.get('/ordersCollab', protect, getOrdersCollaborator); 
 
-router.get('/ordersCollab/receiving', getOrdersReceivingCollaborator); 
+router.get('/ordersCollab/receiving', protect, getOrdersReceivingCollaborator); 
 
-router.get('/orderDetailsCollab', getOrderDetailsCollaborator); 
+router.get('/orderDetailsCollab', protect, getOrderDetailsCollaborator); 
 
-router.get('/statisticOrderCollab', statisticOrderCollaborator); 
+router.get('/statisticOrderCollab', protect, statisticOrderCollaborator); 
 
-router.get('/showOrdersStatistic', showOrdersStatistic); 
+router.get('/showOrdersStatistic', protect, showOrdersStatistic); 
 
-router.put('/updateCompleteOrder/:orderID', updateCompleteOrder);
+router.put('/updateCompleteOrder/:orderID', protect, updateCompleteOrder);
 
-router.put('/updatePinOrder/:orderID', updatePinOrder);
+router.put('/updatePinOrder/:orderID', protect, updatePinOrder);
 
-router.put('/updateStatusOrder/:orderID', updateStatusOrder);
+router.put('/updateStatusOrder/:orderID', protect, updateStatusOrder);
 
 export default router;

@@ -6,16 +6,9 @@ import { useState, useEffect } from "react";
 import { Modal, Portal, PaperProvider } from 'react-native-paper';
 import { useSelector } from "react-redux";
 import { authSelector } from "../redux/reducers/authReducers";
+import { category } from "../constants/appCategories";
 
-const distance = [
-    1,
-    2,
-    5,
-    10,
-    15,
-    25,
-    -1,
-]
+let distance: any = []
 
 
 let time: any = []
@@ -23,20 +16,11 @@ let time: any = []
 
 
 
-const category = [
-    "Quần áo",
-    "Giày dép",
-    "Đồ nội thất",
-    "Công cụ",
-    "Dụng cụ học tập",
-    "Thể thao",
-    "Khác"
-]
 export default function FilterComponent({hideModal, filterValue, setFilterValue}: any) {
 
     const [indexDistance, setIndexDistance] = useState(2)
     const [indexTime, setIndexTime] = useState(3)
-    const [indexCategories, setIndexCategories] = useState(Array.from({length: 7}, () => true))
+    const [indexCategories, setIndexCategories] = useState(Array.from({length: 8}, () => true))
 
     const [checked, setChecked] = useState('first');
 
@@ -50,6 +34,16 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             30,
             -1
         ]
+
+        distance = [
+            1,
+            2,
+            5,
+            10,
+            15,
+            25,
+            -1,
+        ]
     }else{
         time = [ 
             0,
@@ -58,6 +52,17 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
             7,
             14,
             30,
+            -1
+        ]
+
+        distance = [
+            1,
+            2,
+            5,
+            10,
+            15,
+            25,
+            -1,
         ]
     }
 
@@ -140,11 +145,15 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                             <Text style={[{fontSize: 15}, indexDistance === 5 && styles.selectTextItem]}>25 km</Text>
                         </TouchableOpacity>
                         {
-                          auth.roleID === 1 &&
+                          auth.roleID === 1 ?
                           <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
                               onPress={() => {setIndexDistance(6)}}>
                               <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> {`${'>'} 25 km`}</Text>
-                          </TouchableOpacity>
+                          </TouchableOpacity> :
+                          <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
+                          onPress={() => {setIndexDistance(6)}}>
+                          <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> Tất cả </Text>
+                      </TouchableOpacity>
                         }
                     </View>
                 </ScrollView>
@@ -218,6 +227,10 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                                 onPress={() => {setIndexTime(5)}}>
                                 <Text style={[{fontSize: 15}, indexTime === 5 && styles.selectTextItem]}>1 tháng</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity style={[styles.item, indexTime === 6 && styles.selectItem]}
+                                onPress={() => {setIndexTime(6)}}>
+                                <Text style={[{fontSize: 15}, indexTime === 6 && styles.selectTextItem]}>Tất cả</Text>
+                            </TouchableOpacity>
                         </View>
                     </ScrollView>
                 </View>
@@ -228,7 +241,19 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                 
                 <View>
                     <View style={styles.groupItemCategory}>
-                        <TouchableOpacity style={[styles.item, indexCategories[0] === true && styles.selectItem]}
+                        {
+                            category.map((cate: any, index: number) => {
+                                return (
+                                    <TouchableOpacity 
+                                    key={index}
+                                    style={[styles.item, indexCategories[index] === true && styles.selectItem]}
+                                        onPress={() => {handleSetCategory(index)}}>
+                                        <Text style={[{fontSize: 15}, indexCategories[index] === true && styles.selectTextItem]}>{cate}</Text>
+                                    </TouchableOpacity>
+                                )
+                            })
+                        }
+                        {/* <TouchableOpacity style={[styles.item, indexCategories[0] === true && styles.selectItem]}
                             onPress={() => {handleSetCategory(0)}}>
                             <Text style={[{fontSize: 15}, indexCategories[0] === true && styles.selectTextItem]}>Quần áo</Text>
                         </TouchableOpacity>
@@ -255,7 +280,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                         <TouchableOpacity style={[styles.item, indexCategories[6] === true && styles.selectItem]}
                             onPress={() => {handleSetCategory(6)}}>
                             <Text style={[{fontSize: 15}, indexCategories[6] === true && styles.selectTextItem]}>Khác</Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
             </View>

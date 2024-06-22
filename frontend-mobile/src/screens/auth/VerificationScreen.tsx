@@ -12,8 +12,8 @@ import { addAuth } from '../../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const VerificationScreen = ({navigation, route}: any) => {
-  const limitTime = 20;
-  const {code, email, password, username} = route.params;
+  const limitTime = 120;
+  const {code, email, password, firstname, lastname} = route.params;
 
   const [currentCode, setCurrentCode] = useState(code);
   const [codeValues, setCodeValues] = useState<string[]>([]);
@@ -78,29 +78,27 @@ const VerificationScreen = ({navigation, route}: any) => {
 
   const handleVerification = async () => {
     if (limit > 0) {
-      console.log(parseInt(newCode), parseInt(currentCode))
       if (parseInt(newCode) !== parseInt(currentCode)) {
-        setErrorMessage('Invalid code!!!');
+        setErrorMessage('Mã xác minh không hợp lệ!!!');
       } else {
         setErrorMessage('');
 
         const data = {
-          email, password, username: username ?? '',
+          email, password, firstname: firstname ?? '', lastname: lastname ?? ''
         };
 
         try {
           const res: any = await authenticationAPI.HandleAuthentication('/register', data, 'post');
-          console.log(res);
           dispatch(addAuth(res.data));
 
           await AsyncStorage.setItem('auth', JSON.stringify(res.data));
         } catch (error) {
-          setErrorMessage('Email has already exist!!!');
+          setErrorMessage('Địa chỉ email đã tồn tại!!!');
           console.log(`Can not create new user ${error}`);
         }
       }
     } else {
-      setErrorMessage('Time out verification code, please resend verification code!!!');
+      setErrorMessage('Mã xác minh đã hết hạn, vui lòng gửi lại mã xác minh.');
     }
   }
   
@@ -111,10 +109,9 @@ const VerificationScreen = ({navigation, route}: any) => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Verification"  size={24} title color={appColors.primary} />
+        <TextComponent text="Xác minh đăng ký"  size={24} title color={appColors.primary} />
         <SpaceComponent height={12} />
-        <TextComponent text={`We 've send you the verification code on`} />
-        <TextComponent text={`We've send you the verification code on ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} />
+        <TextComponent text={`Chúng tôi đã gửi mã xác minh cho bạn vào ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} />
         <SpaceComponent height={26} />
         <RowComponent justify="space-around">
           <TextInput
@@ -210,7 +207,7 @@ const VerificationScreen = ({navigation, route}: any) => {
           <RowComponent>
             <ButtonComponent
               type="link"
-              text="Resend email verification"
+              text="Gửi lại mã xác minh qua email"
               onPress={handleResendVerification}
             />
           </RowComponent>

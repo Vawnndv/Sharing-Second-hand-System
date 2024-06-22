@@ -1,5 +1,7 @@
+import moment from 'moment';
+import 'moment/locale/vi';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { AvatarComponent, TextComponent } from '../../components';
 import { fontFamilies } from '../../constants/fontFamilies';
@@ -8,10 +10,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { authSelector } from '../../redux/reducers/authReducers'
 import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot, DocumentData, updateDoc, getDocs, limit, Firestore } from 'firebase/firestore'
 import { db } from '../../../firebaseConfig'
-import moment from 'moment';
-import 'moment/locale/vi';
+import { processRooms } from '../../utils/messageUtils';
+import { UnreadCountContext } from './UnreadCountContext';
 
 const ChatItem = ({item, route, navigation, noBorder}: any) => {
+  const { setUnreadCount } = useContext(UnreadCountContext) ?? { setUnreadCount: () => {} };
   moment.locale();
   const auth = useSelector(authSelector);
   const [lastMessage, setLastMessage] = useState<DocumentData | null | undefined>(undefined);
@@ -23,10 +26,17 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
     });
   }
 
+  useEffect(() => {
+    if (lastMessage?.isRead  || auth?.id == lastMessage?.userid)
+      return;
+
+    processRooms(auth.id, setUnreadCount!);
+
+  }, [lastMessage]);
 
   useEffect(() => {
 
-    let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
+    let roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
     const docRef = doc(db, "rooms", roomID);
     const messagesRef = collection(docRef, "messages");
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
@@ -51,13 +61,13 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
 
   const renderLastMessage = () =>{
     if (lastMessage === undefined)
-      return 'Loading...';
+      return 'Đang tải...';
     if (lastMessage) {
       let mess = lastMessage?.text
       if (lastMessage.type == 'image')
         mess = "Đã gửi ảnh"
       if(auth?.id == lastMessage.userid)
-        return "You: " + mess;
+        return "Bạn: " + mess;
       return mess;
     } else {
       return 'Gửi lời chào 👋'
@@ -68,7 +78,7 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
     if (auth?.id == lastMessage?.userid)
       return
     try {
-      let roomID = getRoomIdWithPost(auth?.id, item?.userid, item?.postid);
+      let roomID = item.postid ? getRoomIdWithPost(auth?.id, item?.userid, item?.postid) : getRoomId(auth?.id, item?.userid);
       const docRef = doc(db, "rooms", roomID);
       const messageRef = collection(docRef, "messages");
   
@@ -109,10 +119,6 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
         openChatRoom()
       }}
     >
-      {/* <Image
-        source={{uri: item?.avatar}}
-        style={{height: hp(9), width: hp(9), borderRadius: 100}}
-      /> */}
       <AvatarComponent 
           avatar={item?.avatar}
           username={item?.username ? item?.username : item?.firstname + ' ' + item?.lastname}
@@ -127,9 +133,12 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
             {renderTime()}
           </Text>
         </View>
-        <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.bold, fontStyle: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 'italic' : 'normal', opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
-            Đơn hàng: {item?.title}
+        {
+          item?.postid &&
+          <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.bold, fontStyle: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 'italic' : 'normal', opacity: lastMessage?.isRead || auth?.id == lastMessage?.userid ? 0.5 : 1}}>
+              Đơn hàng: {item?.title}
           </Text>
+        }
         <Text style={{fontSize: hp(1.8), fontFamily: fontFamilies.medium, opacity: lastMessage?.isRead  || auth?.id == lastMessage?.userid ? 0.5 : 1 }}>
           {renderLastMessage()}
         </Text>

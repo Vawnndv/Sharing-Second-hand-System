@@ -85,12 +85,6 @@ export default function StepIndicatorOrder ({orderID}: any) {
     getTrackingList()
   }, []);
 
-  // useEffect(() => {
-  //   console.log('data', data);
-  //   console.log('label', labels);
-  //   console.log('currentPosition', currentPosition);
-  // }, [data, labels, currentPosition]);
-
   const getTrackingList = async () => {
     try {
       const res = await orderAPI.HandleOrder(
@@ -102,11 +96,6 @@ export default function StepIndicatorOrder ({orderID}: any) {
       setData(responseData);
       setLabels(responseData.map(item => item.statusname));
       setCurrentPosition(responseData.map(item => item.statusname).length)
-
-      console.log('RES', res.data)
-      console.log('data', data);
-      console.log('label', labels)
-      console.log('currentPosition', currentPosition)
 
     } catch (error) {
       console.log(error);

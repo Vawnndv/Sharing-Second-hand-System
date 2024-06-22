@@ -5,8 +5,6 @@ import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollV
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
 import { EvilIcons, Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
-import axios from 'axios'
-
 import { useDebounce } from '../../hooks/useDebounce';
 import { appInfo } from '../../constants/appInfos';
 import { useSelector } from 'react-redux';
@@ -15,6 +13,7 @@ import { LoadingModal } from '../../modals';
 import { isLoading } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { GOOGLE_MAP_API_KEY, BING_MAP_API_KEY } from '@env';
+import axiosClient from '../../apis/axiosClient';
 
 
 const getUrlRequest = (query: string) => {
@@ -66,12 +65,14 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     useEffect(() => {
         const fetchHomeLocation = async () => {
-            const response = await axios.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
-            setHomeLocation({
-                address: response.data.data.address,
-                latitude: parseFloat(response.data.data.latitude),
-                longitude: parseFloat(response.data.data.longitude)
-            })
+            const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+            if(response.data !== null){
+                setHomeLocation({
+                    address: response.data.address,
+                    latitude: parseFloat(response.data.latitude),
+                    longitude: parseFloat(response.data.longitude)
+                })
+            }
         }
         fetchHomeLocation()
         
@@ -94,12 +95,12 @@ export default function MapSettingAddress({navigation, route}: any) {
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị trí đã bị hoãn');
             return;
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
+        //   (location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
@@ -111,8 +112,8 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     const searchLocation = async (text: string) => {
         try {
-            const response = await axios.get(getUrlRequest(text));
-            setDataSearch(response.data)
+            const response: any = await axiosClient.get(getUrlRequest(text));
+            setDataSearch(response)
         } catch (error) {
             console.error('Lỗi khi tìm kiếm địa điểm:', error);
         }
@@ -166,6 +167,18 @@ export default function MapSettingAddress({navigation, route}: any) {
         }
         return null;
     };
+
+    const getAddressFromLatLng = async (lat: any, lng: any) => {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`);
+        const data = await response.json();
+        if (data && data.display_name) {
+          return data.display_name
+          
+          // setAddress(data.display_name);
+        } else {
+          console.log('No results found');
+        }
+      };
     
     const handleGetCenterMyLocation = async () => {
         const center = await getCenterCoordinates();
@@ -173,15 +186,15 @@ export default function MapSettingAddress({navigation, route}: any) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
-            if(inputSearch !== ''){
-            // console.log('Center coordinates:', center);
+            
             try {
                 setIsLoading(true)
-                const response: any = await axios.post(`${appInfo.BASE_URL}/map/set_user_location`,{
+                const address = await getAddressFromLatLng(center.latitude, center.longitude)
+                const response: any = await axiosClient.post(`${appInfo.BASE_URL}/map/set_user_location`,{
                     userID: auth.id,
                     latitude: center.latitude,
                     longitude: center.longitude,
-                    address: inputSearch
+                    address: address
                 })
                 setIsLoading(true)
                 Alert.alert('Thông báo', 'Xác nhận vị trí thành công!')
@@ -190,27 +203,25 @@ export default function MapSettingAddress({navigation, route}: any) {
                 console.error(error)
             }
             
-            }else{
-            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
-            }
+            
         }
     };
+    
 
     const handleGetCenterGiveLocation = async () => {
         const center = await getCenterCoordinates();
-        console.log(center)
         if (center) {
             
             // Sử dụng vị trí ở giữa bản đồ ở đây
 
-            if(inputSearch !== ''){
-            // console.log('Center coordinates:', center);
+            
             try {
                 setIsLoading(true)
+                const address = await getAddressFromLatLng(center.latitude, center.longitude)
                 setOriginalLocation({
                     latitude: center.latitude,
                     longitude: center.longitude,
-                    address: inputSearch
+                    address: address
                 })
                 setIsLoading(true)
                 Alert.alert('Thông báo', 'Xác nhận vị trí cho thành công!')
@@ -220,9 +231,7 @@ export default function MapSettingAddress({navigation, route}: any) {
                 console.error(error)
             }
             
-            }else{
-            Alert.alert('Chú ý', 'Bạn cần nhập địa chỉ vào ô tìm kiếm để xác nhận vị trí!')
-            }
+            
         }
     }
 

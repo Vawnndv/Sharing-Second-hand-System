@@ -3,28 +3,50 @@ dotenv.config();
 import asyncHandle from 'express-async-handler';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-
 import { Account } from '../classDiagramModel/Account';
 import { UserManager } from '../classDiagramModel/Manager/UserManager';
+import nodemailer from 'nodemailer';
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use `true` for port 465, `false` for all other ports
+  auth: {
+    user: process.env.USERNAME_EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+export const handleSendMail = async (val: {}) => {
+  try {
+    await transporter.sendMail(val);
+
+    return 'Send banned or unbanned mail successfully!!!';
+  } catch (error) {
+    return error;
+  }
+};
 
 export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
-  console.log(userId, 'userid');
   if (typeof userId === 'string' && userId) {
-    console.log(userId, 'userid4');
     const user = await Account.findUserById(userId);
-    console.log(userId, '123');
+    const countNumber = await UserManager.totalGiveAndReceiveOrder(userId);
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
+        email: user.email ?? '', 
         userId: user.userid,
-        createAt: user.createat,
         firstname: user.firstname ?? '',
+        dob: user.dateofbirth ?? '',
         lastname: user.lastname ?? '',
-        avatar: user.avatar ?? '',
+        createAt: user.createat,
         phonenumber: user.phonenumber ?? '',
         username: user.username ?? '',
-        email: user.email ?? '',
+        avatar: user.avatar ?? '',
+        address: user.address ?? '',
+        giveCount: countNumber.givecount ?? 0,
+        receiveCount: countNumber.receivecount ?? 0,
       },
     });
   } else {
@@ -33,11 +55,8 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   }
 });
 
-
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
-  console.log(req.body);
   const { email, oldPassword, newPassword } = req.body;
-  console.log(req.body);
   const user = await Account.findUserByEmail(email);
   
   if (user) {
@@ -74,24 +93,26 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 });
 
 
-
 export const changeUserProfile = asyncHandle(async (req: Request, res: Response) => {
-  console.log(req.body);
-  const { email, firstname, lastname, phonenumber, avatar } = req.body;
+  const { email, firstname, lastname, phonenumber, avatar, accessToken, dob } = req.body;
 
   const user = await Account.findUserByEmail(email);
   
   if (user) {      
-    const updateUser = await Account.updateAccountProfile(user.userid, firstname, lastname, phonenumber, avatar);
+    const updateUser = await Account.updateAccountProfile(user.userid, firstname, lastname, phonenumber, avatar, dob);
 
     if (updateUser) {
       res.status(200).json({
         message: 'Profile changed successfully!!!',
         data: {
           email,
+          accessToken,
+          id: updateUser.userid,
           firstName: updateUser.firstname ?? '',
           lastName: updateUser.lastname ?? '',
           phoneNumber: updateUser.phonenumber ?? '',
+          dob: user.dateofbirth ?? '',
+          roleID: updateUser.roleid, 
           avatar: updateUser.avatar ?? '',
         },
       });
@@ -110,7 +131,6 @@ export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) 
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
     const likePosts = await Account.findUserLikePostsById(userId);
-    console.log(likePosts, 'BE');
     res.status(200).json({
       message: 'Get user like posts successfully !!!',
       data: likePosts,
@@ -123,7 +143,6 @@ export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) 
 
 export const setUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
   const { userId, postId } = req.body;
-  console.log(req.body);
   if (postId && postId) {
     const likePosts = await Account.setUserLikePostsById(userId, postId);
 
@@ -165,4 +184,186 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
     // If userId is missing or invalid, send a 401 status without throwing an error
     res.sendStatus(401);
   }
+});
+
+export const updateFcmToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, fcmtoken } = req.body;
+
+  await UserManager.addFcmTokenToUser(userid, fcmtoken);
+
+  res.status(200).json({
+    message: 'Fcmtoken addded',
+    data: [],
+  });
+});
+
+export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, fcmtoken } = req.body;
+
+  await UserManager.removeFcmTokenToUser(userid, fcmtoken);
+
+  res.status(200).json({
+    message: 'Fcmtoken deleted',
+    data: [],
+  });
+});
+
+export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) => {
+  const { userid } = req.query;
+  if (typeof userid === 'string' && userid) {
+    const fcmTokens = await Account.getFcmTokenListOfUser(userid);  
+    res.status(200).json({
+      message: 'get user fcmtoken list successfully',
+      data: {
+        fcmTokens: fcmTokens ?? [],
+      },
+    });
+  } else {
+    // If userId is missing or invalid, send a 401 status without throwing an error
+    res.sendStatus(401);
+  }
+});
+
+
+//  ************** ADMIN CONTROLLERS **************
+// @des Get all users
+// @route GET /api/users
+// export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
+//   console.log(req.query);
+//   const { page, pageSize } = req.query;
+//   if (typeof page === 'string' && page && typeof pageSize === 'string' && pageSize) {
+//     console.log(req.query);
+//     const total = await UserManager.totalAllUser();
+
+//     const response = await UserManager.getAllUser(page, pageSize);
+//     res.status(200).json({
+//       message: 'get user address successfully',
+//       data: {
+//         users: response ?? [],
+//         total: total.total_users ?? 0,
+//       },
+//     });
+//   } else {
+//     res.sendStatus(404);
+//     throw new Error('Missing page and pageSize');
+//   }
+// });
+
+export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
+  const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
+  // Build WHERE clause based on filterModel (replace with your logic)
+  let whereClause = '';
+  if (filterModel.items && filterModel.items.length > 0) {
+    whereClause = ' AND ';
+    for (const filter of filterModel.items) {
+      if (filter.operator === 'is' && filter.value) {
+        whereClause += `u.${filter.field} is ${filter.value} OR `;
+      } else if (filter.operator === 'contains') {
+        // Add filtering conditions based on filter object properties
+        whereClause += `u.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+      }
+
+    }
+    whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+  }
+
+  // Build ORDER BY clause based on sortModel (replace with your logic)
+  let orderByClause = '';
+  if (sortModel && sortModel.length > 0) {
+    orderByClause = ' ORDER BY ';
+    for (const sort of sortModel) {
+      orderByClause += `u.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+    }
+    orderByClause = orderByClause.slice(0, -2); // Remove trailing comma and space
+  }
+
+  
+  if (orderByClause === '') {
+    orderByClause = ' ORDER BY u.createdat DESC ';
+  }
+
+  const response = await UserManager.getAllUsers(page, pageSize, whereClause, orderByClause);
+  // res.json({ users: users.rows, total: totalUsers.rows[0].count });
+
+  res.status(200).json({
+    message: 'get user address successfully',
+    data: {
+      users: response ?? [],
+    },
+  });
+
+});
+
+export const getTotalUser = asyncHandle(async (req: Request, res: Response) => {
+  const { filterModel = {} } = req.body;
+  // console.log(filterModel)
+  // Build WHERE clause based on filterModel (replace with your logic)
+  let whereClause = '';
+  if (filterModel.items && filterModel.items.length > 0) {
+    whereClause = ' AND ';
+    for (const filter of filterModel.items) {
+      if (filter.operator === 'is' && filter.value) {
+        whereClause += `u.${filter.field} is ${filter.value} OR `;
+      } else if (filter.operator === 'contains') {
+        // Add filtering conditions based on filter object properties
+        whereClause += `u.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+      }
+    }
+    whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+  }
+
+  const total = await UserManager.totalAllUser(whereClause);
+  // res.json({ users: users.rows, total: totalUsers.rows[0].count });
+
+  res.status(200).json({
+    message: 'get user address successfully',
+    data: {
+      total: total.total_users ?? 0,
+    },
+  });
+});
+
+export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => {
+  const { userId, isBanned } = req.body;
+
+ 
+  // find user in DB
+  const user = await Account.findUserById(userId);
+  const currentTime = new Date().toLocaleString();
+
+  if (user) {
+    const data = {
+      from: `"Ứng dụng ReTreasure" <${process.env.USERNAME_EMAIL}>`,
+      to: user.email,
+      subject: user.isbanned ? 'Thông báo về việc mở khóa tài khoản' : 'Thông báo về việc khóa tài khoản', // Chủ đề email được thay đổi thành "Ban tài khoản"
+      text: user.isbanned ? `Tài khoản của bạn đã bị khóa vào lúc ${currentTime}` : `Tài khoản của bạn đã bị khóa vào lúc ${currentTime}`,
+      html:  user.isbanned ? `<h3 style="font-weight: normal;">Tài khoản của bạn đã được mở khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>` : `<h3 style="font-weight: normal;">Tài khoản của bạn đã bị khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>`,
+    };
+
+    await UserManager.adminBanUser(userId, isBanned);
+    await handleSendMail(data);
+    res.json( { message: 'User was Banned successfully' });
+  } else {
+    res.status(400);
+    throw Error('User not found' );
+  }
+});
+
+export const adminDeleteUser = asyncHandle(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const ids = id.split(',');
+  for (const userId of ids) {
+    // find user in DB
+    const user = await Account.findUserById(userId);
+    // if users exists update user data and save it in DB
+    if (user) {
+      await UserManager.adminDeleteUser(userId);
+    } else {
+      res.status(400);
+      throw Error('User not found' );
+    }
+  }
+
+  res.json( { message: 'User was deleted successfully' });
+
 });

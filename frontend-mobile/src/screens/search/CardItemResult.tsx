@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator  } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Image, FlatList, ActivityIndicator, RefreshControl  } from 'react-native';
 import { Clock, Heart, Message } from 'iconsax-react-native'
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { AvatarComponent, RowComponent, SpaceComponent, TextComponent } from '../../components';
@@ -17,6 +17,7 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 interface DataItem {
   userid: string;
+  iswarehousepost: boolean;
   avatar: string;
   postid: number;
   title: string;
@@ -28,6 +29,7 @@ interface DataItem {
   path: string;
   like_count: number;
   name: string;
+  receiver_count: string;
 }
 
 interface Props {
@@ -36,9 +38,10 @@ interface Props {
   handleEndReached: () => void;
   setData?: (newData: any[]) => void;
   isRefresh?: boolean;
+  handleRefresh?: any
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh, handleRefresh }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
@@ -46,6 +49,19 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
 
   const [likeNumber, setLikeNumber] = useState<number[]>([]);
   const [likesPosts, setLikePosts] = useState<number[]>([]);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    // Giả sử bạn load lại dữ liệu từ API
+    setTimeout(() => {
+      // Ví dụ này chỉ là load lại dữ liệu cũ, bạn có thể thay thế bằng API call
+      handleRefresh()
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   // useEffect(() => {
   //   getUserLikePosts();
@@ -121,14 +137,24 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
           color={appColors.white4}
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen', {
-            postId : item.postid,
+            postID : item.postid,
           })}
         >
-          <RowComponent>
+          <RowComponent
+          styles={styles.rowComponent}>
             <AvatarComponent
-              username={item.name} 
+              username={"item.name"} 
               avatar={item.avatar}
               size={50}
+              onPress={() => {
+                !item.iswarehousepost && navigation.navigate(
+                  'ProfileScreen',
+                  {
+                    id: item.userid
+                  },
+                );
+              }}
+              styles={styles.avatar}
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
@@ -152,34 +178,40 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             </View>
           </RowComponent>
           <SpaceComponent height={8} />
-          <TextComponent text={item.description} />
+          <TextComponent numberOfLines={2} styles={styles.description} text={item.description} />
           <SpaceComponent height={8} />
           {item.path && 
             <Image
-              style={{width: '100%', height: 160, resizeMode: 'cover'}}
+              style={{width: '100%', height: 170, resizeMode: 'cover'}}
               source={{ uri: item.path }}
             />  
           }
+          <View style={{paddingHorizontal: 12}}>
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
               <Message size={24} color={appColors.black}/>
               <SpaceComponent width={4} />
-              <TextComponent size={14} text='0 Người xin' font={fontFamilies.medium} /> 
+              <TextComponent size={14} text={`${item.receiver_count} Người xin`} font={fontFamilies.medium} /> 
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
-              <Heart size={24} color={appColors.black} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
+              <Heart size={24} color={appColors.heart} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
               <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>
           </RowComponent>
+          </View>
+          
         </CardComponent>
       )}
       keyExtractor={(item, index) => index.toString()}
       onEndReached={handleEndReached} // Khi người dùng kéo xuống cuối cùng
       onEndReachedThreshold={0.1} // Kích hoạt khi còn 10% phía dưới còn lại của danh sách
       ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null} // Hiển thị indicator khi đang tải dữ liệu
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     />
   )
 }
@@ -191,5 +223,15 @@ const styles = StyleSheet.create({
     width: '95%', // Đảm bảo phần tử cha có chiều rộng 100%
     overflow: 'hidden', // Ẩn văn bản bị tràn ra ngoài phần tử cha
   },
+  avatar: {
+    
+  },
+  rowComponent: {
+    paddingHorizontal: 12,
+    paddingTop: 12
+  },
+  description: {
+    paddingHorizontal: 12,
+  }
 
 });

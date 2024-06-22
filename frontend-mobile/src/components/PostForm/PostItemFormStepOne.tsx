@@ -4,15 +4,30 @@ import { View, StyleSheet, Text, ScrollView, Image, TouchableOpacity, ActivityIn
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons từ thư viện
 import RNPickerSelect from 'react-native-picker-select';
-import axios from 'axios';
 import { appInfo } from '../../constants/appInfos';
 import { Dropdown } from 'react-native-element-dropdown';
 import { ProfileModel } from '../../models/ProfileModel';
 import { appColors } from '../../constants/appColors';
 import TextComponent from '../TextComponent';
 import { useNavigation } from '@react-navigation/native';
+import { UploadImageToAws3 } from '../../ImgPickerAndUpload';
+import LoadingComponent from '../LoadingComponent';
 
-// import { Picker } from '@react-native-picker/picker';
+
+import * as FileSystem  from 'expo-file-system';
+// import * as Asset from 'expo-asset';
+import * as tf from '@tensorflow/tfjs';
+import * as tfReactNative from '@tensorflow/tfjs-react-native';
+import { bundleResourceIO } from '@tensorflow/tfjs-react-native';
+
+import { fetch } from '@tensorflow/tfjs-react-native';
+import '@tensorflow/tfjs-react-native/dist/platform_react_native';
+import { decode as jpegDecode } from 'jpeg-js';
+import * as ImageManipulator from 'expo-image-manipulator';
+import LoadingModal from '../../modals/LoadingModal';
+import axiosClient from '../../apis/axiosClient';
+import { Alert } from 'react-native';
+
 
 interface ErrorProps  {
   itemName: string;
@@ -36,7 +51,6 @@ interface FormData {
   warehouseAddress?: string;
   warehouseAddressID?: number;
   warehouseID?: number;
-  // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
 interface ItemTypes {
@@ -65,6 +79,10 @@ interface StepOneProps {
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
+const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/'
+
+
+
 
 const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, warehouseSelected, setWarehouseSelected }) => {
 
@@ -89,7 +107,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   // const methodsGive = ["Đăng món đồ lên hệ thống ứng dụng", "Gửi món đồ đến kho"];
 
   const methodsGive = [
-    { label: "  Đăng món đồ lên hệ thống ứng dụng", value: "  Đăng món đồ lên hệ thống ứng dụng" },
+    { label: "  Đăng món đồ lên hệ thống", value: "  Đăng món đồ lên hệ thống" },
     { label: "  Gửi món đồ đến kho", value: "  Gửi món đồ đến kho" },
   ];
 
@@ -125,7 +143,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   const [isFocusSelectedItemType, setIsFocusSelectedItemType] = useState(false);
 
-  const [isFocusSelectedWarehouse, setIsFocusSelectedWarehouse] = useState<any>();
 
   const navigation: any = useNavigation();
 
@@ -135,11 +152,23 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   const [isUploaded, setIsUpdloaded] = useState(false);
 
+  const [model, setModel] = useState<any>(null);
+
+  const [labels, setLabels] = useState<string[]>([]);
+
+  const [isGenerateItemName, setIsGenerateItemName] = useState(false);
+  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);
+
+  
+  
+const metadataLocal = require('../../../assets/model/metadata.json');
+
+
 
 
 
   useEffect(() => {
-    if(formData.methodGive == 'Đăng món đồ lên hệ thống ứng dụng'){
+    if(formData.methodGive == 'Đăng món đồ lên hệ thống'){
       setValidAllMethod(true);
     }
     else if(formData.methodGive == 'Gửi món đồ đến kho' && formData.methodsBringItemToWarehouse == 'Nhân viên kho sẽ đến lấy'){
@@ -190,7 +219,37 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
       setBringItemToWarehouseMethodDropdown('  ' + formData.methodsBringItemToWarehouse)
     }
 
-  },[formData])
+  },[formData, formData.itemCategory])
+
+
+  const loadLabels = () => {
+    const metadata = require('../../../assets/model/metadata.json');
+    if (metadata && metadata.labels) {
+      setLabels(metadata.labels);
+    }
+  };
+
+  useEffect(() => {
+  const loadModel = async () => {
+    try {
+      setIsLoading(true);
+      await tf.ready();  
+      setModel(await tf.loadLayersModel(modelURL + 'model.json'));
+      setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
+
+    } catch (error) {
+      console.error('Error loading the model', error);
+      setIsLoading(false);
+    }
+  };
+  loadModel();
+},[])
+
+  useEffect(() => {
+    loadLabels();
+
+  }, []);
+
 
   useEffect(() =>{
     if(isUploaded){
@@ -213,104 +272,283 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   useEffect(() => {
     const fetchAllData = async () => {
+      
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/items/types`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
+        //   `/${postID}`, 
         // );
         if (!res) {
           throw new Error('Failed to fetch item types'); // Xử lý lỗi nếu request không thành công
         }
 
-        let count = res.data.itemTypes.length;
+        let count = res.itemTypes.length;
         let itemTypesArray = [];
         for(let i = 0; i< count; i++){
           itemTypesArray.push({
-            value: res.data.itemTypes[i].itemtypeid,
-            label: '  ' + res.data.itemTypes[i].nametype
+            value: res.itemTypes[i].itemtypeid,
+            label: '  ' + res.itemTypes[i].nametype
           })
         }
         setItemTypesDropdown(itemTypesArray);
-        setItemTypes(res.data.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
+        setItemTypes(res.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching item types:', error);
-      } finally {
-        setIsLoading(false);
       }
 
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        let count = res.data.wareHouses.length;
+        let count = res.wareHouses.length;
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.wareHouses[i].warehousename + ', ' + res.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
           })
         }
-        setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+        setWarehouses(res.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
         setWarehouseDropdown(warehouseArray);
       } catch (error) {
         console.error('Error fetching warehouses:', error);
+      }
+      
+      setIsLoading(false);
+    };
+    fetchAllData();
+}, []);
+
+const pickImage = async () => {
+  let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+  if (permissionResult.granted === false) {
+    alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
+    return;
+  }
+
+  let pickerResult = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsMultipleSelection: true, // Cho phép chọn nhiều ảnh
+    quality: 1,
+  });
+
+  if (!pickerResult.canceled) {
+    if(pickerResult.assets.length > 0){
+      try {
+        setIsLoading(true);
+        const imageData = pickerResult.assets.map(async (asset: any) => {
+          const {width,height} = asset;
+
+          let isHeightSmaller = width > height ? true : false;
+
+          let scaleX = width / 224;
+          let scaleY = height/ 224;
+          let h = 224;
+          let w = 224;
+          if(isHeightSmaller){
+            w = scaleX * 224 / scaleY;
+          }
+          else{
+            h = scaleY * 224 / scaleX;
+          }
+
+          // Resize ảnh
+          const manipulatedImage = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [{ resize: { width: w, height: h } }],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+          );
+
+
+
+          const prediction = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
+          return {
+            uri: asset.uri,
+            name: new Date().getTime() + asset.fileName,
+            type: asset.mimeType,
+            prediction: prediction,
+            // url: response.url,
+          };
+        });
+
+        const completedImages = await Promise.all(imageData);
+        // Tìm ảnh có probability cao nhất
+        let highestProbabilityImage: any = completedImages[0];
+        await completedImages.forEach(image => {
+          if(image.prediction){
+            const [name, category] = image.prediction.label.split('-');
+            if(category !== 'Nhạy cảm'){
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                highestProbabilityImage = image;
+              }
+            }
+            else if(category === 'Nhạy cảm' && image.prediction.probability > 0.8){
+
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                highestProbabilityImage = image;
+              }
+            }
+            else{
+              if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
+                image.prediction.label = 'Khác-Khác';
+                highestProbabilityImage.prediction.label = 'Khác-Khác';
+                highestProbabilityImage.prediction.probability = image.prediction.probability;
+              }
+            }
+
+          }
+        });
+
+        let [itemName, itemCategory] = highestProbabilityImage.prediction.label.split('-');
+
+        let categoryID: any = null;
+        let categoryLabel: any = null;
+
+        itemTypesDropdown.map( (itemtype: any, index: any) => {
+            if(itemtype.label === '  ' + itemCategory){
+              categoryID = itemtype.value;
+              categoryLabel = itemCategory;
+            }
+          }
+        )
+
+        
+        if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
+          Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
+        }
+        else if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability < 0.8){
+          setFormData({
+            ...formData,
+            itemPhotos: [...formData.itemPhotos, ...completedImages],
+            itemCategory: '8'});
+          setSelectedItemTypeDropdown('Khác');
+          setIsGenerateItemCategory(true);
+        }
+        else{
+          setFormData({
+            ...formData,
+            itemName: itemName, 
+            itemPhotos: [...formData.itemPhotos, ...completedImages],
+            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? categoryID : '8' });
+          setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? categoryLabel : 'Khác' );
+          setIsGenerateItemName(true);
+          setIsGenerateItemCategory(true);
+
+
+        }
+        if(completedImages.length > 0){
+          handleValidate(true, 'photo');
+        }
+        setIsLoading(false);
+
+      
+      } catch (error) {
+        console.error('Error picking and predicting images:', error);
       } finally {
         setIsLoading(false);
       }
-      
-    };
-    fetchAllData();
-}, [])
+  }
+    setIsLoading(false);
+  }
+};
 
 
-  const pickImage = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    setIsUpdloaded(true);
+const imageToTensor = async (rawImageData: any) => {
+  try {
+    if(rawImageData){
+      // setIsLoading(true);
+      const fileUri = rawImageData.uri;
+      const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+      const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
+      const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
 
-    if (permissionResult.granted === false) {
-      alert('Bạn cần cấp quyền truy cập thư viện ảnh!');
-      return;
+      const buffer = new Uint8Array(width * height * 3);
+      let offset = 0;
+      for (let i = 0; i < buffer.length; i += 3) {
+        buffer[i] = data[offset];
+        buffer[i + 1] = data[offset + 1];
+        buffer[i + 2] = data[offset + 2];
+        offset += 4;
+      }
+
+      // Normalize the tensor
+      const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+      // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+
+      return tensor;
     }
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true, // Cho phép chọn nhiều ảnh
-      quality: 1,
-    });
+  } catch (error) {
+    console.log("Error converting image to tensor:", error);
+  }
+}
 
-    if (!pickerResult.canceled) {
-      const imageData = pickerResult.assets.map((asset: any) => {
-        return {
-          uri: asset.uri,
-          name: new Date().getTime() + asset.fileName,
-          type: asset.mimeType
-        }
-      });
-      // const finalResult = {
-      //   ri: result.assets[0].uri,
-      //   name: new Date().getTime(),
-      //   type: result.assets[0].mimeType,
-      // }
-      // setImage(finalResult);
+const predictImage = async (imageUri: any) => {
+  try {
+    if(imageUri){
+      setIsLoading(true);
+      // Chuyển đổi hình ảnh thành tensor
+      const imageTensor = await imageToTensor(imageUri);
+      if (!imageTensor) {
+        throw new Error('Failed to convert image to tensor');
+      }
 
-      setFormData({ ...formData, itemPhotos: [...formData.itemPhotos, ...imageData] }); // Cập nhật đường dẫn của các ảnh vào formData
-      handleValidate('','photo');
+      // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
+      const expandedTensor = imageTensor.expandDims(0);
+
+      // Dự đoán hình ảnh sử dụng mô hình
+      const predictionTensor = await model.predict(expandedTensor);
+      if (!predictionTensor) {
+        throw new Error('Failed to make prediction');
+      }
+
+      // Lấy giá trị dự đoán từ tensor
+      const predictionArray = await predictionTensor.array();
+      const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+
+
+
+      // Lấy nhãn tương ứng từ mảng nhãn
+      let predictedLabel = labels[maxProbabilityIndex];
+
+      // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
+      const predictionResult = {
+        label: predictedLabel,
+        probability: Math.max(...predictionArray[0])
+      };
+
+      setIsLoading(false);
+
+
+      return predictionResult;
     }
-  };
+    else{
+      setIsLoading(false);
+
+    }
+  } catch (error) {
+    console.log('Error when predicting image:', error);
+  }
+};
+
 
   const removeImage = (index: number) => {
     const updatedPhotos = [...formData.itemPhotos];
     updatedPhotos.splice(index, 1);
     setFormData({ ...formData, itemPhotos: updatedPhotos });
     handleValidate('','photo');
+    if(updatedPhotos.length < 1){
+      handleValidate('false','photo');
+
+    }
   };
 
   const handleWarehouseChange = (warehouseID: number) => {
@@ -347,7 +585,13 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
     }
 
     if(typeCheck == 'photo'){
-      if (formData.itemPhotos.length < 1) {
+      if(text === 'false'){
+        updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
+      }
+      else if(text){
+        updatedErrorMessage.itemPhotos = '';
+      }
+      else if (formData.itemPhotos.length < 1) {
         updatedErrorMessage.itemPhotos = 'Vui lòng cung cấp cho chúng tôi ít nhất là 1 tấm ảnh của món đồ.';
       } else {
         updatedErrorMessage.itemPhotos = '';
@@ -460,10 +704,8 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+        <LoadingModal visible={isLoading} />
+      )
   }
   
   const handleSelectWarehouse = () => {
@@ -477,26 +719,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   return (
     <ScrollView style = {styles.container}>
       <Text style={styles.title}>Thông tin sản phẩm </Text>
-      <TextInput
-        label="Tên món đồ"
-        value={formData.itemName}
-        onBlur={() => handleValidate(formData.itemName,'itemname')}
-        onChangeText={(text) => {
-          handleValidate(text,'itemname');
-          // setErrorMessage({...errorMessage, itemName: ''})
-        }}
-        style={styles.input}
-        underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
-        error={errorMessage.itemName? true : false}
-        theme={{
-          colors: {
-            error: appColors.danger, 
-          },
-        }}
-      />
-      {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
-      
+
       <TouchableOpacity onPress={() => handleValidate('','photo')}>
         <TextInput
             label="Ảnh của món đồ"
@@ -512,19 +735,19 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
             }}
           />
           {/* Hiển thị ảnh đã chọn */}
-        <ScrollView horizontal>
+        <ScrollView horizontal={true}>
             {formData.itemPhotos.map((image: any, index) => (
               <View key={index} style={styles.imageContainer}>
-                  <Image source={{ uri: image.uri }} style={styles.image} />
+                  <Image source={{ uri: image.uri }} style={styles.image}/>
                   <TouchableOpacity 
                     onPress={() => {
                       removeImage(index);
-                      setErrorMessage({...errorMessage, itemPhotos: ''})
-                      handleValidate(formData.itemPhotos,'photo');
+                      setErrorMessage({...errorMessage, itemPhotos: ''});
+                      handleValidate('', 'photo');
                     }} 
                     style={styles.closeButton}
                   >
-                    <MaterialIcons name="close" size={24} color="white" />
+                    <MaterialIcons name="close" size={20} color="white" />
                   </TouchableOpacity>
                 </View>
               ))}
@@ -537,6 +760,27 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
       {(errorMessage.itemPhotos) && <TextComponent text={errorMessage.itemPhotos}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
+      <TextInput
+        label="Tên món đồ"
+        value={formData.itemName}
+        onBlur={() => handleValidate(formData.itemName,'itemname')}
+        onChangeText={(text) => {
+          handleValidate(text,'itemname');
+          setIsGenerateItemName(false);
+          // setErrorMessage({...errorMessage, itemName: ''})
+        }}
+        style={styles.input}
+        underlineColor="gray" // Màu của gạch chân khi không focus
+        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        error={errorMessage.itemName? true : false}
+        theme={{
+          colors: {
+            error: appColors.danger, 
+          },
+        }}
+      />
+      {(errorMessage.itemName) && <TextComponent text={errorMessage.itemName}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
+      {(isGenerateItemName) && <TextComponent text= 'Tên món đồ được hệ thống tạo tự động'  color={appColors.green} styles={{marginBottom: 5, textAlign: 'right'}}/>}
 
       <TextInput
         label="Số lượng"
@@ -563,7 +807,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
       />
       {(errorMessage.itemQuantity) && <TextComponent text={errorMessage.itemQuantity}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
-
+      <Text style={styles.labelDropdown}>Loại món đồ</Text>
         <Dropdown
           style={[styles.dropdown, isFocusSelectedItemType ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.itemCategory ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
@@ -575,12 +819,14 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
           maxHeight={windowHeight*0.2}
           labelField="label"
           valueField="value"
-          placeholder={!isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
+          placeholder={selectedItemTypeDropdown ? '  ' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={selectedItemTypeDropdown}
           onFocus={() => {
             setIsFocusSelectedItemType(true);             
             handleValidate('', 'itemtype');
+            setIsGenerateItemCategory(false);
+
           }}
           onBlur={() => setIsFocusSelectedItemType(false)}
           onChange={item => {
@@ -591,10 +837,10 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
             setIsFocusSelectedItemType(false);
           }}
 
-          
+      
         />
       {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
-
+      {(isGenerateItemCategory) && <TextComponent text= 'Loại món đồ được hệ thống tự phân loại'  color={appColors.green} styles={{marginBottom: 5, textAlign: 'right'}}/>}
 
     <Dropdown
         style={[styles.dropdown, isFocusMethodGive ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodGive ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
@@ -677,6 +923,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
                 error: appColors.danger, 
               },
             }}
+            multiline
           />
           <Button icon="warehouse" mode="contained" onPress={() => handleSelectWarehouse()} style={styles.button}>
             Chọn kho
@@ -702,6 +949,11 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     color: 'black',
     fontWeight: 'bold'
+  },
+  labelDropdown: {
+    fontSize: 12,
+    marginLeft: 14,
+    marginBottom: -6
   },
   input: {
     width: '100%',
@@ -737,6 +989,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: 'white',
     fontWeight: 'bold',
+    justifyContent: 'center'
   },
   dropdownContainer: {
     flexDirection: 'row',

@@ -8,6 +8,10 @@ node_modules/
 dist/
 web-build/
 
+android
+android/
+ios/
+
 # Native
 *.orig.*
 *.jks
@@ -34,3 +38,4 @@ env.d.ts
 
 # typescript
 *.tsbuildinfo
+

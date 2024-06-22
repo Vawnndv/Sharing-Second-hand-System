@@ -10,7 +10,6 @@ import SearchNavigator from './SearchNavigator';
 const MainNavigator = () => {
 
   const auth = useSelector(authSelector);
-  console.log(auth)
   let isAdmin;
 
   if (auth.roleID === 1){
@@ -19,7 +18,6 @@ const MainNavigator = () => {
     isAdmin = true
   }
     
-  console.log(isAdmin)
 
   const Stack = createNativeStackNavigator();
 

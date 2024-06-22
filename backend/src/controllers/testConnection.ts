@@ -20,7 +20,7 @@ const viewAllProducts = async (): Promise<any[]> => {
 
   try {
     const res = await pool.query(query);
-    console.log(res.rows);
+   
     return res.rows;
   } catch (err) {
     console.error(err);
@@ -34,7 +34,7 @@ const viewAllItems = async (): Promise<any[]> => {
 
   try {
     const res = await pool.query(query);
-    console.log(res.rows);
+  
     return res.rows;
   } catch (err) {
     console.error(err);
@@ -74,8 +74,8 @@ const updateProduct = async (id: number, product: Product): Promise<void> => {
   const values : any = { id, name, image, quantity, price, drop, type, description, color, storage };
 
   try {
-    const res = await pool.query(query, values);
-    console.log(res.rows[0]);
+    await pool.query(query, values);
+
   } catch (err) {
     console.error(err);
     throw err;
@@ -89,7 +89,6 @@ const deleteProductById = async (id: number): Promise<any> => {
   try {
     const res = await pool.query(query, [id]);
     if (res.rows.length > 0) {
-      console.log('Deleted product:', res.rows[0]);
       return res.rows[0];
     } else {
       console.log('Product not found or already deleted.');

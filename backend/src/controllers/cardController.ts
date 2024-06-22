@@ -14,3 +14,16 @@ export const createInputCard = asyncHandle(async (req, res) => {
   }
 });
 
+export const createOutputCard = asyncHandle(async (req, res) => {
+  const { warehouseid, userreceiveid, orderid, itemid } = req.body;
+
+  
+  try {
+    const newInputCard = await CardManager.createCardOutput(warehouseid, userreceiveid, orderid, itemid);
+    res.status(201).json({ message: 'Card input created successfully', card: newInputCard });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+

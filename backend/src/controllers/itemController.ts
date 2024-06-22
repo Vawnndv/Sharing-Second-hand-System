@@ -6,7 +6,7 @@ export const getItemDetails = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
   try {
     const itemDetails = await ItemManager.viewDetailsItem(itemID);
-    console.log(itemDetails);
+   
     if (itemDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Item founded', item: itemDetails });
@@ -24,9 +24,10 @@ export const getItemDetails = asyncHandle(async (req, res) => {
 
 export const getItemImages = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
+ 
   try {
     const itemImages = await ItemManager.viewItemImages(itemID);
-    console.log(itemImages);
+
     if (itemImages) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
       res.status(200).json({ message: 'Item images founded', itemImages: itemImages });
@@ -80,10 +81,9 @@ export const getAllItemTypes = asyncHandle(async (req, res) => {
 
 export const postNewItem = asyncHandle(async (req, res) => {
   const { name, quantity, itemtypeID } = req.body;
-  
   try {
     const newItem = await ItemManager.createItem(name, quantity, itemtypeID);
-    res.status(201).json({ message: 'Item created successfully', item: newItem });
+    res.status(200).json({ message: 'Item created successfully', item: newItem });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });

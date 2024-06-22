@@ -1,3 +1,4 @@
+import { Collaborator } from './Collaborator';
 import { ChatManager } from './Manager/ChatManager';
 import { NotiManager } from './Manager/NotiManager';
 import pool from '../config/DatabaseConfig';
@@ -52,14 +53,14 @@ export class Account {
   }
 
   
-  public static async createItem(username: string, email: string, password: string, roleid: number): Promise<any> {
+  public static async createItem(email: string, firstname: string, lastname: string, password: string, avatar: string, roleid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
-        INSERT INTO "User"(username, email, password, roleid) 
-        VALUES($1, $2, $3, $4)
+        INSERT INTO "User"(firstname, lastname, email, password, avatar, roleid) 
+        VALUES($1, $2, $3, $4, $5, $6)
         RETURNING *;
       `;
-    const values : any = [username, email, password, roleid];
+    const values : any = [firstname, lastname, email, password, avatar, roleid];
     try {
       const result = await client.query(query, values);
       console.log('User inserted successfully:', result.rows[0]);
@@ -73,18 +74,39 @@ export class Account {
     }
   };
 
+  public static async createCollaborator(username: string, firstname: string, lastname: string, email: string, password: string, phonenumber: string, dob: string, roleid: number): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO "User"(firstname, lastname, email, password, phonenumber, roleid, dateofbirth) 
+        VALUES($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *;
+      `;
+    const values : any = [firstname, lastname, email, password, phonenumber, roleid, dob];
+    try {
+      const result = await client.query(query, values);
+      console.log('Collaborator inserted successfully:', result.rows[0]);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
   public static async findUserById(userId: string): Promise<any> {
     const client = await pool.connect();
     try {
-      console.log(userId, '123');
-      const result = await client.query('SELECT * FROM "User" WHERE userid = $1', [userId]);
+      const result = await client.query('SELECT *, a.address FROM "User" u LEFT JOIN address a ON u.addressid = a.addressid WHERE u.userid = $1', [userId]);
       if (result.rows.length === 0) {
         return null;
       }
-      console.log(result.rows[0], '123456');
 
-      return result.rows[0];
-      // return new Item(row.itemId, row.name, row.quantity);
+      const user = result.rows[0];
+      delete user.password; // Loại bỏ thuộc tính password
+  
+      return user;
     } catch(error) {
       console.log(error);
       return null;
@@ -111,15 +133,15 @@ export class Account {
     }
   }
 
-  public static async updateAccountProfile(userid: number, firstname: string, lastname: string, phonenumber: string, avatar: string): Promise<any> {
+  public static async updateAccountProfile(userid: number, firstname: string, lastname: string, phonenumber: string, avatar: string, dob: string): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
-      SET firstname = $2, lastname = $3, phonenumber = $4, avatar = $5
+      SET firstname = $2, lastname = $3, phonenumber = $4, avatar = $5, dateofbirth = $6
       WHERE userid = $1
       RETURNING *;
     `;
-    const values: any = [userid, firstname, lastname, phonenumber, avatar];
+    const values: any = [userid, firstname, lastname, phonenumber, avatar, dob];
     try {
       const result = await client.query(query, values);
   
@@ -189,7 +211,7 @@ export class Account {
   }
 
   public static async deleteUserLikePostsById(userId: string, postid: string): Promise<any> {
-    console.log(postid)
+
     const client = await pool.connect();
     try {
       const result = await client.query('DELETE FROM "like_post" WHERE userid = $1 AND postid = $2', [userId, postid]);
@@ -206,5 +228,22 @@ export class Account {
       client.release();
     }
   }
+
+  public static async getFcmTokenListOfUser(userid: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        SELECT fcmtoken FROM fcmtoken WHERE userid = $1;
+      `;
+    const values : any = [userid];
+    try {
+      const result = await client.query(query, values);
+      return result.rows.map(row => row.fcmtoken);
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
 }
 

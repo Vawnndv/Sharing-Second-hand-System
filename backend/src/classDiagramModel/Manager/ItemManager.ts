@@ -48,7 +48,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -65,7 +64,6 @@ export class ItemManager {
       if (result.rows.length === 0) {
         return [];
       }
-      console.log(result.rows);
       return result.rows;
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
@@ -76,7 +74,6 @@ export class ItemManager {
   } 
 
   public static async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
-
     const client = await pool.connect();
     const query = `
         INSERT INTO item(name, quantity, itemtypeID)
@@ -87,7 +84,6 @@ export class ItemManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Product inserted successfully:', result.rows[0]);
       return result.rows[0];
     } catch (error) {
       console.error('Error inserting product:', error);
@@ -97,7 +93,6 @@ export class ItemManager {
   };
 
   public static async uploadImageItem (path: string, itemID: string): Promise<boolean> {
-
     const client = await pool.connect();
     const query = `
         INSERT INTO "image" (path, itemid)
@@ -108,12 +103,31 @@ export class ItemManager {
     try {
       const result: QueryResult = await client.query(query);
 
-      
-      console.log('Product inserted successfully:', result.rows[0]);
+    
       return true;
       
     } catch (error) {
       console.error('Error inserting product:', error);
+      return false
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
+  public static async deleteImageItem (imgid: number): Promise<boolean> {
+
+    const client = await pool.connect();
+    const query = `
+      DELETE FROM IMAGE WHERE imgid = ${imgid};
+    `;
+    // const values : any = [name, quantity, itemtypeID];
+    
+    try {
+      const result: QueryResult = await client.query(query);
+      return true;
+      
+    } catch (error) {
+      console.error('Error deleting image:', error);
       return false
     } finally {
       client.release(); // Release client sau khi sử dụng

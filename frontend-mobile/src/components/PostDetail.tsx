@@ -1,20 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button } from 'react-native-paper';
-import { View, StyleSheet, Text, Image, ScrollView, Modal, TouchableOpacity, ActivityIndicator, Alert, Dimensions, TouchableWithoutFeedback  } from 'react-native';
-import { StringLiteral } from 'typescript';
-import { AntDesign, Ionicons, SimpleLineIcons  } from '@expo/vector-icons';
+import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
-import moment from 'moment';
-import { appInfo } from '../constants/appInfos';
+
 import axios from 'axios';
+import moment from 'moment';
 import { useSelector } from 'react-redux';
-import { authSelector } from '../redux/reducers/authReducers';
 import userAPI from '../apis/userApi';
+import { appInfo } from '../constants/appInfos';
 import { ProfileModel } from '../models/ProfileModel';
+import { authSelector } from '../redux/reducers/authReducers';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
-import { IconButton } from 'react-native-paper';
 import LastMessageComponent from './LastMessageComponent';
 
 import { appColors } from '../constants/appColors';
@@ -23,7 +21,12 @@ import ShowMapComponent from './ShowMapComponent';
 // import ImageCropPicker from 'react-native-image-crop-picker';
 
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';  // Đảm bảo đã cài đặt thư viện này
+import { DirectboxReceive, Flag, Heart } from 'iconsax-react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Đảm bảo đã cài đặt thư viện này
+import postsAPI from '../apis/postApi';
+import ReportModal from '../modals/ReportModal';
+import axiosClient from '../apis/axiosClient';
+import LoadingModal from '../modals/LoadingModal';
 
 
 interface Post {
@@ -44,9 +47,9 @@ interface Post {
 
 interface Item {
   itemID: number;
-  itemName: string;
-  itemCategory: string;
-  itemQuantity: number;
+  name: string;
+  itemtypeid: string;
+  quantity: number;
   // itemDescription: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
@@ -62,6 +65,7 @@ interface PostDetailProps {
   postID: number;
   navigation?: any;
   route?: any;
+  fetchFlag?: any;
 }
 
 interface PostReceiver {
@@ -82,17 +86,17 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
-  // console.log(postID)
+
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
   const [profile, setProfile] = useState<ProfileModel>();
   const [itemImages, setItemImages] = useState<ItemImage[]>([]);
   const [itemDetails, setItemDetails] = useState<Item | any>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [isFetchData, setIsFetchData] = useState<any>(true);
 
   const [isUserPost, setIsUserPost] = useState(false);
   const [itemID, setItemID] = useState();
@@ -115,8 +119,10 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
-  const scrollViewRef = useRef(null);
 
+  const [amountLike, setAmountLike] = useState(0)
+
+  const [visibleModalReport, setVisibleModalReport] = useState(false)
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -154,7 +160,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     });
   }
 
-  const handleReceiveForm = () => {
+  const handleReceiveForm = async () => {
     const isReceived = postReceivers.find(postReceiver => postReceiver.receiverid == auth.id);
 
 
@@ -168,66 +174,112 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     }
   };
 
+  const deletePostReceiver = async () => {
+    try {
+      setIsLoading(true);
+      const res = await postsAPI.HandlePost(
+        `/deletepostreceivers?postID=${postID}&receiverID=${auth.id}`,
+        '',
+        'delete'
+      );
+
+      setIsLoading(false);
+      navigation.goBack()
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleCancelReceive = () => {
+    deletePostReceiver()
+  };
+
   const handleGiveForm = (receiveid: number, receivemethod: string, receivetypeid: number, warehouseid: number) => {
     setSelectedReceiver(receiveid);
     setReceiveMethod(receivemethod);
     setReceiveTypeID(receivetypeid);
     setWareHouseID(warehouseid);
     setGoToGiveForm(true);
+    setModalVisible(false);
+
   };
 
-
-
   useEffect(() => {
+    if(fetchFlag){
+      setIsFetchData(!isFetchData);
+    }
+  },[fetchFlag])
+
+
+
+ 
     const fetchAllData = async () => {
       let itemIDs = null;
       let owner = null
-      try {
-        // console.log(postID);
+
+      try{
         setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/get-amount-user-like-post?postID=${postID}`)
+        setAmountLike(res.amount)
+
+      }catch(error){
+        console.log(error)
+      }
+
+      try {
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
-        setPost(res.data.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        setItemID(res.data.postDetail.itemid);
-        itemIDs = res.data.postDetail.itemid;
-        owner = res.data.postDetail.owner;
-        // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-        setIsUserPost(res.data.postDetail.owner == auth.id);
+        setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setItemID(res.postDetail.itemid);
+        itemIDs = res.postDetail.itemid;
+        owner = res.postDetail.owner;
+        setIsUserPost(res.postDetail.owner == auth.id);
       } catch (error) {
         console.error('Error fetching post details:', error);
       }
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
         if (!res) {
           throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
         }
-        setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+        setPostReceivers(res.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching post receivers:', error);
       }
 
       try {
 
-        const res = await axios.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
         // const res = await itemsAPI.HandleAuthentication(
         //   `/${itemID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
-        setItemImages(res.data.itemImages); // Cập nhật state với dữ liệu nhận được từ API
-        setShowRightArrow(res.data.itemImages > 1 ? true : false)
+        setItemImages(res.itemImages); // Cập nhật state với dữ liệu nhận được từ API
+        setShowRightArrow(res.itemImages > 1 ? true : false)
         // setItemID(data.id);
       
       } catch (error) {
         console.error('Error fetching item details:', error);
+      }
+
+      try {
+
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/${itemIDs}`)
+        if (!res) {
+          throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
+        }
+        setItemDetails(res.item); // Cập nhật state với dữ liệu nhận được từ API
+      } catch (error) {
+        console.error('Error fetching post receivers:', error);
       }
 
       try {
@@ -241,18 +293,24 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       }
     };
 
-    if (postID) {
-      fetchAllData();
-    }
 
-}, [postID])
+    useFocusEffect(
+      useCallback(() => {
+        fetchAllData();
+      }, [postID, fetchFlag])
+    );
+  
+    useEffect(() => {
+      if (fetchFlag) {
+        fetchAllData();
+        navigation.setParams({ fetchFlag: false });
+      }
+    }, [fetchFlag]);
 
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingModal visible={isLoading} />
     );
   }
 
@@ -261,6 +319,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
     navigation.navigate('ReceiveFormScreen', {
       postID: postID,
     });
+    // setPost(null);
   }
 
   if(goToGiveForm && postID  && isUserPost){
@@ -270,9 +329,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
       receiveid: selectedReceiver,
       receivetype: receivemethod,
       receivetypeid: receivetypeid,
-      warehouseid: warehouseid
+      warehouseid: warehouseid,
     });
-
+    // setPost(null);
+    <ReceiveForm
+      postID = {postID}
+      setIsFetchData = {setIsFetchData}
+    />
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
@@ -313,11 +376,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
           </View>
 
           <View style={styles.like_receiver_CountContainer}>
-            <AntDesign name="inbox" size={24} color="green" />
-            <Text style={styles.receiverCount}>Người nhận: {postReceivers.length}</Text>
-            <AntDesign name="hearto" size={24} color="red" />
-            <Text style={styles.loverCount}>Thích: 10</Text>
+            {/* <AntDesign name="inbox" size={24} color="green" /> */}
+            <DirectboxReceive size={24} color={appColors.green} variant={ 'Bold' }/>
+            <Text style={styles.receiverCount}>Người xin nhận: {postReceivers.length}</Text>
+            {/* <AntDesign name="hearto" size={24} color="red" /> */}
+            <Heart size={24} color={appColors.heart} variant={ 'Bold' }/>
+            <Text style={styles.loverCount}>Thích: {amountLike}</Text>
           </View>
+
+          
 
           <View style={styles.container}>
             {modalVisible && (
@@ -330,7 +397,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                 transparent={true}
                 visible={modalVisible}
                 onRequestClose={() => {
-                  Alert.alert('Modal has been closed.');
+                  Alert.alert('Cửa sổ đã bị đóng.');
                   setModalVisible(!modalVisible);
                 }}>
                 <TouchableWithoutFeedback onPress={() => {setModalVisible(false)}}>
@@ -343,11 +410,19 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                                         <View style={styles.userInfo}>
                                             <AvatarComponent
                                                 avatar={postReceiver?.avatar}
-                                                username={postReceiver?.username ? postReceiver?.username : postReceiver?.firstname ? postReceiver?.firstname : ' '}
+                                                username={ postReceiver?.firstname ? postReceiver?.firstname : ' '}
                                                 styles={styles.avatar}
+                                                onPress={() => {
+                                                  navigation.navigate(
+                                                    'ProfileScreen',
+                                                    {
+                                                      id: postReceiver.receiverid
+                                                    },
+                                                  );
+                                                }}
                                             />
                                             <View style={styles.receiverInfo}>
-                                                <Text style={styles.username_receiver}>{postReceiver?.firstname ? postReceiver.lastname ? postReceiver.firstname + ' ' + postReceiver.lastname : postReceiver.username : postReceiver.username}</Text>
+                                                <Text style={styles.username_receiver}>{postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
                                                 <Text style={styles.receiverType}>{postReceiver?.give_receivetype}</Text>
                                             </View>
                                             {isUserPost && (
@@ -362,62 +437,101 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                 </TouchableWithoutFeedback>
               </Modal>
 
-              <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if(auth.id != post.owner) {
-                    openChatRoomReceive({item: {
-                      avatar: profile?.avatar,
-                      userid: post.owner,
-                      username: profile?.username,
-                      firstname: profile?.firstname,
-                      lastname: profile?.lastname,
-                    },
-                      postid: postID})}
-                  }}>
-                  <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
-                </TouchableOpacity>
-                
-              </View>
-              
-
-              <View style={styles.userContainer}>
-                {/* Hiển thị avatar của user */}
-                <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                  <AvatarComponent 
-                    avatar={profile?.avatar}
-                    username={profile?.username ? profile?.username : profile?.firstname + ' ' + profile?.lastname}
-                    styles={styles.avatar}
-                  />
-                  <View style={[styles.username_timeContaner, {rowGap: 5}]}>
-                  {/* Hiển thị tên của user */}
-                    <Text style={styles.username_owner}>{profile?.username   ? profile?.username + ' đang muốn cho đồ'  : profile?.firstname  + ' ' + profile?.lastname + ' đang muốn cho đồ' }</Text>
-                    <Text style={{fontFamily: fontFamilies.regular, fontSize:16}}>{post?.title}</Text>
-
-                    {/* Hiển thị ngày đăng */}
-                    <View style={styles.timeContainer}>
-                      <SimpleLineIcons name="clock" size={16} color="grey" />
-                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.time).format('DD-MM-YYYY')}</Text>
-                    </View>
-                  </View>
-
+              <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 10, alignItems: 'center'}}>
+                {(auth.id !== post?.owner) && (
+                  <TouchableOpacity
+                    style={{marginRight: 10, marginLeft: 10}}
+                    onPress={() => {
+                      openChatRoomReceive({
+                        item: {
+                          avatar: profile?.avatar,
+                          userid: post.owner,
+                          username: profile?.firstname ? `${profile.firstname} ${profile.lastname}` : ' ',
+                          firstname: profile?.firstname,
+                          lastname: profile?.lastname,
+                        },
+                        postid: postID,
+                      });
+                    }}
+                  >
+                    <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
+                  </TouchableOpacity>
+                  
+                )}
+                <View style={{flex: 1}}>
+                  {(auth.id !== post?.owner) && (
+                    <TouchableOpacity
+                      onPress={() => 
+                        setVisibleModalReport(true)
+                      }
+                    >
+                      <Flag
+                        size="28"
+                        color={appColors.green}
+                        variant="Outline"
+                      />
+                    </TouchableOpacity>
+                    
+                  )}
                 </View>
 
-                <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start'}}>
+
+              <View style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'flex-end'}}>
                   {/* <View style={{flexDirection: 'column', gap: 10}}> */}
-                    {isUserPost && (
+                    {isUserPost && post?.statusid === 12 && (
                       <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
                     )}
                     {/* Nút chỉ hiển thị khi isUserPost là false */}
-                    {!isUserPost && (
+                    {!isUserPost && post?.statusid === 12 && (
                       <View style={{flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                        
-                        <TouchableOpacity style={styles.button} onPress={handleReceiveForm} ><Text style={{color: 'white'}}>Nhận</Text></TouchableOpacity>
+                        {
+                          postReceivers.some(postReceiver => postReceiver.receiverid === auth.id) ?
+                          <TouchableOpacity style={styles.button} onPress={() => {handleCancelReceive();}} ><Text style={{color: 'white'}}>Hủy xin</Text></TouchableOpacity>
+                          :
+                          <TouchableOpacity style={styles.button} onPress={() => {handleReceiveForm();}} ><Text style={{color: 'white'}}>Xin nhận</Text></TouchableOpacity>
+                        }
                         
                       </View>
                     )}
                   {/* </View> */}
                 </View>
+              </View>
+
+              <View style={styles.userContainer}>
+                {/* Hiển thị avatar của user */}
+                <View style={[styles.userContainer, {paddingLeft: 0 }]}>
+                  <AvatarComponent 
+                    avatar={profile?.avatar}
+                    username={ profile?.firstname + ' ' + profile?.lastname}
+                    styles={styles.avatar}
+                    onPress={() => {
+                      navigation.navigate(
+                        'ProfileScreen',
+                        {
+                          id: post.owner
+                        },
+                      );
+                    }}
+                  
+                  />
+                  <View style={[styles.username_timeContaner, {rowGap: 5}]}>
+                  {/* Hiển thị tên của user */}
+                    <Text style={styles.username_owner}><Text style={{fontWeight: 'bold', color: 'black'}}>{ profile?.firstname  + ' ' + profile?.lastname }</Text> đang muốn cho đồ</Text>
+                    <Text style={{fontFamily: fontFamilies.regular, fontSize:16, fontWeight: 'bold'}}>{post?.title}</Text>
+
+
+
+                    {/* Hiển thị ngày đăng */}
+                    <View style={styles.timeContainer}>
+                      <SimpleLineIcons name="clock" size={16} color="grey" />
+                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.time).fromNow()}</Text>
+
+                    </View>
+                  </View>
+
+                </View>
+
+
                 
                 </View>
               {/* Hiển thị tiêu đề bài đăng */}
@@ -426,7 +540,14 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
 
               <View style = {styles.duration_descriptionContainer}>
 
-                <Text style={styles.description}>{post?.description}</Text>
+                <Text style={[styles.description, {marginBottom: 10}]}>{post?.description}</Text>
+
+                <View>
+                <Text style={styles.title}>Thông tin món đồ</Text>
+                <Text style={styles.duration}>{'Tên sản phẩm: ' + itemDetails?.name}</Text>
+                <Text style={styles.duration}>{'Số lượng: ' + itemDetails?.quantity}</Text>
+
+                </View>
 
                 <View style={styles.durationContainer}>
                   <Text style={styles.title}>Thời gian cho đồ</Text>
@@ -466,7 +587,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                   
                 return (
                   <TouchableOpacity onPress={() => {
-                    if(auth.id == post.owner) {
+                    if(auth.id === post.owner) {
                       openChatRoomReceive({item: {
                         avatar: postReceiver?.avatar,
                         userid: postReceiver.receiverid,
@@ -479,7 +600,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                       openChatRoomReceive({item: {
                         avatar: profile?.avatar,
                         userid: post.owner,
-                        username: profile?.username,
+                        username: profile?.firstname ? profile?.firstname + profile?.lastname : ' ',
                         firstname: profile?.firstname,
                         lastname: profile?.lastname,
                       }, 
@@ -494,13 +615,21 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
                             avatar={postReceiver.avatar}
                             username={postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}
                             styles={styles.avatar}
+                            onPress={() => {
+                              navigation.navigate(
+                                'ProfileScreen',
+                                {
+                                  id: postReceiver.receiverid
+                                },
+                              );
+                            }}
                           />  
                           <View style={styles.receiverInfo}>
                             <Text style={styles.username_receiver}>{postReceiver.username ? postReceiver.username : postReceiver.firstname + ' ' + postReceiver.lastname}</Text>
                             <Text style={styles.receiverType}>{postReceiver.give_receivetype}</Text>
                           </View>
                         </View>
-                        {isUserPost && (
+                        {isUserPost && post?.statusid === 12 && (
                           // <Button style={styles.button} onPress={() => {/* Xử lý khi nút được nhấn */}} mode="contained">Cho</Button>
                           <View>
                             <TouchableOpacity style={styles.button} onPress={() => handleGiveForm(postReceiver.receiverid, postReceiver.give_receivetype, postReceiver.receivertypeid, postReceiver.warehouseid ? postReceiver.warehouseid : 0 )}><Text style={{color: 'white'}}>Cho</Text></TouchableOpacity>
@@ -516,6 +645,18 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID} ) =>
           </ScrollView>
           </View>
         </View>
+
+        {/* <Button mode="contained" onPress={(() => { navigation.navigate('ThankYouScreen', {
+                                                    title: 'Gửi bài viết thành công',
+                                                    postID: postID,
+                                                    content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
+                                                     }) })}>
+         Đi đến trang cảm ơn</Button> */}
+        {
+          post !== null && 
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseid}/>
+        }
+        
       </ScrollView>
     )
   }
@@ -545,7 +686,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
+    flex: 1
   },
   title: {
     marginTop: 5,
@@ -555,8 +697,8 @@ const styles = StyleSheet.create({
     // color: 'white'
   },
   avatar: {
-    width: 50, // Giả sử kích thước bạn muốn
-    height: 50, // Giả sử kích thước bạn muốn
+    width: 60, // Giả sử kích thước bạn muốn
+    height: 60, // Giả sử kích thước bạn muốn
     borderRadius: 50, // Để làm tròn hình ảnh
   },
 
@@ -591,12 +733,12 @@ const styles = StyleSheet.create({
   },
 
   durationContainer:{
-    // padding: 15,
+    // padding: 15
     marginTop: 10,
   },
 
   duration_descriptionContainer:{
-    padding: 15,
+    padding: 10,
     // marginTop: ,
   },
 
@@ -639,6 +781,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'flex-end', // Đảm bảo các phần tử nằm ở cuối container
     marginBottom: 15,
+    alignItems: 'center'
   },
 
   receiverCount: {
@@ -712,13 +855,14 @@ const styles = StyleSheet.create({
 
   timeContainer: {
     flexDirection: 'row',
-
+    alignItems: 'center',
+    columnGap: 2
   },
 
   username_timeContaner: {
     flexDirection: 'column',
     justifyContent: 'space-around',
-    marginLeft: 20
+    marginLeft: 15
   },
 
   centeredModalReceiveView: {

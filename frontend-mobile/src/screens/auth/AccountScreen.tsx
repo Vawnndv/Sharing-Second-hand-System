@@ -56,14 +56,14 @@ const AccountScreen = () => {
       const res = await userAPI.HandleUser('/change-password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.newPassword}, 'put');
       setIsLoading(false);
       setValues(initValue);
-      Alert.alert('Change Password successfully!!!');
+      Alert.alert('Thay đổi mật khẩu thành công!!!');
       setIsDisable(true);
       setErrorRegister('');
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErrorRegister(error.message);
       } else {
-        setErrorRegister("Network Error");
+        setErrorRegister("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);

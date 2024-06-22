@@ -9,8 +9,11 @@ import UserPostComponent from './UserPostComponent';
 import WarehouseComponent from './WarehouseComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import postsAPI from '../../../apis/postApi';
-import axios from 'axios';
 import { appInfo } from '../../../constants/appInfos';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../../../redux/reducers/authReducers';
+import { category } from '../../../constants/appCategories';
+import axiosClient from '../../../apis/axiosClient';
 
 export interface filterValue {
   distance: number;
@@ -19,27 +22,32 @@ export interface filterValue {
   sort: string;
 }
 
-const category = [
-  "Quần áo",
-  "Giày dép",
-  "Đồ nội thất",
-  "Công cụ",
-  "Dụng cụ học tập",
-  "Thể thao",
-  "Khác"
-]
 
-const ItemTabComponent = () => {
+const ItemTabComponent = ({navigation}: any) => {
+  const auth = useSelector(authSelector)
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [warehousesID, setWarehousesID] = useState([])
   const [filterValue, setFilterValue] = useState<filterValue>({
-    distance: 25,
-    time: 14,
+    distance: -1,
+    time: -1,
     category: category,
     sort: "Mới nhất"
   })
+
+  const [isNewUser, setIsNewUser] = useState(false)
+
+  useEffect(() => {
+    const getUserAddress = async () => {
+      const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
+      if(response.data === null){
+        // setIsNewUser(true)
+        navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
+      }
+    }
+    getUserAddress()
+  }, [])
 
   const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))
   useEffect(() => {
@@ -48,18 +56,24 @@ const ItemTabComponent = () => {
 
   useEffect(() => {
     const fetchDataWarehouses = async () => {
-      const response: any = await axios.get(`${appInfo.BASE_URL}/warehouse`)
-      setWarehouses(response.data.wareHouses)
-      // console.log("WAREHOUSES",response.data.wareHouses)
+      const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
+      setWarehouses(response.wareHouses)
       let listWarehouseID: any = []
-      response.data.wareHouses.map((warehouse: any) => {
+      response.wareHouses.map((warehouse: any) => {
         listWarehouseID.push(warehouse.warehouseid)
       })
       setWarehousesID(listWarehouseID)
     }
     fetchDataWarehouses()
+
+    
   }, [])
-  console.log("warehousesID", warehousesID)
+
+  // useEffect(() => {
+  //   if(isNewUser){
+  //     navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
+  //   }
+  // }, [isNewUser])
 
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {
@@ -128,10 +142,10 @@ const ItemTabComponent = () => {
           <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
           {state.index === 1 && (
             <TouchableOpacity
-              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: "#64368F", borderRadius: 15 }}
+              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.white5, borderRadius: 15 }}
               onPress={() => handleNavigateMapSelectWarehouses(navigation)}
             >
-              <MaterialCommunityIcons name='map-search' size={25} color={appColors.white}/>
+              <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary2}/>
             </TouchableOpacity>
           )}
         </View>
@@ -191,8 +205,8 @@ const styles = StyleSheet.create({
 
   tabLabel: {
     textTransform: 'capitalize',
-    color: appColors.primary,
-    fontSize: 17,
+    color: appColors.primary2,
+    fontSize: 20,
     fontFamily: fontFamilies.bold,
   },
 

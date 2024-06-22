@@ -10,7 +10,6 @@ import {
 import OrderComponent from "../../components/OrderCollaborator/OrderComponent";
 import { useEffect, useState } from "react";
 import moment from "moment";
-import axios from "axios";
 import { appInfo } from "../../constants/appInfos";
 import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
@@ -18,6 +17,7 @@ import { ContainerComponent } from "../../components";
 import { LoadingModal } from "../../modals";
 import DropdownComponent from "../../components/DropdownComponent"
 import { appColors } from "../../constants/appColors";
+import axiosClient from "../../apis/axiosClient";
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -81,8 +81,8 @@ export default function StatisticScreen({navigation}: any) {
     useEffect(() => {
         const fetchAPIOrders = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
-                setOrders(response.data.orders)
+                const response: any = await axiosClient.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
+                setOrders(response.orders)
             }catch(error){
                 console.log(error)
             }
@@ -90,9 +90,8 @@ export default function StatisticScreen({navigation}: any) {
 
         const fetchAPIData = async () => {
             try{
-                const response = await axios.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=${auth.id}&time=${timeString[timeValue.indexOf(value)]}`)
-                // console.log(response.data.orders)
-                setOrderData(response.data.statisticOrder)
+                const response: any = await axiosClient.get(`${appInfo.BASE_URL}/statisticOrderCollab?userID=${auth.id}&time=${timeString[timeValue.indexOf(value)]}`)
+                setOrderData(response.statisticOrder)
             }catch(error){
                 console.log(error)
             }
@@ -113,8 +112,8 @@ export default function StatisticScreen({navigation}: any) {
             setIsLoading(true)
             try{
                 
-                const response = await axios.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
-                setOrders(response.data.orders)
+                const response: any = await axiosClient.get(`${appInfo.BASE_URL}/showOrdersStatistic?userID=${auth.id}&type=${tab}&time=${timeString[timeValue.indexOf(value)]}`)
+                setOrders(response.orders)
                 
             }catch(error){
                 console.log(error)
@@ -126,7 +125,6 @@ export default function StatisticScreen({navigation}: any) {
         
     }, [tab])
 
-    console.log(orders)
     
 
     const dataDropdown = [
@@ -195,6 +193,7 @@ export default function StatisticScreen({navigation}: any) {
                                             setChangeOrdersGiving={setChangeOrdersGiving}
                                             orderID={order.orderID}
                                             collboratorReceiveID={auth.id}
+                                            imagePath={order.imagePath}
                                         />
                                     </TouchableOpacity>
                                 )

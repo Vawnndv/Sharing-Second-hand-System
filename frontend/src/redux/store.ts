@@ -1,7 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import * as Auth from './reducers/authReducers';
 import * as User from './reducers/userReducers'
+import * as Collaborator from './reducers/collaboratorReducers'
 import { useDispatch } from 'react-redux';
+import { handleClickMenu } from './reducers/menuReducers';
 
 const rootReducer = combineReducers({
   // User reducer
@@ -9,14 +11,26 @@ const rootReducer = combineReducers({
   userChangePassword: User.userChangePasswordReducer,
   userGetProfile: User.userGetProfileReducer,
   userUpdateProfile: User.userUpdateProfileReducer,
+  adminGetAllUsers: User.adminGetAllUsersReducer,
+  adminDeleteUser: User.adminDeleteUserReducer,
+  adminGetAllCollaborators: Collaborator.adminGetAllCollaboratorsReducer,
+  adminDeleteCollaborator: Collaborator.adminDeleteCollaboratorReducer,
+  adminEditCollaborator: Collaborator.adminEditCollaboratorReducer,
+  adminCreateCollaborator: Collaborator.adminCreateCollaboratorReducer,
+
+  // eslint-disable-next-line object-shorthand
+  handleClickMenu: handleClickMenu
 });
 
 
 // Get userInfo from localStorage
-const userInfoFormStorage = localStorage.getItem('userInfo')
-  ? JSON.parse(localStorage.getItem('userInfo')!)
-  : null;
+// const userInfoFormStorage = localStorage.getItem('userInfo')
+//   ? JSON.parse(localStorage.getItem('userInfo')) 
+//   : null;
 
+const userInfoString = localStorage.getItem('userInfo');
+
+const userInfoFormStorage = userInfoString !== null ? JSON.parse(userInfoString) : null;
 // initialState
 const initialState = {
   userLogin: { userInfo: userInfoFormStorage }

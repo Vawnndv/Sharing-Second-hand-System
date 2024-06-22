@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator, ScrollView, StyleSheet, Alert } from 'react-native';
 import { appInfo } from '../../constants/appInfos';
@@ -13,11 +12,14 @@ import ContainerComponent from '../ContainerComponent';
 import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import PostDetail from '../PostDetail';
 import { useNavigation } from '@react-navigation/native';
-
 import { Dropdown } from 'react-native-element-dropdown';
 import { appColors } from '../../constants/appColors';
 import ShowMapComponent from '../ShowMapComponent';
 import TextComponent from '../TextComponent';
+import { current } from '@reduxjs/toolkit';
+import { HandleNotification } from '../../utils/handleNotification';
+import axiosClient from '../../apis/axiosClient';
+import LoadingModal from '../../modals/LoadingModal';
 
 
 interface Props {
@@ -28,6 +30,8 @@ interface Props {
   warehouseid?: number;
   navigation?: any;
   route?: any;
+  isFetchData?: any;
+  setIsFetchData: (val: any) => void;
 }
 
 
@@ -37,6 +41,7 @@ interface Warehouse {
   warehousename: string;
   longitude: string;
   latitude: string;
+  addressid?: number;
 }
 
 
@@ -67,7 +72,7 @@ interface postOwnerInfo {
   timeend?: string;
   phonenumber?: string;
   itemid?: number;
-  iswarehousepost?: boolean;
+  iswarehousepost?: any;
   longitude?: string;
   latitude?: string;
 
@@ -95,9 +100,11 @@ export interface ErrorProps  {
 }
 
 
-export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid }) => {
+export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid, setIsFetchData }) => {
 
   // const navigation: any = useNavigation();
+
+  const [post, setPost] = useState<any>(null);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -112,6 +119,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   const [selectedReceiveMethod, setSelectedReceiveMethod] = useState('');
 
   const [warehouseSeleted, setWarehouseSelected] = useState<any>(null);
+
 
   // const methodsReceive = ["Nhận đồ qua kho", "Nhận đồ trực tiếp"];
 
@@ -129,6 +137,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
   const [warehouse, setWarehouse] = useState<Warehouse>();
 
+
   const [warehouseDropdown, setWarehouseDropdown] = useState<any>([]);
 
 
@@ -140,6 +149,8 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
   const [isCompleted, setIsCompleted] = useState(false);
 
   const [location, setLocation] = useState<any>(null);
+
+  const [isFetchData, setIsReFetchData] = useState(false);
 
 
   const auth = useSelector(authSelector);
@@ -165,27 +176,25 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     if(warehouseSeleted){
       setIsValidSubmit(true);
     }
-  })
+  },[warehouseSeleted])
 
 
 
   const handleValidate = (text: any, typeCheck: string) => {
     let updatedErrorMessage = {...errorMessage};
 
-    if(typeCheck = 'bringitemtowarehousemethod'){
+    if(typeCheck === 'bringitemtowarehousemethod'){
       if(!validAllMethod){
         updatedErrorMessage.bringItemToWarehouseMethod = 'Vui lòng chọn phương thức mang đồ đến kho.';
         setErrorMessage(updatedErrorMessage);
-
       }
       else{
         updatedErrorMessage.bringItemToWarehouseMethod = '';
         setErrorMessage(updatedErrorMessage);
-
       }
     }
 
-    if(typeCheck = 'receivemethod' ){
+    if(typeCheck === 'receivemethod' ){
       if(!validAllMethod && !selectedReceiveMethod){
         updatedErrorMessage.receiveMethod = 'Vui lòng chọn phương thức nhận đồ.';
       }
@@ -199,7 +208,7 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     }
 
 
-    else if(typeCheck = 'warehouseselected'){
+    else if(typeCheck === 'warehouseselected'){
       if(!validAllMethod){
         updatedErrorMessage.warehouseSelected = 'Vui lòng chọn kho.';
       }
@@ -217,7 +226,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
     if(isUserPost && receivetype === 'Cho nhận trực tiếp'){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
-
     }
 
     else if(isUserPost && bringItemToWarehouseMethodsDropDown){
@@ -226,70 +234,53 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 
     }
 
-
-
-    else if(selectedReceiveMethod == 'Nhận đồ trực tiếp'){
+    else if(selectedReceiveMethod === 'Nhận đồ trực tiếp'){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
     }
 
-    else if(selectedReceiveMethod == 'Nhận đồ qua kho' && warehouseSeleted){
+    else if(selectedReceiveMethod === 'Nhận đồ qua kho' && warehouseSeleted){
       setValidAllMethod(true);
       setErrorMessage({...errorMessage, receiveMethod: '', bringItemToWarehouseMethod: '', warehouseSelected: ''})
     }
     else{
       setValidAllMethod(false);
-
     }
-  },[selectedReceiveMethod, warehouseSeleted])
+  },[selectedReceiveMethod, bringItemToWarehouseMethodsDropDown, warehouseSeleted])
 
-  useEffect( () => {
-    if(      
-      !errorMessage.bringItemToWarehouseMethod && 
-      !errorMessage.receiveMethod && 
-      !errorMessage.warehouseSelected && 
-      validAllMethod) {
-        setIsValidSubmit(true);
-    }
-      else{
-        setIsValidSubmit(false);
-      }
-
-  })
 
 
   useEffect(() => {
-    const fetchWarehouses = async () => {
+    const fetchAllData = async () => {
+      
+      setIsLoading(true);
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/warehouse`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
-        let count = res.data.wareHouses.length;
+        let count = res.wareHouses.length;
         let warehouseArray = [];
         let temp = ''
         for(let i = 0; i< count; i++){
-          temp = '  ' + res.data.wareHouses[i].warehousename + ', ' + res.data.wareHouses[i].address;
+          temp = '  ' + res.wareHouses[i].warehousename + ', ' + res.wareHouses[i].address;
           warehouseArray.push({
             value: temp,
             label: temp
           })
         }
-        setWarehouses(res.data.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
+        setWarehouses(res.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
         setWarehouseDropdown(warehouseArray);
       } catch (error) {
         console.error('Error fetching warehouses:', error);
       } finally {
-        setIsLoading(false);
       }
 
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/posts/postowner/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postowner/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
@@ -297,67 +288,79 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
           throw new Error('Failed to fetch post owner info'); // Xử lý lỗi nếu request không thành công
         }
         setLocation({
-          address: res.data.postOwnerInfos.address,
-          latitude: parseFloat(res.data.postOwnerInfos.latitude),
-          longitude: parseFloat(res.data.postOwnerInfos.longitude)
+          address: res.postOwnerInfos.address,
+          latitude: parseFloat(res.postOwnerInfos.latitude),
+          longitude: parseFloat(res.postOwnerInfos.longitude)
         })
-        setPostOwnerInfo(res.data.postOwnerInfos);
+        setPostOwnerInfo(res.postOwnerInfos);
         setFormData({
           ...formData,
-          address: res.data.postOwnerInfos.address,
-          owmerName: res.data.postOwnerInfos.firstname + ' ' + res.data.postOwnerInfos.lastname,
-          ownerPhone: res.data.postOwnerInfos.phonenumber,
-          ownerID: res.data.postOwnerInfos.owner,
-          postDate: moment(res.data.postOwnerInfos.timestart).format('DD/MM/YYYY') + ' - ' + moment(res.data.postOwnerInfos.timeend).format('DD/MM/YYYY'),
+          address: res.postOwnerInfos.address,
+          owmerName: res.postOwnerInfos.firstname + ' ' + res.postOwnerInfos.lastname,
+          ownerPhone: res.postOwnerInfos.phonenumber,
+          ownerID: res.postOwnerInfos.owner,
+          postDate: moment(res.postOwnerInfos.timestart).format('DD/MM/YYYY') + ' - ' + moment(res.postOwnerInfos.timeend).format('DD/MM/YYYY'),
           // giveType: method,
-          postTitle: res.data.postOwnerInfos.title,
-          addressGiveID: res.data.postOwnerInfos.addressid,
+          postTitle: res.postOwnerInfos.title,
+          addressGiveID: res.postOwnerInfos.addressid,
           postid: postID,
-          itemid: res.data.postOwnerInfos.itemid,
+          itemid: res.postOwnerInfos.itemid,
         });
-        if(auth.id == res.data.postOwnerInfos.owner){
+        if(auth.id == res.postOwnerInfos.owner){
           setIsUserPost(true);
         }
       } catch (error) {
         console.error('Error fetching post owner info:', error);
       } finally {
-        setIsLoading(false);
       }
       try {
-        setIsLoading(true);
-        const res = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
+        const res: any = await userAPI.HandleUser(`/get-profile?userId=${auth.id}`);
 
         // const res = await userAPI.HandleUser(`/profile?userId=${auth.id}`);
         setFormData({
           ...formData,
-          addressReceiveID: res.data.addressid
+          addressReceiveID: res.addressid
         });
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoading(false);
       }
 
+      // try {
+      //   setIsLoading(true);
+      //   const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
+      //   // const res = await postsAPI.HandlePost(
+      //   //   `/${postID}`,
+      //   // );
+      //   if (!res) {
+      //     throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
+      //   }
+      //   setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
+      // } catch (error) {
+      //   console.error('Error fetching order:', error);
+      // } finally {
+      //   setIsLoading(false);
+      // }
+
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
+        const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
         // );
         if (!res) {
-          throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
+          throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
-        setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
-      } catch (error) {
-        console.error('Error fetching order:', error);
-      } finally {
+        setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setIsUserPost(res.postDetail.owner == auth.id);
         setIsLoading(false);
+
+      } catch (error) {
+        console.error('Error fetching post details:', error);
       }
 
-      if(warehouseid != 0 && warehouseid){
+      if(warehouseid !== 0 && warehouseid){
         try {
-          setIsLoading(true);
-          const res = await axios.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
+          const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
           // );
@@ -365,188 +368,376 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
             throw new Error('Failed to fetch warehouse'); // Xử lý lỗi nếu request không thành công
           }
           
-          setWarehouse(res.data.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
+          setWarehouse(res.wareHouse); // Cập nhật state với dữ liệu nhận được từ API
           setFormData({
             ...formData,
-            warehouseInfo: res.data.wareHouse.warehousename + ', ' + res.data.wareHouse.address,
-            warehouseID: res.data.wareHouse.warehouseid,
+            warehouseInfo: res.wareHouse.warehousename + ', ' + res.wareHouse.address,
+            warehouseID: res.wareHouse.warehouseid,
           });
         } catch (error) {
           console.error('Error fetching warehouse:', error);
         } finally {
-          setIsLoading(false);
         }
       }
+      setIsLoading(false)
     };
-    fetchWarehouses();
-}, [])
+    fetchAllData();
+}, [postID])
+
+useEffect( () => {
+  // if(!isUserPost){
+
+  if(post){
+
+    if (!post.iswarehousepost){
+      if (isUserPost && receivetype === 'Cho nhận trực tiếp'){
+        setIsValidSubmit(true);
+      }
+    
+      else if(      
+        !errorMessage.bringItemToWarehouseMethod && 
+        !errorMessage.receiveMethod && 
+        !errorMessage.warehouseSelected &&
+        validAllMethod) {
+          setIsValidSubmit(true);
+      }
+
+      else{
+        setIsValidSubmit(false);
+      }
+    }
+    else{
+      setIsValidSubmit(true);
+    }
+}
+
+
+// }
+
+},[errorMessage, validAllMethod, isUserPost, post])
 
 
 const handleReceive = async () => {
-  try {
-    const postid = postID;
-    const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
-    const comment = '';
-    const time = new Date();
-    let receivertypeid = 1;
-    let warehouseid = null;
-    if(selectedReceiveMethod == "Nhận đồ qua kho"){
-      receivertypeid = 2;
-      warehouseid = warehouseSeleted.warehouseid;
-    }
 
-    if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
-      setIsShowAddress(true);
+  setIsLoading(true)
+  if(!post.iswarehousepost){
+    try {
+      const postid = postID;
+      const receiverid = auth.id; // Thay đổi giá trị này tùy theo logic ứng dụng của bạn
+      const comment = '';
+      const time = new Date();
+      let receivertypeid = 1;
+      let warehouseid = null;
+      if(selectedReceiveMethod == "Nhận đồ qua kho"){
+        receivertypeid = 2;
+        warehouseid = warehouseSeleted.warehouseid;
+      }
+  
+      if(selectedReceiveMethod == "Nhận đồ trực tiếp"){
+        setIsShowAddress(true);
+      }
+      
+      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
+        postid,
+        receiverid,
+        comment,
+        warehouseid,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        receivertypeid,
+      });       
+
+      if(receivertypeid == 1){
+        await HandleNotification.sendNotification({
+          userReceiverId: post.owner,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+        })
+      }else{
+
+        await HandleNotification.sendNotification({
+          userReceiverId: post.owner,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+        })
+
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+          warehouseID: post.warehouseid
+        })
+        resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
+          await HandleNotification.sendNotification({
+            userReceiverId: collab.userid,
+            userSendId: auth.id,
+            name: `${auth?.firstName} ${auth.lastName}`,
+            // postid: postID,
+            avatar: auth.avatar,
+            link: `post/${postID}`,
+            title: ' Xin sản phẩm của bạn',
+            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin cho tiết!`
+          })
+        })
+      }
+      
+      
+      Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+
+      navigation.navigate('ItemDetailScreen', {
+        postID: postID,
+        fetchFlag: true,
+      })    
     }
-    
-    // console.log({title, location, description, owner, time, itemid, timestart, timeend})
-    const response = await axios.post(`${appInfo.BASE_URL}/posts/createPostReceiver`, {
-      postid,
-      receiverid,
-      comment,
-      warehouseid,
-      time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-      receivertypeid,
-    });       
-    Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
-    navigation.navigate('ItemDetailScreen', {
-      postId: postID,
-    })
-    
-  } catch (error) {
-    console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
-    Alert.alert('Error', 'Gửi yêu cầu nhận hàng thất bại.');
+      catch (error) {
+      console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
+      Alert.alert('Thất bại', 'Gửi yêu cầu nhận hàng thất bại.');
+    }
+  }else{
+    let status = 'Chờ người nhận lấy hàng';
+    let statusid = 3;
+    let orderID = null;
+
+  
+      const title = post.title;
+      const location = ' ';
+      const description = post.description;
+      const departure = post.location;
+      const time = new Date();
+      const itemid = post.itemid;
+      const qrcode = ' ';
+      const ordercode = ' ';
+      const usergiveid = post.owner;
+      const postid = post.postid;
+      const imgconfirm = ' ';
+      const locationgive = post.addressid;
+      let userreceiveid = receiveid;
+      let locationreceive = post.addressid;
+      let givetypeid : any = receivetypeid;
+      const imgconfirmreceive = ' ';
+      let givetype = receivetype;
+      let warehouseidPost = post.warehouseid;
+  
+      // let warehouseid = null;
+  
+      try{
+        const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
+          title,
+          location,
+          description,
+          departure,
+          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+          itemid,
+          status,
+          qrcode,
+          ordercode,
+          usergiveid,
+          postid,
+          imgconfirm,
+          locationgive,
+          locationreceive,
+          givetypeid: 3,
+          imgconfirmreceive,
+          givetype: "Cho nhận trực tiếp",
+          warehouseid: warehouseidPost,
+          userreceiveid: auth.id
+        });
+  
+        orderID = response.orderCreated.orderid;    
+        // if(receivetype === )
+  
+      const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
+        currentstatus: status,
+        orderid: orderID,
+      });
+
+      const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+        postid: post.postid,
+        statusid: 14,
+        isApproveAction: false
+    });
+
+
+      const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+        warehouseID: post.warehouseid
+      })
+      resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
+        await HandleNotification.sendNotification({
+          userReceiverId: collab.userid,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Xin sản phẩm của bạn',
+          body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
+        })
+      })
+  
+  
+      Alert.alert('Thành công', 'Nhận món đồ thành công.');
+      setIsCompleted(true);
+      navigation.navigate('Home', {screen: 'HomeScreen'})
+  
+    } catch(error){
+      Alert.alert('Thất bại', 'Cho món đồ thất bại.');
+        setIsCompleted(false);
+    }
   }
+  setIsLoading(false)
+
 }
 
 
 const handleGive = async () =>{
 
+  let status = '';
+  let statusid = null;
+  let orderID = null;
+  setIsLoading(true)
+
   if(receivetype === 'Cho nhận trực tiếp'){
-    const orderid = order?.orderid;
-    const userreceiveid = receiveid;
-    const givetypeid = receivetypeid;
-    const givetype = receivetype;
-    
-    try{
-      const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-        orderid,
-        userreceiveid,
-        givetypeid,
-        givetype,
-      })
-    } catch(error){
-      Alert.alert('Error', 'Cho món đồ thất bại.');
-    }
-
-    try{
-      const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-        orderid: orderid,
-        newstatus: "Chờ người nhận lấy hàng",
-        statusid: "3",
-        
-      })
-      console.log(response.data);
-      Alert.alert('Thành công', 'Cho món đồ thành công');
-      navigation.navigate('ItemDetailScreen', {
-        postId: postID,
-      })
-
-    } catch(error){
-      Alert.alert('Error', 'Cho món đồ thất bại.');
-      setIsCompleted(false);
-    }
+    status = 'Chờ người nhận lấy hàng';
+    statusid = 3;
   }
 
   else{
-      const orderid = order?.orderid;
-      const userreceiveid = receiveid;
-      let givetypeid = receivetypeid;
-      let givetype = receivetype;
-      if(formData?.methodBringItemToWarehouse === 'Tự đem đến kho'){
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-            orderid,
-            userreceiveid,
-            givetypeid,
-            givetype,
-            warehouseid
-          })
-
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-            orderid: orderid,
-            newstatus: "Chờ người cho giao hàng",
-            statusid: "13"
-          })
-          console.log('STATUS UPDATE',response.data);
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-        
-      }
-      
-      if(formData?.methodBringItemToWarehouse === 'Nhân viên kho sẽ đến lấy'){
-        try{
-          givetypeid = 5;
-          givetype = 'Cho nhận qua kho(kho đến lấy)';
-          const resUpdateOrderReceiver = await axios.post(`${appInfo.BASE_URL}/order/updateOrderReceiver`, {
-            orderid,
-            userreceiveid,
-            givetypeid,
-            givetype,
-            warehouseid
-          })
-
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-
-        try{
-          const response = await axios.post(`${appInfo.BASE_URL}/order/updateTraceStatus`, {
-            orderid: orderid,
-            newstatus: "Chờ cộng tác viên lấy hàng",
-            statusid: "7"
-          })
-        } catch(error){
-          Alert.alert('Error', 'Cho món đồ thất bại.');
-          setIsCompleted(false);
-        }
-      }
-
-      try{
-        const qrcode = ' ';
-        const usergiveid = postOwnerInfo?.owner;
-        const itemid = postOwnerInfo?.itemid;
-        const orderid = order?.orderid;
-
-        const response = await axios.post(`${appInfo.BASE_URL}/card/createInputCard`, {
-          qrcode,
-          warehouseid,
-          orderid,
-          usergiveid,
-          itemid
-        })
-
-        Alert.alert('Thành công', 'Cho món đồ thành công');
-        navigation.navigate('ItemDetailScreen', {
-          postId: postID,
-        })
-        // setIsCompleted(true);
-        // navigation.navigate('Home', {screen: 'HomeScreen'})
-
-
-      } catch(error){
-        Alert.alert('Error', 'Tạo input card thất bại.');
-        // setIsCompleted(false);
-      }
+    if(formData?.methodBringItemToWarehouse === 'Tự đem đến kho'){
+      status = "Chờ người cho giao hàng";
+      statusid = 13;
     }
+    else if(formData?.methodBringItemToWarehouse === 'Nhân viên kho sẽ đến lấy'){
+      status = "Chờ cộng tác viên lấy hàng",
+      statusid = 7
+    }
+  }
+
+    const title = post.title;
+    const location = ' ';
+    const description = post.description;
+    const departure = post.location;
+    const time = new Date();
+    const itemid = post.itemid;
+    const qrcode = ' ';
+    const ordercode = ' ';
+    const usergiveid = post.owner;
+    const postid = post.postid;
+    const imgconfirm = ' ';
+    const locationgive = post.addressid;
+    let userreceiveid = receiveid;
+    let locationreceive = null;
+    let givetypeid : any = receivetypeid;
+    const imgconfirmreceive = ' ';
+    let givetype = receivetype;
+    let warehouseidPost = post.warehouseid;
+
+    if(receivetype !== 'Cho nhận trực tiếp' && warehouse){
+      warehouseidPost = warehouseid;
+      locationreceive = warehouse.addressid;
+    }
+
+    // let warehouseid = null;
+
+    try{
+      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
+        title,
+        location,
+        description,
+        departure,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        status,
+        qrcode,
+        ordercode,
+        usergiveid,
+        postid,
+        imgconfirm,
+        locationgive,
+        locationreceive,
+        givetypeid,
+        imgconfirmreceive,
+        givetype,
+        warehouseid: warehouseidPost,
+        userreceiveid
+      });
+
+
+      orderID = response.orderCreated.orderid;    
+      // if(receivetype === )
+    
+    const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
+      currentstatus: status,
+      orderid: orderID,
+    });
+
+    const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+        postid: post.postid,
+        statusid: 14,
+        isApproveAction: false
+    });
+
+    Alert.alert('Thành công', 'Cho món đồ thành công.');
+    setIsCompleted(true);
+
+    if(receivetype !== 'Cho nhận trực tiếp' && warehouseid)
+    {
+      const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/card/createInputCard`, {
+        qrcode: '',
+        warehouseid: warehouseid,
+        usergiveid: auth.id,
+        orderid: orderID,
+        itemid: post.itemid,
+      });
+    }
+
+    try {
+
+      const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/postreceivers/${postID}`)
+      if (!res) {
+        throw new Error('Failed to fetch post receivers'); // Xử lý lỗi nếu request không thành công
+      }
+      // setPostReceivers(res.data.postReceivers); // Cập nhật state với dữ liệu nhận được từ API
+
+      res.postReceivers.map(async (receiver: any, index: number) => {
+        await HandleNotification.sendNotification({
+          userReceiverId: receiver.receiverid,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `post/${postID}`,
+          title: ' Đã cho sản phẩm',
+          body: receiver.receiverid === receiveid ? 
+            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
+        })
+      })
+    } catch (error) {
+      console.error('Error fetching post receivers:', error);
+    }
+
+    
+    
+    setIsLoading(false);
+    navigation.navigate('Home', {screen: 'HomeScreen'})
+
+  } catch(error){
+    Alert.alert('Thất bại', 'Cho món đồ thất bại.');
+      setIsCompleted(false);
+  }
+
+  // if(receivetype === 'Cho nhận trực tiếp'){
+  //   givetypeid = receivetypeid;
+  //   givetype = receivetype;
+  // }
+
+
   }
   
 
@@ -568,7 +759,6 @@ const handleGive = async () =>{
 
 
   const handleBringItemToWareHouseChange = (methodBringItemToWarehouse: string) => {
-    console.log('ĐEM ĐỒ ĐẾN KHO:', methodBringItemToWarehouse)
     setFormData({
       ...formData,
       methodBringItemToWarehouse: methodBringItemToWarehouse
@@ -586,18 +776,16 @@ const handleGive = async () =>{
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingModal visible={isLoading} />
+
     );
   }
 
-  console.log(location)
 
 
 
   return (
-    <ScrollView style = {styles.container}>
+  <ScrollView style = {styles.container}>
     {!isUserPost && (
       <Text style={styles.title}>Thông tin nhận đồ </Text>
     )}
@@ -682,6 +870,7 @@ const handleGive = async () =>{
           label="Kho"
           value={warehouseSeleted ? `${warehouseSeleted.warehousename}, ${warehouseSeleted.address}`  : ''}
           style={styles.input}
+          multiline
           underlineColor="transparent" // Màu của gạch chân khi không focus
           editable={false} // Người dùng không thể nhập trực tiếp vào trường này
           // error={errorMessage.warehouseAddress? true : false}
@@ -856,7 +1045,7 @@ const handleGive = async () =>{
     )}
 
     {isUserPost && (
-      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit}>Xác nhận</Button>
+      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit} >Xác nhận</Button>
     )}
   </ScrollView>
   );

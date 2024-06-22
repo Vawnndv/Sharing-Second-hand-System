@@ -22,7 +22,7 @@ import { authSelector } from '../redux/reducers/authReducers';
 import postsAPI from '../apis/postApi';
 import { ActivityIndicator } from 'react-native-paper';
 import { statusOrder } from '../constants/statusOrder';
-import { ContainerComponent } from '../components';
+import { ContainerComponent, TextComponent } from '../components';
 
 interface Data {
   title: string;
@@ -37,10 +37,14 @@ interface Data {
   userreceiveid: string,
   postid: string,
   isreciever: boolean,
+  warehouseid: string,
+  iswarehousepost: boolean,
+  name: string
 }
 
 export default function ViewDetailOrder({navigation, route}: any) {
   const {orderid} = route.params;
+
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalConfirmVisible, setModalConfirmVisible] = useState(false);
@@ -77,7 +81,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
       
       setIsLoading(false);
       setData(res.data)
-      console.log('test',res.data)
     } catch (error) {
       console.log(error);
     }
@@ -178,7 +181,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               color={appColors.white4}
               isShadow
               onPress={() => navigation.navigate('ItemDetailScreen', {
-                postId : data?.postid,
+                postID : data?.postid,
               })}
               // onPress={() => [navigation.navigate('MapSettingAddressScreen',{
               //   useTo: 'setAddress'
@@ -196,7 +199,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
                 <View style={{ paddingTop: 2, flexDirection: 'row', alignItems: 'center' }}>
                     {/* <Icon name="map-pin" size={20} color="#552466" /> */}
                     <SimpleLineIcons name="location-pin" size={14} color={appColors.black} />
-                    <Text style={{ paddingLeft: 10 }}>{data?.address}</Text>
+                    <TextComponent styles={{ paddingLeft: 10 }} text={`${data?.address}`} numberOfLines={2}/>
                 </View>
 
                 <View style={{ paddingTop: 2, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -206,7 +209,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               </View>
             </CardComponent>
 
-            <View style={{flexDirection: 'row'}}>
+            <View style={{flexDirection: 'row', margin: 15, marginVertical: 0}}>
               {
                 userID == data?.userreceiveid ? (
                   data?.isreciever ? (
@@ -263,7 +266,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
               onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
               onRemovePress={() => removeImage()}
               isLoading={false}
-              title='Confirm photo'     
+              title='Chụp ảnh xác nhận'     
             />
 
           </View>
@@ -274,7 +277,9 @@ export default function ViewDetailOrder({navigation, route}: any) {
 
         {/* Use a light status bar on iOS to account for the black space above the modal */}
         <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
-        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible} image={image} orderid={data.orderid}/>}
+        {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible}
+         image={image} orderid={data.orderid} owner={data.usergiveid} warehouseID={data.warehouseid} 
+         isWarehousePost={data.iswarehousepost} auth={auth} name={data.name}/>}
         <ShowImageModal visible={visible} setVisible={setVisible}>
           {
             isShowQR ? (
@@ -302,7 +307,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
     flex: 1
   },
   body: {
-    margin: 15,
     flexDirection: 'column',
     gap: 5
   },
@@ -315,17 +319,16 @@ export default function ViewDetailOrder({navigation, route}: any) {
     alignItems: 'center',
   },
   infomation: {
-    width: '70%',
+    width: '65%',
     justifyContent: 'space-between',
     paddingLeft: 10,
-    marginVertical: 10
+    marginVertical: 10,
+    
   },
   image: {
-    width: 90,
-    height: 90,
+    width: '30%',
+    height: '100%',
     objectFit: 'cover',
-    borderRadius: 5,
-    margin: 5
   },
   process: {
     height: appInfo.sizes.HEIGHT * 0.59,
@@ -333,6 +336,8 @@ export default function ViewDetailOrder({navigation, route}: any) {
     borderColor: 'grey',
     borderWidth: 1,
     flexGrow: 1, // Thiết lập để mở rộng theo chiều cao
+    margin: 15,
+    marginTop: 0
   },
   title: {
     fontSize: 20,

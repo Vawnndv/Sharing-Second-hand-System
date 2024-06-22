@@ -1,10 +1,10 @@
 import axios from "axios";
-import { View, Image, StyleSheet, Text, TouchableOpacity } from "react-native"
+import { View, Image, StyleSheet, Text, TouchableOpacity, Platform } from "react-native"
 import IconEntypo from 'react-native-vector-icons/Entypo';
 import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { appInfo } from "../../constants/appInfos";
 import { appColors } from "../../constants/appColors";
-
+import TextComponent from "../TextComponent";
 interface OrderFunctionProbs {
     avatar: string,
     name: string,
@@ -18,7 +18,8 @@ interface OrderFunctionProbs {
     changeOrdersGiving: boolean,
     setChangeOrdersGiving: any,
     orderID: string,
-    collboratorReceiveID: string | null
+    collboratorReceiveID: string | null,
+    imagePath: string
 }
 const OrderComponent: React.FC<OrderFunctionProbs> = ({
     avatar,
@@ -33,7 +34,8 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
     changeOrdersGiving,
     setChangeOrdersGiving,
     orderID,
-    collboratorReceiveID}) => {
+    collboratorReceiveID,
+    imagePath}) => {
     // Xây dựng và trả về JSX.Element tương ứng với thông tin của đơn hàng
 
 
@@ -57,19 +59,29 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
         // }
 
         return (
-        <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#DAE2CF" : appColors.gray5}]}>
+        <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#E9FFE9" : appColors.white2}]}>
 
-            <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 5, marginRight: 5}}>
+            <View style= {[styles.padding,{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5}]}>
                 <Text style={{color: '#54C362', fontStyle: 'italic'}}>{status}</Text>
             </View>
 
-            <View style={styles.orderInfo}>
-                <Image
-                    style={{width: 80, height: 80, borderRadius: 50}}
-                    source={{
-                    uri: `${avatar}`,
-                    }}
-                />
+            <View style={[styles.orderInfo, styles.padding]}>
+                {
+                    avatar ?
+                    <Image
+                        style={{width: 80, height: 80, borderRadius: 50}}
+                        source={{
+                        uri: `${avatar}`,
+                        }}
+                    /> : 
+                    <Image
+                        style={{width: 80, height: 80, borderRadius: 50}}
+                        source={{
+                        uri: `https://ss-images.saostar.vn/wp700/pc/1613810558698/Facebook-Avatar_3.png`,
+                        }}
+                    />
+                }
+                
 
                 <View style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
 
@@ -99,16 +111,18 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
                         </View>
 
                         <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20}/>
-                                <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text>
+                                {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{departure}</Text> */}
+                                <TextComponent numberOfLines={1} text={departure} />
                             </View>
                         </View>
 
                         <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-start'}}>
-                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row'}}>
+                            <View style= {{ marginTop: 5, display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                                 <IconEvil name="location" size={20} color='red'/>
-                                <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text>
+                                {/* <Text style= {{fontSize: 14, marginLeft: 5}}>{destination}</Text> */}
+                                <TextComponent numberOfLines={1} text={destination} />
                             </View>
                         </View>
                     </View>
@@ -116,33 +130,47 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
                 </View>
             </View>
 
-            <View style={styles.orderInfo}>
-                <Image
-                    style={{width: 80, height: 80}}
-                    source={
-                        require('../.../../../../assets/item.png')
-                    }/>
+            <View style={[styles.orderInfo, {marginTop: 5}]}>
                 
                 <View style={{flex: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-                    <Text style= {{fontSize: 14, marginLeft: 5, fontWeight: 'bold'}}>Số lượng {quantity} - {itemName}</Text>
-                    <IconEntypo name="chevron-right" size={25}/>
+                    <Text style= {{fontSize: 14, marginLeft: 10, fontWeight: 'bold'}}>{itemName} - Số lượng {quantity}</Text>
+                    {/* <IconEntypo name="chevron-right" size={25}/> */}
                 </View>
             </View>
 
-            <View style= {{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginBottom: 5, marginRight: 5}}>
+            <View style= {[styles.padding, {display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginRight: 5}]}>
                 <Text style={{color: '#C35454', fontStyle: 'italic'}}>Ngày hết hạn {timeEnd}</Text>
             </View>
+
+            <Image
+                style={styles.image}
+                source={{
+                uri: imagePath,
+                }}
+            />
         </View>
         );
   };
 
 
   const styles = StyleSheet.create({
-    order: {
-        paddingVertical: 10,
+    padding: {
+        paddingVertical: 5,
         paddingHorizontal: 10,
-        borderRadius: 5, 
-        marginTop: 10
+    },
+    order: {
+        marginTop: 5, 
+        marginBottom: 5,
+        borderRadius: 8,
+        shadowColor: Platform.OS === 'ios' ? 'rgba(0,0,0,0.3)' : 'black',
+        shadowOffset: {
+        width: 12,
+        height: 16,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 8,
+        overflow: 'hidden'
     },
     orderInfo: {
         display: 'flex',
@@ -150,6 +178,10 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
+    image: {
+        width: '100%',
+        height: 180
+    }
     
 })
 

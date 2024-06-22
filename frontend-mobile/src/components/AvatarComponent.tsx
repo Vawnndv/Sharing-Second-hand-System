@@ -23,10 +23,11 @@ interface Props {
   onPress?: () => void;
   isEdit?: boolean;
   onButtonPress?: () => void;
+  isNumber?: boolean;
 }
 
 const AvatarComponent = (props: Props) => {
-  const {avatar, username, size, styles, onPress, isEdit, onButtonPress, isBorder} = props;
+  const {avatar, username, size, styles, onPress, isEdit, onButtonPress, isBorder, isNumber} = props;
 
   return (
     <TouchableOpacity disabled={!onPress} onPress={onPress}>
@@ -55,16 +56,16 @@ const AvatarComponent = (props: Props) => {
               borderRadius: 100,
               borderWidth: isBorder ? 5: 1,
               borderColor: isBorder ? appColors.gray2 : appColors.white,
-              backgroundColor: appColors.primary,
+              backgroundColor: !isNumber ? appColors.primary : appColors.danger,
             },
             isEdit && localStyles.container,
             styles,
           ]}>
           <TextComponent
-            text={username.substring(0, 1).toLocaleUpperCase()}
+            text={!isNumber ? username.substring(0, 1).toLocaleUpperCase() : username}
             font={fontFamilies.bold}
             color={appColors.white}
-            size={size ? size / 3 : 14}
+            size={size ? size / 2.5 : 14}
           />
         </View>
       )}

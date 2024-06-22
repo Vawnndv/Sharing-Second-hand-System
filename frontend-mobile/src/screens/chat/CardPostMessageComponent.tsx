@@ -11,7 +11,7 @@ const CardPostMessageComponent = ({route, navigation, title, uri, postid}: any) 
   return (
     <CardComponent
       onPress={() => navigation.navigate('ItemDetailScreen', {
-        postId : postid,
+        postID : postid,
       })}
       isShadow
     >
@@ -24,7 +24,7 @@ const CardPostMessageComponent = ({route, navigation, title, uri, postid}: any) 
         }}
       />
       <View>
-      <Text style={{ fontFamily: fontFamilies.bold }}>{title}</Text>
+      <Text style={{ fontFamily: fontFamilies.bold, paddingVertical: 5, paddingHorizontal: 5 }}>{title}</Text>
       </View>
     </CardComponent>
   )

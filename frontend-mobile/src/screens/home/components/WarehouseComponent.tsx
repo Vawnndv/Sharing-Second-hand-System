@@ -5,7 +5,7 @@ import { Image, StyleSheet, View } from 'react-native'
 import postsAPI from '../../../apis/postApi'
 import { GetCurrentLocation } from '../../../utils/GetCurrenLocation'
 import CardItemResult from '../../search/CardItemResult'
-import { MyData } from '../../search/SearchResultScreen'
+import { PostData } from '../../search/SearchResultScreen'
 import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
 
@@ -23,18 +23,13 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [isEndOfData, setIsEndOfData] = useState(false);
+  const [isFirstTime, setIsFirstTime] = useState(true)
 
   const LIMIT = 5;
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Thực hiện các hành động cần thiết khi màn hình được focus
-      console.log('Home Screen Reloaded:');
-      setRefresh(prevRefresh => !prevRefresh);
-      console.log(refresh)
-    });
-    return unsubscribe;
-  }, [navigation]);
+  const handleRefresh = () => {
+    setRefresh(prevRefresh => !prevRefresh);
+  }
 
   useEffect(() => {
     setData([]);
@@ -57,7 +52,6 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
     try {
       let location = await GetCurrentLocation();
       if (!location) {
-        console.log("Failed to get location.");
         return;
       }
       
@@ -77,21 +71,26 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
         'post'
       )
 
-      const newData: MyData[] = res.allPosts;
+      const newData: PostData[] = res.allPosts;
 
-      if (!newData) {
-        setIsEndOfData(true)
-      } else {
-        if (newData.length <= 0 && page === 0)
-          setIsEmpty(true)
-        if (newData.length <= 0 && data.length > 0)
+      if(!isFirstTime){
+        if (!newData) {
           setIsEndOfData(true)
+        } else {
+          if (newData.length <= 0 && page === 0)
+            setIsEmpty(true)
+          if (newData.length <= 0 && data.length > 0)
+            setIsEndOfData(true)
+        }
+  
+        if (newData.length > 0)
+          setPage(page + 1); // Tăng số trang lên
+  
+        setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+      }else{
+        setIsFirstTime(false)
       }
-
-      if (newData.length > 0)
-      setPage(page + 1); // Tăng số trang lên
-
-      setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+      
 
     } catch (error) {
       console.log(error);
@@ -101,7 +100,6 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   };
 
   const handleEndReached = () => {
-    console.log(isLoading, isEmpty, isEndOfData)
     if (!isLoading && !isEmpty && !isEndOfData) {
       fetchData(); // Khi người dùng kéo xuống cuối cùng của danh sách, thực hiện fetch dữ liệu mới
     }
@@ -117,7 +115,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
       />
     </View>
   ) : (
-    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} />
+    <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} handleRefresh={handleRefresh}/>
   )
 }
 

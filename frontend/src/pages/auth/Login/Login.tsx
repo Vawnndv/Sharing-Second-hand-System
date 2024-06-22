@@ -1,5 +1,6 @@
 // import './style.scss'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -100,24 +101,21 @@ function Login(props: Props) {
       setValue('email', rememberedCredentials.email);
       setValue('password', rememberedCredentials.password);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
       if (userInfo) {
-      if (userInfo?.isAdmin) {
-          navigate('/dashboard')
-      } else {
-          
-          navigate('/')
-      }
+        if (userInfo?.roleID === 3) {
+            navigate('/dashboard')
+        } else {
+            navigate('/')
+        }
       }
 
       if (isSuccess) {
-        toast.success(`Welcome back ${userInfo?.firstName}`)
+        toast.success(`Chào mừng quay trở lại ${userInfo?.firstName}`)
       }
       if (isError) {
-        console.log(isError)
         toast.error(isError)
         dispatch({ type: 'USER_LOGIN_RESET' })
       }
@@ -180,7 +178,7 @@ function Login(props: Props) {
                 color: 'primary.main'
               }}
             >
-              Sign in
+              Đăng nhập
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
               <TextField
@@ -195,18 +193,18 @@ function Login(props: Props) {
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
-              <Grid container sx={{ justifyContent: 'flex-end' }}>
+              {/* <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
                   <Link component={RouterLink} to="/user/activation" variant="body2">
                     Resend activation email
                   </Link>
                 </Grid>
-              </Grid>
+              </Grid> */}
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                label="Password"
+                label="Mật khẩu"
                 id="password"
                 autoComplete="current-password"
                 {...register('password')}
@@ -230,8 +228,8 @@ function Login(props: Props) {
               />
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
-                  <Link component={RouterLink} to="/user/forgot" variant="body2">
-                    Forgot password?
+                  <Link component={RouterLink} to="/forgot-password" variant="body2">
+                    Quên mật khẩu?
                   </Link>
                 </Grid>
               </Grid>
@@ -240,7 +238,7 @@ function Login(props: Props) {
               </Grid>
               <FormControlLabel
                 control={<Checkbox onChange={handleRememberMeChange} checked={rememberMe} value="remember" color="primary" />}
-                label="Remember me"
+                label="Ghi nhớ đăng nhập"
               />
               <Button
                 type="submit"
@@ -250,18 +248,18 @@ function Login(props: Props) {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                      'Loading...'
+                      'Đang tải...'
                   ) : (
                 <>
                   <FiLogIn />
-                  <span style={{ marginLeft: '4px' }}>Sign In</span>
+                  <span style={{ marginLeft: '4px' }}>Đăng nhập</span>
                 </>
               )} 
               </Button>
               <Grid container sx={{ justifyContent: 'flex-end' }}>
                 <Grid item>
                   <Link component={RouterLink} to="/register" variant="body2">
-                    Don &apos; t have an account? Sign Up
+                    Bạn chưa có tài khoản? Đăng ký
                   </Link>
                 </Grid>
               </Grid>
@@ -275,7 +273,7 @@ function Login(props: Props) {
                     fontSize: '20px'
                   }}
                 >
-                  Or sign in with
+                  Hoặc đăng nhập qua
                 </Typography>
                 <IconButton
                   // variant='rounded'

@@ -1,25 +1,38 @@
+import { Fontisto, SimpleLineIcons } from '@expo/vector-icons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import moment from 'moment'
 import React, { useEffect, useState } from 'react'
-import { ActivityIndicator, Button, Text, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
-import { AvatarComponent, ButtonComponent, ContainerComponent, HeaderComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import userAPI from '../../apis/userApi'
+import { AvatarComponent, ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
+import { appColors } from '../../constants/appColors'
+import { ProfileModel } from '../../models/ProfileModel'
 import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
-import { appColors } from '../../constants/appColors'
-import userAPI from '../../apis/userApi'
-import { ProfileModel } from '../../models/ProfileModel'
-import { Avatar } from 'react-native-paper'
-import { Fontisto } from '@expo/vector-icons'
+import { Flag } from 'iconsax-react-native'
+import ReportModal from '../../modals/ReportModal'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
   const [profileId, setProfileId] = useState('');
+  const [refresh, setRefresh] = useState(false)
+
+  const [visibleModalReport, setVisibleModalReport] = useState(false)
 
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
   
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // Thực hiện các hành động cần thiết khi màn hình được focus
+      setRefresh(prevRefresh => !prevRefresh);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   useEffect(() => {
     if (auth) {
       getProfile();
@@ -28,8 +41,7 @@ const ProfileScreen = ({navigation, route}: any) => {
 
   useEffect(() => {
     if (route.params) {
-      // const {id} = route.params;
-      setProfileId(auth.id);
+      setProfileId(route.params.id);
 
       if (route.params.isUpdated) {
         getProfile();
@@ -37,19 +49,18 @@ const ProfileScreen = ({navigation, route}: any) => {
     } else {
       setProfileId(auth.id);
     }
-  }, [route.params]);
+  }, [route.params, refresh]);
 
   useEffect(() => {
     if (profileId) {
       getProfile();
     }
-  }, [profileId]);
+  }, [profileId, refresh]);
 
   const getProfile = async () => {
     setIsLoading(true);
 
     try {
-      console.log(profileId, '12366')
       const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
       res && res.data && setProfile(res.data);
       setIsLoading(false);
@@ -65,7 +76,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   }
 
   return (
-    <ContainerComponent isScroll title='Profile' back={auth.roleID === 1} right={auth.roleID === 1}>
+    <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1}>
       {isLoading ? (
         <ActivityIndicator />
         // <LoadingComponent isLoading={isLoading} value={1} />
@@ -75,7 +86,7 @@ const ProfileScreen = ({navigation, route}: any) => {
             <RowComponent>
               <AvatarComponent 
                 avatar={profile.avatar}
-                username={profile.username ? profile.username : profile.email}
+                username={profile.firstname ? profile.firstname : profile.email}
                 size={150}
                 isBorder
               />
@@ -91,7 +102,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={`20`}
+                  text={profile.giveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />
@@ -107,7 +118,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={`10`}
+                  text={profile.receiveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />
@@ -115,51 +126,142 @@ const ProfileScreen = ({navigation, route}: any) => {
               </View>
             </RowComponent>
           </SectionComponent>
-          <SpaceComponent height={21} />
-          {/* <SectionComponent>
-            
-          </SectionComponent> */}
-          <SpaceComponent height={20} />
-          <RowComponent justify='center'>
-            <SectionComponent>
-              <ButtonComponent
-                styles={{
-                  borderWidth: 1,
-                  borderColor: appColors.primary,
-                  backgroundColor: appColors.white,
-                }}
-                text="Edit profile"
-                onPress={() =>
-                  navigation.navigate('EditProfileScreen', {
-                    profile,
-                  })
+          {/* <SpaceComponent height={21} /> */}
+          <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
+            {(auth.id !== profile.userId) && (
+              <TouchableOpacity
+                onPress={() => 
+                  setVisibleModalReport(true)
                 }
-                textColor={appColors.primary}
-                type="primary"
-              />
-
-              {
-                auth.roleID !== 1 &&
-                <ButtonComponent
-                  styles={{
-                    borderWidth: 1,
-                    borderColor: appColors.white,
-                    backgroundColor: appColors.gray,
-                  }}
-                  text="Log out"
-                  onPress={() =>
-                    handleLogout()
-                  }
-                  textColor={appColors.white}
-                  type="primary"
+              >
+                <Flag
+                  size="28"
+                  color={appColors.green}
+                  variant="Outline"
                 />
-              }
-            </SectionComponent>
-          </RowComponent>
+              </TouchableOpacity>
+              
+            )}
+          </View>
+          <SectionComponent>
+            <View style={styles.container}>
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <Fontisto name="email" size={24} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.email}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <SimpleLineIcons name="phone" size={24} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.phonenumber}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <Fontisto name="date" size={24} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.dob ? moment(profile.dob).format('DD-MM-YYYY') : ''}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+              <View style={styles.infoContainer}>
+                <View style={styles.iconContainer}>
+                  <SimpleLineIcons name="location-pin" size={26} color={appColors.gray} />
+                </View>
+                <View style={styles.textContainer}>
+                  <TextComponent text={profile.address}/>
+                </View>
+              </View>
+              <View style={styles.separator} />
+            </View>
+          </SectionComponent>
+          {
+            profile.userId === auth.id && (
+              <RowComponent justify='center'>
+                <SectionComponent>
+                  <ButtonComponent
+                    styles={{
+                      borderWidth: 1,
+                      borderColor: appColors.primary,
+                      backgroundColor: appColors.white,
+                    }}
+                    text="Sửa thông tin"
+                    onPress={() =>
+                      navigation.navigate('EditProfileScreen', {
+                        profile,
+                      })
+                    }
+                    textColor={appColors.primary}
+                    type="primary"
+                  />
+    
+                  {
+                    auth.roleID !== 1 &&
+                    <ButtonComponent
+                      styles={{
+                        borderWidth: 1,
+                        borderColor: appColors.white,
+                        backgroundColor: appColors.gray,
+                      }}
+                      text="Đăng xuất"
+                      onPress={() =>
+                        handleLogout()
+                      }
+                      textColor={appColors.white}
+                      type="primary"
+                    />
+                  }
+                </SectionComponent>
+              </RowComponent>
+            )
+          }
+
+          <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={profile.firstname + ' ' + profile.lastname} reportType={1} userID={profile.userId} postID={null} reporterID={auth.id} warehouseID={null}/>
         </>
       )}
     </ContainerComponent>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  iconContainer: {
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 1,
+  },
+  label: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  info: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
+    paddingBottom: 5,
+  },
+  separator: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+    marginBottom: 10,
+  },
+});
+
 
 export default ProfileScreen

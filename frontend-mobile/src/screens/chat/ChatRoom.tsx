@@ -15,10 +15,10 @@ import * as ImagePicker from 'expo-image-picker';
 import { UploadImageToAws3 } from '../../ImgPickerAndUpload'
 import chatAPI from '../../apis/chatApi'
 import postsAPI from '../../apis/postApi'
-import axios from 'axios'
 import itemsAPI from '../../apis/itemApi'
 import { appInfo } from '../../constants/appInfos'
 import { fontFamilies } from '../../constants/fontFamilies'
+import axiosClient from '../../apis/axiosClient'
 
 const ChatRoom = ({ route, navigation }: any) => {
   const { item, postid } = route.params;
@@ -84,8 +84,8 @@ const ChatRoom = ({ route, navigation }: any) => {
     if (!roomDoc.exists()) {
       // Nếu room chưa tồn tại, tạo room mới
       await setDoc(roomRef, {
-          roomID,
-          createdAt: Timestamp.fromDate(new Date())
+        roomID,
+        createdAt: Timestamp.fromDate(new Date())
       });
 
       postid && await handleSendPost()
@@ -108,15 +108,9 @@ const ChatRoom = ({ route, navigation }: any) => {
       textRef.current = "";
       if(inputRef) inputRef?.current?.clear()
       const newDoc = await addDoc(messageRef, {
-        // userid: auth?.id,
-        // text: message,
-        // avatar: auth?.avatar,
-        // firstname: auth?.firstname,
-        // lastname: auth?.lastname,
-        // createdAt: Timestamp.fromDate(new Date())
         userid: auth?.id,
         text: message,
-        username: auth?.username ? auth?.username : '',
+        username: auth?.firstName +  ' '  + auth?.lastName,
         type: 'text',
         createdAt: Timestamp.fromDate(new Date()),
         isRead: false
@@ -135,16 +129,16 @@ const ChatRoom = ({ route, navigation }: any) => {
       textRef.current = "";
       if(inputRef) inputRef?.current?.clear()
 
-      const res = await axios.get(`${appInfo.BASE_URL}/posts/${postid}`)
+      const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postid}`)
       
-      const res_image = await axios.get(`${appInfo.BASE_URL}/items/images/${res.data.postDetail.itemid}`)
+      const res_image: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${res.postDetail.itemid}`)
 
-      const post = res.data.postDetail;
-      const uri = res_image.data.itemImages[0].path
+      const post = res.postDetail;
+      const uri = res_image.itemImages[0].path
       const newDoc = await addDoc(messageRef, {
         userid: auth?.id,
         text: 'Tôi muốn xin món đồ này',
-        username: auth?.username ? auth?.username : '',
+        username: auth?.firstName +  ' '  + auth?.lastName,
         title: post?.title,
         postid: postid,
         uri: uri,
@@ -162,10 +156,7 @@ const ChatRoom = ({ route, navigation }: any) => {
       (async () => {
         for (const img of image) {
           try {
-            const temp = await UploadImageToAws3(img);
-            console.log('START')
-
-            console.log('TEMP', temp)
+            const temp = await UploadImageToAws3(img, false);
             const url = temp.url
             if (!url) continue;
 
@@ -178,7 +169,7 @@ const ChatRoom = ({ route, navigation }: any) => {
                 text: url,
                 type: 'image',
                 createdAt: Timestamp.fromDate(new Date()),
-                username: auth?.username ? auth?.username : '',
+                username: auth?.firstName +  ' '  + auth?.lastName,
                 isRead: false
             });
 
@@ -231,8 +222,11 @@ const ChatRoom = ({ route, navigation }: any) => {
         </View>
         <View style={{marginBottom: hp(2), paddingTop: hp(2)}}>
             <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: 3}}>
-            { item.enablechat == "true" ? ( 
-
+            { item.enablechat == "false" ? ( 
+              <View style={{flex: 1, alignItems: 'center'}}>
+                  <Text style={{fontFamily: fontFamilies.light, fontStyle: 'italic', opacity:0.5}}>Đơn hàng đã hoàn tất hoặc đã được cho người khác</Text>
+              </View>
+            ) : (
               <View style={{padding: 5, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: appColors.white, borderRadius: 100, borderWidth: 0.2}}>
                 <TextInput
                   ref={inputRef}
@@ -246,10 +240,6 @@ const ChatRoom = ({ route, navigation }: any) => {
                 <TouchableOpacity onPress={() => {handleSendMessage()}} style={{padding: 10, borderRadius: 100, backgroundColor: appColors.gray5}}>
                   <Feather name="send" size={hp(2.7)} color={'#737373'}></Feather>
                 </TouchableOpacity>
-              </View>
-            ) : (
-              <View style={{flex: 1, alignItems: 'center'}}>
-                  <Text style={{fontFamily: fontFamilies.light, fontStyle: 'italic', opacity:0.5}}>Đơn hàng đã hoàn tất hoặc đã được cho người khác</Text>
               </View>
             )}
             </View>

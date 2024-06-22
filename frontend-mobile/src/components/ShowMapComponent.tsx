@@ -28,12 +28,11 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
     const getHowFarAway = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị tri đã bị hoãn');
             return 0;
         }
 
         let currentLocationResult: any = await Location.getCurrentPositionAsync({});
-    //   console.log(location)
         const currentLocation = {
             latitude: currentLocationResult.coords.latitude,
             longitude: currentLocationResult.coords.longitude
@@ -67,7 +66,6 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         const fetchData = async () => {
             const distance = await getHowFarAway();
             setDistance(Math.round(distance));
-            console.log(distance)
         };
 
         fetchData()
@@ -80,13 +78,10 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         return meter + 'm'
     }
     
-    console.log(initalPosition)
-    
-    // console.log(width, height)
     return (
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>
-                <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2}}>
+                <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2, padding: 5}}>
                     <Text style={{fontFamily: fontFamilies.regular, flex: 1}}>Uớc tính: </Text>
                     <Text style={{fontFamily: fontFamilies.regular}}>{convertMeterToKilometer(distance)}</Text>
                 </View>

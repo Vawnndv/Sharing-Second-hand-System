@@ -7,9 +7,8 @@ export const getGallaryPermission = async (setGalleryPermission: any) => {
     const result = await ImagePicker.requestMediaLibraryPermissionsAsync()
     if(result.granted){
         setGalleryPermission(true)
-        console.log(`gallery permission true`)
     }else{
-        alert(`Can't get Gallery Permission`)
+        alert(`Chưa được cấp quyền vào thư viện ảnh`)
     }
 }
 
@@ -17,9 +16,8 @@ export const getCameraPermission = async (setCameraPermission: any) => {
     const result = await ImagePicker.requestCameraPermissionsAsync();
     if(result.granted){
         setCameraPermission(true)
-        console.log(`camera permission true`)
     }else{
-        alert(`Can't get Camera Permission`)
+        alert(`Chưa được cấp quyền máy ảnh`)
     }
     
 }
@@ -50,7 +48,7 @@ export const PickImage = async (permission: boolean, multiple: boolean, setImage
         }
     
     }else{
-        alert(`Permission hasn't granted yet`)
+        alert(`Quyền chưa được cấp`)
     }
     
 }
@@ -70,7 +68,6 @@ export const TakePhoto = async (permission: boolean, setImage: any, setModalVisi
                 name: new Date().getTime(),
                 type: result.assets[0].mimeType,
             }
-            console.log(finalResult)
             setImage(finalResult)
             setModalVisible(false);
             // setImage(result.assets[0])
@@ -78,7 +75,7 @@ export const TakePhoto = async (permission: boolean, setImage: any, setModalVisi
         
     }
     else{
-        alert(`Permission hasn't granted yet`)
+        alert(`Quyền chưa được cấp`)
     }
 }
 
@@ -104,7 +101,7 @@ export const uploadImage = async (file: any) => {
         // }
         // });
 
-        await UploadImageToAws3(file);
+        await UploadImageToAws3(file, false);
     }).catch(error => {
         console.error('error reading image', error)
     })
@@ -114,7 +111,7 @@ export const uploadImage = async (file: any) => {
         
 }
 
-export const UploadImageToAws3 = async (file: any) => {
+export const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
 
     try {
         const fileContent = await FileSystem.readAsStringAsync(file.uri, { encoding: FileSystem.EncodingType.Base64 });
@@ -124,6 +121,9 @@ export const UploadImageToAws3 = async (file: any) => {
         formData.append('file', fileContent);
         formData.append('name', file.name)
         formData.append('type', file.type)
+        if(isLimit){
+            formData.append('typeExpire', "expire")
+        }
 
         // Gửi FormData qua phương thức POST
         const serverResponse = await fetch(`${appInfo.BASE_URL}/aws3/uploadImage`, {
@@ -137,7 +137,6 @@ export const UploadImageToAws3 = async (file: any) => {
         // Xử lý phản hồi từ server nếu cần
         const data = await serverResponse.json();
 
-        console.log('Server response:', data);
         return data;
     } catch (error) {
         console.error('Error uploading file:', error);

@@ -11,19 +11,26 @@ import RowComponent from './RowComponent';
 import SpaceComponent from './SpaceComponent';
 import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
+import { fontFamilies } from '../constants/fontFamilies';
+import { usePushNotifications } from '../utils/usePushNotification';
 
 const DrawerCustom = ({navigation}: any) => {
   const auth = useSelector(authSelector);
   const dispatch = useDispatch();
 
   const size = 24;
-  const color = appColors.gray;
+  const color = appColors.black2;
   const profileMenu = [
     {
       key: 'Home',
       title: 'Trang chủ',
       icon: <Home size={size} color={color} />,
       
+    },
+    {
+      key: 'MyPost',
+      title: 'Bài đăng',
+      icon: <AntDesign name="filetext1" size={size} color={color} />,
     },
     {
       key: 'MyOrder',
@@ -83,6 +90,14 @@ const DrawerCustom = ({navigation}: any) => {
   ];
 
   const handleLogout = async () => {
+    const fcmtoken = await AsyncStorage.getItem('fcmtoken');
+
+    if (fcmtoken) {
+      if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
+        await usePushNotifications.removeUserToken(auth.id, fcmtoken);
+      }
+    }
+
     await AsyncStorage.clear();
     dispatch(removeAuth({}));
   }
@@ -110,7 +125,6 @@ const DrawerCustom = ({navigation}: any) => {
       //   });
       //   break;
       default:
-        console.log(key);
         navigation.navigate(key);
         break;
     }
@@ -127,7 +141,9 @@ const DrawerCustom = ({navigation}: any) => {
           navigation.closeDrawer('');
           navigation.navigate('Profile', {
             screen: 'ProfileScreen',
-            // params: {},
+            params: {
+              id: auth.id
+            },
           });
         }}
       >
@@ -155,7 +171,7 @@ const DrawerCustom = ({navigation}: any) => {
             {item.icon}
             <TextComponent
               text={item.title}
-              styles={[localStyles.listItemText, {fontSize: 16}]}
+              styles={[localStyles.listItemText, {fontSize: 16, fontFamily: fontFamilies.medium}]}
             />
           </RowComponent>
         )}
@@ -189,6 +205,6 @@ const localStyles = StyleSheet.create({
   },
 
   listItemText: {
-    paddingLeft: 12,
+    paddingLeft: 15
   }
 })

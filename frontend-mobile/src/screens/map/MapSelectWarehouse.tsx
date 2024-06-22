@@ -1,11 +1,15 @@
 import MapView, {Callout, Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 
 import * as Location from 'expo-location';
-import {Dimensions, View, StyleSheet, TextInput, Text, ScrollView, Keyboard, TouchableOpacity,KeyboardAvoidingView, Alert} from "react-native"
+import {Dimensions, View, StyleSheet, TextInput, Text, ScrollView, Keyboard, TouchableOpacity,KeyboardAvoidingView, Alert, Modal} from "react-native"
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
 import { EvilIcons, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Checkbox } from 'react-native-paper';
+import { fontFamilies } from '../../constants/fontFamilies';
+import axiosClient from '../../apis/axiosClient';
+import { appInfo } from '../../constants/appInfos';
+import React from 'react';
 
 const { width, height } = Dimensions.get("window")
 
@@ -33,25 +37,63 @@ const initalPosition = {
 //     }
 // ]
 
+const stylesConfirmComponent = StyleSheet.create({
+    container: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+        opacity: 500,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    },
+    modalView: {
+        width: '80%',
+        display: 'flex',
+        justifyContent: 'center',
+        padding: 15,
+        borderRadius: 10,
+        backgroundColor: '#ffffff',
+        opacity: 500
+    },
+    buttonContainer: {
+        width: '100%', 
+        display: 'flex',
+        flexDirection: 'row', 
+        marginTop: 20,
+        justifyContent: 'space-around'
+    },
+    button: {
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: '#693F8B',
+    }
+})
+
 export default function MapSelectWarehouse({navigation, route}: any) {
 
-    const {warehouses, checkWarehouses, setCheckWarehouses}: any = route.params;
-    // console.log("setWarehousesID", setWarehousesID)
+    const {checkWarehouses, setCheckWarehouses}: any = route.params;
+
+    const [warehouses, setWarehouses] = useState<any>([])
 
     // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(checkWarehouses)
     const [location, setLocation] = useState<any>(null);
-    // console.log(location)
+
+    const [visible, setVisible] = useState(false)
+    const showModal = () => setVisible(true);
+    const hideModal = () => setVisible(false);
 
     const handleGetMyLocation = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-            Alert.alert('Permission to access location was denied');
+            Alert.alert('Quyền truy cập vào vị trí đã bị hoãn');
             return;
           }
     
           let location: any = await Location.getCurrentPositionAsync({});
-        //   console.log(location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
@@ -61,9 +103,19 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         //   setLocation(location);
     }
 
+    const getWarehouses = async () => {
+        try {
+            const response: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
+            setWarehouses(response.wareHouses)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     // thực hiện hiển thị tại vị trí người dùng trước
     useEffect(() => {
         handleGetMyLocation()
+        getWarehouses() 
     },[])
 
     // dùng để di chuyển camera khi click vào 1 kết quả
@@ -84,8 +136,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         let newData = [...checkWarehousesOnMap]
         newData[index] = !newData[index]
         setCheckWarehousesOnMap(newData)
-        console.log(checkWarehousesOnMap)
-        // console.log('press check box')
     }
 
     const handleConfirmSelect = () => {
@@ -103,6 +153,119 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         // setWarehousesID(listWarehouseID)
         navigation.goBack()
     }
+
+    const ConfirmComponent = ({}: any) => {
+        const [tempSelectedWarehouse, setTempSelectedWarehouse] = useState(checkWarehousesOnMap)
+        const handleSelectTempWarehouse = (index: number) => {
+            const newSelectedWarehouse = [...tempSelectedWarehouse]
+            newSelectedWarehouse[index] = !newSelectedWarehouse[index]
+            setTempSelectedWarehouse(newSelectedWarehouse)
+        }
+        return (
+    
+                <Modal
+                animationType="slide"
+                transparent={true}
+                visible={visible}>
+                    <View style={stylesConfirmComponent.container}>
+                        <View style={stylesConfirmComponent.modalView}>
+                            <View style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+                                <Text style={{fontSize: 16, fontWeight: 'bold'}}>
+                                    {'Danh sách kho'}
+                                </Text>
+                            </View>
+                            
+                            <ScrollView horizontal={false} style={{maxHeight: 300}}>
+                            {
+                                warehouses.map((warehouse: any, index: number) => {
+                                    return (
+                                        <View key={index} style={{paddingVertical: 5, display: 'flex', flexDirection: 'row'}}>
+                                            <TouchableOpacity style={{flex: 1}}
+                                                onPress={() => {setVisible(false), moveCameraToCoordinate({
+                                                    latitude: parseFloat(warehouse.latitude),
+                                                    longitude: parseFloat(warehouse.longitude)
+                                                })}}>
+                                                <Text style={{fontFamily: fontFamilies.bold, fontSize: 15}}>{warehouse.warehousename}</Text>
+                                                <Text>{warehouse.address}</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => handleSelectTempWarehouse(index)}>
+                                                <Checkbox
+                                                    status={tempSelectedWarehouse[index] ? 'checked' : 'unchecked'}
+                                                    uncheckedColor='#693F8B'
+                                                    color='#693F8B'
+                                                    onPress={() => handleSelectTempWarehouse(index)}/>
+                                            </TouchableOpacity>
+                                            
+                                        </View>
+                                    )
+                                })
+                            }
+                            </ScrollView>
+                            
+    
+                            <View style={stylesConfirmComponent.buttonContainer}>
+                                <TouchableOpacity
+                                    onPress={() => {setVisible(false), setCheckWarehousesOnMap(tempSelectedWarehouse)}}
+                                    style={[stylesConfirmComponent.button, {backgroundColor: '#693F8B',}]}>
+                                    <Text style={{color: 'white'}}>
+                                        Xác nhận
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                            
+                        </View>
+                    </View>
+                    
+                    
+                </Modal>
+    
+            
+        )
+    }
+
+    interface WarehouseMarkerProps {
+        item: {
+            latitude: string;
+            longitude: string;
+            warehousename: string;
+            address: string;
+        };
+        index: number;
+        onPress: () => void;
+        isChecked: boolean;
+    }
+    
+
+    const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
+        return (
+            <Marker
+                coordinate={{
+                    latitude: parseFloat(item.latitude),
+                    longitude: parseFloat(item.longitude),
+                }}
+                onPress={onPress}
+                key={index}
+            >
+                <View style={styles.boxLocation}>
+                    <View style={{ backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B' />
+                            <TouchableOpacity onPress={() => console.log('checkbox')}>
+                                <Checkbox
+                                    status={isChecked ? 'checked' : 'unchecked'}
+                                    uncheckedColor='#693F8B'
+                                    color='#693F8B'
+                                />
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.warehousename}</Text>
+                        <Text style={{ maxWidth: 150, textAlign: 'center' }}>{item.address}</Text>
+                    </View>
+                    <Ionicons name='location' size={50} style={{ color: '#693F8B' }} />
+                </View>
+            </Marker>
+        );
+    });
     
     return (
         <ContainerComponent back>
@@ -119,40 +282,14 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     {
                         warehouses.map((item: any, index: number) => {
                             return(
-                                <Marker
-                                    coordinate={{
-                                        latitude: parseFloat(item.latitude),
-                                        longitude: parseFloat(item.longitude)
-                                    }}
-                                    onPress={() => handleClickWarehouse(index)}
+                                <WarehouseMarker
                                     key={index}
-                                >
-                    
-                                    <View style={styles.boxLocation}>
-                                        <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
-                                            <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                                <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B'/>
-                                                <TouchableOpacity
-                                                    onPress={() => console.log('checkbox')}>
-                                                    <Checkbox
-                                                        status={checkWarehousesOnMap[index] === false ? 'unchecked' : 'checked'}
-                                                        uncheckedColor='#693F8B'
-                                                        color='#693F8B'
-                                                        />
-                                                </TouchableOpacity>
-                                                
-                                            </View>
-                                            <Text style={{fontSize: 15, fontWeight: 'bold'}}>{item.warehousename}</Text>
-                                            <Text style={{maxWidth: 150, textAlign: 'center'}}>{item.address}</Text>
-                                        </View>
-                                        
-                                        <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
-                                    </View>
-                                
-                                    
-                                    
-                                </Marker>
-                            )
+                                    item={item}
+                                    index={index}
+                                    onPress={() => handleClickWarehouse(index)}
+                                    isChecked={checkWarehousesOnMap[index] !== false}
+                                />
+                                )
                         })
                     }
                 </MapView>
@@ -160,6 +297,10 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                 {/* <View style={styles.header}>
                     <Text>Bản đồ đang hiển thị các kho ở gần bạn trong bán kính 20km</Text>
                 </View> */}
+                <TouchableOpacity style={styles.warehouses}
+                    onPress={showModal}>
+                    <MaterialCommunityIcons name='warehouse' size={35} color='white'/>
+                </TouchableOpacity>
 
                 <TouchableOpacity style={styles.getMyLocation}
                     onPress={handleGetMyLocation}>
@@ -174,7 +315,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                 
             </KeyboardAvoidingView>
             
-            
+            <ConfirmComponent />
         </ContainerComponent>
         
     );
@@ -250,5 +391,17 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+    },warehouses: {
+        position: 'absolute',
+        top: 20,
+        right: 10,
+        elevation: 8,
+        width: 60,
+        height: 60,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems:'center',
+        backgroundColor: '#693F8B',
+        borderRadius: 100,
     },
 })

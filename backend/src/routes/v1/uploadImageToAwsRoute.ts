@@ -44,11 +44,9 @@ const upload = multer({ storage: storage });
 const router = express.Router();
 router.post('/uploadImage', upload.single('file'), async (req: Request, res: Response) => {
 
-  console.log('req.body ', req.body);
-  console.log('req.file ', req.file);
+
   if (req.body.file) {
     
-    console.log(req.file);
 
     // const dataImage = fs.readFileSync(file.path);
     const params = {

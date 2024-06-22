@@ -46,7 +46,7 @@ const updateProfileAction = (user: any): ThunkAction<void, RootState, unknown, A
       type: userConstants.USER_UPDATE_PROFILE_SUCCESS,
       payload: response
     })
-    toast.success('Profile Updated')
+    toast.success('Đã cập nhật thông tin tài khoản')
     dispatch({
       type: authConstants.USER_LOGIN_SUCCESS,
       payload: response
@@ -56,8 +56,35 @@ const updateProfileAction = (user: any): ThunkAction<void, RootState, unknown, A
   }
 }
 
+
+// admin get all users action
+const getAllUsersAction = (page: number, pageSize: number, filterModel: any, sortModel: any): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch =>  {
+  try {
+    dispatch({ type: userConstants.GET_ALL_USERS_REQUEST })
+    const response = await userApi.getAllUsersService(page, pageSize, filterModel, sortModel)
+    dispatch({ type: userConstants.GET_ALL_USERS_SUCCESS, payload: response })
+  } catch (error) {
+    ErrorsAction(error, dispatch, userConstants.GET_ALL_USERS_FAIL)
+  }
+}
+
+
+// admin delete user action
+const deleteUserAction = (id: string): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch =>  {
+  try {
+    dispatch({ type: userConstants.DELETE_USER_REQUEST })
+    await userApi.deleteUserService(id)
+    dispatch({ type: userConstants.DELETE_USER_SUCCESS })
+    toast.success('Xóa người dùng thành công')
+  } catch (error) {
+    ErrorsAction(error, dispatch, userConstants.DELETE_USER_FAIL)
+  }
+}
+
 export {
     changePasswordAction,
     updateProfileAction,
     getProfileAction,
+    getAllUsersAction,
+    deleteUserAction,
 }

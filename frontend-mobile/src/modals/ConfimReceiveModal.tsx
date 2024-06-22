@@ -6,21 +6,31 @@ import orderAPI from '../apis/orderApi';
 import { UploadImageToAws3 } from '../ImgPickerAndUpload';
 import LoadingModal from './LoadingModal';
 import { appInfo } from '../constants/appInfos';
+import { HandleNotification } from '../utils/handleNotification';
+import { useSelector } from 'react-redux';
+import { authSelector } from '../redux/reducers/authReducers';
+import axios from 'axios';
+import axiosClient from '../apis/axiosClient';
 
 interface Props {
   setModalConfirmVisible: any;
   modalConfirmVisible: any;
   image: any;
   orderid: any;
+  owner: any,
+  isWarehousePost: boolean,
+  warehouseID: string,
+  auth: any,
+  name: string
 }
 
 const ConfimReceiveModal = (props: Props) => {
-  const { setModalConfirmVisible, modalConfirmVisible, image, orderid } = props;
+  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    const {url} = await UploadImageToAws3(image);
+    const {url} = await UploadImageToAws3(image, false);
     try {
       const res = await orderAPI.HandleOrder('/upload-image-confirm', 
       {
@@ -28,6 +38,39 @@ const ConfimReceiveModal = (props: Props) => {
         imgconfirmreceive: url
       }
       , 'post');
+
+      if( isWarehousePost ){
+        const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+          warehouseID
+        })
+        resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
+          await HandleNotification.sendNotification({
+            userReceiverId: collab.userid,
+            userSendId: auth.id,
+            name: `${auth?.firstName} ${auth.lastName}`,
+            // postid: postID,
+            avatar: auth.avatar,
+            link: `order/${orderid}`,
+            title: ' Đã xác nhận nhận đồ',
+            body:` đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+          })
+        })
+      }else{
+        await HandleNotification.sendNotification({
+          userReceiverId: owner,
+          userSendId: auth.id,
+          name: `${auth?.firstName} ${auth.lastName}`,
+          // postid: postID,
+          avatar: auth.avatar,
+          link: `order/${orderid}`,
+          title: ' Đã xác nhận nhận đồ',
+          body:` đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+        })
+      }
+
+      
+
+      
       setIsLoading(false);
       setModalConfirmVisible(false);
     } catch (error: unknown) {
@@ -81,8 +124,8 @@ const localStyles = StyleSheet.create({
   },
   modalView: {
     margin: 20,
-    paddingVertical: 20,
-    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     borderRadius: 10,
     alignItems: 'center',
   },
@@ -100,8 +143,8 @@ const localStyles = StyleSheet.create({
     borderRadius: 10,
   },
   image: {
-    width: appInfo.sizes.WIDTH - 100,
-    height: appInfo.sizes.HEIGHT - 400,
+    width: appInfo.sizes.WIDTH - 50,
+    height: appInfo.sizes.WIDTH - 150,
     marginBottom: 10,
   },
   confirmButton: {
