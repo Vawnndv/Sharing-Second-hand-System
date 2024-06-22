@@ -21,7 +21,7 @@ const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
             formData.append('typeExpire', "expire")
           }
           // Gửi FormData qua phương thức POST
-          const serverResponse = await fetch(`http://localhost:3000/aws3/uploadImage`, {
+          const serverResponse = await fetch(`${process.env.BASE_URL}/aws3/uploadImage`, {
             method: 'POST',
             body: formData,
           });
