@@ -635,7 +635,6 @@ const handleGive = async () =>{
     const imgconfirmreceive = ' ';
     let givetype = receivetype;
     let warehouseidPost = post.warehouseid;
-    console.log(givetype, givetypeid)
 
     if(receivetype !== 'Cho nhận trực tiếp' && warehouse){
       warehouseidPost = warehouseid;

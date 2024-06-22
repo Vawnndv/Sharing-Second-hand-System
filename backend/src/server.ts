@@ -20,6 +20,7 @@ import mapRouter from './routes/mapRouter';
 import statisticRouter from './routes/statisticRouter';
 import collaboratorRouter from './routes/collaboratorRouter';
 import reportRouter from './routes/reportRouter';
+import ratingRouter from './routes/ratingRouter';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/chat', chatRouter);
 app.use('/map', mapRouter);
 
 app.use('/report', reportRouter);
+app.use('/rating', ratingRouter);
 
 app.use('/statistic', statisticRouter);
 

@@ -12,12 +12,15 @@ import { authSelector, removeAuth } from '../../redux/reducers/authReducers'
 import { globalStyles } from '../../styles/globalStyles'
 import { Flag } from 'iconsax-react-native'
 import ReportModal from '../../modals/ReportModal'
+import axiosClient from '../../apis/axiosClient'
+import { AirbnbRating } from "react-native-ratings";
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
   const [profileId, setProfileId] = useState('');
   const [refresh, setRefresh] = useState(false)
+  const [rating, setRating] = useState<any>(null)
 
   const [visibleModalReport, setVisibleModalReport] = useState(false)
 
@@ -63,6 +66,10 @@ const ProfileScreen = ({navigation, route}: any) => {
     try {
       const res = await userAPI.HandleUser(`/get-profile?userId=${profileId}`);
       res && res.data && setProfile(res.data);
+
+      const resRating = await axiosClient.get(`/rating/getRating?userID=${profileId}`)
+      // console.log(resRating.data)
+      setRating(resRating.data)
       setIsLoading(false);
     } catch (error) {
       console.log(error);
@@ -124,6 +131,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                 <SpaceComponent height={8} />
                 <TextComponent text="Sản phẩm đã nhận" />
               </View>
+              
             </RowComponent>
           </SectionComponent>
           {/* <SpaceComponent height={21} /> */}
@@ -181,6 +189,38 @@ const ProfileScreen = ({navigation, route}: any) => {
                 </View>
               </View>
               <View style={styles.separator} />
+              {
+                rating !== null && rating?.average_rate !== null &&
+
+                <><View style={styles.infoContainer}>
+                    <View style={styles.iconContainer}>
+                      <TextComponent text={rating.average_rate} styles={{
+                        backgroundColor: '#929200',
+                        paddingVertical: 2,
+                        paddingHorizontal: 15,
+                        color: 'white',
+                        borderRadius: 10,
+                        fontSize: 18,
+                        fontWeight: '800'
+                      }} />
+                    </View>
+                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                      <TextComponent text={rating.amount_rate} styles={{
+                        color: '#929200',
+                        fontSize: 18,
+                        paddingHorizontal: 10,
+                        fontWeight: '800'
+                      }} />
+                      <AirbnbRating
+                        count={5}
+                        size={20}
+                        defaultRating={parseInt(rating.average_rate)}
+                        isDisabled
+                        showRating={false} />
+                    </View>
+                  </View><View style={styles.separator} /></>
+              }
+              
             </View>
           </SectionComponent>
           {

@@ -28,11 +28,13 @@ interface Props {
   isWarehousePost: boolean,
   warehouseID: string,
   auth: any,
-  name: string
+  name: string,
+  visibleRatingModal: any;
+  setVisibleRatingModal: any;
 }
 
 const ConfimReceiveModal = (props: Props) => {
-  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name } = props;
+  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name, visibleRatingModal, setVisibleRatingModal } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/';
@@ -222,6 +224,7 @@ const ConfimReceiveModal = (props: Props) => {
             body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
           })
         }
+        setVisibleRatingModal(true);
         setIsLoading(false);
         setModalConfirmVisible(false);
       } catch (error: unknown) {
