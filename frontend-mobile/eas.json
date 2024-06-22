@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "ubuntu-20.04-android-30"
       },
       "ios": {
         "image": "default"
@@ -16,7 +16,7 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "image": "default"
+        "image": "ubuntu-20.04-android-30"
       },
       "ios": {
         "image": "default"
@@ -24,7 +24,15 @@
     },
     "production": {
       "android": {
+        "image": "ubuntu-20.04-android-30"
+      },
+      "ios": {
         "image": "default"
+      }
+    },
+    "production-apk": {
+      "android": {
+        "image": "ubuntu-20.04-android-30"
       },
       "ios": {
         "image": "default"
@@ -33,5 +41,11 @@
   },
   "submit": {
     "production": {}
-  }
+  },
+  "extra": {
+    "eas": {
+      "projectId": "retreasure"
+    }
+  },
+  "owner": "retreasure"
 }
