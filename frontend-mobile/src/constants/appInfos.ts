@@ -10,6 +10,6 @@ export const appInfo = {
   },
   
   BASE_URL: BASE_URL,
-  // BASE_URL:'http://192.168.239.83:3000',
+  // BASE_URL:'http://192.168.239.83:8080',
 
 }
