@@ -23,6 +23,7 @@ import postsAPI from '../apis/postApi';
 import { ActivityIndicator } from 'react-native-paper';
 import { statusOrder } from '../constants/statusOrder';
 import { ContainerComponent, TextComponent } from '../components';
+import RatingModal from './RatingModal';
 
 interface Data {
   title: string;
@@ -52,6 +53,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [visibleRating, setVisibleRating] = useState(false)
   const [isShowQR, setIsShowQR] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Data>();
@@ -279,7 +281,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
         <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
         {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible}
          image={image} orderid={data.orderid} owner={data.usergiveid} warehouseID={data.warehouseid} 
-         isWarehousePost={data.iswarehousepost} auth={auth} name={data.name}/>}
+         isWarehousePost={data.iswarehousepost} auth={auth} name={data.name} visibleRatingModal={visibleRating} setVisibleRatingModal={setVisibleRating}/>}
         <ShowImageModal visible={visible} setVisible={setVisible}>
           {
             isShowQR ? (
@@ -289,6 +291,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
             )
           }
         </ShowImageModal>
+        <RatingModal visible={visibleRating} setVisible={setVisibleRating} usergiveid={data?.usergiveid} orderid={data?.orderid}/>
       </ContainerComponent>
     );
   }

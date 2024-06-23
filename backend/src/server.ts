@@ -20,16 +20,17 @@ import mapRouter from './routes/mapRouter';
 import statisticRouter from './routes/statisticRouter';
 import collaboratorRouter from './routes/collaboratorRouter';
 import reportRouter from './routes/reportRouter';
+import ratingRouter from './routes/ratingRouter';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
-  res.send('Hello ReTreasure');
+  res.send('Wellcome to ReTreasure - Sharing Second-hand System');
 });
 
 app.use(express.json());
@@ -49,6 +50,7 @@ app.use('/chat', chatRouter);
 app.use('/map', mapRouter);
 
 app.use('/report', reportRouter);
+app.use('/rating', ratingRouter);
 
 app.use('/statistic', statisticRouter);
 

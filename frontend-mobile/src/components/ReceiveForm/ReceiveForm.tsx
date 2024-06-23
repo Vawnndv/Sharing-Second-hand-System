@@ -454,7 +454,7 @@ const handleReceive = async () => {
           // postid: postID,
           avatar: auth.avatar,
           link: `post/${postID}`,
-          title: ' Xin sản phẩm của bạn',
+          title: 'Xin sản phẩm của bạn',
           body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
         })
       }else{
@@ -466,7 +466,7 @@ const handleReceive = async () => {
           // postid: postID,
           avatar: auth.avatar,
           link: `post/${postID}`,
-          title: ' Xin sản phẩm của bạn',
+          title: 'Xin sản phẩm của bạn',
           body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
         })
 
@@ -481,7 +481,7 @@ const handleReceive = async () => {
             // postid: postID,
             avatar: auth.avatar,
             link: `post/${postID}`,
-            title: ' Xin sản phẩm của bạn',
+            title: 'Xin sản phẩm của bạn',
             body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin cho tiết!`
           })
         })
@@ -504,52 +504,51 @@ const handleReceive = async () => {
     let statusid = 3;
     let orderID = null;
 
-  
-      const title = post.title;
-      const location = ' ';
-      const description = post.description;
-      const departure = post.location;
-      const time = new Date();
-      const itemid = post.itemid;
-      const qrcode = ' ';
-      const ordercode = ' ';
-      const usergiveid = post.owner;
-      const postid = post.postid;
-      const imgconfirm = ' ';
-      const locationgive = post.addressid;
-      let userreceiveid = receiveid;
-      let locationreceive = post.addressid;
-      let givetypeid : any = receivetypeid;
-      const imgconfirmreceive = ' ';
-      let givetype = receivetype;
-      let warehouseidPost = post.warehouseid;
+    const title = post.title;
+    const location = ' ';
+    const description = post.description;
+    const departure = post.location;
+    const time = new Date();
+    const itemid = post.itemid;
+    const qrcode = ' ';
+    const ordercode = ' ';
+    const usergiveid = post.owner;
+    const postid = post.postid;
+    const imgconfirm = ' ';
+    const locationgive = post.addressid;
+    let userreceiveid = receiveid;
+    let locationreceive = post.addressid;
+    let givetypeid : any = receivetypeid;
+    const imgconfirmreceive = ' ';
+    let givetype = receivetype;
+    let warehouseidPost = post.warehouseid;
   
       // let warehouseid = null;
   
-      try{
-        const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
-          title,
-          location,
-          description,
-          departure,
-          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-          itemid,
-          status,
-          qrcode,
-          ordercode,
-          usergiveid,
-          postid,
-          imgconfirm,
-          locationgive,
-          locationreceive,
-          givetypeid: 3,
-          imgconfirmreceive,
-          givetype: "Cho nhận trực tiếp",
-          warehouseid: warehouseidPost,
-          userreceiveid: auth.id
-        });
+    try{
+      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
+        title,
+        location,
+        description,
+        departure,
+        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+        itemid,
+        status,
+        qrcode,
+        ordercode,
+        usergiveid,
+        postid,
+        imgconfirm,
+        locationgive,
+        locationreceive,
+        givetypeid: 1,
+        imgconfirmreceive,
+        givetype: "Cho nhận trực tiếp",
+        warehouseid: warehouseidPost,
+        userreceiveid: auth.id
+      });
   
-        orderID = response.orderCreated.orderid;    
+      orderID = response.orderCreated.orderid;    
         // if(receivetype === )
   
       const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
@@ -575,7 +574,7 @@ const handleReceive = async () => {
           // postid: postID,
           avatar: auth.avatar,
           link: `post/${postID}`,
-          title: ' Xin sản phẩm của bạn',
+          title: 'Xin sản phẩm của bạn',
           body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
         })
       })
@@ -712,7 +711,7 @@ const handleGive = async () =>{
           // postid: postID,
           avatar: auth.avatar,
           link: `post/${postID}`,
-          title: ' Đã cho sản phẩm',
+          title: 'Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
             `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
             `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
