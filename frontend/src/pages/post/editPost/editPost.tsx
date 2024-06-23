@@ -305,7 +305,7 @@ function EditPost() {
         }
         setIsLoading(false)
         // try{
-        //     const res = await axios.post(`http://localhost:3000/posts/update-post-status`, {
+        //     const res = await axios.post(`http://localhost:8080/posts/update-post-status`, {
         //         postid: newPostid,
         //         statusid: 12,
         //         isApproveAction: true,
