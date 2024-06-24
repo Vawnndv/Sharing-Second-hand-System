@@ -14,7 +14,7 @@ import ChatRoom from './pages/chat/ChatRoom';
 import InventoryScreen from './pages/inventory/InventoryScreen';
 import Layout from './layout/Layout';
 import ViewPostDetail from './pages/post/postDetail/ViewPostDetail';
-import { AdminProtectedRouter, ProtectedRouter } from './ProtectedRouter';
+import { AdminProtectedRouter, CollaboratorProtectedRouter, ProtectedRouter } from './ProtectedRouter';
 import ViewInventoryDetail from './pages/inventory/ViewInventoryDetail';
 import Statistic from './pages/statistic/Statistic';
 import Users from './pages/Admin/users/Users';
@@ -45,19 +45,21 @@ export function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/password" element={<Password />} />
           <Route path="/profile" element={<Profile />} />
-          <Route path="/order" element={<Order />} />
-          <Route path="/order/:orderid" element={<ViewDetailOrder />} />
+          <Route path="/report" element={<ReportScreen />} />
+          <Route path="/statistic" element={<Statistic />} />
           <Route path="/chat" element={<ChatScreen />} />
           <Route path="/chat/:roomid" element={<ChatRoom />} />
-          <Route path="/inventory" element={<InventoryScreen />} />
-          <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
-          <Route path="/inventory/:orderid/:typeCard" element={<ViewInventoryDetail />} />
-          <Route path="/statistic" element={<Statistic />} />
-          <Route path="/posts" element={<PostsCreen />} />
-          <Route path="/approval" element={<PostApproval />} />
-          <Route path="/post/:postid" element={<ViewPostDetail />} />
-          <Route path="/post/edit/:postid" element={<EditPost />} />
-          <Route path="/report" element={<ReportScreen />} />
+          <Route element={<CollaboratorProtectedRouter />}>
+            <Route path="/order" element={<Order />} />
+            <Route path="/order/:orderid" element={<ViewDetailOrder />} />
+            <Route path="/inventory" element={<InventoryScreen />} />
+            <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
+            <Route path="/inventory/:orderid/:typeCard" element={<ViewInventoryDetail />} />
+            <Route path="/posts" element={<PostsCreen />} />
+            <Route path="/approval" element={<PostApproval />} />
+            <Route path="/post/:postid" element={<ViewPostDetail />} />
+            <Route path="/post/edit/:postid" element={<EditPost />} />
+          </Route>
           <Route element={<AdminProtectedRouter />}>
             <Route path="/users" element={<Users />} />
             <Route path="/collaborators" element={<Collaborators />} />
