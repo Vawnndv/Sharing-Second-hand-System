@@ -111,9 +111,9 @@ function Login(props: Props) {
         }
       }
 
-      if (isSuccess) {
-        toast.success(`Chào mừng quay trở lại ${userInfo?.firstName}`)
-      }
+        console.log(userInfo)
+      // if (isSuccess) {
+      // }
       if (isError) {
         toast.error(isError)
         dispatch({ type: 'USER_LOGIN_RESET' })

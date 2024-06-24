@@ -40,9 +40,9 @@ export function App() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route path='/' element={<Layout/>}>
-        <Route path="*" element={<NotFound />} />
         <Route element={<ProtectedRouter />}>
           <Route index element={<Home />} />
+          <Route path="*" element={<NotFound />} />
           <Route path="/password" element={<Password />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/order" element={<Order />} />
@@ -58,15 +58,14 @@ export function App() {
           <Route path="/post/:postid" element={<ViewPostDetail />} />
           <Route path="/post/edit/:postid" element={<EditPost />} />
           <Route path="/report" element={<ReportScreen />} />
-        </Route>
-        <Route element={<AdminProtectedRouter />}>
-          <Route path="/users" element={<Users />} />
-          <Route path="/collaborators" element={<Collaborators />} />
-          <Route path="/warehouse" element={<ManageWarehouse />} />
-          <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
+          <Route element={<AdminProtectedRouter />}>
+            <Route path="/users" element={<Users />} />
+            <Route path="/collaborators" element={<Collaborators />} />
+            <Route path="/warehouse" element={<ManageWarehouse />} />
+            <Route path="/SelectWarehouses" element={<MapSelectWarehouses />} />
+          </Route>
         </Route>
       </Route>
-          {/* <Route path="/order" element={<Order />} /> */}
     </Routes>
   );
 }
