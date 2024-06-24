@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "frontend-mobile",
+    "name": "ReTreasure",
     "slug": "frontend-mobile",
     "scheme" : "frontend-mobile",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icon_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash_logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,12 +23,12 @@
       }
     },
     "android": {
+      "versionCode": 3,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon_logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.retreasure.frontendmobile",
-      "googleServicesFile": "./android/google-services.json",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",

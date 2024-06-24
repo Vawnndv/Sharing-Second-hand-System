@@ -68,7 +68,6 @@ const ProfileScreen = ({navigation, route}: any) => {
       res && res.data && setProfile(res.data);
 
       const resRating = await axiosClient.get(`/rating/getRating?userID=${profileId}`)
-      // console.log(resRating.data)
       setRating(resRating.data)
       setIsLoading(false);
     } catch (error) {
@@ -194,7 +193,7 @@ const ProfileScreen = ({navigation, route}: any) => {
 
                 <><View style={styles.infoContainer}>
                     <View style={styles.iconContainer}>
-                      <TextComponent text={rating.average_rate} styles={{
+                      <TextComponent text={`${parseFloat(rating.average_rate).toFixed(2)}`} styles={{
                         backgroundColor: '#929200',
                         paddingVertical: 2,
                         paddingHorizontal: 15,

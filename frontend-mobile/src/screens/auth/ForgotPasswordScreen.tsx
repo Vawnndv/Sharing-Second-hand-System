@@ -67,7 +67,6 @@ const ForgotPasswordScreen = () => {
   return (
     <ContainerComponent
       back
-      isImageBackground
       isScroll
     >
       <SectionComponent>

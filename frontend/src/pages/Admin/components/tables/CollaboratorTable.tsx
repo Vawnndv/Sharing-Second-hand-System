@@ -14,6 +14,13 @@ import toast from 'react-hot-toast'
 import { TbLock, TbLockOpen } from "react-icons/tb";
 import ModalCreateCollaborator from '../modals/ModelCreateCollaborator'
 import dayjs from 'dayjs';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
 // import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
@@ -44,8 +51,13 @@ function CollaboratorTable(props: Props) {
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
+  const [isBanLoading, setIsBanLoading] = useState(false);
   const [userRow, setUserRow] = useState(null);
   const [isEdit, setIsEdit] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
@@ -64,39 +76,53 @@ function CollaboratorTable(props: Props) {
   const handleRowSelection = (newSelectionModel: any) => {
     setSelectionModel(newSelectionModel)
   }
+
+  const handleOpenDialog = (user: any, isBanned: any) => {
+    setSelectedUser({ ...user, isBanned });
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedUser(null);
+  };
   
-  const handleBanUser = async (id: number, firstname: string, lastname: string, isBanned: any) => {
-    try {
-      const text: string = isBanned ? 'khóa' : 'mở khóa'
-      if (window.confirm(`Bạn có chắc chắn muốn ${text} cộng tác viên ${lastname} ${firstname}?`)) {
-        await banUserService(id, {userId: id, isBanned});
-        const userIndex = data.findIndex((user:any) => user.userid === id);
+  const handleConfirmBanUser = async () => {
+    if (selectedUser) {
+      handleClose();
+      setIsBanLoading(true);
+      try {
+        const text = selectedUser.isBanned ? 'khóa' : 'mở khóa';
+        await banUserService(selectedUser.userid, { userId: selectedUser.userid, isBanned: selectedUser.isBanned });
+        const userIndex = data.findIndex((user: any) => user.userid === selectedUser.userid);
         if (userIndex !== -1) {
           const updatedUsers = [...data];
-          // Create a new array with the user replaced with updated data
-          updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: isBanned };
+          updatedUsers[userIndex] = { ...updatedUsers[userIndex], isbanned: selectedUser.isBanned };
           setData(updatedUsers);
-        //   await HandleNotification.sendNotification({
-        //     userReceiverId: updatedUsers[userIndex].userid,
-        //     userSendId: userInfo?.id,
-        //     avatar: userInfo?.avatar,
-        //     link: '',
-        //     title: 'Khóa tài khoản',
-        //     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-        //     body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
-        //   })
-          toast.success(`${text} tài khoản của cộng tác viên ${lastname} ${firstname} thành công`);
+          toast.success(`${text} tài khoản của cộng tác viên ${selectedUser.lastname} ${selectedUser.firstname} thành công`);
+          setIsBanLoading(false);
+          //   await HandleNotification.sendNotification({
+          //     userReceiverId: updatedUsers[userIndex].userid,
+          //     userSendId: userInfo?.id,
+          //     avatar: userInfo?.avatar,
+          //     link: '',
+          //     title: 'Khóa tài khoản',
+          //     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
+          //     body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
+          //   })
         }
-      }
-    } catch (error: unknown) {
-      console.log(error)
-      if (error instanceof Error) {
-        toast.error(error.message)
-      } else {
-        toast.error("Lỗi mạng");
+      } catch (error: unknown) {
+        console.log(error);
+        if (error instanceof Error) {
+          toast.error(error.message);
+        } else {
+          toast.error('Lỗi mạng');
+        }
+        setIsBanLoading(false);
       }
     }
-  }
+  };
+
 
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
     () => [
@@ -140,7 +166,7 @@ function CollaboratorTable(props: Props) {
         renderCell: (params: any) => (
           <Box>
             <Tooltip title="Khóa cộng tác viên">
-              <IconButton onClick={() => {handleBanUser(params.row.userid, params.row.firstname, params.row.lastname, !params.row.isbanned) }}>
+              <IconButton onClick={() => handleOpenDialog(params.row, !params.row.isbanned)}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
               </IconButton>
             </Tooltip>
@@ -225,7 +251,7 @@ function CollaboratorTable(props: Props) {
             rows={data}
             columns={columns}
             rowCount={total}
-            loading={isLoading}
+            loading={isLoading || isBanLoading}
             getRowId={(row) => row.userid}
             // pagination
             paginationMode="server"
@@ -245,6 +271,7 @@ function CollaboratorTable(props: Props) {
             })}
             sx={{
               [`& .${gridClasses.row}`]: {
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 bgcolor: (theme) =>
                   theme.palette.mode === 'light' ? grey[200] : grey[900]
               },
@@ -267,6 +294,31 @@ function CollaboratorTable(props: Props) {
           />
         </Box>
       </Grid>
+      <Dialog
+        fullScreen={fullScreen}
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {!selectedUser?.isBanned ? 'Mở khóa tài khoản' : 'Khóa tài khoản '}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {!selectedUser?.isBanned
+              ? `Bạn có chắc chắn muốn mở khóa tài khoản của Cộng tác viên ${selectedUser?.lastname} ${selectedUser?.firstname}?`
+              : `Bạn có chắc chắn muốn khóa tài khoản của Cộng tác viên ${selectedUser?.lastname} ${selectedUser?.firstname}?`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose} color='error'>
+            Không
+          </Button>
+          <Button onClick={handleConfirmBanUser} autoFocus>
+            Có
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   )
 }

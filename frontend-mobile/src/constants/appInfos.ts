@@ -1,7 +1,7 @@
 import { Dimensions } from "react-native";
 import { BASE_URL } from "@env";
 
-console.log('_BA_S_E_URL_', BASE_URL)
+console.log('_BA_S_E_URL___________', BASE_URL)
 
 export const appInfo = {
   sizes: {
@@ -9,7 +9,7 @@ export const appInfo = {
     HEIGHT: Dimensions.get('window').height,
   },
   
-  // BASE_URL: BASE_URL,
-  BASE_URL:'http://192.168.1.5:3000',
+  BASE_URL: BASE_URL,
+  // BASE_URL:'http://192.168.239.83:8080',
 
 }

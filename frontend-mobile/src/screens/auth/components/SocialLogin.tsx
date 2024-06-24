@@ -85,7 +85,7 @@ const SocialLogin = () => {
     <SectionComponent>
       <TextComponent 
         styles={{textAlign: 'center'}} 
-        text="OR" 
+        text="Hoặc" 
         color={appColors.gray4} 
         size={16} 
         font={fontFamilies.medium} 
@@ -96,7 +96,7 @@ const SocialLogin = () => {
         type="primary"
         color={appColors.white}
         textColor={appColors.text}
-        text="Login with Google"
+        text="Đăng nhập với Google"
         textFont={fontFamilies.regular}
         // icon={<Google />}
         iconFlex="left"

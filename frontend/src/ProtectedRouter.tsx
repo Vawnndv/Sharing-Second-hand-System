@@ -8,6 +8,21 @@ function ProtectedRouter() {
     return userInfo?.accessToken ? <Outlet /> : <Navigate to="/login" />
 }
 
+
+function CollaboratorProtectedRouter() {
+    const { userInfo } = useSelector((state: RootState) => state.userLogin);
+
+    return userInfo?.accessToken ? (
+        userInfo?.roleID === 2 ? (
+            <Outlet />
+        ) : (
+            <Navigate to="/*" />
+        )
+    ) : (
+        <Navigate to="/login" />
+    )
+}
+
 // admin router protection
 function AdminProtectedRouter() {
     const { userInfo } = useSelector((state: RootState) => state.userLogin);
@@ -23,4 +38,4 @@ function AdminProtectedRouter() {
     )
 }
 
-export { ProtectedRouter, AdminProtectedRouter }
+export { ProtectedRouter, AdminProtectedRouter, CollaboratorProtectedRouter }

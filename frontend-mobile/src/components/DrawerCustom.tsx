@@ -13,6 +13,7 @@ import TextComponent from './TextComponent';
 import ButtonComponent from './ButtonComponent';
 import { fontFamilies } from '../constants/fontFamilies';
 import { usePushNotifications } from '../utils/usePushNotification';
+import authenticationAPI from '../apis/authApi';
 
 const DrawerCustom = ({navigation}: any) => {
   const auth = useSelector(authSelector);
@@ -90,16 +91,26 @@ const DrawerCustom = ({navigation}: any) => {
   ];
 
   const handleLogout = async () => {
-    const fcmtoken = await AsyncStorage.getItem('fcmtoken');
+    try {
+      const fcmtoken = await AsyncStorage.getItem('fcmtoken');
 
-    if (fcmtoken) {
-      if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
-        await usePushNotifications.removeUserToken(auth.id, fcmtoken);
+      if (fcmtoken) {
+        if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
+          await usePushNotifications.removeUserToken(auth.id, fcmtoken);
+        }
       }
-    }
 
-    await AsyncStorage.clear();
-    dispatch(removeAuth({}));
+      await authenticationAPI.HandleAuthentication(
+        '/remove-refresh-token',
+        { userid: auth.id, deviceid:  auth.deviceid},
+        'post',
+      );
+      
+      await AsyncStorage.clear();
+      dispatch(removeAuth({}));
+    } catch (error) {
+      console.log(`Log out error: ${error}`);
+    }
   }
 
   const handleSettingAddress = () => {
