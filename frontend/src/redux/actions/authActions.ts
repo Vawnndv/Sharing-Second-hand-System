@@ -20,13 +20,25 @@ const loginAction = (datas: any): ThunkAction<void, RootState, unknown, Action<s
   }
 };
 
+const updateUserInfoAction = (userInfo: any): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch => {
+  try {
+    dispatch({
+      type: authConstants.USER_LOGIN_SUCCESS,
+      payload: userInfo
+    })
+  } catch (error) {
+    ErrorsAction(error, dispatch, authConstants.USER_LOGIN_FAIL);
+  }
+}
 const logoutAction = (): ThunkAction<void, RootState, unknown, Action<string>> => async dispatch => {
-  // await authApi.logoutService()
+  await authApi.logoutService()
+
   dispatch({ type: authConstants.USER_LOGOUT })
   localStorage.removeItem('userInfo')
 }
 
 export {
   loginAction,
+  updateUserInfoAction,
   logoutAction,
 }

@@ -5,6 +5,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import userAPI from '../apis/userApi'; // Adjust the import according to your project structure
 import { NotificationModel } from '../models/NotificationModel';
+import authenticationAPI from '../apis/authApi';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -100,7 +101,7 @@ export class usePushNotifications {
 
   static async removeUserToken(id: string, fcmToken: string) {
     try {
-      await userAPI.HandleUser(
+      await authenticationAPI.HandleAuthentication(
         '/remove-fcmtoken',
         { userid: id, fcmtoken:  fcmToken},
         'post',

@@ -10,7 +10,6 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import GoogleIcon from '@mui/icons-material/Google';
 import IconButton from '@mui/material/IconButton';
 import { ThemeProvider, createTheme } from '@mui/material';
 import {  useSelector } from 'react-redux';
@@ -106,7 +105,7 @@ function Login(props: Props) {
   useEffect(() => {
       if (userInfo) {
         if (userInfo?.roleID === 3) {
-            navigate('/dashboard')
+            navigate('/statistic')
         } else {
             navigate('/')
         }
@@ -120,12 +119,6 @@ function Login(props: Props) {
         dispatch({ type: 'USER_LOGIN_RESET' })
       }
   }, [userInfo, isSuccess, isError, navigate, dispatch])
-
-  const handleGoogleLogin = () => {
-    // Handle when user click login by Google
-    // window.open('http://localhost:5000/api/auth/google', '_self')
-    window.open('https://nexusedu.onrender.com/api/auth/google', '_self');
-  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -275,13 +268,6 @@ function Login(props: Props) {
                 >
                   Hoặc đăng nhập qua
                 </Typography>
-                <IconButton
-                  // variant='rounded'
-                  onClick={handleGoogleLogin}
-                  size="large"
-                >
-                  <GoogleIcon />
-                </IconButton>
               </Box>
             </Box>
           </Box>

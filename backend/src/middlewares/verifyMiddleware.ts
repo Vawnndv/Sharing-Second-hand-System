@@ -13,7 +13,7 @@ const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunct
     if (!token) {
       return res.status(401).json({ message: 'Not authorized, no token' });
     } else {
-      const secretKey = process.env.SECRET_KEY;
+      const secretKey = process.env.ACCESS_TOKEN_KEY;
       if (!secretKey) {
         return res.status(500).json({ message: 'Secret key is not defined' });
       }

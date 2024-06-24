@@ -68,7 +68,6 @@ const ProfileScreen = ({navigation, route}: any) => {
       res && res.data && setProfile(res.data);
 
       const resRating = await axiosClient.get(`/rating/getRating?userID=${profileId}`)
-      // console.log(resRating.data)
       setRating(resRating.data)
       setIsLoading(false);
     } catch (error) {

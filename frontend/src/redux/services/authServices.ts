@@ -17,6 +17,7 @@ export interface UserInfo {
   phoneNumber: string;
   accessToken: string;
   dob: string;
+  deviceid: string;
 }
 
 // Login user API
@@ -36,8 +37,16 @@ const forgotPasswordService = async (email: string) => {
     return data;
 }
 
-const logoutService = async (): Promise<any> => {
-  await Axios.post('/auth/logout', {}, { withCredentials: true });
+const logoutService = async (): Promise<void> => {
+  const authString = localStorage.getItem('userInfo');
+  const auth: UserInfo | null = authString ? JSON.parse(authString) : null;
+
+  if (auth) {
+    await Axios.post(`/auth/remove-refresh-token`, { 
+      userid: auth.id, 
+      deviceid: auth.deviceid 
+    });
+  }
 };
 
 export { loginService, logoutService, forgotPasswordService };

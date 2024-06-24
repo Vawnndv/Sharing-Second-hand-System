@@ -1,13 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import queryString from "query-string";
-import { appInfo } from "../constants/appInfos";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch, useSelector } from "react-redux";
-import { authSelector, removeAuth } from "../redux/reducers/authReducers";
-import { usePushNotifications } from "../utils/usePushNotification";
-import store from "../redux/store";
 import { Platform, ToastAndroid } from "react-native";
-
+import { appInfo } from "../constants/appInfos";
+import { removeAuth, updateAuth } from "../redux/reducers/authReducers";
+import store from "../redux/store";
 
 const showToast = (message: string) => {
   if (Platform.OS === 'android') {
@@ -23,27 +20,30 @@ const showToast = (message: string) => {
 }
 
 const handleLogout = async () => {
-  
-  const state = store.getState();
-  const auth = state.authReducer.authData;
-  const dispatch = store.dispatch;
+  try {
+    const dispatch = store.dispatch;
+    const state = store.getState();
+    const auth = state.authReducer.authData;
+    const fcmtoken = await AsyncStorage.getItem('fcmtoken');
 
-  const fcmtoken = await AsyncStorage.getItem('fcmtoken');
-
-  if (fcmtoken) {
-    if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
-      await axios.post(`${appInfo.BASE_URL}/user/remove-fcmtoken`, {
-        userid: auth.id, fcmtoken
-      })
+    if (fcmtoken) {
+      if (auth.fcmTokens && auth.fcmTokens.length > 0 && !auth.fcmTokens.includes(fcmtoken)) {
+        await axios.post(`${appInfo.BASE_URL}/auth/remove-fcmtoken`, {
+          userid: auth.id, fcmtoken
+        })
+      }
     }
+
+    await axios.post(`${appInfo.BASE_URL}/auth/remove-refresh-token`, { 
+      userid: auth.id, deviceid:  auth.deviceid
+    });
+
+    await AsyncStorage.clear();
+
+    dispatch(removeAuth({}));
+  } catch (error) {
+    console.log(`Logout error: ${error}`);
   }
-
-  const hello = await AsyncStorage.getItem('auth');
-
-  await AsyncStorage.clear();
-
-  const hello2 = await AsyncStorage.getItem('auth');
-  dispatch(removeAuth({}));
 };
 
 
@@ -72,32 +72,49 @@ axiosClient.interceptors.request.use(async (config: any) => {
 });
 
 axiosClient.interceptors.response.use(
-  res => {
-    if (res.data && (res.status === 200 || res.status === 201)) {
-      return res.data;
+  response => {
+    if (response.data && (response.status === 200 || response.status === 201)) {
+      return response.data;
     }
-   
     throw new Error('Error');
   },
-  error => {
-
-    // console.log(`Error api ${JSON.stringify(error)}`);
-    // throw new Error(error.response);
+  async error => {
+    const originalRequest = error.config;
+    
     if (error.response && error.response.data && error.response.data.message) {
       if (error.response.status === 403 && error.response.data.message === 'Not authorized, invalid token') {
-        handleLogout();
-        showToast('Phiên đăng nhập đã hết hạn');
-      }
-      else if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
+        try {
+          const dispatch = store.dispatch;
+          const state = store.getState();
+          const auth = state.authReducer.authData;
+
+          const res: any = await axiosClient.post(`${appInfo.BASE_URL}/auth/refresh-token`, {
+            userid: auth.id, deviceid: auth.deviceid
+          });
+          if (res.accessToken) {
+            originalRequest.headers['Authorization'] = `Bearer ${res.accessToken}`;
+            await AsyncStorage.setItem('auth', JSON.stringify({ ...auth, accessToken: res.accessToken }));
+            dispatch(updateAuth({accessToken: res.accessToken}));
+            
+            return axiosClient(originalRequest);
+          }
+        } catch (refreshError) {
+          await handleLogout();
+          showToast('Phiên đăng nhập đã hết hạn');
+        }
+      } else if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
         handleLogout();
         showToast(error.response.data.message);
       } else {
+        // return Promise.reject(new Error(error.response.data.message));
         throw new Error(error.response.data.message);
       }
     } else {
-      throw new Error('Network Error');
+      // return Promise.reject(new Error('Network Error'));
+      throw new Error(error.response.data.message);
+
     }
-  },
+  }
 );
 
 export default axiosClient
