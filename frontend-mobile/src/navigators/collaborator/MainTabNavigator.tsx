@@ -20,11 +20,12 @@ const MainTabNavigator = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: appColors.white,
+                marginBottom: 6
                 },
                 tabBarIcon: ({focused, color, size}) => {
                 let icon: ReactNode;
                 color = focused ? appColors.primary : appColors.gray5;
-                size = 24;
+                size = 28;
                 const variant = focused ? 'Bold' : 'Outline';
                 
                 switch (route.name) {
@@ -41,7 +42,7 @@ const MainTabNavigator = () => {
                 return icon;
                 },
                 tabBarIconStyle: {
-                marginTop: 8
+                marginTop: 8,
                 },
             })}
         >

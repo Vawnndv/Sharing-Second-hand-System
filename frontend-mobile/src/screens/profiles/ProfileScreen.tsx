@@ -193,7 +193,7 @@ const ProfileScreen = ({navigation, route}: any) => {
 
                 <><View style={styles.infoContainer}>
                     <View style={styles.iconContainer}>
-                      <TextComponent text={rating.average_rate} styles={{
+                      <TextComponent text={`${parseFloat(rating.average_rate).toFixed(2)}`} styles={{
                         backgroundColor: '#929200',
                         paddingVertical: 2,
                         paddingHorizontal: 15,
