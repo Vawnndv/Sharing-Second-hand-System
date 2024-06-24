@@ -79,7 +79,7 @@ const LoginScreen = ({navigation}: any) => {
   }; 
 
   return (
-    <ContainerComponent isImageBackground isScroll>
+    <ContainerComponent isScroll>
       <SectionComponent 
         styles={{
           justifyContent: 'center',
