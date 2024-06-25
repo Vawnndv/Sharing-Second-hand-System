@@ -1,9 +1,9 @@
 {
   "expo": {
     "name": "ReTreasure",
-    "slug": "frontend-mobile",
+    "slug": "retreasure",
     "scheme" : "frontend-mobile",
-    "version": "1.0.2",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon_logo.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
       }
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_logo.png",
         "backgroundColor": "#ffffff"
@@ -58,7 +58,7 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "3d1b1f78-a4b7-4ba8-9f74-8d08fdc8185d"
+        "projectId": "a656517f-3660-4b78-a947-ac5f8d6691fd"
       }
     }  
   }
