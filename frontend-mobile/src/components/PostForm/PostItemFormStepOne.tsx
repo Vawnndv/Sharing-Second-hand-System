@@ -157,14 +157,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   const [labels, setLabels] = useState<string[]>([]);
 
   const [isGenerateItemName, setIsGenerateItemName] = useState(false);
-  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);
-
-  
-  
-const metadataLocal = require('../../../assets/model/metadata.json');
-
-
-
+  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);  
 
 
   useEffect(() => {
@@ -207,9 +200,7 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       setSelectedWarehouseDropdown('  ' + formData.warehouseAddress)
     }
 
-    // if (formData.itemCategory){
-    //   setSelectedItemTypeDropdown(formData.itemCategory)
-    // }
+
 
     if (formData.methodGive){
       setSelectedMethodGive('  ' + formData.methodGive)
@@ -222,33 +213,14 @@ const metadataLocal = require('../../../assets/model/metadata.json');
   },[formData, formData.itemCategory])
 
 
-  const loadLabels = () => {
-    const metadata = require('../../../assets/model/metadata.json');
-    if (metadata && metadata.labels) {
-      setLabels(metadata.labels);
-    }
-  };
+  // const loadLabels = () => {
+  //   const metadata = require('../../../assets/model/metadata.json');
+  //   if (metadata && metadata.labels) {
+  //     setLabels(metadata.labels);
+  //   }
 
-//   useEffect(() => {
-//   const loadModel = async () => {
-//     try {
-//       setIsLoading(true);
-//       await tf.ready();  
-//       setModel(await tf.loadLayersModel(modelURL + 'model.json'));
-//       setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
-
-//     } catch (error) {
-//       console.error('Error loading the model', error);
-//       setIsLoading(false);
-//     }
-//   };
-//   loadModel();
-// },[])
-
-  useEffect(() => {
-    loadLabels();
-
-  }, []);
+  //   const labelRes = fetch(modelURL + 'metadata.json');
+  // };
 
 
   useEffect(() =>{
@@ -275,10 +247,16 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       
       setIsLoading(true);
 
-      loadLabels();
+      // loadLabels();
       try {
         await tf.ready();  
-        setModel(await tf.loadLayersModel(modelURL + 'model.json'));  
+        setModel(await tf.loadLayersModel(modelURL + 'model.json')); 
+        const response: any = await fetch(modelURL + 'metadata.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch labels of model');
+        }
+        const metadata = await response.json();
+        setLabels(metadata.labels);        
       } catch (error) {
         console.error('Error loading the model', error);
       }
@@ -372,9 +350,10 @@ const pickImage = async () => {
           // Resize ảnh
           const manipulatedImage = await ImageManipulator.manipulateAsync(
             asset.uri,
-            [{ resize: { width: 224, height: 224 } }],
-            { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+            [{ resize: { width: 400, height: 400 } }],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG } 
           );
+          // setSampleImg(manipulatedImage.uri);
 
 
 
@@ -394,6 +373,7 @@ const pickImage = async () => {
         await completedImages.forEach(image => {
           if(image.prediction){
             const [name, category] = image.prediction.label.split('-');
+            console.log(image.prediction.label + ' ' +  image.prediction.probability);
             if(category !== 'Nhạy cảm'){
               if (image.prediction.probability > highestProbabilityImage.prediction.probability) {
                 highestProbabilityImage = image;
@@ -522,6 +502,7 @@ const predictImage = async (imageUri: any) => {
       // Lấy giá trị dự đoán từ tensor
       const predictionArray = await predictionTensor.array();
       const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+      console.log(predictionArray);
 
 
 
@@ -941,7 +922,6 @@ const predictImage = async (imageUri: any) => {
         </>
       )}
         <Button mode="contained" onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
-      
 
     </ScrollView>
   );
