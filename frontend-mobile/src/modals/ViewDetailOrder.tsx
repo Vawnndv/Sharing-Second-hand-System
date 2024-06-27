@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from 'react';
-import { Platform, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from 'react-native';
 import { Text, View } from 'react-native';
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -24,6 +24,12 @@ import { ActivityIndicator } from 'react-native-paper';
 import { statusOrder } from '../constants/statusOrder';
 import { ContainerComponent, TextComponent } from '../components';
 import RatingModal from './RatingModal';
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-react-native/dist/platform_react_native';
+import { decode as jpegDecode } from 'jpeg-js';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem  from 'expo-file-system';
+import ConfirmCategoryReceiveModal from './ConfirmCategoryReceiveModal';
 
 interface Data {
   title: string;
@@ -40,7 +46,8 @@ interface Data {
   isreciever: boolean,
   warehouseid: string,
   iswarehousepost: boolean,
-  name: string
+  name: string,
+  nametype: string
 }
 
 export default function ViewDetailOrder({navigation, route}: any) {
@@ -53,10 +60,37 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const [hasGalleryPermission, setHasGalleryPermission] = useState(false)
   const [hasCameraPermission, setHasCameraPermission] = useState(false)
   const [visible, setVisible] = useState(false)
+  const [visibleConfirmCategory, setVisibleConfirmCategory] = useState(false)
   const [visibleRating, setVisibleRating] = useState(false)
   const [isShowQR, setIsShowQR] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<Data>();
+
+  const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/';
+  const [labels, setLabels] = useState<string[]>([]);
+
+
+  const [model, setModel] = useState<any>(null);
+  const [currentCategory, setCurrentCategory] = useState('')
+
+
+  const loadLabels = () => {
+    const metadata = require('../../assets/model/metadata.json');
+    if (metadata && metadata.labels) {
+      setLabels(metadata.labels);
+    }
+  };
+
+  const loadModel = async () => {
+    try {
+      await tf.ready();  
+      setModel(await tf.loadLayersModel(modelURL + 'model.json'));
+      console.log('model Loaded !!!!!');
+
+    } catch (error) {
+      console.error('Error loading the model', error);
+    }
+  };
 
   // const navigation: any = useNavigation();
 
@@ -64,7 +98,11 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const userID = auth.id;
 
   useEffect(function(){
+    setIsLoading(true)
     getOrderDetails()
+    loadModel();
+    loadLabels();
+    setIsLoading(false)
   }, []);
 
   useEffect(function(){
@@ -72,16 +110,131 @@ export default function ViewDetailOrder({navigation, route}: any) {
     getOrderDetails()
   }, [modalConfirmVisible]);
 
+
+  const imageToTensor = async (rawImageData: any) => {
+    try {
+      if(rawImageData){
+        // setIsLoading(true);
+        
+        const fileUri = rawImageData.uri;
+        const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+        const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
+        const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
+  
+        const buffer = new Uint8Array(width * height * 3);
+        let offset = 0;
+        for (let i = 0; i < buffer.length; i += 3) {
+          buffer[i] = data[offset];
+          buffer[i + 1] = data[offset + 1];
+          buffer[i + 2] = data[offset + 2];
+          offset += 4;
+        }
+  
+        // Normalize the tensor
+        const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+        // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+  
+        return tensor;
+      }
+  
+    } catch (error) {
+      console.log("Error converting image to tensor:", error);
+    }
+  }
+  
+  const predictImage = async (imageUri: any) => {
+    try {
+      if(imageUri){
+        setIsLoading(true);
+        // Chuyển đổi hình ảnh thành tensor
+        const imageTensor = await imageToTensor(imageUri);
+        if (!imageTensor) {
+          throw new Error('Failed to convert image to tensor');
+        }
+  
+        // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
+        const expandedTensor = imageTensor.expandDims(0);
+  
+        // Dự đoán hình ảnh sử dụng mô hình
+        const predictionTensor = await model.predict(expandedTensor);
+        if (!predictionTensor) {
+          throw new Error('Failed to make prediction');
+        }
+  
+        // Lấy giá trị dự đoán từ tensor
+        const predictionArray = await predictionTensor.array();
+        const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+  
+  
+  
+        // Lấy nhãn tương ứng từ mảng nhãn
+        let predictedLabel = labels[maxProbabilityIndex];
+  
+        // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
+        const predictionResult = {
+          label: predictedLabel,
+          probability: Math.max(...predictionArray[0])
+        };
+        console.log('predict Result: ', predictionResult.label + ' ' + predictionResult.probability);
+        setIsLoading(false);
+
+  
+  
+        return predictionResult;
+      }
+      else{
+        setIsLoading(false);
+  
+      }
+    } catch (error) {
+      console.log('Error when predicting image:', error);
+    }
+  };
+
+  useEffect(() => {
+    const handlePredict = async () => {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        image.uri,
+        [{ resize: { width: 224, height: 224 } }],
+        { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+      );
+  
+      const prediction: any = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
+  
+      const [nameType, category] = prediction ? prediction?.label.split('-') : '';
+      setCurrentCategory(category)
+  
+      if(category === 'Nhạy cảm' && prediction?.probability > 0.8){
+        Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
+        setVisibleConfirmCategory(true)
+        return;
+      }else if(category !== data?.nametype){
+        setVisibleConfirmCategory(true)
+        return;
+      }else{
+        setModalConfirmVisible(true);
+      }
+    }
+
+    if(image !== null){
+      try {
+       handlePredict()
+      } catch (error) {
+        console.log(error)
+      }
+      
+    }
+  }, [image])
+
+  
+
   const getOrderDetails = async () => {
     try {
-      setIsLoading(true);
 
       const res = await orderAPI.HandleOrder(
         `/${orderid}`,
         'get'
       );
-      
-      setIsLoading(false);
       setData(res.data)
     } catch (error) {
       console.log(error);
@@ -140,10 +293,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
     await getCameraPermission(setHasCameraPermission);
     await getGallaryPermission(setHasGalleryPermission);
   }
-
-  useEffect(()  => {
-    image && setModalConfirmVisible(true)
-  }, [image])
 
   const handleConfirm = async () => {
     setImage(null)
@@ -282,6 +431,9 @@ export default function ViewDetailOrder({navigation, route}: any) {
         {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible}
          image={image} orderid={data.orderid} owner={data.usergiveid} warehouseID={data.warehouseid} 
          isWarehousePost={data.iswarehousepost} auth={auth} name={data.name} visibleRatingModal={visibleRating} setVisibleRatingModal={setVisibleRating}/>}
+
+        {data && <ConfirmCategoryReceiveModal setVisible={setVisibleConfirmCategory} visible={visibleConfirmCategory} setImage={setImage} 
+        setVisibleConfirmReceiveModal={setModalConfirmVisible} categoryGive={data.nametype} currentCategory={currentCategory} />}
         <ShowImageModal visible={visible} setVisible={setVisible}>
           {
             isShowQR ? (

@@ -1007,7 +1007,8 @@ export class OrderManager {
                 us.phonenumber AS phonenumberreceive,
                 po.iswarehousepost,
                 po.warehouseid,
-                it.name
+                it.name,
+                itype.nametype
               FROM orders AS o
               JOIN Address ad ON ad.AddressID = o.LocationGive
               JOIN give_receivetype grt ON grt.give_receivetypeid = o.givetypeid
@@ -1018,6 +1019,7 @@ export class OrderManager {
               LEFT JOIN "User" us ON us.userid = o.userreceiveid
               LEFT JOIN Posts po ON po.postid = o.postid
               LEFT JOIN item it ON o.itemid = it.itemid
+              LEFT JOIN item_type itype ON it.itemtypeid = itype.itemtypeid
               WHERE o.orderid = $1
           LIMIT 1)AS ranked_orders
         

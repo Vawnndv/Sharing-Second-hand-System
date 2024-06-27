@@ -5,7 +5,8 @@ interface AuthState {
   email: string;
   accessToken: string;
   roleID: string;
-  fcmTokens?: string[];
+  fcmTokens: string[];
+  deviceid: string;
 };
 
 const initialState: AuthState = {
@@ -13,6 +14,8 @@ const initialState: AuthState = {
   email: '',
   accessToken: '',
   roleID: '',
+  fcmTokens: [],
+  deviceid: '',
 };
 
 const authSlice = createSlice({

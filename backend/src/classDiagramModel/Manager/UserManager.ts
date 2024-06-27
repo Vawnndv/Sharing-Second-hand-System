@@ -178,7 +178,6 @@ export class UserManager {
   public static async adminDeleteUser(userid: string): Promise<any> {
     const client = await pool.connect();
 
-
     const query = `
       UPDATE "User"
       SET email = null, password = ''
@@ -218,6 +217,26 @@ export class UserManager {
     }
   };
 
+  public static async addRefreshTokenToUser(userid: string, refreshtoken: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        INSERT INTO refreshtoken(userid, refreshtoken) 
+        VALUES($1, $2)
+        RETURNING *;
+      `;
+    const values : any = [userid, refreshtoken];
+    try {
+      const result = await client.query(query, values);
+
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
   public static async removeFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
     
     const client = await pool.connect();
@@ -237,6 +256,41 @@ export class UserManager {
     }
   };
 
+  public static async removeRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
+    
+    const client = await pool.connect();
+    try {
+      const result = await client.query('DELETE FROM "refreshtoken" WHERE userid = $1 AND deviceid = $2', [userid, deviceid]);
+
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows[0];
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
+
+  public static async getRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
+    const client = await pool.connect();
+    const query = `
+        SELECT refreshtoken FROM refreshtoken WHERE userid = $1 AND deviceid = $2;
+      `;
+    const values : any = [userid, deviceid];
+    try {
+      const result = await client.query(query, values);
+      return result.rows[0];
+    } catch (error) {
+      console.error(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  };
 
 
   public ban(userID: string): void {

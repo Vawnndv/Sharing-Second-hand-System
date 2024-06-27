@@ -16,6 +16,14 @@ import { Alert } from "react-native";
 import ShowMapComponent from "../../components/ShowMapComponent";
 import { appColors } from "../../constants/appColors";
 import axiosClient from "../../apis/axiosClient";
+import * as tf from '@tensorflow/tfjs';
+import '@tensorflow/tfjs-react-native/dist/platform_react_native';
+import { decode as jpegDecode } from 'jpeg-js';
+import * as ImageManipulator from 'expo-image-manipulator';
+import * as FileSystem  from 'expo-file-system';
+import ConfirmCategoryReceiveModal from "../../modals/ConfirmCategoryReceiveModal";
+import RatingModal from "../../modals/RatingModal";
+import { current } from "@reduxjs/toolkit";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -37,32 +45,182 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     const [isVisibleModalConfirm, setIsVisibleModalConfirm] = useState(false)
     const [confirm, setConfirm] = useState(false)
 
+    const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/';
+    const [labels, setLabels] = useState<string[]>([]);
+
+
+    const [model, setModel] = useState<any>(null);
+    const [currentCategory, setCurrentCategory] = useState('')
+
+    const [visibleConfirmCategory, setVisibleConfirmCategory] = useState(false)
+    const [visibleRating, setVisibleRating] = useState(false)
+
+    const [visibleModalConfirm, setVisibleModalConfirm] = useState(false)
+
+
+    const loadLabels = () => {
+        const metadata = require('../../../assets/model/metadata.json');
+        if (metadata && metadata.labels) {
+        setLabels(metadata.labels);
+        }
+    };
+
+    const loadModel = async () => {
+        try {
+        await tf.ready();  
+        setModel(await tf.loadLayersModel(modelURL + 'model.json'));
+        console.log('model Loaded !!!!!');
+
+        } catch (error) {
+        console.error('Error loading the model', error);
+        }
+    };
+
+    const imageToTensor = async (rawImageData: any) => {
+        try {
+          if(rawImageData){
+            // setIsLoading(true);
+            
+            const fileUri = rawImageData.uri;
+            const fileData = await FileSystem.readAsStringAsync(fileUri, { encoding: FileSystem.EncodingType.Base64 });
+            const rawImageDataArray = Uint8Array.from(Buffer.from(fileData, 'base64'));
+            const { width, height, data } = jpegDecode(rawImageDataArray, { useTArray: true });
+      
+            const buffer = new Uint8Array(width * height * 3);
+            let offset = 0;
+            for (let i = 0; i < buffer.length; i += 3) {
+              buffer[i] = data[offset];
+              buffer[i + 1] = data[offset + 1];
+              buffer[i + 2] = data[offset + 2];
+              offset += 4;
+            }
+      
+            // Normalize the tensor
+            const tensor = tf.tensor3d(buffer, [height, width, 3]).resizeBilinear([224, 224]).div(tf.scalar(255));
+            // const tensor = tf.tensor3d(buffer, [height, width, 3]);
+      
+            return tensor;
+          }
+      
+        } catch (error) {
+          console.log("Error converting image to tensor:", error);
+        }
+      }
+      
+      const predictImage = async (imageUri: any) => {
+        try {
+          if(imageUri){
+            setIsLoading(true);
+            // Chuyển đổi hình ảnh thành tensor
+            const imageTensor = await imageToTensor(imageUri);
+            if (!imageTensor) {
+              throw new Error('Failed to convert image to tensor');
+            }
+      
+            // Thêm batch dimension để tensor phù hợp với đầu vào của mô hình
+            const expandedTensor = imageTensor.expandDims(0);
+      
+            // Dự đoán hình ảnh sử dụng mô hình
+            const predictionTensor = await model.predict(expandedTensor);
+            if (!predictionTensor) {
+              throw new Error('Failed to make prediction');
+            }
+      
+            // Lấy giá trị dự đoán từ tensor
+            const predictionArray = await predictionTensor.array();
+            const maxProbabilityIndex = predictionArray[0].indexOf(Math.max(...predictionArray[0]));
+      
+      
+      
+            // Lấy nhãn tương ứng từ mảng nhãn
+            let predictedLabel = labels[maxProbabilityIndex];
+      
+            // Tạo đối tượng kết quả dự đoán chỉ với dự đoán có xác suất cao nhất
+            const predictionResult = {
+              label: predictedLabel,
+              probability: Math.max(...predictionArray[0])
+            };
+            console.log('predict Result: ', predictionResult.label + ' ' + predictionResult.probability);
+            setIsLoading(false);
+    
+      
+      
+            return predictionResult;
+          }
+          else{
+            setIsLoading(false);
+      
+          }
+        } catch (error) {
+          console.log('Error when predicting image:', error);
+        }
+      };
+
+    const handlePredict = async () => {
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+          image.uri,
+          [{ resize: { width: 224, height: 224 } }],
+          { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+        );
+    
+        const prediction: any = await predictImage({ uri: manipulatedImage.uri }); // Dự đoán ảnh đã resize
+    
+        const [nameType, category] = prediction ? prediction?.label.split('-') : '';
+        setCurrentCategory(category)
+    
+        if(category === 'Nhạy cảm' && prediction?.probability > 0.8){
+          Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
+          setVisibleConfirmCategory(true)
+          return;
+        }
+    }
+
+    useEffect(() => {
+        const completeOrder = async () => {
+            if(visibleRating){
+                const data = await UploadImageToAws3(image, false);
+                // const urlConfirm = response.url
+                await axiosClient.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
+                    url: data.url
+                });
+        
+                await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
+                    orderID: orderID,
+                    statusID: 9
+                });
+        
+                if(orders[0].order.giveTypeID === 5){
+                    await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
+                        orderID: orderID,
+                        statusID: 3
+                    });
+                }
+                Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
+                navigation.goBack();
+    
+            }
+        }
+        completeOrder()
+        
+    }, [visibleRating])
+
     const handleConfirm = async () => {
         if(image !== null){
             setIsLoading(true);
-        
-            const data = await UploadImageToAws3(image, false);
-            // const urlConfirm = response.url
-            await axiosClient.put(`${appInfo.BASE_URL}/updateCompleteOrder/${orderID}`,{
-                url: data.url
-            });
-    
-            await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
-                orderID: orderID,
-                statusID: 9
-            });
-    
-            if(orders[0].order.giveTypeID === 5){
-                await axiosClient.post(`${appInfo.BASE_URL}/order/update-status`,{
-                    orderID: orderID,
-                    statusID: 3
-                });
+            if(!visibleRating){
+                handlePredict()
+                if(orders[0].order.item !== currentCategory){
+                    // console.log(orders[0].order.giver.userID)
+                    setVisibleConfirmCategory(true)
+                    console.log(image)
+                }
             }
+            
             setIsLoading(false);
-            Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
-            navigation.goBack();
+            
         }else{
             Alert.alert('Thông báo','Bạn phải thêm ảnh xác nhận đơn hàng!')
+            setIsLoading(false);
         }
         
     }
@@ -89,7 +247,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         }
         navigation.goBack();
     }
-
+    
     useEffect(() => {
         if(confirm === true) {
             updateReceiver()
@@ -98,18 +256,27 @@ export default function OrderDetailsScreen({navigation, route}: any) {
 
     useEffect(() => {
         const fetchAPI = async () => {
-            setIsLoading(true)
+            
             const response: any = await axiosClient.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.orders)
-            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ''){
+            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ' '){
                 setImage({
                     uri: response.orders[0].imgConfirm
                 })
             }
+            
+        }
+
+        const fetchAllData = async () => {
+            setIsLoading(true)
+            await fetchAPI();
+            await loadModel();
+            await loadLabels();
             setIsLoading(false)
         }
 
-        fetchAPI()
+        fetchAllData()
+        
     }, [])
 
     useEffect(()  => {
@@ -338,6 +505,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             
             <ConfirmComponent visible={isVisibleModalConfirm} setVisible={setIsVisibleModalConfirm} title={'Bạn có thực sự muốn nhận đơn hàng này?'} setConfirm={setConfirm} setIsLoading={setIsLoading}/>
             <LoadingModal visible={isLoading}/>
+            <ConfirmCategoryReceiveModal setVisible={setVisibleConfirmCategory} visible={visibleConfirmCategory} setImage={setImage} setVisibleConfirmReceiveModal={setVisibleRating} categoryGive={orders[0]?.order.item.nametype} currentCategory={"currentCategory"} />
+            <RatingModal visible={visibleRating} setVisible={setVisibleRating} usergiveid={orders[0]?.order.giver.userID} orderid={orders[0]?.order.orderID}/>
         </ContainerComponent>
         
     )

@@ -13,7 +13,6 @@ import AvatarComponent from './AvatarComponent';
 import SpaceComponent from './SpaceComponent';
 
 interface Props {
-  isImageBackground?: boolean;
   isScroll?: boolean;
   title?: string;
   children: ReactNode;
@@ -24,7 +23,7 @@ interface Props {
 };
 
 const ContainerComponent = (props: Props) => {
-  const {children, isScroll, isImageBackground, title, back, right, badge, option} = props;
+  const {children, isScroll, title, back, right, badge, option} = props;
   const navigation: any = useNavigation();
 
   const headerComponent = () => {
@@ -102,17 +101,7 @@ const ContainerComponent = (props: Props) => {
     </View>
   );
 
-  return isImageBackground ? (
-    <ImageBackground
-      source={require('../../assets/images/splash-img.png')}
-      style={{flex: 1, paddingTop: 30}}
-      imageStyle={{flex: 1}}
-    >
-      <SafeAreaView style={{flex: 1}}>
-        {headerComponent()}
-      </SafeAreaView>
-    </ImageBackground>
-  ) : (
+  return (
     <SafeAreaView style={[globalStyles.container]}>
       <View
         style={[

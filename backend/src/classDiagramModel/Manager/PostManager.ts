@@ -940,6 +940,7 @@ export class PostManager {
       SELECT 
         POSTS.*,
         ITEM.name,
+        ITEM_TYPE.nametype,
         ADDRESS.address,
         ADDRESS.longitude,
         ADDRESS.latitude,
@@ -949,6 +950,8 @@ export class PostManager {
           POSTS
       INNER JOIN
           ITEM ON ITEM.itemid = POSTS.itemid
+      INNER JOIN
+          ITEM_TYPE ON ITEM.itemtypeid = ITEM_TYPE.itemtypeid
       INNER JOIN 
           ADDRESS ON POSTS.addressid = ADDRESS.addressid
       INNER JOIN

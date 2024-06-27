@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
 import { Account } from '../classDiagramModel/Account';
+import { UserManager } from '../classDiagramModel/Manager/UserManager';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -18,22 +19,42 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const getJsonWebToken = async (email: string, id: number) => {
+const getJsonWebAccessToken = async (id: number) => {
   const payload = {
-    email, 
     id,
   };
-  const secret = process.env.SECRET_KEY;
+  const secret = process.env.ACCESS_TOKEN_KEY;
 
-  // Kiểm tra xem SECRET_KEY đã được định nghĩa hay chưa
+  // Kiểm tra xem ACCESS_TOKEN_KEY đã được định nghĩa hay chưa
   if (!secret) {
-    console.error('SECRET_KEY is not defined in environment variables.');
+    console.error('ACCESS_TOKEN_KEY is not defined in environment variables.');
     process.exit(1); // Thoát ứng dụng với mã lỗi 1
   }
   
-  // const SECRET_KEY = 'khoahoctunhien';
   const token = jwt.sign(payload, secret, {
-    expiresIn: '7d',
+    expiresIn: '30s',
+  });
+
+  return token;
+};
+
+
+const getJsonWebRefreshToken = async (id: number) => {
+  const payload = {
+    id,
+  };
+  console.log(id);
+  const secret = process.env.REFRESH_TOKEN_KEY;
+
+  // Kiểm tra xem REFRESH_TOKEN_KEY đã được định nghĩa hay chưa
+  if (!secret) {
+    console.error('REFRESH_TOKEN_KEY is not defined in environment variables.');
+    process.exit(1); // Thoát ứng dụng với mã lỗi 1
+  }
+  
+  // const REFRESH_TOKEN_KEY = 'khoahoctunhien';
+  const token = jwt.sign(payload, secret, {
+    expiresIn: '2m',
   });
 
   return token;
@@ -85,6 +106,47 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
   }
 });
 
+// Controller function to handle refresh token
+export const refreshAccessToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, deviceid } = req.body;
+
+  console.log(req.body, '13123');
+  if (!userid || !deviceid) {
+    res.status(400).json({ message: 'userid and deviceid are required' });
+    return;
+  }
+
+
+  const secret = process.env.REFRESH_TOKEN_KEY;
+  if (!secret) {
+    console.error('REFRESH_TOKEN_KEY is not defined in environment variables.');
+    process.exit(1); // Exit application with error code 1
+  }
+
+  const { refreshtoken } = await UserManager.getRefreshTokenOfUser(userid, deviceid);
+
+  if (!refreshtoken) {
+    res.status(403).json({ message: 'RefreshToken not found' });
+    return;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  jwt.verify(refreshtoken, secret, async (err: any, decoded: any) => {
+    if (err) {
+      res.status(403).json({ message: 'Not authorized, token failed!' });
+    } else {
+      const accessToken = await getJsonWebAccessToken(userid);
+      console.log(accessToken);
+
+      res.status(200).json({ 
+        message: 'Access token refreshed successfully',
+        accessToken,
+      });
+    }
+  });
+});
+
+
 export const register = asyncHandle(async (req: Request, res: Response) => {
   const { email, firstname, lastname, password } = req.body;
 
@@ -116,7 +178,7 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
       lastName: newUser.lastname,
       avatar: newUser.avatar,
       roleID: newUser.roleid, 
-      accessToken: await getJsonWebToken(email, newUser.userid),
+      accessToken: await getJsonWebAccessToken(newUser.userid),
     },
   });
 });
@@ -144,8 +206,12 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
   }
   
   const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+  
+  const refreshToken = await getJsonWebRefreshToken(existingUser.userid);
 
   if (platform === 'web' && existingUser.roleid > 1) {
+    console.log(refreshToken);
+    const refreshtoken = await UserManager.addRefreshTokenToUser(existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
@@ -155,13 +221,15 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
         lastName: existingUser.lastname,
         avatar: existingUser.avatar,
         roleID: existingUser.roleid,
-        accessToken: await getJsonWebToken(email, existingUser.userid),
+        deviceid: refreshtoken.deviceid,
+        accessToken: await getJsonWebAccessToken(existingUser.userid),
       },
     });
   } else if (platform === 'web' && existingUser.roleid === 1) {
     res.status(400);
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
+    const refreshtoken = await UserManager.addRefreshTokenToUser(existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
@@ -172,7 +240,8 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
         avatar: existingUser.avatar,
         roleID: existingUser.roleid,
         fcmTokens: fcmTokens ?? [],
-        accessToken: await getJsonWebToken(email, existingUser.userid),
+        deviceid: refreshtoken.deviceid,
+        accessToken: await getJsonWebAccessToken(existingUser.userid),
       },
     });
   }
@@ -233,7 +302,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: existingUser.avatar,
       roleID: existingUser.roleid,
       fcmTokens: fcmTokens ?? [],
-      accessToken: await getJsonWebToken(email, existingUser.userid),
+      accessToken: await getJsonWebAccessToken(existingUser.userid),
     };
 
     res.status(200).json({
@@ -260,7 +329,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: newUser.avatar,
       roleID: newUser.roleid,
       fcmTokens: fcmTokens ?? [],
-      accessToken: await getJsonWebToken(email, newUser.userid),
+      accessToken: await getJsonWebAccessToken(newUser.userid),
     };
 
     if (newUser) {
@@ -273,4 +342,26 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       throw new Error('fafsf');
     }
   }
+});
+
+export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, fcmtoken } = req.body;
+
+  await UserManager.removeFcmTokenToUser(userid, fcmtoken);
+
+  res.status(200).json({
+    message: 'Fcmtoken deleted',
+    data: [],
+  });
+});
+
+export const removeRefreshToken = asyncHandle(async (req: Request, res: Response) => {
+  const { userid, deviceid } = req.body;
+
+  await UserManager.removeRefreshTokenOfUser(userid, deviceid);
+
+  res.status(200).json({
+    message: 'Refreshtoken deleted',
+    data: [],
+  });
 });

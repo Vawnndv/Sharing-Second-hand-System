@@ -207,9 +207,9 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       setSelectedWarehouseDropdown('  ' + formData.warehouseAddress)
     }
 
-    if (formData.itemCategory){
-      setSelectedItemTypeDropdown(formData.itemCategory)
-    }
+    // if (formData.itemCategory){
+    //   setSelectedItemTypeDropdown(formData.itemCategory)
+    // }
 
     if (formData.methodGive){
       setSelectedMethodGive('  ' + formData.methodGive)
@@ -229,21 +229,21 @@ const metadataLocal = require('../../../assets/model/metadata.json');
     }
   };
 
-  useEffect(() => {
-  const loadModel = async () => {
-    try {
-      setIsLoading(true);
-      await tf.ready();  
-      setModel(await tf.loadLayersModel(modelURL + 'model.json'));
-      setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
+//   useEffect(() => {
+//   const loadModel = async () => {
+//     try {
+//       setIsLoading(true);
+//       await tf.ready();  
+//       setModel(await tf.loadLayersModel(modelURL + 'model.json'));
+//       setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
 
-    } catch (error) {
-      console.error('Error loading the model', error);
-      setIsLoading(false);
-    }
-  };
-  loadModel();
-},[])
+//     } catch (error) {
+//       console.error('Error loading the model', error);
+//       setIsLoading(false);
+//     }
+//   };
+//   loadModel();
+// },[])
 
   useEffect(() => {
     loadLabels();
@@ -274,6 +274,15 @@ const metadataLocal = require('../../../assets/model/metadata.json');
     const fetchAllData = async () => {
       
       setIsLoading(true);
+
+      loadLabels();
+      try {
+        await tf.ready();  
+        setModel(await tf.loadLayersModel(modelURL + 'model.json'));  
+      } catch (error) {
+        console.error('Error loading the model', error);
+      }
+
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
         // const res = await postsAPI.HandlePost(
@@ -363,7 +372,7 @@ const pickImage = async () => {
           // Resize ảnh
           const manipulatedImage = await ImageManipulator.manipulateAsync(
             asset.uri,
-            [{ resize: { width: w, height: h } }],
+            [{ resize: { width: 224, height: 224 } }],
             { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
           );
 
@@ -833,7 +842,7 @@ const predictImage = async (imageUri: any) => {
             setFormData({ ...formData, itemCategory: item.value});
             setErrorMessage({...errorMessage, itemCategory: ''})
             // handleValidate(item.value,'itemtype');
-            setSelectedItemTypeDropdown(item.value);
+            setSelectedItemTypeDropdown(item.label);
             setIsFocusSelectedItemType(false);
           }}
 

@@ -42,9 +42,8 @@ function Collaborators() {
       const total: number = await getCollaboratorsTotalService(filterModel);
       setTotalCollaborator(total);
     } catch (error: unknown) {
-      console.log(error)
       if (error instanceof Error) {
-        toast.error(error.message)
+        throw new Error(error.message)
       } else {
         toast.error("Lỗi mạng");
       }

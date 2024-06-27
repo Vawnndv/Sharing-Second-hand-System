@@ -80,7 +80,7 @@ const RegisterScreen = ({navigation}: any) => {
 
   return (
     <>
-      <ContainerComponent isImageBackground isScroll back>
+      <ContainerComponent isScroll back>
         <SectionComponent>
           <TextComponent text="Đăng ký" title size={24} color={appColors.primary} />
           <SpaceComponent height={21} />

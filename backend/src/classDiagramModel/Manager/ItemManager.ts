@@ -28,13 +28,15 @@ export class ItemManager {
   public static async viewDetailsItem(itemId: number): Promise<Item | null> {
     const client = await pool.connect();
     try {
-      const result = await client.query(`SELECT * FROM "item" WHERE itemid = $1`, [itemId]);
+      const result = await client.query(
+        `SELECT i.*, it.nametype FROM "item" i
+        INNER JOIN "item_type" it ON it.itemtypeid = i.itemtypeid
+        WHERE itemid = $1`, [itemId]);
       if (result.rows.length === 0) {
         return null;
       }
       const row = result.rows[0];
-      const itemTest = new Item(row.itemid, row.name, row.quantity, row.itemtypeid);
-      return new Item(row.itemid, row.name, row.quantity, row.itemtypeid);
+      return new Item(row.itemid, row.name, row.quantity, row.itemtypeid, row.nametype);
 
     } finally {
       client.release()

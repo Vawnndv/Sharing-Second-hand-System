@@ -79,7 +79,7 @@ const LoginScreen = ({navigation}: any) => {
   }; 
 
   return (
-    <ContainerComponent isImageBackground isScroll>
+    <ContainerComponent isScroll>
       <SectionComponent 
         styles={{
           justifyContent: 'center',
@@ -114,8 +114,11 @@ const LoginScreen = ({navigation}: any) => {
               thumbColor={appColors.white}
               value={isRemember}
               onChange={() => setIsRemember(!isRemember)}
+              style={{
+                transform: [{ scaleX: 1.2 }, { scaleY: 1.2 }],
+              }}
             />
-            <SpaceComponent width={4} />
+            <SpaceComponent width={6} />
             <TextComponent text="Lưu tài khoản" />
           </RowComponent>
           <ButtonComponent 

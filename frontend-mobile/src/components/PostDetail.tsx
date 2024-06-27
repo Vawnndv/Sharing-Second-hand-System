@@ -545,6 +545,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                 <View>
                 <Text style={styles.title}>Thông tin món đồ</Text>
                 <Text style={styles.duration}>{'Tên sản phẩm: ' + itemDetails?.name}</Text>
+                <Text style={styles.duration}>{'Loại sản phẩm: ' + post?.nametype}</Text>
                 <Text style={styles.duration}>{'Số lượng: ' + itemDetails?.quantity}</Text>
 
                 </View>

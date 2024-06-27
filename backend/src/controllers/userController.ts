@@ -50,7 +50,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
       },
     });
   } else {
-    res.sendStatus(401);
+    res.status(401);
     throw new Error('Missing uid');
   }
 });
@@ -136,7 +136,7 @@ export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) 
       data: likePosts,
     });
   } else {
-    res.sendStatus(401);
+    res.status(401);
     throw new Error('Missing uid');
   }
 });
@@ -151,7 +151,7 @@ export const setUserLikePosts = asyncHandle(async (req: Request, res: Response) 
       data: likePosts,
     });
   } else {
-    res.sendStatus(401);
+    res.status(401);
     throw new Error('Missing uid');
   }
 });
@@ -166,7 +166,7 @@ export const deleteUserLikePosts = asyncHandle(async (req: Request, res: Respons
       data: likePosts,
     });
   } else {
-    res.sendStatus(401);
+    res.status(401);
     throw new Error('Missing uid');
   }
 });
@@ -182,7 +182,7 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
     });
   } else {
     // If userId is missing or invalid, send a 401 status without throwing an error
-    res.sendStatus(401);
+    res.status(401);
   }
 });
 
@@ -193,17 +193,6 @@ export const updateFcmToken = asyncHandle(async (req: Request, res: Response) =>
 
   res.status(200).json({
     message: 'Fcmtoken addded',
-    data: [],
-  });
-});
-
-export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
-  const { userid, fcmtoken } = req.body;
-
-  await UserManager.removeFcmTokenToUser(userid, fcmtoken);
-
-  res.status(200).json({
-    message: 'Fcmtoken deleted',
     data: [],
   });
 });
@@ -220,7 +209,7 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
     });
   } else {
     // If userId is missing or invalid, send a 401 status without throwing an error
-    res.sendStatus(401);
+    res.status(401);
   }
 });
 
@@ -244,7 +233,7 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
 //       },
 //     });
 //   } else {
-//     res.sendStatus(404);
+//     res.status(404);
 //     throw new Error('Missing page and pageSize');
 //   }
 // });
