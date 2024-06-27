@@ -259,7 +259,8 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             
             const response: any = await axiosClient.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.orders)
-            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ' '){
+            console.log("'" + response.orders[0].imgConfirm + "'")
+            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ''){
                 setImage({
                     uri: response.orders[0].imgConfirm
                 })
@@ -505,7 +506,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             
             <ConfirmComponent visible={isVisibleModalConfirm} setVisible={setIsVisibleModalConfirm} title={'Bạn có thực sự muốn nhận đơn hàng này?'} setConfirm={setConfirm} setIsLoading={setIsLoading}/>
             <LoadingModal visible={isLoading}/>
-            <ConfirmCategoryReceiveModal setVisible={setVisibleConfirmCategory} visible={visibleConfirmCategory} setImage={setImage} setVisibleConfirmReceiveModal={setVisibleRating} categoryGive={orders[0]?.order.item.nametype} currentCategory={"currentCategory"} />
+            <ConfirmCategoryReceiveModal setVisible={setVisibleConfirmCategory} visible={visibleConfirmCategory} setImage={setImage} setVisibleConfirmReceiveModal={setVisibleRating} categoryGive={orders[0]?.order.item.nametype} currentCategory={currentCategory} />
             <RatingModal visible={visibleRating} setVisible={setVisibleRating} usergiveid={orders[0]?.order.giver.userID} orderid={orders[0]?.order.orderID}/>
         </ContainerComponent>
         

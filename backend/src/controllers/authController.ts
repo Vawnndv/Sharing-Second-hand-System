@@ -32,7 +32,7 @@ const getJsonWebAccessToken = async (id: number) => {
   }
   
   const token = jwt.sign(payload, secret, {
-    expiresIn: '30s',
+    expiresIn: '1d',
   });
 
   return token;
@@ -54,7 +54,7 @@ const getJsonWebRefreshToken = async (id: number) => {
   
   // const REFRESH_TOKEN_KEY = 'khoahoctunhien';
   const token = jwt.sign(payload, secret, {
-    expiresIn: '2m',
+    expiresIn: '7d',
   });
 
   return token;
@@ -189,14 +189,14 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 
   if (!existingUser) {
     res.status(400);
-    throw new Error('Email is invalid!!!');
+    throw new Error('Địa chỉ email không chính xác!!!');
   }
 
   const isMatchPassword = await bcrypt.compare(password, existingUser.password);
 
   if (!isMatchPassword) {
     res.status(400);
-    throw new Error('Password is invalid!!!');
+    throw new Error('Mật khẩu không chính xác!!!');
   }
 
   if (existingUser.isbanned) {
