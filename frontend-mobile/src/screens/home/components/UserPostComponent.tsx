@@ -1,6 +1,6 @@
 import moment from 'moment'
 import 'moment/locale/vi'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Image, StyleSheet, View } from 'react-native'
 import postsAPI from '../../../apis/postApi'
 import { GetCurrentLocation } from '../../../utils/GetCurrenLocation'
@@ -26,7 +26,6 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [isEndOfData, setIsEndOfData] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(true)
 
   const LIMIT = 5;
 
@@ -41,7 +40,7 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
     setData([]);
     setIsEndOfData(false);
 
-  }, [filterValue, refresh, warehousesID])
+  }, [filterValue, refresh])
 
   useEffect(() => {
     if (shouldFetchData) {
@@ -49,7 +48,7 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
       setShouldFetchData(false); // Đặt lại shouldFetchData về false sau khi đã fetch dữ liệu
     }
   }, [shouldFetchData]);
-
+  
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -75,8 +74,8 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
       )
       const newData: PostData[] = res.allPosts;
 
-      if(!isFirstTime){
-        if (!newData) {
+      
+        if (newData === null) {
           setIsEndOfData(true)
         } else {
           if (newData.length <= 0 && page === 0)
@@ -85,13 +84,13 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
             setIsEndOfData(true)
         }
   
-        if (newData.length > 0)
+        if (newData.length > 0){
           setPage(page + 1); // Tăng số trang lên
   
-        setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
-      }else{
-        setIsFirstTime(false)
-      }
+          setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+        }
+          
+      
       
 
     } catch (error) {

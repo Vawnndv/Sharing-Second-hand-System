@@ -11,7 +11,7 @@ const showToast = (message: string) => {
     ToastAndroid.showWithGravity(
       message,
       ToastAndroid.SHORT,
-      ToastAndroid.BOTTOM
+      ToastAndroid.BOTTOM,
     );
   } else {
     // For iOS or other platforms, you can handle differently if needed

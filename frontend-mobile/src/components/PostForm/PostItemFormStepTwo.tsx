@@ -69,7 +69,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   useEffect( () => {
     const fetchUserData = async () =>{
         try {
-          setIsLoading(true)
           const res = await axiosClient.get(`${appInfo.BASE_URL}/user/get-profile/?userId=${auth.id}`)
           // const res = await postsAPI.HandlePost(
           //   `/${postID}`,
@@ -87,13 +86,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           } catch (error) {
           console.error('Error fetching user info:', error);
         } finally {
-          setIsLoading(false)
         }
     }
 
     const fetchUserAddressData = async () =>{
       try {
-        setIsLoading(true)
         const response = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
         // const res = await postsAPI.HandlePost(
         //   `/${postID}`,
@@ -112,13 +109,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         } catch (error) {
         console.error('Error fetching user info:', error);
       } finally {
-        setIsLoading(false)
       }
     }
 
     const fetchImages = async () => {
       try {
-        setIsLoading(true)
         let addPhotosURL = []
         for(let i = 0; i < itemPhotos.length; i++){
           const response: any = await UploadImageToAws3(itemPhotos[i], true)
@@ -134,13 +129,19 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         console.log("FetchImages: ",error)
       }
       
-      setIsLoading(false)
     }
    
+    const fetchAllData = async () => {
+      setIsLoading(true)
+
+      await fetchUserData();
+      await fetchUserAddressData()
+      await fetchImages()
+      
+      setIsLoading(false)
+    }
+    fetchAllData()
     
-    fetchUserData();
-    fetchUserAddressData()
-    fetchImages()
   },[] )
 
   
@@ -305,12 +306,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           return img.url
         })
         const categoryName = category[parseInt(itemCategory) - 1]
+        console.log(imageUrls, categoryName)
         const response = await getGPTDescription(categoryName, imageUrls)
         setFormData({ ...formData, postDescription: response });
         handleValidate(response,'postdescription')
         setCountClickGenerate(countClickGenerate + 1);
       } catch (error) {
         Alert.alert("Thông báo", "Tạo mô tả tự động đã gặp vấn đề, xin vui lòng thử lại!")
+        console.log(error)
         setIsLoadingGenerateGPT(false)
       }
     }else{

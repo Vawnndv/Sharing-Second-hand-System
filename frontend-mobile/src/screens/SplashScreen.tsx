@@ -1,13 +1,18 @@
-import { View, Text, ImageBackground, Image, ActivityIndicator } from 'react-native'
+import { View, Text, ImageBackground, Image, ActivityIndicator, useColorScheme  } from 'react-native'
 import React from 'react'
 import SpaceComponent from '../components/SpaceComponent'
 import { appInfo } from '../constants/appInfos';
 import { appColors } from '../constants/appColors';
 
 const SplashScreen = () => {
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
+  
   return (
     <ImageBackground 
-      source={require('../../assets/images/splash-img.png')} 
+      source={isDarkMode 
+        ? require('../../assets/images/dark-splash.png') 
+        : require('../../assets/images/light-splash.png')} 
       style={{
         flex: 1, 
         justifyContent: 'center', 

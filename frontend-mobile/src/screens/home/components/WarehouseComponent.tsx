@@ -23,22 +23,29 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   const [isEmpty, setIsEmpty] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [isEndOfData, setIsEndOfData] = useState(false);
-  const [isFirstTime, setIsFirstTime] = useState(true)
+  const [isLoadedWarehouses, setIsLoadedWarehouses] = useState(false)
 
   const LIMIT = 5;
 
   const handleRefresh = () => {
     setRefresh(prevRefresh => !prevRefresh);
   }
+  useEffect(() => {
+    if(warehousesID.length > 0){
+      setIsLoadedWarehouses(true)
+    }
+  }, [warehousesID])
 
   useEffect(() => {
-    setData([]);
-    setPage(0);
-    setIsEmpty(false);
-    setIsEndOfData(false);
-    setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-
-  }, [filterValue, refresh, warehousesID])
+    if(isLoadedWarehouses){
+      setData([]);
+      setPage(0);
+      setIsEmpty(false);
+      setIsEndOfData(false);
+      setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    }
+      
+  }, [filterValue, refresh, warehousesID, isLoadedWarehouses])
 
   useEffect(() => {
     if (shouldFetchData) {
@@ -73,7 +80,7 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
 
       const newData: PostData[] = res.allPosts;
 
-      if(!isFirstTime){
+      
         if (!newData) {
           setIsEndOfData(true)
         } else {
@@ -83,13 +90,13 @@ const WarehouseComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
             setIsEndOfData(true)
         }
   
-        if (newData.length > 0)
+        if (newData.length > 0){
           setPage(page + 1); // Tăng số trang lên
-  
-        setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
-      }else{
-        setIsFirstTime(false)
-      }
+
+          setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
+        }
+          
+      
       
 
     } catch (error) {
