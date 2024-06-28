@@ -7,6 +7,7 @@ import { addAuth, authSelector } from '../../redux/reducers/authReducers';
 import * as Notifications from 'expo-notifications';
 import { LoadingModal } from '../../modals';
 import { useNavigation } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
 
 const AppRouters = () => {
   const {getItem} = useAsyncStorage('auth');
@@ -22,24 +23,25 @@ const AppRouters = () => {
 
     function redirect(notification: Notifications.Notification) {
       const url = notification.request.content.data?.url;
+      // console.log(notification.request.content.data)
       if (url) {
-        // Linking.openURL(`frontend-mobile://${url}`)
-        const parts = url.split('/');
-        if( parts[0] === 'order') {
-          navigation.navigate('MyOrder', {
-            screen: 'ViewDetailOrder',
-            params: {
-              orderid: parts[1]
-            },
-          });
-        } else {
-          navigation.navigate('Home', {
-            screen: 'ItemDetailScreen',
-            params: {
-              postID: parts[1]
-            },
-          });
-        }
+        Linking.openURL(`frontend-mobile://${url}`)
+        // const parts = url.split('/');
+        // if( parts[0] === 'order') {
+        //   navigation.navigate('MyOrder', {
+        //     screen: 'ViewDetailOrder',
+        //     params: {
+        //       orderid: parts[1]
+        //     },
+        //   });
+        // } else {
+        //   navigation.navigate('Home', {
+        //     screen: 'ItemDetailScreen',
+        //     params: {
+        //       postID: parts[1]
+        //     },
+        //   });
+        // }
       }
     }
 

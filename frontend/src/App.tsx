@@ -25,6 +25,7 @@ import PostApproval from './pages/approval/PostApproval';
 import EditPost from './pages/post/editPost/editPost';
 import PostsCreen from './pages/post/postsPage/PostsScreen';
 import ReportScreen from './pages/report/ReportScreen';
+import AddPost from './pages/post/addPost/AddPost';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -56,6 +57,7 @@ export function App() {
             <Route path="/inventory/:orderid" element={<ViewInventoryDetail />} />
             <Route path="/inventory/:orderid/:typeCard" element={<ViewInventoryDetail />} />
             <Route path="/posts" element={<PostsCreen />} />
+            <Route path="/post" element={<AddPost />} />
             <Route path="/approval" element={<PostApproval />} />
             <Route path="/post/:postid" element={<ViewPostDetail />} />
             <Route path="/post/edit/:postid" element={<EditPost />} />

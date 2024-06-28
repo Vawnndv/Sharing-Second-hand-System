@@ -174,6 +174,19 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
         address: data.display_name
       })
       console.log(data.display_name);
+      if(isUser === true){
+        try {
+          const response = await Axios.post(`/map/set_user_location`, {
+            userID: userLogin.userInfo.id,
+            latitude: lat, 
+            longitude: lng, 
+            address: data.display_name
+          })
+        } catch (error) {
+          console.log(error)
+        }
+      }
+      
     } else {
       console.log('No results found');
     }
