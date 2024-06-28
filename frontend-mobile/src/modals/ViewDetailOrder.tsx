@@ -74,17 +74,23 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const [currentCategory, setCurrentCategory] = useState('')
 
 
-  const loadLabels = () => {
-    const metadata = require('../../assets/model/metadata.json');
-    if (metadata && metadata.labels) {
-      setLabels(metadata.labels);
-    }
-  };
+  // const loadLabels = () => {
+  //   const metadata = require('../../assets/model/metadata.json');
+  //   if (metadata && metadata.labels) {
+  //     setLabels(metadata.labels);
+  //   }
+  // };
 
   const loadModel = async () => {
     try {
       await tf.ready();  
       setModel(await tf.loadLayersModel(modelURL + 'model.json'));
+      const response: any = await fetch(modelURL + 'metadata.json');
+      if (!response.ok) {
+        throw new Error('Failed to fetch labels of model');
+      }
+      const metadata = await response.json();
+      setLabels(metadata.labels);   
       console.log('model Loaded !!!!!');
 
     } catch (error) {
@@ -101,7 +107,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
     setIsLoading(true)
     getOrderDetails()
     loadModel();
-    loadLabels();
     setIsLoading(false)
   }, []);
 
