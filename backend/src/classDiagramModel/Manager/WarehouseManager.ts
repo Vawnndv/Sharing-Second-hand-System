@@ -45,6 +45,25 @@ export class WarehouseManager {
     }
   }
 
+  public static async viewAllWarehouseAdmin(): Promise<any[] | null> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT * FROM warehouse
+      `);
+      if (result.rows.length === 0) {
+        return [];
+      }
+
+      return result.rows;
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
   public static async viewWarehouse(warehouseid: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
