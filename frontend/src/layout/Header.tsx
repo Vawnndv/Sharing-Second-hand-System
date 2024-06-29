@@ -16,7 +16,8 @@ import MoreIcon from '@mui/icons-material/MoreVert'
 import { Avatar, InputAdornment, InputLabel, Popover, Typography } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import FilledInput from '@mui/material/FilledInput'
-import logo from '../assets/logo.png'
+import logo from '../assets/Retreasure_Icon_Header.svg'
+import logo_title from '../assets/Retreasure_Icon_Title.svg'
 import { useDispatch, useSelector } from 'react-redux'
 import { handleClickMenu } from '../redux/actions/menuActions';
 import { FiSettings } from 'react-icons/fi'
@@ -26,8 +27,6 @@ import { AppDispatch, RootState, useAppDispatch } from '../redux/store'
 import toast from 'react-hot-toast'
 import { logoutAction } from '../redux/actions/authActions'
 import Notification from '../components/notification/Notification'
-// import { useDispatch } from 'react-redux'
-// import { handleClickMenu } from '../redux/actions/menuActions'
 import { collection, doc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'
 
@@ -73,7 +72,6 @@ export default function Header({setIndex}: any) {
     return () => unsubscribe();
   }, [userInfo?.id]);
 
- 
   const isMenuOpen = Boolean(anchorEl)
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
   
@@ -277,46 +275,23 @@ export default function Header({setIndex}: any) {
             sx={{ display: { xs: 'none', sm: 'flex' }}}
             onClick={() => handleNavigateToHome()}
           >
-            <img alt='logo' src={logo} style={{width: '80px', height: '60px', color: 'white'}}/>
+            <img alt='logo' src={logo} style={{width: '40px', height: '40px', color: 'white', borderRadius: 10}}/>
+            <img alt='logo' src={logo_title} style={{width: '150px', height: '50px', color: 'white', borderRadius: 10}}/>
           </IconButton>
-          {/* <FormControl sx={{ m: 1, width: '35ch', borderRadius: 2,
-            transition: 'width 3s ease', // Thêm transition cho hiệu ứng mở rộng
-            '&:focus-within': {
-              width: '60ch', // Kích thước mới khi focus
-              backgroundColor: 'rgb(128, 52, 156)',
-              color: 'rgb(236, 236, 236)'
-            },
-          }} className='search' variant="filled">
-            <InputLabel htmlFor="filled-adornment-password" className='text'>Tìm kiếm</InputLabel>
-            <FilledInput
-                id="filled-adornment-password"
-                type='text'
-                
-                endAdornment={
-                <InputAdornment position="end">
-                    <SearchIcon className='text'/>
-                </InputAdornment>
-                }
-            />
-          </FormControl> */}
-
-
-           {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search> */}
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton> */}
+          <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center', gap: 2 } }}>
+            <Typography>Hi, {userInfo?.firstName}</Typography>
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
+              aria-haspopup="true"
+              onClick={(e) => handleProfileMenuOpen(e)}
+              color="inherit"
+            >
+              <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
+            </IconButton>
             <IconButton
               size="large"
               aria-label="show 17 new notifications"
@@ -341,17 +316,7 @@ export default function Header({setIndex}: any) {
             >
               <Notification/>
             </Popover>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={(e) => handleProfileMenuOpen(e)}
-              color="inherit"
-            >
-              <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
-            </IconButton>
+            
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
