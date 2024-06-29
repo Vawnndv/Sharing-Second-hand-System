@@ -84,7 +84,7 @@ const ChatUserScreen = ({ router, navigation }: any) => {
       {
         isLoading ? (
           <View style={{display: 'flex', alignItems: 'center', paddingTop: 30}}>
-            <ActivityIndicator size={30}/>
+            <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
           </View>
         ) : (
           users.length > 0 ? (

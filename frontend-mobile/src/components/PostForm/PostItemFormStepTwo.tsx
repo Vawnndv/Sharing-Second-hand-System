@@ -58,7 +58,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isLoadingGenerateGPT, setIsLoadingGenerateGPT] = useState(false)
 
   const [newItemPhotos, setNewItemPhotos] = useState<any>(null)
 
@@ -299,7 +298,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   }
 
   const generateDecription = async () => {
-    setIsLoadingGenerateGPT(true)
+    setIsLoading(true)
     if(countClickGenerate < 3){
       try {
         const imageUrls: string[] = newItemPhotos.map((img: any) => {
@@ -314,13 +313,13 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       } catch (error) {
         Alert.alert("Thông báo", "Tạo mô tả tự động đã gặp vấn đề, xin vui lòng thử lại!")
         console.log(error)
-        setIsLoadingGenerateGPT(false)
+        setIsLoading(false);
       }
     }else{
       Alert.alert("Thông báo", "Bạn đã đạt giới hạn tối đa tạo mô tả tự động cho bài đăng này!")
     }
     
-    setIsLoadingGenerateGPT(false)
+    setIsLoading(false);
   }
 
   // if (isLoading) {
@@ -334,7 +333,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
   return (
     <ScrollView style = {styles.container}>
-      {/* <LoadingModal visible={isLoadingGenerateGPT} /> */}
       <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin bài đăng sản phẩm </Text>
       <TextInput

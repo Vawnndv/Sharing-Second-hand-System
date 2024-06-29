@@ -48,6 +48,7 @@ export default function AddPost() {
   const [amount, setAmount] = useState('')
 
   const [itemTypes, setItemTypes] = useState<any>([])
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
   const [itemCategory, setItemCategory] = useState(null)
 
   useEffect(() => {

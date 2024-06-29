@@ -11,6 +11,7 @@ import HeaderComponent from './HeaderComponent';
 import { Badge } from 'react-native-elements';
 import AvatarComponent from './AvatarComponent';
 import SpaceComponent from './SpaceComponent';
+import LoadingComponent from './LoadingComponent';
 
 interface Props {
   isScroll?: boolean;
@@ -20,10 +21,11 @@ interface Props {
   right?: boolean;
   badge?: number;
   option?: ReactNode;
+  isLoading?: boolean;
 };
 
 const ContainerComponent = (props: Props) => {
-  const {children, isScroll, title, back, right, badge, option} = props;
+  const {children, isScroll, title, back, right, badge, option, isLoading} = props;
   const navigation: any = useNavigation();
 
   const headerComponent = () => {
@@ -89,12 +91,21 @@ const ContainerComponent = (props: Props) => {
   };
 
   const returnContainer = isScroll ? (
-    <ScrollView 
+   
+    <View style={{ flex: 1 }}>
+    {isLoading ? (
+      <LoadingComponent isLoading={isLoading} />
+      // <>
+      // </>
+    ) : (
+      <ScrollView 
       style={{flex: 1}}
       showsVerticalScrollIndicator={false}
     >
       {children}
     </ScrollView>
+    )}
+  </View>
   ) : (
     <View style={{flex: 1}}>
       {children}

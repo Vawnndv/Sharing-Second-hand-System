@@ -139,7 +139,7 @@ const LoginScreen = ({navigation}: any) => {
         <ButtonComponent
           disable={isDisable}
           onPress={handleLogin}
-          text="ĐĂNG NHẬP"
+          text={"ĐĂNG NHẬP"}
           type='primary'
           iconFlex="right"
           icon={
@@ -159,7 +159,7 @@ const LoginScreen = ({navigation}: any) => {
       <SocialLogin />
       <SectionComponent>
         <RowComponent justify="center">
-          <TextComponent text="bạn chưa có tài khoản? " />
+          <TextComponent text="Bạn chưa có tài khoản? " />
           <ButtonComponent 
             type="link" 
             text="Đăng ký" 
