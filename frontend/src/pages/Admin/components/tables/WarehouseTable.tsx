@@ -105,8 +105,8 @@ function WarehouseTable(props: Props) {
         filterable: false,
       }
       ,
-      { field: 'warehousename', headerName: 'Tên kho', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Địa chỉ', width: 300, getTooltip: (params: any) => params.value },
+      { field: 'warehousename', headerName: 'Tên kho', width: 200, getTooltip: (params: any) => params.value },
+      { field: 'address', headerName: 'Địa chỉ', width: 450, getTooltip: (params: any) => params.value },
       { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
       { field: 'numberofemployees', headerName: 'Nhân viên', width: 100, getTooltip: (params: any) => params.value },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
@@ -259,6 +259,9 @@ function WarehouseTable(props: Props) {
               [`& .${gridClasses.row}`]: {
                 bgcolor: (theme) =>
                   theme.palette.mode === 'light' ? grey[200] : grey[900]
+              },
+              '.MuiDataGrid-cell': {
+                alignContent: 'center',
               },
               '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': {
                 'mt': '1em',
