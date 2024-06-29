@@ -6,6 +6,7 @@ interface AuthState {
   accessToken: string;
   roleID: string;
   fcmTokens: string[];
+  likesPosts: string[]; 
   deviceid: string;
 };
 
@@ -15,6 +16,7 @@ const initialState: AuthState = {
   accessToken: '',
   roleID: '',
   fcmTokens: [],
+  likesPosts: [],
   deviceid: '',
 };
 
@@ -34,6 +36,14 @@ const authSlice = createSlice({
 
     removeAuth: (state, action) => {
       state.authData = initialState;
+    },
+
+    addLikePosts: (state, action) => {
+      state.authData.likesPosts = action.payload;
+    },
+
+    updateLikePosts: (state, action) => {
+      state.authData.likesPosts = action.payload;
     },
   },
 });

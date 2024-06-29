@@ -58,9 +58,8 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
   const { email, oldPassword, newPassword } = req.body;
   const user = await Account.findUserByEmail(email);
-  
   if (user) {
-    const checkPassword = await bcrypt.compare(oldPassword, user.password);
+    const checkPassword = (oldPassword.trim().length === 0 && user.password.trim().length === 0) ? true :  await bcrypt.compare(oldPassword, user.password);
 
     
     if (checkPassword) {

@@ -62,7 +62,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
         overshootRight={false} // Disable overshoot effect
         friction={1} // Lower friction to increase swipe speed and sensitivity
         rightThreshold={20} // Decrease threshold for easier and faster swipe completion
-        containerStyle={{ borderBottomWidth: 1 }}
+        containerStyle={{ borderBottomWidth: 0.6 }}
       >
         <RowComponent
           key={`event${index}`}
@@ -108,9 +108,6 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
                 <Clock size={14} color={appColors.black} />
                 <SpaceComponent width={4} />
                 <TextComponent text={moment(item.createdAt.seconds * 1000 + item.createdAt.nanoseconds / 1000000).fromNow()} font={fontFamilies.light} />
-              </RowComponent>
-              <RowComponent>
-                <MaterialIcons name="more-horiz" color={appColors.black} variant='Bold' size={24} />
               </RowComponent>
             </RowComponent>
           </View>
