@@ -950,31 +950,34 @@ export class PostManager {
           a.latitude,
           itt.nametype,
           MIN(i.path) AS path,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
-        FROM 
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
+      FROM 
           "posts" p
-        LEFT JOIN 
+      LEFT JOIN 
           "User" u ON u.userId = p.owner AND u.userId NOT IN (SELECT userId FROM workAt)
-        LEFT JOIN 
+      LEFT JOIN 
           "workat" wa ON p.owner = wa.userid
-        LEFT JOIN 
+      LEFT JOIN 
           "warehouse" w ON wa.warehouseid = w.warehouseid
-        JOIN 
+      JOIN 
           "address" a ON a.addressid = p.addressid
-        JOIN 
+      JOIN 
           item it ON it.itemid = p.itemid
-        JOIN 
+      JOIN 
           item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN 
+      LEFT JOIN 
           "image" i ON p.itemid = i.itemid
-        LEFT JOIN 
+      LEFT JOIN 
           "like_post" lp ON p.postid = lp.postid
-        LEFT JOIN
-          "postreceiver" pr ON p.postid = pr.postid  
-        WHERE 
-          (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) AND pr.receiverid = ${userId}
-        GROUP BY 
+      LEFT JOIN
+          "postreceiver" pr ON p.postid = pr.postid
+      LEFT JOIN
+          "postreceiver" prt ON p.postid = prt.postid
+      WHERE 
+          (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) 
+          AND prt.receiverid = ${userId}
+      GROUP BY 
           p.description, 
           p.postid,
           p.itemid,
@@ -986,7 +989,7 @@ export class PostManager {
           a.longitude,
           a.latitude,
           itt.nametype
-        ORDER BY
+      ORDER BY
           p.createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
