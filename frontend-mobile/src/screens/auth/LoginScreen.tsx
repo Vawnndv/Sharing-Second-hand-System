@@ -137,9 +137,9 @@ const LoginScreen = ({navigation}: any) => {
       )}
       <SectionComponent>
         <ButtonComponent
-          disable={isLoading}
+          disable={isDisable}
           onPress={handleLogin}
-          text={isLoading ? "ĐANG ĐĂNG NHẬP" : "ĐĂNG NHẬP"}
+          text={"ĐĂNG NHẬP"}
           type='primary'
           iconFlex="right"
           icon={
@@ -167,6 +167,7 @@ const LoginScreen = ({navigation}: any) => {
           />
         </RowComponent>
       </SectionComponent>
+      <LoadingModal visible={isLoading} />
     </ContainerComponent>
 
   )
