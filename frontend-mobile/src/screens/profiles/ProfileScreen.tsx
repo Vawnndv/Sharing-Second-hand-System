@@ -84,7 +84,7 @@ const ProfileScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1}>
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
         // <LoadingComponent isLoading={isLoading} value={1} />
       ) : profile && (
         <>

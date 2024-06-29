@@ -328,7 +328,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
       {
         isLoading ? (
           <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <ActivityIndicator animating={true} color={appColors.purple} />
+            <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
           </View>
         ) : (
           <View style={styles.body}>

@@ -75,7 +75,7 @@ const PostScreen = ({ navigation, route }: any) => {
     <ContainerComponent back title="Bài Đăng">
       <View style={{ flex: 1 }}>
         {isLoading ? (
-          <ActivityIndicator />
+          <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
         ) : (
           <FlatList
             data={posts}

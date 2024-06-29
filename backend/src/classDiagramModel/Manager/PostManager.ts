@@ -1406,8 +1406,6 @@ export class PostManager {
     LEFT JOIN 
       Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
     LEFT JOIN 
-      Postreceiver por ON po.PostID = por.PostID
-    LEFT JOIN 
       Trace_Status ts ON po.StatusID = ts.StatusID
     LEFT JOIN
       Give_receivetype grt ON grt.give_receivetypeid = po.givetypeid

@@ -137,9 +137,9 @@ const LoginScreen = ({navigation}: any) => {
       )}
       <SectionComponent>
         <ButtonComponent
-          disable={isDisable}
+          disable={isLoading}
           onPress={handleLogin}
-          text="ĐĂNG NHẬP"
+          text={isLoading ? "ĐANG ĐĂNG NHẬP" : "ĐĂNG NHẬP"}
           type='primary'
           iconFlex="right"
           icon={
@@ -159,7 +159,7 @@ const LoginScreen = ({navigation}: any) => {
       <SocialLogin />
       <SectionComponent>
         <RowComponent justify="center">
-          <TextComponent text="bạn chưa có tài khoản? " />
+          <TextComponent text="Bạn chưa có tài khoản? " />
           <ButtonComponent 
             type="link" 
             text="Đăng ký" 
@@ -167,7 +167,6 @@ const LoginScreen = ({navigation}: any) => {
           />
         </RowComponent>
       </SectionComponent>
-      <LoadingModal visible={isLoading} />
     </ContainerComponent>
 
   )
