@@ -323,18 +323,19 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     setIsLoadingGenerateGPT(false)
   }
 
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
 
 
   return (
     <ScrollView style = {styles.container}>
-      <LoadingModal visible={isLoadingGenerateGPT} />
+      {/* <LoadingModal visible={isLoadingGenerateGPT} /> */}
+      <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin bài đăng sản phẩm </Text>
       <TextInput
         label="Tiêu đề bài đăng"
