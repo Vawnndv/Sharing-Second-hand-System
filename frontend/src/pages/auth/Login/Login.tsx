@@ -25,6 +25,7 @@ import { LoginValidation } from '../../../validation/userValidation';
 import './style.scss';
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
 import { loginAction } from '../../../redux/actions/authActions';
+import ReTreasure_BackGround from '../../../assets/Retreasure_Icon.svg';
 
 
 const defaultTheme = createTheme({
@@ -129,7 +130,7 @@ function Login(props: Props) {
           sm={false}
           md={7}
           sx={{
-            backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
+            backgroundImage: `url(${ReTreasure_BackGround})`,
             backgroundRepeat: 'no-repeat',
             backgroundColor: (t) => (t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900]),
             backgroundSize: 'cover',
@@ -186,13 +187,6 @@ function Login(props: Props) {
                 error={!!errors.email}
                 helperText={errors.email?.message || ''}
               />
-              {/* <Grid container sx={{ justifyContent: 'flex-end' }}>
-                <Grid item>
-                  <Link component={RouterLink} to="/user/activation" variant="body2">
-                    Resend activation email
-                  </Link>
-                </Grid>
-              </Grid> */}
               <TextField
                 margin="normal"
                 required
@@ -256,19 +250,6 @@ function Login(props: Props) {
                   </Link>
                 </Grid>
               </Grid>
-
-              <Box display="flex" justifyContent="center" alignItems="center" height="10vh">
-                <Typography
-                  sx={{
-                    mt: 2,
-                    pb: 2,
-                    mr: 4,
-                    fontSize: '20px'
-                  }}
-                >
-                  Hoặc đăng nhập qua
-                </Typography>
-              </Box>
             </Box>
           </Box>
         </Grid>

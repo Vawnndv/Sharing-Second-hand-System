@@ -82,11 +82,8 @@ const ProfileScreen = ({navigation, route}: any) => {
   }
 
   return (
-    <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1}>
-      {isLoading ? (
-        <ActivityIndicator />
-        // <LoadingComponent isLoading={isLoading} value={1} />
-      ) : profile && (
+    <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1} isLoading={isLoading}>
+      {profile && (
         <>
           <SectionComponent styles={[globalStyles.center]}>
             <RowComponent>

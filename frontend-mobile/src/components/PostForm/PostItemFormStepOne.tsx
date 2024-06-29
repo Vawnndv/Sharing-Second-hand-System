@@ -51,6 +51,7 @@ interface FormData {
   warehouseAddress?: string;
   warehouseAddressID?: number;
   warehouseID?: number;
+  itemCategoryLabel: string;
 }
 
 interface ItemTypes {
@@ -157,14 +158,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   const [labels, setLabels] = useState<string[]>([]);
 
   const [isGenerateItemName, setIsGenerateItemName] = useState(false);
-  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);
-
-  
-  
-const metadataLocal = require('../../../assets/model/metadata.json');
-
-
-
+  const [isGenerateItemCategory, setIsGenerateItemCategory] = useState(false);  
 
 
   useEffect(() => {
@@ -207,9 +201,15 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       setSelectedWarehouseDropdown('  ' + formData.warehouseAddress)
     }
 
-    // if (formData.itemCategory){
-    //   setSelectedItemTypeDropdown(formData.itemCategory)
-    // }
+
+    if(formData.itemCategory){
+        itemTypesDropdown.map( (itemtype: any, index: any) => {
+          if(itemtype.value === formData.itemCategory){
+            setSelectedItemTypeDropdown(itemtype.label);
+          }
+        }
+      )
+    }
 
     if (formData.methodGive){
       setSelectedMethodGive('  ' + formData.methodGive)
@@ -222,33 +222,14 @@ const metadataLocal = require('../../../assets/model/metadata.json');
   },[formData, formData.itemCategory])
 
 
-  const loadLabels = () => {
-    const metadata = require('../../../assets/model/metadata.json');
-    if (metadata && metadata.labels) {
-      setLabels(metadata.labels);
-    }
-  };
+  // const loadLabels = () => {
+  //   const metadata = require('../../../assets/model/metadata.json');
+  //   if (metadata && metadata.labels) {
+  //     setLabels(metadata.labels);
+  //   }
 
-//   useEffect(() => {
-//   const loadModel = async () => {
-//     try {
-//       setIsLoading(true);
-//       await tf.ready();  
-//       setModel(await tf.loadLayersModel(modelURL + 'model.json'));
-//       setIsLoading(false); // Chỉ gọi setIsLoading(false) sau khi mô hình được tải thành công
-
-//     } catch (error) {
-//       console.error('Error loading the model', error);
-//       setIsLoading(false);
-//     }
-//   };
-//   loadModel();
-// },[])
-
-  useEffect(() => {
-    loadLabels();
-
-  }, []);
+  //   const labelRes = fetch(modelURL + 'metadata.json');
+  // };
 
 
   useEffect(() =>{
@@ -275,10 +256,16 @@ const metadataLocal = require('../../../assets/model/metadata.json');
       
       setIsLoading(true);
 
-      loadLabels();
+      // loadLabels();
       try {
         await tf.ready();  
-        setModel(await tf.loadLayersModel(modelURL + 'model.json'));  
+        setModel(await tf.loadLayersModel(modelURL + 'model.json')); 
+        const response: any = await fetch(modelURL + 'metadata.json');
+        if (!response.ok) {
+          throw new Error('Failed to fetch labels of model');
+        }
+        const metadata = await response.json();
+        setLabels(metadata.labels);        
       } catch (error) {
         console.error('Error loading the model', error);
       }
@@ -372,9 +359,10 @@ const pickImage = async () => {
           // Resize ảnh
           const manipulatedImage = await ImageManipulator.manipulateAsync(
             asset.uri,
-            [{ resize: { width: 224, height: 224 } }],
-            { compress: 1, format: ImageManipulator.SaveFormat.JPEG }
+            [{ resize: { width: 400, height: 400 } }],
+            { compress: 1, format: ImageManipulator.SaveFormat.JPEG } 
           );
+          // setSampleImg(manipulatedImage.uri);
 
 
 
@@ -429,7 +417,6 @@ const pickImage = async () => {
           }
         )
 
-        
         if(itemCategory === 'Nhạy cảm' && highestProbabilityImage.prediction.probability > 0.8){
           Alert.alert('Bạn không thể sử dụng ảnh này vì lý do: ', ' Ảnh được nhận diện là ảnh nhạy cảm');
         }
@@ -437,8 +424,10 @@ const pickImage = async () => {
           setFormData({
             ...formData,
             itemPhotos: [...formData.itemPhotos, ...completedImages],
-            itemCategory: '8'});
+            itemCategory: '8',
+            itemCategoryLabel: 'Khác'});
           setSelectedItemTypeDropdown('Khác');
+
           setIsGenerateItemCategory(true);
         }
         else{
@@ -446,12 +435,11 @@ const pickImage = async () => {
             ...formData,
             itemName: itemName, 
             itemPhotos: [...formData.itemPhotos, ...completedImages],
-            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? categoryID : '8' });
+            itemCategory: highestProbabilityImage.prediction.probability > 0.5 ? categoryID : '8',
+            itemCategoryLabel: highestProbabilityImage.prediction.probability > 0.5 ? categoryLabel : 'Khác' });
           setSelectedItemTypeDropdown(highestProbabilityImage.prediction.probability > 0.5 ? categoryLabel : 'Khác' );
           setIsGenerateItemName(true);
           setIsGenerateItemCategory(true);
-
-
         }
         if(completedImages.length > 0){
           handleValidate(true, 'photo');
@@ -556,7 +544,6 @@ const predictImage = async (imageUri: any) => {
     handleValidate('','photo');
     if(updatedPhotos.length < 1){
       handleValidate('false','photo');
-
     }
   };
 
@@ -619,7 +606,6 @@ const predictImage = async (imageUri: any) => {
       else {
         updatedErrorMessage.itemQuantity = '';
         setFormData({ ...formData, itemQuantity: text});
-
       }
     }
     
@@ -711,11 +697,11 @@ const predictImage = async (imageUri: any) => {
 
 
 
-  if (isLoading) {
-    return (
-        <LoadingModal visible={isLoading} />
-      )
-  }
+  // if (isLoading) {
+  //   return (
+  //       <LoadingModal visible={isLoading} />
+  //     )
+  // }
   
   const handleSelectWarehouse = () => {
     navigation.navigate('MapSelectWarehouseGiveScreen', {
@@ -727,6 +713,7 @@ const predictImage = async (imageUri: any) => {
 
   return (
     <ScrollView style = {styles.container}>
+      <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
 
       <TouchableOpacity onPress={() => handleValidate('','photo')}>
@@ -828,18 +815,18 @@ const predictImage = async (imageUri: any) => {
           maxHeight={windowHeight*0.2}
           labelField="label"
           valueField="value"
-          placeholder={selectedItemTypeDropdown ? '  ' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
+          placeholder={ formData.itemCategoryLabel ? '  ' +  formData.itemCategoryLabel : selectedItemTypeDropdown ? ' ' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={selectedItemTypeDropdown}
           onFocus={() => {
             setIsFocusSelectedItemType(true);             
             handleValidate('', 'itemtype');
             setIsGenerateItemCategory(false);
-
           }}
           onBlur={() => setIsFocusSelectedItemType(false)}
           onChange={item => {
             setFormData({ ...formData, itemCategory: item.value});
+            setFormData({ ...formData, itemCategoryLabel: item.label});
             setErrorMessage({...errorMessage, itemCategory: ''})
             // handleValidate(item.value,'itemtype');
             setSelectedItemTypeDropdown(item.label);
@@ -941,7 +928,6 @@ const predictImage = async (imageUri: any) => {
         </>
       )}
         <Button mode="contained" onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
-      
 
     </ScrollView>
   );

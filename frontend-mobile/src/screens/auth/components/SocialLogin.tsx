@@ -12,6 +12,7 @@ import authenticationAPI from '../../../apis/authApi'
 import { useDispatch } from 'react-redux'
 import { addAuth } from '../../../redux/reducers/authReducers'
 import { LoadingModal } from '../../../modals'
+import { usePushNotifications } from '../../../utils/usePushNotification'
 // GoogleSignin.configure({
 //   webClientId: '207453487106-codnbkrd7v3mu6gljp17n9u521vm35ep.apps.googleusercontent.com',
 // });
@@ -72,6 +73,7 @@ const SocialLogin = () => {
         dispatch(addAuth(res.data));
 
         await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+        await usePushNotifications.registerForPushNotificationsAsync();
 
         setIsLoading(false);
       }

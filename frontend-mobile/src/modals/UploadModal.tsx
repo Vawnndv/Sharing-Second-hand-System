@@ -31,7 +31,7 @@ const UploadModal = (props: Props) => {
         onPress={onBackPress}
       >
         {isLoading && (
-          <ActivityIndicator size={70} color={appColors.white} />
+          <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
         )}
         {!isLoading && (
           <View style={[localStyles.modalView, { backgroundColor: appColors.white }]}>

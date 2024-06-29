@@ -212,6 +212,22 @@ export const getUserLikePosts = asyncHandle(async (req, res) => {
   }
 });
 
+export const getReceivePosts = asyncHandle(async (req, res) => {
+  const userId: any = req.query.userId;
+  const limit : any = req.query.limit;
+  const page : any = req.query.page;
+
+  try {
+    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
+    const allPosts = await PostManager.getReceivePosts(limit, page, userId);
+  
+    res.status(200).json({ message: 'Lấy danh sách bài xin nhận thành công', allPosts });
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách bài xin nhận:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
 export const getAmountUserLikePost = asyncHandle(async (req, res) => {
   const postID: any = req.query.postID;
 

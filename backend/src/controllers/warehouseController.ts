@@ -20,6 +20,24 @@ export const getAllWarehouses = asyncHandle(async (req, res) => {
   }
 });
 
+export const getAllWarehousesAdmin = asyncHandle(async (req, res) => {
+  try {
+    // Call the static method getAllItems to fetch all items from the database
+    const warehouses = await WarehouseManager.viewAllWarehouseAdmin();
+    // If items are found, return them as a response
+    if (warehouses) {
+      res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
+    } else {
+      // If no items are found, return an empty array
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    // If there's an error, return a 500 error
+    console.error('Error retrieving warehouses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
   try {
     const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
@@ -74,6 +92,26 @@ export const getWarehouse = asyncHandle(async (req, res) => {
 
     // Call the static method getAllItems to fetch all items from the database
     const warehouse = await WarehouseManager.viewWarehouse(warehouseid);
+    // If items are found, return them as a response
+    if (warehouse) {
+      res.status(200).json({ message: 'Warehouses founded', wareHouse: warehouse });
+    } else {
+      // If no items are found, return an empty array
+      res.status(200).json([]);
+    }
+  } catch (error) {
+    // If there's an error, return a 500 error
+    console.error('Error retrieving warehouses:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+export const getWarehouseByUserID = asyncHandle(async (req, res) => {
+  try {
+    const userid: number = parseInt(req.params.userid);
+
+    // Call the static method getAllItems to fetch all items from the database
+    const warehouse = await WarehouseManager.getWarehouseByUserID(userid);
     // If items are found, return them as a response
     if (warehouse) {
       res.status(200).json({ message: 'Warehouses founded', wareHouse: warehouse });

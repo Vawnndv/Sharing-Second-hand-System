@@ -16,14 +16,6 @@ import { category } from "../../constant/appCategories";
 
 
 function Home() {
-  // const dispatch: AppDispatch = useAppDispatch();
-  // const navigate = useNavigate();
-
-  // const logoutHandler = () => {
-  //   dispatch(logoutAction())
-  //   toast.success('Logged out successfully')
-  //   navigate('login')
-  // }
 
   const [value, setValue] = useState('1')
 

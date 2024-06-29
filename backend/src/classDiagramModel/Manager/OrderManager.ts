@@ -627,61 +627,6 @@ export class OrderManager {
   public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
-    // let query = `
-    //   SELECT *,
-    //   CASE
-    //       WHEN UserReceiveID IS NULL THEN false
-    //       ELSE true
-    //   END AS isReciever
-    //   FROM (
-    //   SELECT *,
-    //           ROW_NUMBER() OVER (PARTITION BY oo.orderid ORDER BY oo.statuscreatedat DESC) AS row_num
-    //   FROM (
-    //       SELECT 
-    //           po.Title, 
-    //           adg.address AS Location, 
-    //           o.Status,
-    //           o.CreatedAt,
-    //           i.Path AS Image, 
-    //           o.OrderID,
-    //           ts.StatusName,
-    //           th.Time AS StatusCreatedAt,
-    //           o.GiveType,
-    //           adg.Longitude AS LongitudeGive,
-    //           adg.Latitude AS LatitudeGive,
-    //           adr.Longitude AS LongitudeReceive,
-    //           adr.Latitude AS LatitudeReceive,
-    //           itt.NameType,
-    //           o.imgconfirmreceive,
-    //           o.UserReceiveID AS UserReceiveID
-    //       FROM 
-    //           Orders o
-    //       JOIN 
-    //           Image i ON o.ItemID = i.ItemID
-    //       JOIN 
-    //           Trace t ON o.OrderID = t.OrderID
-    //       JOIN 
-    //           Trace_History th ON t.TraceID = th.TraceID
-    //       JOIN 
-    //           Trace_Status ts ON th.StatusID = ts.StatusID
-    //       JOIN 
-    //           Address adg ON adg.AddressID = o.LocationGive
-    //       JOIN 
-    //           Address adr ON adr.AddressID = o.LocationReceive
-    //       JOIN 
-    //           Posts po ON po.PostID = o.PostID
-    //       JOIN 
-    //           Item it ON it.ItemID = po.ItemID
-    //       JOIN 
-    //           Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
-    //       WHERE 
-    //           {placeholder}
-    //       ORDER BY
-    //           th.Time DESC
-    //   ) AS oo
-    //   ) AS ranked_orders
-    //   WHERE row_num = 1;
-    // `
     let query = `
     WITH RankedOrders AS (
       SELECT 

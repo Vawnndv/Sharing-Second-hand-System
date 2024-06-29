@@ -30,6 +30,7 @@ interface FormDataStepOne {
   warehouseAddress?: string;
   warehouseAddressID?: number;
   warehouseID?: number;
+  itemCategoryLabel: string;
   // Định nghĩa thêm các thuộc tính khác ở đây nếu cần
 }
 
@@ -78,7 +79,7 @@ const MultiStepForm = () => {
 
   const navigation: any = useNavigation();
   const [currentStep, setCurrentStep] = useState(1);
-  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
+  const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemCategoryLabel: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
   const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isValidSubmit, setIsValidSubmit] = useState(false);
@@ -217,7 +218,7 @@ const MultiStepForm = () => {
       try {
         const name = formDataStepOne.itemName;
         const quantity = parseInt(formDataStepOne.itemQuantity);
-        const itemtypeID = parseInt(formDataStepOne.itemCategory)
+        const itemtypeID = parseInt(formDataStepOne.itemCategory);
         const res: any = await axiosClient.post(`${appInfo.BASE_URL}/items`, {
           name,
           quantity,

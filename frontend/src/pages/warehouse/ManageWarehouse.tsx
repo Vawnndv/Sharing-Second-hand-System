@@ -68,7 +68,7 @@ export default function ManageWarehouse() {
       }
 
       try {
-        const res: any = await Axios.get(`/warehouse/`)
+        const res: any = await Axios.get(`/warehouse/admin`)
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }

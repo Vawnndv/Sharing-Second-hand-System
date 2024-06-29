@@ -1,12 +1,16 @@
 import express from 'express';
-import { getWarehouse, getAllWarehouses, getAllWarehousesAllInfo, getWarehouseNameList, createWarehouse, updateWarehouse, updateWarehouseStatus } from '../controllers/warehouseController';
+import { getWarehouse, getAllWarehouses, getAllWarehousesAllInfo, getWarehouseNameList, createWarehouse, updateWarehouse, updateWarehouseStatus, getAllWarehousesAdmin, getWarehouseByUserID } from '../controllers/warehouseController';
 import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
 
 router.get('/getWarehouse/:warehouseid', protect, getWarehouse);
+router.get('/getWarehouseByUserID/:userid', protect, getWarehouseByUserID);
 
 router.get('/', protect, getAllWarehouses);
+
+router.get('/admin', protect, getAllWarehousesAdmin);
+
 
 router.get('/warehouse-name-list', protect, getWarehouseNameList);
 

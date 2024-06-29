@@ -12,6 +12,7 @@ import ContactPageIcon from '@mui/icons-material/ContactPage';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import Groups2Icon from '@mui/icons-material/Groups2';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 // import MenuIcon from '@mui/icons-material/Menu';
 import './styles.scss';
 import { useSelector } from 'react-redux';
@@ -66,6 +67,9 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
         break;
       case '/users':
         setIndexAdmin(3);
+        break;
+      case '/post':
+        setIndex(9);
         break;
       default:
         setIndex(-1);
@@ -156,6 +160,23 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
             <ContentPasteSearchIcon className="icon" />
             <Typography variant="body1" component="h2" className="text">
               Quản lí đơn hàng
+            </Typography>
+          </Stack>
+
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1}
+            className={index === 9 ? 'tabSelected' : 'tab'}
+            component="div"
+            onClick={() => {
+              setIndex(9);
+              navigate('/post');
+            }}
+          >
+            <AddCircleIcon className="icon" />
+            <Typography variant="body1" component="h2" className="text">
+              Đăng bài
             </Typography>
           </Stack>
 

@@ -1,6 +1,7 @@
 import { View, Text, ActivityIndicator } from 'react-native'
 import React from 'react'
 import TextComponent from './TextComponent';
+import { appColors } from '../constants/appColors';
 
 interface Props {
   isLoading: boolean;
@@ -18,11 +19,11 @@ const LoadingComponent = (props :Props) => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        // padding: 20,
       }}
     >
       {isLoading ? (
-        <ActivityIndicator />
+        <ActivityIndicator size="large" color={appColors.primary2} style={{ marginTop: 10 }} /> 
       ) : (
         values === 0 && <TextComponent text={message ?? 'Data not found!'} /> 
       )}

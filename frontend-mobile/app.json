@@ -3,12 +3,12 @@
     "name": "ReTreasure",
     "slug": "retreasure",
     "scheme" : "frontend-mobile",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon_logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash_logo.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -23,18 +23,24 @@
       }
     },
     "android": {
-      "versionCode": 4,
+      "versionCode": 5,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.retreasure.frontendmobile",
+      "googleServicesFile": "./google-services.json",
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAbk-Yxdn_arPK7y6BHG25BauJy4f-vppc"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -53,6 +59,14 @@
         {
           "photosPermission": "Allow  $(PRODUCT_NAME) to access your photos.",
           "cameraPermission": "Allow  $(PRODUCT_NAME) to access your camera."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon_logo.png",
+          "color": "#ffffff",
+          "defaultChannel": "default"
         }
       ]
     ],
