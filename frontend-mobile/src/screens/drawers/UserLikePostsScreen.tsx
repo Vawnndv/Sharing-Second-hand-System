@@ -18,6 +18,7 @@ const UserLikePostsScreen = () => {
     const [page, setPage] = useState(0);
     const [shouldFetchData, setShouldFetchData] = useState(false);
     const [isEndOfData, setIsEndOfData] = useState(false);
+    const [refresh, setRefresh] = useState(false)
 
     const LIMIT = 3;
 
@@ -28,7 +29,7 @@ const UserLikePostsScreen = () => {
         setIsEmpty(false);
         setData([]);
 
-    }, [])
+    }, [refresh])
 
     useEffect(() => {
         if (shouldFetchData) {
@@ -36,6 +37,10 @@ const UserLikePostsScreen = () => {
         setShouldFetchData(false); // Đặt lại shouldFetchData về false sau khi đã fetch dữ liệu
         }
     }, [shouldFetchData]);
+
+    const handleRefresh = () => {
+        setRefresh(prevRefresh => !prevRefresh);
+    }
 
     const fetchData = async () => {
         setIsLoading(true);
@@ -79,7 +84,7 @@ const UserLikePostsScreen = () => {
                 />
                 </View>
             ) : (
-                <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} setData={setData} isRefresh={true} />
+                <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} setData={setData} isRefresh={true} handleRefresh={handleRefresh}/>
             )}
         </ContainerComponent>
         // </ContainerComponent>
