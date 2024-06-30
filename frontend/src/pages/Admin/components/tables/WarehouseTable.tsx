@@ -42,10 +42,11 @@ interface Props {
   isUpdateWarehouse: any;
   setIsAddNewWarehouse: (val: any) => void;
   setIsUpdateWarehouse: (val: any) => void;
+  setIsLoading: (val: any) => void;
 }
 
 function WarehouseTable(props: Props) {
-  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse} = props;
+  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse, setIsLoading} = props;
 
   // const { userInfo } = useSelector(
   //   (state: RootState) => state.userLogin
@@ -80,18 +81,24 @@ function WarehouseTable(props: Props) {
   }
   
   const handleLockWarehouse = async (warehouseid: number, status: any) => {
-    const res = await Axios.post(`/warehouse/updateWarehouseStatus`, {
-      warehouseid,
-      status
-    });
-    const warehouseIndex = data.findIndex((warehouse:any) => warehouse.warehouseid === warehouseid);
-    if (warehouseIndex !== -1) {
-      const updatedWarehouse = [...data];
-      updatedWarehouse[warehouseIndex] = { ...updatedWarehouse[warehouseIndex], isactivated: status };
-      setData(updatedWarehouse);
-      toast.success(`Cập nhật trạng thái kho thành công`);
+    setIsLoading(true);
+    try{
+      const res = await Axios.post(`/warehouse/updateWarehouseStatus`, {
+        warehouseid,
+        status
+      });
+      const warehouseIndex = data.findIndex((warehouse:any) => warehouse.warehouseid === warehouseid);
+      if (warehouseIndex !== -1) {
+        const updatedWarehouse = [...data];
+        updatedWarehouse[warehouseIndex] = { ...updatedWarehouse[warehouseIndex], isactivated: status };
+        setData(updatedWarehouse);
+        toast.success(`Cập nhật trạng thái kho thành công`);
+      }
+    } catch(error: any){
+      toast.error(`Lỗi khi cập nhật trạng thái kho `, error);
+      setIsLoading(false);
     }
-
+    setIsLoading(false);
   }
 
   const columns: GridColDef<(typeof data)[number]>[] = useMemo(
