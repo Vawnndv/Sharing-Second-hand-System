@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../../redux/reducers/authReducers";
 import { useFocusEffect } from "@react-navigation/native";
 import { category } from "../../constants/appCategories";
+import LoadingComponent from "../LoadingComponent";
 
 interface Item {
   title: string;
@@ -124,7 +125,7 @@ export default function GiveOrderScreen({ navigation, route }: any) {
   );
 
   const renderFooterComponent = () => (
-    isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null
+    isLoading ? <LoadingComponent isLoading={isLoading} /> : null
   );
 
   return (
