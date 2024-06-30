@@ -14,6 +14,7 @@ import 'moment/locale/vi';
 import userAPI from '../../apis/userApi';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
+import LoadingComponent from '../../components/LoadingComponent';
 
 interface DataItem {
   userid: string;
@@ -70,7 +71,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   useEffect(() => {
     getUserLikePosts();
     const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => item.like_count) : [];
-      
+    console.log(newLikeNumber)
     setLikeNumber(newLikeNumber);
 
   }, [data])
@@ -208,7 +209,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
       keyExtractor={(item, index) => index.toString()}
       onEndReached={handleEndReached} // Khi người dùng kéo xuống cuối cùng
       onEndReachedThreshold={0.1} // Kích hoạt khi còn 10% phía dưới còn lại của danh sách
-      ListFooterComponent={isLoading ? <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> : null} // Hiển thị indicator khi đang tải dữ liệu
+      ListFooterComponent={isLoading ? <LoadingComponent isLoading={isLoading} /> : null} // Hiển thị indicator khi đang tải dữ liệu
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }

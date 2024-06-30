@@ -77,13 +77,6 @@ const ScanScreen: React.FC<ScanScreenProps> = ({ navigation, route }) => {
     verifyQRCode({ data });
   };
 
-  if (hasPermission === null) {
-    return <Text>Đang yêu cầu quyền cho Camera</Text>;
-  }
-  if (hasPermission === false) {
-    return <Text>Không truy cập được Camera</Text>;
-  }
-
   return (
     <ContainerComponent>
       <View style={styles.container}>

@@ -11,6 +11,7 @@ import { ArrowRight, Lock } from 'iconsax-react-native';
 import { globalStyles } from '../../styles/globalStyles';
 import { LoadingModal } from '../../modals';
 import userAPI from '../../apis/userApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const initValue = {
   oldPassword: '',
@@ -26,17 +27,29 @@ const AccountScreen = () => {
   const [isDisable, setIsDisable] = useState(true);
   
   const user = useSelector(authSelector);
+  console.log(user);
+  useFocusEffect(
+      React.useCallback(() => {
+      if (!user.isPassword) {
+        if (
+          errorMessage.newPassword || errorMessage.confirmNewPassword || !values.newPassword || !values.confirmNewPassword 
+        ) {
+          setIsDisable(true);
+        } else {
+          setIsDisable(false);
+        }
+      } else {
+        if (
+          errorMessage.oldPassword || errorMessage.newPassword || errorMessage.confirmNewPassword || !values.oldPassword || !values.newPassword || !values.confirmNewPassword 
+        ) {
+          setIsDisable(true);
+        } else {
+          setIsDisable(false);
+        }
+      }
+    }, [errorMessage, values])
 
-  useEffect(() => {
-    if (
-      errorMessage.oldPassword || errorMessage.newPassword || errorMessage.confirmNewPassword || !values.oldPassword || !values.newPassword || !values.confirmNewPassword 
-    ) {
-      setIsDisable(true);
-    } else {
-      setIsDisable(false);
-    }
-  }, [errorMessage, values]);
-
+  );
   const handleChangeValue = (key: string, value: string) => {
     const data: any = {...values};
 
@@ -46,6 +59,9 @@ const AccountScreen = () => {
   };
 
   const formValidator = (key: keyof ErrorMessages) => {
+    if (!user.isPassword) {
+      return;
+    }
     setErrorMessage(Validator.Validation(key, errorMessage, values));
   };
   
@@ -56,7 +72,7 @@ const AccountScreen = () => {
       const res = await userAPI.HandleUser('/change-password', {email: user.email, oldPassword: values.oldPassword, newPassword: values.newPassword}, 'put');
       setIsLoading(false);
       setValues(initValue);
-      Alert.alert('Thay đổi mật khẩu thành công!!!');
+      Alert.alert('Thay đổi mật khẩu thành công');
       setIsDisable(true);
       setErrorRegister('');
     } catch (error: unknown) {
@@ -72,23 +88,21 @@ const AccountScreen = () => {
   
   return (
     <>
-      <ContainerComponent back isScroll>
+      <ContainerComponent back isScroll title="Đổi mật khẩu">
         <SectionComponent>
-          <TextComponent text="Change Password" title  size={24} color={appColors.primary} />
-          <SpaceComponent height={21} />
-          <InputComponent
+          {user.isPassword && <InputComponent
               value={values.oldPassword}
-              placeholder="Old Password"
+              placeholder="Mật khẩu cũ"
               onChange={val => handleChangeValue('oldPassword', val)}
               allowClear
               isPassword
               affix={<Lock size={22} color={appColors.gray} />}
               onEnd={() => formValidator('oldPassword')}
               error={errorMessage['oldPassword']}
-            />
+            />}
           <InputComponent
               value={values.newPassword}
-              placeholder="New Password"
+              placeholder="Mật khẩu mới"
               onChange={val => handleChangeValue('newPassword', val)}
               allowClear
               isPassword
@@ -98,7 +112,7 @@ const AccountScreen = () => {
             />
           <InputComponent
             value={values.confirmNewPassword}
-            placeholder="Confirm New Password"
+            placeholder="Nhập lại mật khẩu mới"
             onChange={val => handleChangeValue('confirmNewPassword', val)}
             allowClear
             isPassword

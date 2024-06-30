@@ -8,7 +8,7 @@ const ChatList = ({users, router, navigation} : any) => {
     <View style={{flex: 1}}>
       <FlatList
         data={users}
-        contentContainerStyle={{paddingVertical: 25}}
+        contentContainerStyle={{marginTop: 8}}
         keyExtractor={item=> Math.random().toString()}
         showsVerticalScrollIndicator={false}
         renderItem={({item, index}) => <ChatItem 

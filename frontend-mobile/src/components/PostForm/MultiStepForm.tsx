@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { ProfileModel } from '../../models/ProfileModel';
 import { LoadingModal } from '../../modals';
 import axiosClient from '../../apis/axiosClient';
+import { appColors } from '../../constants/appColors';
 
 
 interface FormDataStepOne {
@@ -434,7 +435,7 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 20,
     marginBottom: 30,
-
+    backgroundColor: appColors.primary2
   },
 });
 

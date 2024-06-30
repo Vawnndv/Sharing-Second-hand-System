@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
-import { DataGrid, GridColDef, GridToolbar, gridClasses } from '@mui/x-data-grid'
+import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button, Dialog, useMediaQuery, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material'
+import { DataGrid, GridColDef, GridToolbar, getGridSingleSelectOperators, getGridStringOperators, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { Add, Delete, Edit } from '@mui/icons-material'
 // import { useSelector } from 'react-redux'
@@ -22,6 +22,7 @@ import { banUserService } from '../../../../redux/services/userServices'
 import moment from 'moment'
 import dayjs from 'dayjs'
 import Axios from '../../../../redux/APIs/Axios'
+import theme from '../../../../theme'
 
 
 interface Props {
@@ -42,10 +43,11 @@ interface Props {
   isUpdateWarehouse: any;
   setIsAddNewWarehouse: (val: any) => void;
   setIsUpdateWarehouse: (val: any) => void;
+  setIsLoading: (val: any) => void;
 }
 
 function WarehouseTable(props: Props) {
-  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse} = props;
+  const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse, setIsLoading} = props;
 
   // const { userInfo } = useSelector(
   //   (state: RootState) => state.userLogin
@@ -53,9 +55,12 @@ function WarehouseTable(props: Props) {
 
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
-  const [warehouseRow, setWarehouseRow] = useState(null);
+  const [warehouseRow, setWarehouseRow] = useState<any>(null);
   const [isEdit, setIsEdit] = useState(true);
   const [isOpenModalCreate, setIsOpenModalCreate] = useState(false);
+  const [isOpenDialog, setOpenDialog] = useState(false);
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
 
 
 
@@ -78,18 +83,41 @@ function WarehouseTable(props: Props) {
     setIsOpenModalCreate(!isOpenModalCreate);
     // setIsAddNewWarehouse(true);
   }
+
+  const handleOpenDialog = (warehouse: any) => {
+    setSelectedWarehouse(warehouse);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   
-  const handleLockWarehouse = async (warehouseid: number, status: any) => {
-    const res = await Axios.post(`/warehouse/updateWarehouseStatus`, {
-      warehouseid,
-      status
-    });
-    const warehouseIndex = data.findIndex((warehouse:any) => warehouse.warehouseid === warehouseid);
-    if (warehouseIndex !== -1) {
-      const updatedWarehouse = [...data];
-      updatedWarehouse[warehouseIndex] = { ...updatedWarehouse[warehouseIndex], isactivated: status };
-      setData(updatedWarehouse);
-      toast.success(`Cập nhật trạng thái kho thành công`);
+  const handleLockWarehouse = async () => {
+    if(selectedWarehouse){
+      setIsLoading(true);
+      const warehouseid = selectedWarehouse.warehouseid;
+      const status = !selectedWarehouse.isactivated;
+      try{
+        const res = await Axios.post(`/warehouse/updateWarehouseStatus`, {
+          warehouseid,
+          status
+        });
+        const warehouseIndex = data.findIndex((warehouse:any) => warehouse.warehouseid === warehouseid);
+        if (warehouseIndex !== -1) {
+          const updatedWarehouse = [...data];
+          updatedWarehouse[warehouseIndex] = { ...updatedWarehouse[warehouseIndex], isactivated: status };
+          setData(updatedWarehouse);
+          toast.success(`Cập nhật trạng thái kho thành công`);
+        }
+      } catch(error: any){
+        toast.error(`Lỗi khi cập nhật trạng thái kho `, error);
+        setOpenDialog(false);
+        setIsLoading(false);
+      }
+      setOpenDialog(false);
+      setIsLoading(false);
     }
 
   }
@@ -105,10 +133,30 @@ function WarehouseTable(props: Props) {
         filterable: false,
       }
       ,
-      { field: 'warehousename', headerName: 'Tên kho', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Địa chỉ', width: 300, getTooltip: (params: any) => params.value },
-      { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'numberofemployees', headerName: 'Nhân viên', width: 100, getTooltip: (params: any) => params.value },
+      { field: 'warehousename', 
+        headerName: 'Tên kho', 
+        width: 200, 
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      { field: 'address',
+         headerName: 'Địa chỉ', 
+         width: 450, 
+         getTooltip: (params: any) => params.value,
+         filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+        },
+      { field: 'phonenumber', 
+        headerName: 'Số điện thoại', 
+        width: 150, 
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      { field: 'numberofemployees', 
+        headerName: 'Nhân viên', 
+        width: 100, 
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter(operator => operator.value === 'contains'),
+      },
       // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
       {
         field: 'createdat',
@@ -121,6 +169,13 @@ function WarehouseTable(props: Props) {
         field: 'isactivated',
         headerName: 'Tình trạng',
         width: 150,
+        type: "singleSelect",
+        valueOptions: [
+          { value: '', label: "Bất kì giá trị nào", defaultValue: true},
+          { value: true, label: "Hoạt động" },
+          { value: false, label: "Ngưng hoạt động" }
+        ],
+        filterOperators: getGridSingleSelectOperators().filter(operator => operator.value === 'is'),
         renderCell: (params: any) =>(
           <Box sx={{
             width: '100%',
@@ -152,12 +207,12 @@ function WarehouseTable(props: Props) {
         renderCell: (params: any) => (
           <Box>
             <Tooltip title="Cập nhật trạng thái kho">
-              <IconButton onClick={() => {handleLockWarehouse(params.row.warehouseid, !params.row.isactivated) }}>
+              <IconButton onClick={() => {handleOpenDialog(params.row)}}>
                 {!params.row.isactivated ? <TbLock /> : <TbLockOpen />}
               </IconButton>
             </Tooltip>
             <Tooltip title="Cập nhật kho">
-              <IconButton onClick={() => { handleOpen(); setWarehouseRow(params.row) }}>
+              <IconButton onClick={() => { handleOpenDialog(params.row); setWarehouseRow(params.row) }}>
                 <Edit />
               </IconButton>
             </Tooltip>
@@ -257,8 +312,12 @@ function WarehouseTable(props: Props) {
             })}
             sx={{
               [`& .${gridClasses.row}`]: {
+                // eslint-disable-next-line @typescript-eslint/no-shadow
                 bgcolor: (theme) =>
                   theme.palette.mode === 'light' ? grey[200] : grey[900]
+              },
+              '.MuiDataGrid-cell': {
+                alignContent: 'center',
               },
               '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': {
                 'mt': '1em',
@@ -279,6 +338,31 @@ function WarehouseTable(props: Props) {
           />
         </Box>
       </Grid>
+      <Dialog
+        fullScreen={fullScreen}
+        open={isOpenDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">
+          {!selectedWarehouse?.isactivated ? 'Mở khóa tài khoản' : 'Khóa tài khoản '}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {!selectedWarehouse?.isactivated
+              ? `Bạn có chắc chắn muốn kho ${selectedWarehouse?.warehousename} hoạt động lại ?`
+              : `Bạn có chắc chắn muốn kho  ${selectedWarehouse?.warehousename} ngưng hoạt động ?`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleCloseDialog} color='error'>
+            Không
+          </Button>
+          <Button onClick={handleLockWarehouse} autoFocus>
+            Có
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   )
 }

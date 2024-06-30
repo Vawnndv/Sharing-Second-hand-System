@@ -12,6 +12,8 @@ import { Timestamp, setDoc, doc, collection, addDoc, query, orderBy, onSnapshot,
 import { db } from '../../../firebaseConfig'
 import { processRooms } from '../../utils/messageUtils';
 import { UnreadCountContext } from './UnreadCountContext';
+import { appColors } from '../../constants/appColors';
+import CardComponent from '../../components/CardComponent';
 
 const ChatItem = ({item, route, navigation, noBorder}: any) => {
   const { setUnreadCount } = useContext(UnreadCountContext) ?? { setUnreadCount: () => {} };
@@ -103,16 +105,17 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
   }
 
   return (
-    <TouchableOpacity
-      style={{
+    <CardComponent 
+      color={appColors.white4}
+      isShadow
+      styles={{
         flexDirection: 'row',
         justifyContent: "space-between",
         alignItems: 'center',
         gap: 20,
-        marginHorizontal: 20,
-        marginBottom: 4,
-        paddingBottom: 2,
-        // borderBottomWidth: noBorder ? 0 : 0.5
+        padding: 10,
+        marginVertical: 0,
+        marginBottom: 8,
       }}
       onPress={() => {
         updateRead()
@@ -144,7 +147,7 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
         </Text>
       </View>
 
-    </TouchableOpacity>
+    </CardComponent>
   )
 }
 

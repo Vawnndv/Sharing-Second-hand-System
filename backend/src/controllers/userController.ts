@@ -58,9 +58,8 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
   const { email, oldPassword, newPassword } = req.body;
   const user = await Account.findUserByEmail(email);
-  
   if (user) {
-    const checkPassword = await bcrypt.compare(oldPassword, user.password);
+    const checkPassword = (oldPassword.trim().length === 0 && user.password.trim().length === 0) ? true :  await bcrypt.compare(oldPassword, user.password);
 
     
     if (checkPassword) {
@@ -240,6 +239,8 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
 
 export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
+  console.log(req.body);
+
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {

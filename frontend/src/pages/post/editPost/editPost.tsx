@@ -256,14 +256,23 @@ function EditPost() {
         if((itemImages.length + itemNewImages.length > 0) &&
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){
+
+                
                 try{
+                    const resGetItemDetail: any = await Axios.get(`/items/${post.itemid}`)
+                    const resCreateItem: any = await Axios.post(`/items`, {
+                        name: resGetItemDetail.item.name,
+                        quantity: resGetItemDetail.item.quantity,
+                        itemtypeID: resGetItemDetail.item.itemtypeid,
+                    });
+
                     const res = await Axios.post(`/posts/createPost`, {
                         title: newTitle,
                         location: location.address,
                         description: newDescription,
                         owner: userLogin.userInfo.id,
                         time: new Date(post.time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-                        itemid: post.itemid,
+                        itemid: resCreateItem.item.itemid,
                         timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
                         timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
                         isNewAddress: false,
@@ -276,6 +285,23 @@ function EditPost() {
                     });
                     newPostid = res.data.postCreated.postid;
                     
+                    itemImages.map(async (image: any) => {
+                        const data: any = await UploadImageToAws3(image, false);
+                        const responseUploadImage = await Axios.post(`/items/upload-image`,{
+                          path: data.url,
+                          itemID: resCreateItem.item.itemid
+                        })
+              
+                    })
+
+                    itemNewImages.map(async (image: any) => {
+                        const data: any = await UploadImageToAws3(image, false);
+                        const responseUploadImage = await Axios.post(`/items/upload-image`,{
+                          path: data.url,
+                          itemID: resCreateItem.item.itemid
+                        })
+              
+                    })
                     
                 }
                 catch (error) {

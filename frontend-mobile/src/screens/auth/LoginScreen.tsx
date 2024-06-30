@@ -1,4 +1,4 @@
-import { View, Text, Switch, Alert } from 'react-native'
+import { View, Text, Switch, StyleSheet, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { ArrowRight, Lock, Sms } from 'iconsax-react-native';
@@ -21,7 +21,7 @@ const initValue = {
 
 const LoginScreen = ({navigation}: any) => {
   const [values, setValues] = useState(initValue);
-  const [isRemember, setIsRemember] = useState(true);
+  const [isRemember, setIsRemember] = useState(false);
   const [isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
@@ -47,6 +47,7 @@ const LoginScreen = ({navigation}: any) => {
   };
 
   const formValidator = (key: keyof ErrorMessages) => {
+    setErrorLogin('');
     let updatedErrorMessage = Validator.Validation(key, errorMessage, values);
     setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
   };
@@ -63,7 +64,7 @@ const LoginScreen = ({navigation}: any) => {
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
-      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
+      await AsyncStorage.setItem('auth', JSON.stringify(res.data));
       await usePushNotifications.registerForPushNotificationsAsync();
       setIsLoading(false);
       
@@ -83,9 +84,12 @@ const LoginScreen = ({navigation}: any) => {
       <SectionComponent 
         styles={{
           justifyContent: 'center',
-          marginTop: 75,
+          marginTop: 25,
         }}
       >
+        <View style={styles.logoContainer}>
+          <Image source={require("../../../assets/images/retreasure_title_logo.png")} style={styles.logo} />
+        </View>
         <TextComponent text="Đăng nhập" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
         <SpaceComponent height={21} />
         <InputComponent
@@ -172,5 +176,16 @@ const LoginScreen = ({navigation}: any) => {
 
   )
 }
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    alignItems: 'center',
+  },
+  logo: {
+    width: 300,
+    height: 100,
+    resizeMode: 'contain'
+  }
+});
 
 export default LoginScreen

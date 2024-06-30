@@ -82,7 +82,26 @@ const ProfileScreen = ({navigation, route}: any) => {
   }
 
   return (
-    <ContainerComponent isScroll title='Tài khoản' back={auth.roleID === 1} right={auth.roleID === 1} isLoading={isLoading}>
+    <ContainerComponent 
+      isScroll 
+      title={auth.id !== profile?.userId ? 'Tài khoản' : ''} 
+      back={auth.roleID === 1 && auth.id !== profile?.userId} 
+      right={auth.roleID === 1 && auth.id === profile?.userId}
+      isLoading={isLoading}
+      option= {(auth.id !== profile?.userId) && (
+        <TouchableOpacity
+          onPress={() => 
+            setVisibleModalReport(true)
+          }
+        >
+          <Flag
+            size="28"
+            color={appColors.green}
+            variant="Outline"
+          />
+        </TouchableOpacity>
+      )}
+    >
       {profile && (
         <>
           <SectionComponent styles={[globalStyles.center]}>
@@ -131,22 +150,6 @@ const ProfileScreen = ({navigation, route}: any) => {
             </RowComponent>
           </SectionComponent>
           {/* <SpaceComponent height={21} /> */}
-          <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 20}}>
-            {(auth.id !== profile.userId) && (
-              <TouchableOpacity
-                onPress={() => 
-                  setVisibleModalReport(true)
-                }
-              >
-                <Flag
-                  size="28"
-                  color={appColors.green}
-                  variant="Outline"
-                />
-              </TouchableOpacity>
-              
-            )}
-          </View>
           <SectionComponent>
             <View style={styles.container}>
               <View style={styles.infoContainer}>

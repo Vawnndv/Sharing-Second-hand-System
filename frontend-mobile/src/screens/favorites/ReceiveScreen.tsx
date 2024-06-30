@@ -22,22 +22,22 @@ const ReceiveScreen = () => {
 
     const LIMIT = 3;
 
-    // useEffect(() => {
-    //     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    //     setPage(0);
-    //     setIsEmpty(false);
-    //     setData([]);
-    // }, [refresh])
+    useEffect(() => {
+        setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+        setPage(0);
+        setIsEmpty(false);
+        setData([]);
+    }, [refresh])
 
-    useFocusEffect(
-        React.useCallback(() => {
-            // Hàm này sẽ được gọi mỗi khi màn hình được focus
-            setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-            setPage(0);
-            setIsEmpty(false);
-            setData([]);
-        }, [refresh])
-    );
+    // useEffect(
+    //     React.useCallback(() => {
+    //         // Hàm này sẽ được gọi mỗi khi màn hình được focus
+    //         setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    //         setPage(0);
+    //         setIsEmpty(false);
+    //         setData([]);
+    //     }, [refresh])
+    // );
 
     useEffect(() => {
         if (shouldFetchData) {
@@ -81,7 +81,7 @@ const ReceiveScreen = () => {
     };
 
     return (
-      <ContainerComponent>
+        <View style={styles.container}>
           { isEmpty ? (
               <View style={{display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <Image
@@ -93,7 +93,7 @@ const ReceiveScreen = () => {
           ) : (
               <CardItemResult data={data} handleEndReached={handleEndReached} isLoading={isLoading} setData={setData} handleRefresh={handleRefresh}/>
           )}
-      </ContainerComponent>
+      </View>
     )
 }
 
@@ -103,5 +103,8 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 80,
-    }
+    }, 
+    container: {
+        flex: 1,
+    },
 })

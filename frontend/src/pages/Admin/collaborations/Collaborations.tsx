@@ -5,15 +5,15 @@ import { deleteCollaboratorAction, getAllCollaboratorsAction } from '../../../re
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store'
 import CollaboratorTable from '../components/tables/CollaboratorTable'
 import { getCollaboratorsTotalService } from '../../../redux/services/collaboratorServices'
-import { styled } from '@mui/material/styles'
+// import { styled } from '@mui/material/styles'
 import { getWarehouseNameList } from '../../../redux/services/warehouseService'
 
 
-const StyledClassTable = styled('div')({
-    transform: 'scale(0.9)',
-    transformOrigin: 'top left',
-    width: 'calc(100% / 0.9)'
-  })
+// const StyledClassTable = styled('div')({
+//     transform: 'scale(0.9)',
+//     transformOrigin: 'top left',
+//     width: 'calc(100% / 0.9)'
+//   })
   
 function Collaborators() {
     const dispatch: AppDispatch = useAppDispatch();
@@ -102,25 +102,25 @@ function Collaborators() {
   }
 
   return (
-    <StyledClassTable>
-        <CollaboratorTable 
-            deleteHandler={deleteUserHandler} 
-            isLoading={isLoading ?? false} 
-            collaborators={collaborators ?? []} 
-            total={totalCollaborator} 
-            deleteSelectedHandler={handleDeleteSelectedRows} 
-            selectionModel={selectionModel} 
-            setSelectionModel={setSelectionModel} 
-            pageState={pageState} 
-            filterModel={filterModel}
-            sortModel={sortModel}
-            setPageState={setPageState} 
-            setFilterModel={setFilterModel}
-            setSortModel={setSortModel}
-            warehouseNameList={warehouseNameList}
-            setTotalCollaborator={setTotalCollaborator}
-        />
-    </StyledClassTable>
+    // <StyledClassTable>
+      <CollaboratorTable 
+        deleteHandler={deleteUserHandler} 
+        isLoading={isLoading ?? false} 
+        collaborators={collaborators ?? []} 
+        total={totalCollaborator} 
+        deleteSelectedHandler={handleDeleteSelectedRows} 
+        selectionModel={selectionModel} 
+        setSelectionModel={setSelectionModel} 
+        pageState={pageState} 
+        filterModel={filterModel}
+        sortModel={sortModel}
+        setPageState={setPageState} 
+        setFilterModel={setFilterModel}
+        setSortModel={setSortModel}
+        warehouseNameList={warehouseNameList}
+        setTotalCollaborator={setTotalCollaborator}
+      />
+    // </StyledClassTable>
   )
 }
 

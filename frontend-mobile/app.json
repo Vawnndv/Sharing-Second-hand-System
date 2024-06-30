@@ -3,7 +3,7 @@
     "name": "ReTreasure",
     "slug": "retreasure",
     "scheme" : "frontend-mobile",
-    "version": "1.0.5",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon_logo.png",
     "userInterfaceStyle": "light",
@@ -23,7 +23,7 @@
       }
     },
     "android": {
-      "versionCode": 5,
+      "versionCode": 7,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon_logo.png",
         "backgroundColor": "#ffffff"

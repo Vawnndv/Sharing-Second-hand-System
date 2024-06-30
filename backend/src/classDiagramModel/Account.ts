@@ -110,7 +110,7 @@ export class Account {
     } catch(error) {
       console.log(error);
       return null;
-    } finally {
+  } finally {
       client.release();
     }
   }

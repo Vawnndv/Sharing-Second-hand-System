@@ -82,7 +82,6 @@ function ChatScreen() {
           <ChatList searchQuery={searchQuery} typeChat={2} />
         </TabPanel>
         <TabPanel sx={{m: 0, p: 0, mt: 1}} value="3">
-          {/* <ChatList typeChat={3} /> */}
           <ChatRoom typeChat={3}/>
         </TabPanel>
       </TabContext>

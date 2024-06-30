@@ -37,7 +37,7 @@ export class CollaboratorManager extends UserManager {
       a.longitude,
       a.latitude
     FROM public."User" u LEFT JOIN address a ON u.addressid = a.addressid LEFT JOIN workat wk ON u.userid = wk.userid LEFT JOIN warehouse w ON w.warehouseid = wk.warehouseid
-    WHERE u.roleid = 2 AND u.email is not null`  + ` LIMIT ${pageSize} OFFSET ${page} * ${pageSize}`;
+    WHERE u.roleid = 2 AND u.email is not null`  + whereClause + orderByClause + ` LIMIT ${pageSize} OFFSET ${page} * ${pageSize}`;
 
     try {
       const result = await client.query(query);

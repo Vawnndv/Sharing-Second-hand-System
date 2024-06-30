@@ -42,16 +42,11 @@ export default function ManageWarehouse() {
   const [totalWarehouses, setTotalWarehouses] = useState(0);
 
 
-  const { isLoading, isError, collaborators } = useSelector(
-    (state: RootState) => state.adminGetAllCollaborators
-  )
-
-  const { isError: deleteError, isSuccess } = useSelector(
-    (state: RootState) => state.adminDeleteCollaborator
-  )
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchWarehouses = async () => {
+      setIsLoading(true);
       try {
         const res: any = await Axios.post(`/warehouse/getAllWarehousesAllInfo`,{
           page: pageState.page,
@@ -65,6 +60,8 @@ export default function ManageWarehouse() {
         setWarehouses(res.wareHouses); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching warehouses:', error);
+        setIsLoading(false);
+
       }
 
       try {
@@ -75,7 +72,10 @@ export default function ManageWarehouse() {
         setTotalWarehouses(res.wareHouses.length); // Cập nhật state với dữ liệu nhận được từ API
       } catch (error) {
         console.error('Error fetching warehouses:', error);
+        setIsLoading(false);
+
       }
+      setIsLoading(false);
 
     }
   fetchWarehouses();
@@ -101,6 +101,7 @@ export default function ManageWarehouse() {
     <WarehouseTable 
         deleteHandler={deleteWarehouseHandler} 
         isLoading={isLoading ?? false} 
+        setIsLoading={setIsLoading}
         warehouses={wareHouses ?? []} 
         total={totalWarehouses} 
         deleteSelectedHandler={handleDeleteSelectedRows} 
