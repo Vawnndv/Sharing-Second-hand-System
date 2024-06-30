@@ -17,7 +17,7 @@ const ItemDetailScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent 
       title='Bài đăng' 
-      isScroll 
+      // isScroll 
       back
       option={(isOwnPost) && (
         <TouchableOpacity

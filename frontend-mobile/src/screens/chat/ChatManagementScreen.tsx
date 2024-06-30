@@ -14,7 +14,7 @@ const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
 
   return (
     <UnreadCountContext.Provider value={{ setUnreadCount }}>
-      <ContainerComponent back={isMenuNavigate} right={!isMenuNavigate} title={isMenuNavigate ? 'Tin nhắn' : ''}>
+      <ContainerComponent back right title='Tin nhắn'>
         <SubTabs.Navigator
           style={styles.tabs}
           screenOptions={({ route }) => ({
