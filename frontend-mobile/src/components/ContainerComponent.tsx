@@ -91,21 +91,18 @@ const ContainerComponent = (props: Props) => {
   };
 
   const returnContainer = isScroll ? (
-   
     <View style={{ flex: 1 }}>
-    {isLoading ? (
-      <LoadingComponent isLoading={isLoading} />
-      // <>
-      // </>
-    ) : (
-      <ScrollView 
-      style={{flex: 1}}
-      showsVerticalScrollIndicator={false}
-    >
-      {children}
-    </ScrollView>
-    )}
-  </View>
+      {isLoading ? (
+        <LoadingComponent isLoading={isLoading} />
+      ) : (
+        <ScrollView 
+        style={{flex: 1}}
+        showsVerticalScrollIndicator={false}
+        >
+          {children}
+        </ScrollView>
+      )}
+    </View>
   ) : (
     <View style={{flex: 1}}>
       {children}

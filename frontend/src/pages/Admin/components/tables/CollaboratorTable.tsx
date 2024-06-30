@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
-import { DataGrid, GridColDef, GridToolbar, gridClasses } from '@mui/x-data-grid'
+import { DataGrid, GridColDef, GridToolbar, getGridSingleSelectOperators, getGridStringOperators, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
@@ -128,35 +128,80 @@ function CollaboratorTable(props: Props) {
     () => [
       {
         field: 'avatar',
-        headerName: 'Hình đại diện',
+        headerName: 'Ảnh',
         width: 60,
         renderCell: (params) => <Avatar src={params.row.avatar} />,
         sortable: false,
         filterable: false,
       }
       ,
-      { field: 'lastname', headerName: 'Họ', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'firstname', headerName: 'Tên', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'email', headerName: 'Email', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'dob', headerName: 'Ngày sinh', width: 100, getTooltip: (params: any) => params.value,
-      renderCell: (params: any) =>
-        params.row.dob ? dayjs(params.row.dob).format('DD/MM/YYYY') : ''
-       },
-      { field: 'phonenumber', headerName: 'Số điện thoại', width: 150, getTooltip: (params: any) => params.value },
-      { field: 'address', headerName: 'Địa chỉ', width: 250, getTooltip: (params: any) => params.value },
-      {
-        field: 'createdat',
-        headerName: 'Ngày tạo',
-        width: 150,
-        renderCell: (params: any) =>
-            dayjs(params.row.createdat).format('DD/MM/YYYY')
+      { 
+        field: 'lastname',
+        headerName: 'Họ',
+        width: 110,
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
       },
-      { field: 'warehousename', headerName: 'Tên kho làm việc', width: 100, getTooltip: (params: any) => params.value },
+      { 
+        field: 'firstname',
+        headerName: 'Tên',
+        width: 100,
+        getTooltip: (params: any) => params.value,
+        // filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      { 
+        field: 'email',
+        headerName: 'Email',
+        width: 240,
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      { 
+        field: 'dob',
+        headerName: 'Ngày sinh',
+        width: 95,
+        getTooltip: (params: any) => params.value,
+        renderCell: (params: any) => params.row.dob ? dayjs(params.row.dob).format('DD/MM/YYYY') : ''
+      },   
+      { 
+        field: 'phonenumber',
+        headerName: 'Số điện thoại',
+        width: 110,
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      { 
+        field: 'address',
+        headerName: 'Địa chỉ',
+        width: 250,
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
+      
+      {
+        field: 'createdat',  
+        headerName: 'Ngày tạo',
+        width: 95,
+        renderCell: (params: any) => dayjs(params.row.createdat).format('DD/MM/YYYY')
+      },
+      { 
+        field: 'warehousename',
+        headerName: 'Kho làm việc',
+        width: 100,
+        getTooltip: (params: any) => params.value,
+        filterOperators: getGridStringOperators().filter((operator) => operator.value === 'contains'),
+      },
       {
         field: 'isbanned',
-        headerName: 'Ban',
-        width: 100,
-        type: 'boolean'
+        headerName: 'Bị khóa',
+        width: 70,
+        type: "singleSelect",
+        valueOptions: [
+          { value: '', label: "Bất kì giá trị nào", defaultValue: true},
+          { value: true, label: "Có" },
+          { value: false, label: "Không" }
+        ],
+        filterOperators: getGridSingleSelectOperators().filter(operator => operator.value === 'is'),
       },
       {
         field: 'actions',
@@ -224,7 +269,7 @@ function CollaboratorTable(props: Props) {
         <Box
           sx={{
             width: '100%',
-            minHeight: '400px',
+            // minHeight: '400px',
             textAlign: 'center'
           }}
         >
@@ -274,6 +319,9 @@ function CollaboratorTable(props: Props) {
                 // eslint-disable-next-line @typescript-eslint/no-shadow
                 bgcolor: (theme) =>
                   theme.palette.mode === 'light' ? grey[200] : grey[900]
+              },
+              '.MuiDataGrid-cell': {
+                alignContent: 'center',
               },
               '.MuiTablePagination-displayedRows, .MuiTablePagination-selectLabel': {
                 'mt': '1em',

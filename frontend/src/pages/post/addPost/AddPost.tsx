@@ -20,6 +20,7 @@ import Axios from '../../../redux/APIs/Axios';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import SelectComponent from '../../../components/SelectComponent';
+import toast from 'react-hot-toast'
 
 const steps = ['Thông tin sản phẩm', 'Thông tin bài đăng'];
 
@@ -53,16 +54,18 @@ export default function AddPost() {
 
   useEffect(() => {
     const fetchWareHouse = async () => {
+        setIsLoading(true)
         try {
-            setIsLoading(true)
+            
             const response: any = await Axios.get(`/warehouse/getWarehouseByUserID/${userLogin.userInfo.id}`)
             setLocation({
+                addressid: response.wareHouse.addressid,
                 address: response.wareHouse.address,
                 latitude: parseFloat(response.wareHouse.latitude),
                 longitude: parseFloat(response.wareHouse.longitude)
             })
             
-            setIsLoading(false)
+            
             setWarehouseInfo(response.wareHouse)
             setPhoneNumber(response.wareHouse.phonenumber)
         } catch (error) {
@@ -81,7 +84,8 @@ export default function AddPost() {
             setItemTypes(res.itemTypes); // Cập nhật state với dữ liệu nhận được từ API
           } catch (error) {
             console.error('Error fetching item types:', error);
-          }
+        }
+        setIsLoading(false)
     }
 
     fetchWareHouse()
@@ -92,24 +96,6 @@ export default function AddPost() {
     return skipped.has(step);
   };
 
-  const handleNext = () => {
-    let newSkipped = skipped;
-    if (isStepSkipped(activeStep)) {
-      newSkipped = new Set(newSkipped.values());
-      newSkipped.delete(activeStep);
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped(newSkipped);
-  };
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const handleReset = () => {
-    setActiveStep(0);
-  };
 
   const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -146,6 +132,7 @@ export default function AddPost() {
     }
 
     const UploadImageToAws3 = async (file: any, isLimit: boolean) => {
+        setIsLoading(true)
         try {
           // Đọc nội dung của tệp tin bằng FileReader
           const fileReader: any = new FileReader();
@@ -181,11 +168,14 @@ export default function AddPost() {
                       reject(error);
                   }
               };
+              setIsLoading(false)
           });
         } catch (error) {
             console.error('Error reading file:', error);
+            setIsLoading(false)
             return null;
         }
+        
       };
 
     const handleTakeImgFile = async (e: any) => {
@@ -230,6 +220,105 @@ export default function AddPost() {
         setLocation(tempLocation)
     }
 
+    const handleOnChangeAmount = (event: any) => {
+        if (/^\d*$/.test(event.target.value)) {
+            setAmount(event.target.value)
+        }
+        
+    }
+    
+  const handleNext = async () => {
+    setIsLoading(true)
+
+    if(activeStep === steps.length - 1){
+        // Hoàn thành, thực hiện đăng bài
+        try{
+            // const resGetItemDetail: any = await Axios.get(`/items/${post.itemid}`)
+            const resCreateItem: any = await Axios.post(`/items`, {
+                name: itemName,
+                quantity: amount,
+                itemtypeID: itemCategory,
+            });
+
+            await Axios.post(`/posts/createPost`, {
+                title,
+                location: location.address,
+                description,
+                owner: userLogin.userInfo.id,
+                time: new Date().toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+                itemid: resCreateItem.item.itemid,
+                timestart: `${date[0].year()}-${date[0].month() + 1}-${date[0].date()}`, // Tương tự cho timestart
+                timeend: `${date[1].year()}-${date[1].month() + 1}-${date[1].date()}`, // Và timeend
+                isNewAddress: false,
+                postLocation: location,
+                isWarehousePost: true,
+                givetypeid: 1,
+                statusid: 12,
+                warehouseid: warehouseInfo.warehouseid,
+                phonenumber: phoneNumber
+            });
+
+            itemNewImages.map(async (image: any) => {
+                const data: any = await UploadImageToAws3(image, false);
+                await Axios.post(`/items/upload-image`,{
+                  path: data.url,
+                  itemID: resCreateItem.item.itemid
+                })
+      
+            })
+            
+
+            let newSkipped = skipped;
+            if (isStepSkipped(activeStep)) {
+                newSkipped = new Set(newSkipped.values());
+                newSkipped.delete(activeStep);
+            }
+
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setSkipped(newSkipped);
+            toast.success('Đăng bài thành công!')
+        }
+        catch (error) {
+            console.log(error);
+            // isSuccessRepost = false
+            toast.error(`Đăng bài thất bại! ${error}`)
+        }
+    }else {
+        // Next qua bước tiếp theo
+        // eslint-disable-next-line no-lonely-if
+        if( itemNewImages.length > 0 && itemName !== '' && amount !== '') {
+            let newSkipped = skipped;
+            if (isStepSkipped(activeStep)) {
+                newSkipped = new Set(newSkipped.values());
+                newSkipped.delete(activeStep);
+            }
+
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            setSkipped(newSkipped);
+        }else{
+            toast.error('Bạn phải điền đầy đủ thông tin trước khi qua bước mới')
+        }
+    }
+
+    setIsLoading(false)
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+    setTitle('');
+    setPhoneNumber('')
+    setAmount('')
+    setDescription('')
+    setItemCategory(null)
+    setItemName('')
+    setDate([today,today])
+    setItemNewImages([])
+  };
+
   return (
     <div style={{
         width: '100%', display: 'flex',flexDirection: 'column', justifyContent: 'center', alignItems: 'center'
@@ -254,9 +343,18 @@ export default function AddPost() {
                 </Stepper>
                 {activeStep === steps.length ? (
                     <>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
-                    </Typography>
+                    <Stack sx={{
+                        width: '100%',
+                        height: 'auto',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <img 
+                            style={{
+                                width: '30vw'
+                            }}
+                            src='https://i.pinimg.com/564x/16/91/46/1691462ee976cd17c631bdc5cad93af3.jpg' alt='thank-you'/>
+                    </Stack>
                     <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                         <Box sx={{ flex: '1 1 auto' }} />
                         <Button onClick={handleReset}>Reset</Button>
@@ -279,7 +377,8 @@ export default function AddPost() {
                                     <Stack 
                                         component="div"
                                         flexDirection='row'
-                                        flexWrap='wrap'>
+                                        flexWrap='wrap'
+                                        >
                                         {
                                             itemImages.length > 0 && 
                                             itemImages.map((image: any, index: number) => {
@@ -381,6 +480,14 @@ export default function AddPost() {
                                         <AddPhotoAlternateOutlinedIcon className='iconImage' sx={{ color: '#A1A1A1' }} />
                                     </Paper>
                                     </Stack>
+                                    {
+                                        itemNewImages.length < 1 &&
+                                        <Typography variant='body1' color='error' sx={{
+                                            fontSize: 13,
+                                            marginLeft: 4
+                                        }}>Phải có ít nhất một ảnh</Typography>
+                                    }
+                                    
                                     
                                     <Stack>
                                             <Typography
@@ -419,21 +526,23 @@ export default function AddPost() {
                                             </Stack>
                                             
                                             <TextField
-                                                error={amount === ""}
+                                                error={(amount === "" || parseInt(amount, 10) > 50)}
                                                 value={amount}
-                                                onChange={(e) => setAmount(e.target.value)}
+                                                onChange={(e) => handleOnChangeAmount(e)}
                                                 sx={{
                                                     mx: 2,
                                                     color: 'black'
                                                 }}
-                                                helperText={amount === "" ? "Số lượng không được trống và phải <= 50" : ''}
+                                                type="number"
+                                                inputProps={{ min: 0, max: 100, step: 1 }}
+                                                helperText={(amount === "" || parseInt(amount, 10) > 50) ? "Số lượng không được trống và phải <= 50" : ''}
                                                 multiline/>
                 
                                             
                                         </Stack>
                 
                                     {
-                                        
+                                        itemTypes &&
                                             <Stack>
                 
                                                 {/*  profile */}

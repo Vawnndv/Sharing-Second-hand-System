@@ -70,7 +70,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   useEffect(() => {
     getUserLikePosts();
     const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => item.like_count) : [];
-      
+    console.log(newLikeNumber)
     setLikeNumber(newLikeNumber);
 
   }, [data])

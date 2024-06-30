@@ -163,8 +163,8 @@ export class PostManager {
         od.status,
         us.firstname,
         us.lastname,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+        CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
@@ -240,8 +240,8 @@ export class PostManager {
         od.status,
         us.firstname,
 		    us.lastname,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+        CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid
@@ -448,8 +448,8 @@ export class PostManager {
         gr.give_receivetype,
         us.firstname,
 		    us.lastname,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+        CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid
@@ -514,8 +514,8 @@ export class PostManager {
           us.firstname,
 		      us.lastname,
       po.updatedat,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
         LEFT JOIN "User" us ON po.owner = us.UserID
@@ -583,8 +583,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
           us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
         LEFT JOIN "User" us ON po.owner = us.UserID
@@ -652,8 +652,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
 		      us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "orders" od ON od.postid = po.postid
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
@@ -724,8 +724,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
 		      us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "orders" od ON od.postid = po.postid
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
@@ -796,8 +796,8 @@ export class PostManager {
           po.updatedat,
           us.firstname,
 		      us.lastname,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM Posts AS po
       LEFT JOIN "orders" od ON od.postid = po.postid
       LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
@@ -881,8 +881,8 @@ export class PostManager {
           a.latitude,
           itt.nametype,
           MIN(i.path) AS path,
-          CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
         FROM 
           "posts" p
         LEFT JOIN 
@@ -891,11 +891,11 @@ export class PostManager {
           "workat" wa ON p.owner = wa.userid
         LEFT JOIN 
           "warehouse" w ON wa.warehouseid = w.warehouseid
-        JOIN 
+        LEFT JOIN 
           "address" a ON a.addressid = p.addressid
-        JOIN 
+        LEFT JOIN 
           item it ON it.itemid = p.itemid
-        JOIN 
+        LEFT JOIN 
           item_type itt ON itt.itemtypeid = it.itemtypeid
         LEFT JOIN 
           "image" i ON p.itemid = i.itemid
@@ -1279,8 +1279,8 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        CAST(COUNT(lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(pr.receiverid) AS INTEGER) AS receiver_count
+        CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+        CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
       LEFT JOIN "User" us ON po.owner = us.UserID
       LEFT JOIN Address ad ON po.addressid = ad.addressid

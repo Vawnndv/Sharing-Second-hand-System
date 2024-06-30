@@ -9,6 +9,7 @@ import { handleSendMail } from './authController';
 
 export const getAllCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
+  console.log(req.body);
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {
@@ -40,6 +41,7 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
     orderByClause = ' ORDER BY u.createdat DESC ';
   }
 
+  console.log(whereClause);
   const response = await CollaboratorManager.getAllCollaborators(page, pageSize, whereClause, orderByClause);
   // res.json({ Collaborators: Collaborators.rows, total: totalCollaborators.rows[0].count });
 

@@ -70,7 +70,7 @@ export class Validator {
         if (!values.confirmPassword) {
           message = 'Vui lòng nhập xác nhận mật khẩu';
         } else if (values.confirmPassword !== values.password) {
-          message = 'Xác nhận mật khẩu phải trùng khớp với mật khẩu';
+          message = 'Mật khẩu nhập lại phải giống với mật khẩu';
         } else {
           message = '';
         }
@@ -80,7 +80,7 @@ export class Validator {
           if (!values.confirmNewPassword) {
             message = 'Vui lòng nhập xác nhận mật khẩu mới';
           } else if (values.confirmNewPassword !== values.newPassword) {
-            message = 'Xác nhận mật khẩu phải trùng khớp với mật khẩu mới';
+            message = 'Mật khẩu nhập lại phải giống với mật khẩu mới';
           } else {
             message = '';
           }

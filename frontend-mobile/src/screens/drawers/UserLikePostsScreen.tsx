@@ -22,23 +22,23 @@ const UserLikePostsScreen = () => {
 
     const LIMIT = 3;
 
-    // useEffect(() => {
-    //     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    //     setPage(0);
-    //     setIsEmpty(false);
-    //     setData([]);
+    useEffect(() => {
+        setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+        setPage(0);
+        setIsEmpty(false);
+        setData([]);
 
-    // }, [refresh])
+    }, [refresh])
 
-    useFocusEffect(
-        React.useCallback(() => {
-            // Hàm này sẽ được gọi mỗi khi màn hình được focus
-            setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-            setPage(0);
-            setIsEmpty(false);
-            setData([]);
-        }, [refresh])
-    );
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         // Hàm này sẽ được gọi mỗi khi màn hình được focus
+    //         setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
+    //         setPage(0);
+    //         setIsEmpty(false);
+    //         setData([]);
+    //     }, [refresh])
+    // );
 
     useEffect(() => {
         if (shouldFetchData) {

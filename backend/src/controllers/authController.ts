@@ -154,7 +154,7 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
 
   if (existingUser) {
     res.status(401);
-    throw new Error('User has already exist!!!');
+    throw new Error('Tài khoản đã tồn tại');
   }
 
   const salt = await bcrypt.genSalt(10);
@@ -241,6 +241,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
         roleID: existingUser.roleid,
         fcmTokens: fcmTokens ?? [],
         deviceid: refreshtoken.deviceid,
+        isPassword: existingUser.password.trim().length > 0 ? true : false, 
         accessToken: await getJsonWebAccessToken(existingUser.userid),
       },
     });
@@ -339,7 +340,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       });
     } else {
       res.sendStatus(401);
-      throw new Error('fafsf');
+      throw new Error('Login google failed!!!');
     }
   }
 });

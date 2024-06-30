@@ -21,7 +21,7 @@ const initValue = {
 
 const LoginScreen = ({navigation}: any) => {
   const [values, setValues] = useState(initValue);
-  const [isRemember, setIsRemember] = useState(true);
+  const [isRemember, setIsRemember] = useState(false);
   const [isDisable, setIsDisable] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessages>(initValue);
@@ -47,6 +47,7 @@ const LoginScreen = ({navigation}: any) => {
   };
 
   const formValidator = (key: keyof ErrorMessages) => {
+    setErrorLogin('');
     let updatedErrorMessage = Validator.Validation(key, errorMessage, values);
     setErrorMessage(updatedErrorMessage); // Sử dụng bản sao mới của errorMessage
   };
@@ -63,7 +64,7 @@ const LoginScreen = ({navigation}: any) => {
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
-      await AsyncStorage.setItem('auth', isRemember ? JSON.stringify(res.data) : JSON.stringify(values.email));
+      await AsyncStorage.setItem('auth', JSON.stringify(res.data));
       await usePushNotifications.registerForPushNotificationsAsync();
       setIsLoading(false);
       

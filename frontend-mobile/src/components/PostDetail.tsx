@@ -66,6 +66,9 @@ interface PostDetailProps {
   navigation?: any;
   route?: any;
   fetchFlag?: any;
+  visibleModalReport?: boolean;
+  setVisibleModalReport?: (val: boolean) => void;
+  setIsOwnPost: (val: boolean) => void;
 }
 
 interface PostReceiver {
@@ -86,7 +89,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag} ) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
 
@@ -122,7 +125,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
   const [amountLike, setAmountLike] = useState(0)
 
-  const [visibleModalReport, setVisibleModalReport] = useState(false)
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -235,6 +237,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
         setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
+        setIsOwnPost(auth.id !== res.postDetail.owner);
         setItemID(res.postDetail.itemid);
         itemIDs = res.postDetail.itemid;
         owner = res.postDetail.owner;
@@ -437,7 +440,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                 </TouchableWithoutFeedback>
               </Modal>
 
-              <View style={{display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginRight: 10, alignItems: 'center'}}>
+              <View style={{display: 'flex', justifyContent: 'flex-end', flex: 1, flexDirection: 'row', marginRight: 10, alignItems: 'center'}}>
                 {(auth.id !== post?.owner) && (
                   <TouchableOpacity
                     style={{marginRight: 10, marginLeft: 10}}
@@ -454,12 +457,12 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                       });
                     }}
                   >
-                    <Ionicons name='chatbubbles-outline' size={28} color={appColors.primary2} />
+                    <Ionicons name='chatbubbles-outline' size={32} color={appColors.primary2} />
                   </TouchableOpacity>
                   
                 )}
                 <View style={{flex: 1}}>
-                  {(auth.id !== post?.owner) && (
+                  {/* {(auth.id !== post?.owner) && (
                     <TouchableOpacity
                       onPress={() => 
                         setVisibleModalReport(true)
@@ -472,7 +475,9 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                       />
                     </TouchableOpacity>
                     
-                  )}
+                  )} */}
+                  <>
+                  </>
                 </View>
 
 
