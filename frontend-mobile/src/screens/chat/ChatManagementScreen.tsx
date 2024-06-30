@@ -13,15 +13,21 @@ const ChatManagementScreen = ({ setUnreadCount }: any) => {
   return (
     <UnreadCountContext.Provider value={{ setUnreadCount }}>
       <ContainerComponent back right title='Tin nhắn'>
-        <SubTabs.Navigator style={styles.tabs}>
+        <SubTabs.Navigator
+          style={styles.tabs}
+          screenOptions={({ route }) => ({
+            tabBarLabelStyle: styles.tabLabel,
+            tabBarIndicatorStyle: styles.tabIndicator,
+            tabBarActiveTintColor: '#552466',
+            tabBarInactiveTintColor: '#666',
+          })}
+        >
           <SubTabs.Screen
             name="ChatPost"
             component={ChatScreen}
             options={{
               tabBarLabel: 'Trao đổi đồ',
               tabBarStyle: styles.tabItem,
-              tabBarLabelStyle: styles.tabLabel,
-              tabBarIndicatorStyle: styles.tabIndicator,
             }}
           />
           <SubTabs.Screen
@@ -30,8 +36,6 @@ const ChatManagementScreen = ({ setUnreadCount }: any) => {
             options={{
               tabBarLabel: 'Người dùng',
               tabBarStyle: styles.tabItem,
-              tabBarLabelStyle: styles.tabLabel,
-              tabBarIndicatorStyle: styles.tabIndicator,
             }}
           />
         </SubTabs.Navigator>
@@ -51,7 +55,6 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     textTransform: 'capitalize',
-    color: '#552466',
     fontWeight: 'bold',
     fontSize: 17,
   },
