@@ -9,15 +9,21 @@ const SubTabs = createMaterialTopTabNavigator();
 
 function OrderManagementScreen() {
   return (
-    <SubTabs.Navigator style={styles.tabs}>
+    <SubTabs.Navigator 
+      style={styles.tabs}
+      screenOptions={({ route }) => ({
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarIndicatorStyle: styles.tabIndicator,
+        tabBarActiveTintColor: '#552466',
+        tabBarInactiveTintColor: '#666',
+      })}
+    >
       <SubTabs.Screen
         name="OrderGive"
         component={GiveOrderScreen}
         options={{
           tabBarLabel: 'Đồ cho',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-          tabBarLabelStyle: styles.tabLabel, // Áp dụng style cho chữ
-          tabBarIndicatorStyle: styles.tabIndicator, // Áp dụng style cho đấu gạch dưới
         }}
       />
       <SubTabs.Screen
@@ -26,8 +32,6 @@ function OrderManagementScreen() {
         options={{
           tabBarLabel: 'Đồ nhận',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-          tabBarLabelStyle: styles.tabLabel, // Áp dụng style cho chữ
-          tabBarIndicatorStyle: styles.tabIndicator, // Áp dụng style cho đấu gạch dưới
         }}
       />
     </SubTabs.Navigator>
@@ -45,8 +49,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     textTransform: 'capitalize',
-    color: '#552466',
-    fontWeight:'bold',
+    fontWeight: 'bold',
     fontSize: 17,
   },
   tabIndicator: {
