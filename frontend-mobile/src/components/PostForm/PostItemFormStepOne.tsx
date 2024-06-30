@@ -767,7 +767,7 @@ const predictImage = async (imageUri: any) => {
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
         error={errorMessage.itemName? true : false}
         theme={{
           colors: {
@@ -792,7 +792,7 @@ const predictImage = async (imageUri: any) => {
         }}   
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor= {appColors.primary2} // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
         error={errorMessage.itemQuantity? true : false}
         theme={{
@@ -927,7 +927,7 @@ const predictImage = async (imageUri: any) => {
           {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
-        <Button mode="contained" onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
+        <Button mode="contained" style={styles.button} onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
 
     </ScrollView>
   );
@@ -959,6 +959,7 @@ const styles = StyleSheet.create({
   button: {
     marginTop: 5,
     marginBottom: 20,
+    backgroundColor: appColors.primary2
   },
   imageContainer: {
     position: 'relative',

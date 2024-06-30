@@ -346,7 +346,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
         error={errorMessage.postTitle? true : false}
         theme={{
           colors: {
@@ -368,7 +368,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           }}
           style={styles.inputDescription}
           underlineColor="gray" // Màu của gạch chân khi không focus
-          activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+          activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
           multiline={true} // Cho phép nhập nhiều dòng văn bản
           numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
           error={errorMessage.postDescription? true : false}
@@ -386,7 +386,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
           label="Ngày bắt đầu"
-          value={startDate ? moment(startDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={startDate ? moment(startDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
           error={errorMessage.postStartDate? true : false}
@@ -415,7 +415,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
       <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
           label="Ngày kết thúc"
-          value={endDate ? moment(endDate).format('YYYY-MM-DD') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
+          value={endDate ? moment(endDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           // onBlur={() => handleValidate(formData.postEndDate,'postenddate')}
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
@@ -454,7 +454,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         }}        
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
         keyboardType="numeric" // Chỉ hiển thị bàn phím số
         error={errorMessage.postPhoneNumber? true : false}
         theme={{
@@ -487,7 +487,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
             multiline
             style={styles.input}
             underlineColor="gray" // Màu của gạch chân khi không focus
-            activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+            activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
             error={errorMessage.postAddress? true : false}        
 
             // textAlignVertical="top"
@@ -519,7 +519,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         style={styles.inputForGiveMethod}
         editable={false}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
       />
       {(errorMessage.postGiveMethod) && <TextComponent text={errorMessage.postGiveMethod}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
@@ -532,7 +532,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         style={styles.inputForGiveMethod}
         editable={false}
         underlineColor="gray" // Màu của gạch chân khi không focus
-        activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
+        activeUnderlineColor={appColors.primary2} // Màu của gạch chân khi đang focus
       />
       }
       {/* Thêm các trường input khác tương tự */}
@@ -566,7 +566,8 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 10,
-    marginBottom: 10
+    marginBottom: 10,
+    backgroundColor: appColors.primary2
   },
   datePicker: {
     width: '100%',
