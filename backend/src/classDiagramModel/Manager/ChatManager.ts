@@ -122,6 +122,7 @@ export class ChatManager {
           SELECT warehouseid
           FROM Workat
           WHERE userid = $1) AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'))
+          AND u.userId != ${userID}
     `
     try {
       const result: QueryResult = await client.query(query, [userID]);
