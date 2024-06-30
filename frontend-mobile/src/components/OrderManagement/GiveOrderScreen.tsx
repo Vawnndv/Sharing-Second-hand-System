@@ -150,7 +150,7 @@ export default function GiveOrderScreen({ navigation, route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff",
   },
   content: {
     flex: 1,
