@@ -12,6 +12,7 @@ import { collection, doc, getDocs, limit, onSnapshot, orderBy, query } from 'fir
 import { db } from '../../../firebaseConfig';
 import { processRooms } from '../../utils/messageUtils';
 import { UnreadCountContext } from './UnreadCountContext';
+import LoadingComponent from '../../components/LoadingComponent';
 
 interface User {
   userid: string;
@@ -30,13 +31,7 @@ const ChatScreen = ({ router, navigation  }: any) => {
   useFocusEffect(
     React.useCallback(() => {
       getUsers();
-      // const unsubscribeRooms = onSnapshot(collection(db, "rooms"), () => {
         processRooms(auth.id, setUnreadCount!);
-      // });
-  
-      // return () => {
-      //   unsubscribeRooms();
-      // };
     }, [])
   );
 
@@ -86,9 +81,7 @@ const ChatScreen = ({ router, navigation  }: any) => {
 
       {
         isLoading ? (
-          <View style={{display: 'flex', alignItems: 'center', paddingTop: 30}}>
-            <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} />
-          </View>
+          <LoadingComponent isLoading={isLoading} />
         ) : (
           users.length > 0 ? (
             <ChatList route={router} navigation={navigation} users={users}/>
