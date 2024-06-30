@@ -12,7 +12,7 @@ const SubTabs = createMaterialTopTabNavigator();
 const ChatManagementScreen = ({ setUnreadCount }: any) => {
   return (
     <UnreadCountContext.Provider value={{ setUnreadCount }}>
-      <ContainerComponent back right title='Tin nhắn'>
+      <ContainerComponent right title='Tin nhắn'>
         <SubTabs.Navigator
           style={styles.tabs}
           screenOptions={({ route }) => ({
