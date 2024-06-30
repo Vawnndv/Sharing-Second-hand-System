@@ -10,15 +10,21 @@ const SubTabs = createMaterialTopTabNavigator();
 
 function FavoritesManagementScreen() {
   return (
-    <SubTabs.Navigator style={styles.tabs}>
+    <SubTabs.Navigator 
+      style={styles.tabs}
+      screenOptions={({ route }) => ({
+        tabBarLabelStyle: styles.tabLabel,
+        tabBarIndicatorStyle: styles.tabIndicator,
+        tabBarActiveTintColor: '#552466',
+        tabBarInactiveTintColor: '#666',
+      })}
+    >
       <SubTabs.Screen
         name="UserLikePostsScreen"
         component={UserLikePostsScreen}
         options={{
           tabBarLabel: 'Yêu thích',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-          tabBarLabelStyle: styles.tabLabel, // Áp dụng style cho chữ
-          tabBarIndicatorStyle: styles.tabIndicator, // Áp dụng style cho đấu gạch dưới
         }}
       />
       <SubTabs.Screen
@@ -27,8 +33,6 @@ function FavoritesManagementScreen() {
         options={{
           tabBarLabel: 'Đã xin',
           tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-          tabBarLabelStyle: styles.tabLabel, // Áp dụng style cho chữ
-          tabBarIndicatorStyle: styles.tabIndicator, // Áp dụng style cho đấu gạch dưới
         }}
       />
     </SubTabs.Navigator>
@@ -46,7 +50,6 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     textTransform: 'capitalize',
-    color: '#552466',
     fontWeight:'bold',
     fontSize: 17,
   },

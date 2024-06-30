@@ -68,7 +68,7 @@ interface PostDetailProps {
   fetchFlag?: any;
   visibleModalReport?: boolean;
   setVisibleModalReport?: (val: boolean) => void;
-  setIsOwnPost: (val: boolean) => void;
+  setIsOwnPost?: (val: boolean) => void;
 }
 
 interface PostReceiver {
@@ -237,11 +237,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
         setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-        setIsOwnPost(auth.id !== res.postDetail.owner);
         setItemID(res.postDetail.itemid);
         itemIDs = res.postDetail.itemid;
         owner = res.postDetail.owner;
         setIsUserPost(res.postDetail.owner == auth.id);
+        if (setIsOwnPost) {
+          setIsOwnPost(auth.id !== res.postDetail.owner);
+        }
       } catch (error) {
         console.error('Error fetching post details:', error);
       }

@@ -6,6 +6,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { SpaceComponent } from '../components'
 import StyledText from '../components/StyleText'
 import { fontFamilies } from '../constants/fontFamilies'
+import LoadingComponent from '../components/LoadingComponent'
 
 interface Props {
   modalVisible: boolean;
@@ -31,7 +32,7 @@ const UploadModal = (props: Props) => {
         onPress={onBackPress}
       >
         {isLoading && (
-          <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
+          <LoadingComponent isLoading={isLoading} /> 
         )}
         {!isLoading && (
           <View style={[localStyles.modalView, { backgroundColor: appColors.white }]}>

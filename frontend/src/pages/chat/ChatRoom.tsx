@@ -1,4 +1,4 @@
-import { Box, Avatar, Typography, TextField, IconButton, List } from '@mui/material';
+import { Box, Avatar, Typography, TextField, IconButton, List, CircularProgress } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
@@ -35,6 +35,7 @@ function ChatRoom({ typeChat }: any) {
   const listRef = useRef<HTMLUListElement | null>(null);
   const [profile, setProfile] = useState<any>(null);
   const [warehouse, setWarehouse] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { userInfo } = useSelector(
     (state: RootState) => state.userLogin
@@ -62,8 +63,10 @@ function ChatRoom({ typeChat }: any) {
   };
 
   const getProfile = async () => {
+    setIsLoading(true);
     const res = await getProfileService(userID?.toString() !== convert(roomid).userID2 ? convert(roomid).userID2 : convert(roomid).userID1);
     setProfile(res);
+    setIsLoading(false);
   };
 
   const getWareHouse = async () => {
@@ -71,8 +74,10 @@ function ChatRoom({ typeChat }: any) {
       toast.error('Không thể lấy thông tin người dùng')
       return
     }
+    setIsLoading(true);
     const res = await getWareHouseByUserID(userID);
     setWarehouse(res.data[0]);
+    setIsLoading(false);
   };
 
   const getMessages = async () => {
@@ -99,7 +104,6 @@ function ChatRoom({ typeChat }: any) {
   useEffect(() => {
     if (typeChat === 3) getWareHouse();
     else getProfile();
-
     createRoomIfNotExists();
     getMessages();
   }, []);
@@ -175,46 +179,54 @@ function ChatRoom({ typeChat }: any) {
 
   return (
     <Box sx={{ flex: 1, mx: 2, my: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          {warehouse ? (
-            <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{warehouse.warehousename}</Typography>
-          ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
-              <Avatar alt="Travis Howard" sx={{ ml: 1, width: 50, height: 50 }} src={profile?.avatar} />
-              <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{profile?.firstName} {profile?.lastName}</Typography>
+      {isLoading ? (
+      <Box sx={{ display: 'flex', justifyContent: 'center', height: 'calc(100vh - 200px)' }}>
+        <CircularProgress />
+      </Box>
+      ) : (
+        <Box>
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              {warehouse ? (
+                <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{warehouse.warehousename}</Typography>
+              ) : (
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, alignItems: 'center' }}>
+                  <Avatar alt="Travis Howard" sx={{ ml: 1, width: 50, height: 50 }} src={profile?.avatar} />
+                  <Typography sx={{ ml: 2 }} variant='body1' fontWeight='bold' fontSize={20}>{profile?.firstName} {profile?.lastName}</Typography>
+                </Box>
+              )}
             </Box>
-          )}
+          </Box>
+    
+          <List sx={{height: 'calc(100vh - 200px)', overflowY: 'auto', my: 3, padding: 0 }} ref={listRef}>
+            <MessageItem messages={messages} typeChat={typeChat} />
+          </List>
+    
+          <Box sx={{ display: 'flex', alignItems: 'center', padding: '10px 30px' }}>
+            <TextField
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Nhắn tin"
+              fullWidth
+              variant="outlined"
+              sx={{ marginRight: '10px' }}
+              onKeyPress={handleKeyPress}
+            />
+            <IconButton onClick={() => {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.multiple = true;
+              input.addEventListener('change', handleFileChange);
+              input.click();
+            }} aria-label="send image">
+              <InsertPhotoIcon />
+            </IconButton>
+            <IconButton onClick={handleMessageSend} aria-label="send message">
+              <SendIcon />
+            </IconButton>
+          </Box>
         </Box>
-      </Box>
-
-      <List sx={{height: 'calc(100vh - 200px)', overflowY: 'auto', my: 3, padding: 0 }} ref={listRef}>
-        <MessageItem messages={messages} typeChat={typeChat} />
-      </List>
-
-      <Box sx={{ display: 'flex', alignItems: 'center', padding: '10px 30px' }}>
-        <TextField
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Nhắn tin"
-          fullWidth
-          variant="outlined"
-          sx={{ marginRight: '10px' }}
-          onKeyPress={handleKeyPress}
-        />
-        <IconButton onClick={() => {
-          const input = document.createElement('input');
-          input.type = 'file';
-          input.multiple = true;
-          input.addEventListener('change', handleFileChange);
-          input.click();
-        }} aria-label="send image">
-          <InsertPhotoIcon />
-        </IconButton>
-        <IconButton onClick={handleMessageSend} aria-label="send message">
-          <SendIcon />
-        </IconButton>
-      </Box>
+      )}
     </Box>
   );
 }

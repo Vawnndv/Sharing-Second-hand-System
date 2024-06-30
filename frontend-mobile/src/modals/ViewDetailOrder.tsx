@@ -30,6 +30,7 @@ import { decode as jpegDecode } from 'jpeg-js';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as FileSystem  from 'expo-file-system';
 import ConfirmCategoryReceiveModal from './ConfirmCategoryReceiveModal';
+import LoadingComponent from '../components/LoadingComponent';
 
 interface Data {
   title: string;
@@ -328,7 +329,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
       {
         isLoading ? (
           <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-            <ActivityIndicator size="large" color="#000" style={{ marginTop: 10 }} /> 
+            <LoadingComponent isLoading={isLoading} /> 
           </View>
         ) : (
           <View style={styles.body}>
