@@ -104,9 +104,8 @@ export class WarehouseManager {
     }
   } 
 
-  public static async getAllWarehouseAllInfo(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any[] | null> {
+  public static async getAllWarehouseAllInfo(page: string, pageSize: string, whereClause: string, orderByClause: string, havingClause: string): Promise<any[] | null> {
     const client = await pool.connect();
-
     const query = `
     SELECT 
       w.warehouseid,

@@ -43,24 +43,48 @@ export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
     const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
     // Build WHERE clause based on filterModel (replace with your logic)
     let whereClause = '';
+    let havingClause = '';
     if (filterModel.items && filterModel.items.length > 0) {
       whereClause = ' WHERE ';
       for (const filter of filterModel.items) {
-        if (filter.operator === 'is' && filter.value) {
-          whereClause += `w.${filter.field} is ${filter.value} OR `;
-        } else if (filter.operator === 'contains') {
-          // Add filtering conditions based on filter object properties
-          whereClause += `w.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+        if (filter.field !== 'numberofemployees' && filter.field !== 'address') {
+          if (filter.operator === 'is' && filter.value) {
+            whereClause += `w.${filter.field} is ${filter.value} OR `;
+          } else if (filter.operator === 'contains') {
+            // Add filtering conditions based on filter object properties
+            whereClause += `w.${filter.field} LIKE '%${filter.value ? filter.value : ''}%' OR `;
+          }
+        } else if (filter.field === 'address') {
+          if (filter.operator === 'is' && filter.value) {
+            whereClause += `a.address is ${filter.value} OR `;
+          } else if (filter.operator === 'contains') {
+            // Add filtering conditions based on filter object properties
+            whereClause += `a.address LIKE '%${filter.value ? filter.value : ''}%' OR `;
+          }
+        } else if (filter.field === 'numberofemployees' && filter.value) {
+          whereClause = ' ';
+          havingClause = `HAVING COUNT(WorkAt.UserID) = ${filter.value}`;
         }
-  
       }
       whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
+      console.log(whereClause);
+      console.log(havingClause);
+      havingClause = havingClause.slice(0, -4); // Remove trailing 'OR'
     }
+
+
     let orderByClause = '';
     if (sortModel && sortModel.length > 0) {
       orderByClause = ' ORDER BY ';
       for (const sort of sortModel) {
-        orderByClause += `w.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+        if (sort.field !== 'numberofemployees' && sort.field !== 'address') {
+          orderByClause += `w.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+        } else if (sort.field == 'numberofemployees') {
+          orderByClause += `NumberOfEmployees ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+        } else if (sort.field == 'address') {
+          orderByClause += `a.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
+        }
+        console.log(orderByClause);
       }
       orderByClause = orderByClause.slice(0, -2); // Remove trailing comma and space
     }
@@ -68,10 +92,8 @@ export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
     if (orderByClause === '') {
       orderByClause = ' ORDER BY createdat DESC ';
     }
-
-  
     // Call the static method getAllItems to fetch all items from the database
-    const warehouses = await WarehouseManager.getAllWarehouseAllInfo(page, pageSize, whereClause, orderByClause);
+    const warehouses = await WarehouseManager.getAllWarehouseAllInfo(page, pageSize, whereClause, orderByClause, havingClause);
     // If items are found, return them as a response
     if (warehouses) {
       res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
