@@ -84,9 +84,9 @@ const ProfileScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent 
       isScroll 
-      title='Tài khoản' 
-      back={auth.roleID === 1} 
-      right={auth.roleID === 1 && auth.id == profile?.userId}
+      title={auth.id !== profile?.userId ? 'Tài khoản' : ''} 
+      back={auth.roleID === 1 && auth.id !== profile?.userId} 
+      right={auth.roleID === 1 && auth.id === profile?.userId}
       isLoading={isLoading}
       option= {(auth.id !== profile?.userId) && (
         <TouchableOpacity

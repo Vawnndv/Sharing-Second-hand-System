@@ -114,7 +114,8 @@ const ChatItem = ({item, route, navigation, noBorder}: any) => {
         alignItems: 'center',
         gap: 20,
         padding: 10,
-        marginVertical: 0
+        marginVertical: 0,
+        marginBottom: 8,
       }}
       onPress={() => {
         updateRead()

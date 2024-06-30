@@ -9,10 +9,12 @@ import { UnreadCountContext } from './UnreadCountContext';
 
 const SubTabs = createMaterialTopTabNavigator();
 
-const ChatManagementScreen = ({ setUnreadCount }: any) => {
+const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
+  const isMenuNavigate = route.params ? route.params.isMenuNavigate : false;
+
   return (
     <UnreadCountContext.Provider value={{ setUnreadCount }}>
-      <ContainerComponent back right title='Tin nhắn'>
+      <ContainerComponent back={isMenuNavigate} right={!isMenuNavigate} title={isMenuNavigate ? 'Tin nhắn' : ''}>
         <SubTabs.Navigator
           style={styles.tabs}
           screenOptions={({ route }) => ({

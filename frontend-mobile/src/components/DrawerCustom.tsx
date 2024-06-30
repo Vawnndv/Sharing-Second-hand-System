@@ -127,6 +127,15 @@ const DrawerCustom = ({navigation}: any) => {
         handleSettingAddress();
         break;
 
+      case 'Chat':
+        navigation.navigate('Chat', {
+          screen: 'ChatScreen',
+          params: {
+            isMenuNavigate: true
+          },
+        });
+        break;
+
       // case 'MyProfile':
       //   navigation.navigate('Profile', {
       //     screen: 'ProfileScreen',
