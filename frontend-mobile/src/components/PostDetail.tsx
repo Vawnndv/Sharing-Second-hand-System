@@ -27,6 +27,7 @@ import postsAPI from '../apis/postApi';
 import ReportModal from '../modals/ReportModal';
 import axiosClient from '../apis/axiosClient';
 import LoadingModal from '../modals/LoadingModal';
+import LoadingComponent from './LoadingComponent';
 
 
 interface Post {
@@ -315,7 +316,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
   if (isLoading) {
     return (
-      <LoadingModal visible={isLoading} />
+      <LoadingComponent isLoading={isLoading} />
     );
   }
 
