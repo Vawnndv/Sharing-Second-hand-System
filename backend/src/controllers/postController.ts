@@ -1,4 +1,5 @@
 import { AddressManager } from '../classDiagramModel/Manager/AddressManager';
+import { CollaboratPostManager } from '../classDiagramModel/Manager/CollaboratorPostManager';
 import { ItemManager } from '../classDiagramModel/Manager/ItemManager';
 import { PostManager } from '../classDiagramModel/Manager/PostManager';
 import asyncHandle from 'express-async-handler';
@@ -35,7 +36,7 @@ export const getTotalPost = asyncHandle(async (req, res) => {
   const { status, userID } = req.body;
 
   
-  const totalPosts = await PostManager.getTotalPost(status, userID);
+  const totalPosts = await CollaboratPostManager.getTotalPost(status, userID);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
 
@@ -50,7 +51,7 @@ export const getAllPostByStatus  = asyncHandle(async (req, res) => {
   const { status, limit, page, distance, time, category, sort, latitude, longitude, warehouses, userID } = req.body;
 
 
-  const allPosts = await PostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses, userID);
+  const allPosts = await CollaboratPostManager.getAllPostByStatus(status, limit, page, distance, time, category, sort, latitude, longitude, warehouses, userID);
 
   // const postReceivers = await PostManager.viewPostReceivers(postID);
 

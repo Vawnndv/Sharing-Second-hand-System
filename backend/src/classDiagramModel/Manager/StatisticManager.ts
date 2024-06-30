@@ -23,7 +23,7 @@ export class StatisticManager {
     // code here
   }
 
-  public static async statisticOrderCollab(userID: string | undefined, time: string | undefined): Promise<Number[] | undefined>{
+  public async statisticOrderCollab(userID: string | undefined, time: string | undefined): Promise<Number[] | undefined>{
     const client = await pool.connect();
 
     try{
@@ -81,7 +81,7 @@ export class StatisticManager {
   }
   
 
-  public static async statisticImportExport(userID: string | undefined, type: string | undefined, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
+  public async statisticImportExport(userID: string | undefined, type: string | undefined, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -221,7 +221,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticInventory(userID: string | undefined): Promise<any[] | undefined>{
+  public async statisticInventory(userID: string | undefined): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -285,7 +285,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticAccessUser(type: string, timeStart: string | undefined, timeEnd: string | undefined): Promise<any[] | undefined>{
+  public async statisticAccessUser(type: string, timeStart: string | undefined, timeEnd: string | undefined): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -324,7 +324,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticImportExportAdmin(type: string | undefined, warehouses: any, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
+  public async statisticImportExportAdmin(type: string | undefined, warehouses: any, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -421,7 +421,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticImportExportFollowTimeAdmin(type: string | undefined,category: string, warehouses: any, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
+  public async statisticImportExportFollowTimeAdmin(type: string | undefined,category: string, warehouses: any, timeStart: string, timeEnd: string): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -548,7 +548,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticInventoryAdmin(warehouses: any): Promise<any[] | undefined>{
+  public async statisticInventoryAdmin(warehouses: any): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -625,7 +625,7 @@ export class StatisticManager {
     }
   }
 
-  public static async statisticAccessUserAdmin(timeValue: number, warehouses: any[] ): Promise<any[] | undefined>{
+  public async statisticAccessUserAdmin(timeValue: number, warehouses: any[] ): Promise<any[] | undefined>{
     const client = await pool.connect()
 
     try{
@@ -715,7 +715,7 @@ export class StatisticManager {
     }
   }
 
-  public static async insertAnalytic(type: string | undefined): Promise<Boolean> {
+  public async insertAnalytic(type: string | undefined): Promise<Boolean> {
     const client = await pool.connect()
 
     try{

@@ -7,11 +7,11 @@ import { NotiManager } from './Manager/NotiManager';
 
 export class Admin extends Account {
     
-  private statistic: StatisticManager | undefined;
+  public static statistic: StatisticManager = new StatisticManager();
 
-  private userManager: CollaboratorManager | undefined;
+  public static userManager: CollaboratorManager = new CollaboratorManager();
 
-  private warehouseManager: WarehouseManager | undefined;
+  public static warehouseManager: WarehouseManager = new WarehouseManager();
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,

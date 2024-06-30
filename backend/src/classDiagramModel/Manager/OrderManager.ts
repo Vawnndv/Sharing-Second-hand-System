@@ -589,7 +589,7 @@ export class OrderManager {
     }
   }
 
-  public static async pinOrder(orderID: string | undefined, collaboratorReceiveID: string | undefined): Promise<any | null> {
+  public static async pinOrder(orderID: string | undefined, collaboratorReceiveID: string | undefined): Promise<Boolean> {
     const client = await pool.connect()
 
     let queryGetOrder = `
@@ -1050,7 +1050,8 @@ export class OrderManager {
 
 
   
-  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<void> {
+  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, 
+    qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `

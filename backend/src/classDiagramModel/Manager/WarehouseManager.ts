@@ -89,7 +89,7 @@ export class WarehouseManager {
         FROM warehouse 
         JOIN address ON warehouse.addressid = address.addressid 
         JOIN workat ON workat.warehouseid = warehouse.warehouseid
-        WHERE workat.userid = 82
+        WHERE workat.userid = ${userID}
         `);
       if (result.rows.length === 0) {
         console.log('Không tìm thấy kho');

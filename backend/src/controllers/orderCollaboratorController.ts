@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { OrderManager } from '../classDiagramModel/Manager/OrderManager';
-import { StatisticManager } from '../classDiagramModel/Manager/StatisticManager';
+import { Collaborator } from '../classDiagramModel/Collaborator';
 
 export const getOrdersCollaborator = async (req: Request, res: Response) => {
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
@@ -50,7 +50,7 @@ export const statisticOrderCollaborator = async (req: Request, res: Response) =>
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
   const time = typeof req.query.time === 'string' ? req.query.time : undefined;
   try {
-    const statisticOrder = await StatisticManager.statisticOrderCollab(userID, time);
+    const statisticOrder = await Collaborator.statistic.statisticOrderCollab(userID, time);
       
     res.status(201).json({ message: 'Get orders successfully', statisticOrder: statisticOrder });
   } catch (error) {
