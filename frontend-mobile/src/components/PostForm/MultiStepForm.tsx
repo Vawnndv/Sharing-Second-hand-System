@@ -383,7 +383,7 @@ const MultiStepForm = () => {
         </View>
           {renderStep()}
           {currentStep === 2 && (
-            <Button style= {styles.button} mode="contained" disabled={!isValidSubmit} onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
+            <Button style={[styles.button, { backgroundColor: isValidSubmit ? appColors.primary2 : appColors.gray3 } ]} mode="contained" disabled={!isValidSubmit} onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
           )}
         </ScrollView>
       </View>

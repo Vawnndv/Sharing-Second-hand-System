@@ -442,8 +442,9 @@ const pickImage = async () => {
           setIsGenerateItemCategory(true);
         }
         if(completedImages.length > 0){
-          handleValidate(true, 'photo');
+          setErrorMessage({...errorMessage, itemPhotos: ''})
         }
+        setErrorMessage({...errorMessage, itemName: '', itemCategory:''})
         setIsLoading(false);
 
       
@@ -927,7 +928,7 @@ const predictImage = async (imageUri: any) => {
           {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
-        <Button mode="contained" style={styles.button} onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
+        <Button mode="contained" style={[styles.button, { backgroundColor: isValidNext ? appColors.primary2 : appColors.gray2 } ]} onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
 
     </ScrollView>
   );
