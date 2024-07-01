@@ -27,6 +27,9 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import LoadingModal from '../../modals/LoadingModal';
 import axiosClient from '../../apis/axiosClient';
 import { Alert } from 'react-native';
+import ButtonComponent from '../ButtonComponent';
+import { globalStyles } from '../../styles/globalStyles';
+import { ArrowRight } from 'iconsax-react-native';
 
 
 interface ErrorProps  {
@@ -257,18 +260,21 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
       setIsLoading(true);
 
       // loadLabels();
-      try {
-        await tf.ready();  
-        setModel(await tf.loadLayersModel(modelURL + 'model.json')); 
-        const response: any = await fetch(modelURL + 'metadata.json');
-        if (!response.ok) {
-          throw new Error('Failed to fetch labels of model');
+      if(!model){
+        try {
+          await tf.ready();  
+          setModel(await tf.loadLayersModel(modelURL + 'model.json')); 
+          const response: any = await fetch(modelURL + 'metadata.json');
+          if (!response.ok) {
+            throw new Error('Failed to fetch labels of model');
+          }
+          const metadata = await response.json();
+          setLabels(metadata.labels);        
+        } catch (error) {
+          console.error('Error loading the model', error);
         }
-        const metadata = await response.json();
-        setLabels(metadata.labels);        
-      } catch (error) {
-        console.error('Error loading the model', error);
       }
+
 
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
@@ -442,8 +448,9 @@ const pickImage = async () => {
           setIsGenerateItemCategory(true);
         }
         if(completedImages.length > 0){
-          handleValidate(true, 'photo');
+          setErrorMessage({...errorMessage, itemPhotos: ''})
         }
+        setErrorMessage({...errorMessage, itemName: '', itemCategory:''})
         setIsLoading(false);
 
       
@@ -716,7 +723,6 @@ const predictImage = async (imageUri: any) => {
       <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin sản phẩm </Text>
 
-      <TouchableOpacity onPress={() => handleValidate('','photo')}>
         <TextInput
             label="Ảnh của món đồ"
             style={styles.input}
@@ -731,7 +737,7 @@ const predictImage = async (imageUri: any) => {
             }}
           />
           {/* Hiển thị ảnh đã chọn */}
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} scrollEnabled={formData.itemPhotos.length !== 1}> 
             {formData.itemPhotos.map((image: any, index) => (
               <View key={index} style={styles.imageContainer}>
                   <Image source={{ uri: image.uri }} style={styles.image}/>
@@ -748,11 +754,12 @@ const predictImage = async (imageUri: any) => {
                 </View>
               ))}
         </ScrollView>
-
         <Button icon="camera" mode="contained" onPress={pickImage} style={styles.button}>
           Chọn Ảnh
         </Button>
-      </TouchableOpacity>
+
+
+
 
       {(errorMessage.itemPhotos) && <TextComponent text={errorMessage.itemPhotos}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
 
@@ -805,7 +812,7 @@ const predictImage = async (imageUri: any) => {
 
       <Text style={styles.labelDropdown}>Loại món đồ</Text>
         <Dropdown
-          style={[styles.dropdown, isFocusSelectedItemType ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.itemCategory ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
+          style={[styles.dropdown, isFocusSelectedItemType ? { borderColor: appColors.primary2, borderBottomWidth: 2 } : errorMessage.itemCategory ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
           // inputSearchStyle={styles.inputSearchStyle}
@@ -838,8 +845,9 @@ const predictImage = async (imageUri: any) => {
       {(errorMessage.itemCategory) && <TextComponent text={errorMessage.itemCategory}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       {(isGenerateItemCategory) && <TextComponent text= 'Loại món đồ được hệ thống tự phân loại'  color={appColors.green} styles={{marginBottom: 5, textAlign: 'right'}}/>}
 
+    <Text style={styles.labelDropdown}>Phương thức cho đồ</Text>
     <Dropdown
-        style={[styles.dropdown, isFocusMethodGive ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodGive ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
+        style={[styles.dropdown, isFocusMethodGive ? { borderColor: appColors.primary2, borderBottomWidth: 2 } : errorMessage.methodGive ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         // inputSearchStyle={styles.inputSearchStyle}
@@ -850,7 +858,7 @@ const predictImage = async (imageUri: any) => {
         maxHeight={300}
         labelField="label"
         valueField="value"
-        placeholder={!isFocusMethodGive ? '  Phương thức cho đồ' : '...'}
+        placeholder={!isFocusMethodGive ? '  Chọn phương thức' : '...'}
         searchPlaceholder="Tìm kiếm..."
         value={selectedMethodGive}
         onFocus={() => {
@@ -873,8 +881,9 @@ const predictImage = async (imageUri: any) => {
 
       {isWarehouseGive && (
         <>
+          <Text style={styles.labelDropdown}>Phương thức đem đồ đến kho</Text>
           <Dropdown
-            style={[styles.dropdown, isFocusBringItemToWarehouse ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.methodsBringItemToWarehouse ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
+            style={[styles.dropdown, {marginBottom: 15}  , isFocusBringItemToWarehouse ? { borderColor: appColors.primary2, borderBottomWidth: 2 } : errorMessage.methodsBringItemToWarehouse ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             // inputSearchStyle={styles.inputSearchStyle}
@@ -884,7 +893,7 @@ const predictImage = async (imageUri: any) => {
             maxHeight={300}
             labelField="label"
             valueField="value"
-            placeholder={!isFocusBringItemToWarehouse ? '  Phương thức đem đồ đến kho' : '...'}
+            placeholder={!isFocusBringItemToWarehouse ? '  Chọn phương thức' : '...'}
             // searchPlaceholder="Tìm kiếm..."
             value={bringItemToWarehouseMethodsDropDown}
             onFocus={() => {
@@ -909,7 +918,7 @@ const predictImage = async (imageUri: any) => {
           <TextInput
             label="Kho"
             value={warehouseSelected ? `${warehouseSelected.warehousename}, ${warehouseSelected.address}`  : ''}
-            style={styles.input}
+            style={[styles.input, {marginTop: 1}]}
             underlineColor="transparent" // Màu của gạch chân khi không focus
             editable={false} // Người dùng không thể nhập trực tiếp vào trường này
             error={errorMessage.warehouseAddress? true : false}
@@ -927,7 +936,28 @@ const predictImage = async (imageUri: any) => {
           {(errorMessage.warehouseAddress) && <TextComponent text={errorMessage.warehouseAddress}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
         </>
       )}
-        <Button mode="contained" style={styles.button} onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button>
+      <ButtonComponent
+          disable={!isValidNext}
+          onPress={handleNext}
+          text={"Tiếp theo"}
+          type='primary'
+          iconFlex="right"
+          icon={
+            <View style={[
+              globalStyles.iconContainer,
+              {
+                backgroundColor: !isValidNext  
+                  ? appColors.gray 
+                  : appColors.primary2
+              },
+            ]}>
+              <ArrowRight size={18} color={appColors.white} />
+            </View>
+          }
+          styles={{width: "100%"}}
+        
+        />       
+          {/* <Button mode="contained" style={[styles.button, { backgroundColor: isValidNext ? appColors.primary2 : appColors.gray2 } ]} onPress={handleNext} disabled={!isValidNext}>Tiếp theo</Button> */}
 
     </ScrollView>
   );
@@ -952,14 +982,19 @@ const styles = StyleSheet.create({
   },
   input: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
     fontSize: 14,
   },
   button: {
     marginTop: 5,
     marginBottom: 20,
-    backgroundColor: appColors.primary2
+    backgroundColor: appColors.primary2,
+    height: 45, 
+    justifyContent: "center", 
+    borderRadius: 15,
+    width: "90%",
+    left: "5%"
   },
   imageContainer: {
     position: 'relative',
@@ -1014,7 +1049,7 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     paddingHorizontal: 8,
     borderBottomWidth: 0.5,
-    marginBottom: '10%'
+    marginBottom: 15
   },
   icon: {
     marginRight: 5,
@@ -1037,7 +1072,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     borderWidth: 0,
     marginRight: 50,
-    // backgroundColor: 'blue'
 
   },
   iconStyle: {

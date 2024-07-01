@@ -10,13 +10,17 @@ import { User } from './User';
 
 export class Collaborator extends User {
 
-  private collaboratorID: string | undefined;
+  public static collaboratorID: string | undefined;
 
-  private statistic: StatisticManager | undefined;
+  public static statistic: StatisticManager = new StatisticManager();
 
-  private userManager: UserManager | undefined;
+  public static userManager: UserManager = new UserManager();
 
-  private cardManager: CardManager | undefined;
+  public static cardManager: CardManager = new CardManager();
+  
+  public static orderManager: OrderManager = new OrderManager()
+
+  public static postManager: PostManager = new PostManager();
   static adminDeleteCollaboratorReducer: any;
   static adminEditCollaboratorReducer: any;
 
