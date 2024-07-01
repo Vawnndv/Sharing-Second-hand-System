@@ -72,7 +72,7 @@ const LoginScreen = ({navigation}: any) => {
       if (error instanceof Error) {
         setErrorLogin(error.message);
       } else {
-        setErrorLogin("Network Error");
+        setErrorLogin("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);

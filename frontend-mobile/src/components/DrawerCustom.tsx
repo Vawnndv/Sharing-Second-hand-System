@@ -109,6 +109,8 @@ const DrawerCustom = ({navigation}: any) => {
       await AsyncStorage.clear();
       dispatch(removeAuth({}));
     } catch (error) {
+      await AsyncStorage.clear();
+      dispatch(removeAuth({}));
       console.log(`Log out error: ${error}`);
     }
   }
