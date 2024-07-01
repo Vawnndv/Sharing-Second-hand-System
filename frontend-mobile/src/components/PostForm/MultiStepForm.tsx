@@ -18,6 +18,7 @@ import { ProfileModel } from '../../models/ProfileModel';
 import { LoadingModal } from '../../modals';
 import axiosClient from '../../apis/axiosClient';
 import { appColors } from '../../constants/appColors';
+import ButtonComponent from '../ButtonComponent';
 
 
 interface FormDataStepOne {
@@ -359,13 +360,6 @@ const MultiStepForm = () => {
   //   )
   // }
 
-  if (isLoading) {
-    return (
-      <LoadingModal visible={isLoading} />
-
-    );
-  }
-
   return (
     <ScrollView>
 
@@ -383,12 +377,19 @@ const MultiStepForm = () => {
         </View>
           {renderStep()}
           {currentStep === 2 && (
-            <Button style={[styles.button, { backgroundColor: isValidSubmit ? appColors.primary2 : appColors.gray3 } ]} mode="contained" disabled={!isValidSubmit} onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
+            // <Button style={[styles.button, { backgroundColor: isValidSubmit ? appColors.primary2 : appColors.gray3 } ]} mode="contained" disabled={!isValidSubmit} onPress={handleSubmit}>Gửi</Button> // Sửa lại để thực hiện submit thực tế
+            <ButtonComponent
+            disable={!isValidSubmit}
+            onPress={handleSubmit}
+            text={"Gửi"}
+            type='primary'
+            iconFlex="right"
+            styles={{ padding: 20 , margin: 10, marginBottom: 30}}
+          
+          />       
           )}
         </ScrollView>
       </View>
-
-      
     </ScrollView>
   );
 
@@ -399,6 +400,8 @@ const styles = StyleSheet.create({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
+    // padding: 20,
+
   },
 
   header: {
