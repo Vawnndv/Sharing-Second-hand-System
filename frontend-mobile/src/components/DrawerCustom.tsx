@@ -60,14 +60,14 @@ const DrawerCustom = ({navigation}: any) => {
     },
     {
       key: 'MyProfile',
-      title: 'Thông tin tài khoản',
-      icon: <User size={size} color={color} />,
-    },
-    {
-      key: 'Setting',
-      title: 'Cài đặt',
+      title: 'Đổi mật khẩu',
       icon: <Ionicons name="settings-outline" size={size} color={color} />,
     },
+    // {
+    //   key: 'MyProfile',
+    //   title: 'Thông tin tài khoản',
+    //   icon: <User size={size} color={color} />,
+    // },
     {
       key: 'Location',
       title: 'Vị trí',
@@ -125,6 +125,15 @@ const DrawerCustom = ({navigation}: any) => {
 
       case 'Location':
         handleSettingAddress();
+        break;
+
+      case 'Chat':
+        navigation.navigate('Chat', {
+          screen: 'ChatScreen',
+          params: {
+            isMenuNavigate: true
+          },
+        });
         break;
 
       // case 'MyProfile':

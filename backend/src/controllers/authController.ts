@@ -8,6 +8,9 @@ import { Request, Response } from 'express';
 
 import { Account } from '../classDiagramModel/Account';
 import { UserManager } from '../classDiagramModel/Manager/UserManager';
+import { GmailLogin } from '../classDiagramModel/Login/GmailLogin';
+import { LoginGoogle } from '../classDiagramModel/Login/LoginGoogle';
+import { Guest } from '../classDiagramModel/Guest';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -185,64 +188,64 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
 
 export const login = asyncHandle(async (req: Request, res: Response) => {
   const { platform, email, password } = req.body;
-  const existingUser = await Account.findUserByEmail(email);
 
-  if (!existingUser) {
+  const guest = new Guest(new GmailLogin());
+  const handleGmailLogin = await guest.login(email, password);
+
+  if (!handleGmailLogin.existingUser) {
     res.status(400);
     throw new Error('Địa chỉ email không chính xác!!!');
   }
 
-  const isMatchPassword = await bcrypt.compare(password, existingUser.password);
-
-  if (!isMatchPassword) {
+  if (!handleGmailLogin.isMatchPassword) {
     res.status(400);
     throw new Error('Mật khẩu không chính xác!!!');
   }
 
-  if (existingUser.isbanned) {
+  if (handleGmailLogin.existingUser.isbanned) {
     res.status(400);
     throw new Error('Tài khoản của bạn đã bị khóa');
 
   }
   
-  const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+  const fcmTokens = await Account.getFcmTokenListOfUser(handleGmailLogin.existingUser.userid);  
   
-  const refreshToken = await getJsonWebRefreshToken(existingUser.userid);
+  const refreshToken = await getJsonWebRefreshToken(handleGmailLogin.existingUser.userid);
 
-  if (platform === 'web' && existingUser.roleid > 1) {
+  if (platform === 'web' && handleGmailLogin.existingUser.roleid > 1) {
     console.log(refreshToken);
-    const refreshtoken = await UserManager.addRefreshTokenToUser(existingUser.userid, refreshToken);
+    const refreshtoken = await UserManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
-        id: existingUser.userid,
-        email: existingUser.email,
-        firstName: existingUser.firstname,
-        lastName: existingUser.lastname,
-        avatar: existingUser.avatar,
-        roleID: existingUser.roleid,
+        id: handleGmailLogin.existingUser.userid,
+        email: handleGmailLogin.existingUser.email,
+        firstName: handleGmailLogin.existingUser.firstname,
+        lastName: handleGmailLogin.existingUser.lastname,
+        avatar: handleGmailLogin.existingUser.avatar,
+        roleID: handleGmailLogin.existingUser.roleid,
         deviceid: refreshtoken.deviceid,
-        accessToken: await getJsonWebAccessToken(existingUser.userid),
+        accessToken: await getJsonWebAccessToken(handleGmailLogin.existingUser.userid),
       },
     });
-  } else if (platform === 'web' && existingUser.roleid === 1) {
+  } else if (platform === 'web' && handleGmailLogin.existingUser.roleid === 1) {
     res.status(400);
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
-    const refreshtoken = await UserManager.addRefreshTokenToUser(existingUser.userid, refreshToken);
+    const refreshtoken = await UserManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
-        id: existingUser.userid,
-        email: existingUser.email,
-        firstName: existingUser.firstname,
-        lastName: existingUser.lastname,
-        avatar: existingUser.avatar,
-        roleID: existingUser.roleid,
+        id: handleGmailLogin.existingUser.userid,
+        email: handleGmailLogin.existingUser.email,
+        firstName: handleGmailLogin.existingUser.firstname,
+        lastName: handleGmailLogin.existingUser.lastname,
+        avatar: handleGmailLogin.existingUser.avatar,
+        roleID: handleGmailLogin.existingUser.roleid,
         fcmTokens: fcmTokens ?? [],
         deviceid: refreshtoken.deviceid,
-        isPassword: existingUser.password.trim().length > 0 ? true : false, 
-        accessToken: await getJsonWebAccessToken(existingUser.userid),
+        isPassword: handleGmailLogin.existingUser.password.trim().length > 0 ? true : false, 
+        accessToken: await getJsonWebAccessToken(handleGmailLogin.existingUser.userid),
       },
     });
   }
@@ -290,7 +293,10 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
 export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
   const { email, firstname, lastname, avatar } = req.body;
 
-  const existingUser = await Account.findUserByEmail(email);
+  // const existingUser = await Account.findUserByEmail(email);
+  const guest = new Guest(new LoginGoogle());
+  const handleGoogleLogin = await guest.login(email, '');
+  const existingUser = handleGoogleLogin.existingUser;
 
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  

@@ -1,4 +1,4 @@
-import { View, Text, Switch, Alert } from 'react-native'
+import { View, Text, Switch, StyleSheet, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ButtonComponent, ContainerComponent, InputComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components'
 import { ArrowRight, Lock, Sms } from 'iconsax-react-native';
@@ -84,9 +84,12 @@ const LoginScreen = ({navigation}: any) => {
       <SectionComponent 
         styles={{
           justifyContent: 'center',
-          marginTop: 75,
+          marginTop: 25,
         }}
       >
+        <View style={styles.logoContainer}>
+          <Image source={require("../../../assets/images/retreasure_title_logo.png")} style={styles.logo} />
+        </View>
         <TextComponent text="Đăng nhập" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
         <SpaceComponent height={21} />
         <InputComponent
@@ -173,5 +176,16 @@ const LoginScreen = ({navigation}: any) => {
 
   )
 }
+
+const styles = StyleSheet.create({
+  logoContainer: {
+    alignItems: 'center',
+  },
+  logo: {
+    width: 300,
+    height: 100,
+    resizeMode: 'contain'
+  }
+});
 
 export default LoginScreen

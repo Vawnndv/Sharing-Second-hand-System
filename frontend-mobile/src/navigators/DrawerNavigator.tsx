@@ -18,6 +18,7 @@ import FavoritesNavigator from './FavoritesNavigator';
 import PostNavigator from './PostNavigator';
 import HistoryNavigator from './HistoryNavigator';
 import NotificationNavigator from './NotificationNavigator';
+import ContactScreen from '../screens/contact/ContactScreen';
 
 
 const DrawerNavigator = () => {
@@ -41,6 +42,7 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="Chat" component={ChatNavigator} />
       <Drawer.Screen name="MyLike" component={FavoritesNavigator} options={{ unmountOnBlur: true }} />
       <Drawer.Screen name="MyPost" component={PostNavigator} options={{ unmountOnBlur: true }} />
+      <Drawer.Screen name="Contact" component={ContactScreen} />
     </Drawer.Navigator>
   )
 }

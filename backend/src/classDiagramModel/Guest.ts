@@ -12,8 +12,8 @@ export class Guest {
     this.loginMethod = method;
   }
 
-  public login(username: string, password: string): void {
-    this.loginMethod.login(username, password);
+  public async login(email: string, password: string): Promise<any> {
+    return await this.loginMethod.login(email, password);
   }
 
 }

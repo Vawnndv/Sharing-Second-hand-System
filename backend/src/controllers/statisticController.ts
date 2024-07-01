@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
-import { StatisticManager } from '../classDiagramModel/Manager/StatisticManager';
+import { Admin } from '../classDiagramModel/Admin';
+import { Collaborator } from '../classDiagramModel/Collaborator';
   
 export const statisticImportExport = async (req: Request, res: Response) => {
   const { type, userID, timeStart, timeEnd } = req.body;
   try {
-    const results = await StatisticManager.statisticImportExport(userID, type, timeStart, timeEnd);
+    const results = await Collaborator.statistic.statisticImportExport(userID, type, timeStart, timeEnd);
       
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -16,7 +17,7 @@ export const statisticImportExport = async (req: Request, res: Response) => {
 export const statisticInventory = async (req: Request, res: Response) => {
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
   try {
-    const results = await StatisticManager.statisticInventory(userID);
+    const results = await Collaborator.statistic.statisticInventory(userID);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -29,7 +30,7 @@ export const statisticAccessUser = async (req: Request, res: Response) => {
   const { type, timeStart, timeEnd } = req.body;
 
   try {
-    const results = await StatisticManager.statisticAccessUser(type, timeStart, timeEnd);
+    const results = await Collaborator.statistic.statisticAccessUser(type, timeStart, timeEnd);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -41,7 +42,7 @@ export const statisticAccessUser = async (req: Request, res: Response) => {
 export const statisticImportExportAdmin = async (req: Request, res: Response) => {
   const { type, warehouses, timeStart, timeEnd } = req.body;
   try {
-    const results = await StatisticManager.statisticImportExportAdmin(type, warehouses, timeStart, timeEnd);
+    const results = await Admin.statistic.statisticImportExportAdmin(type, warehouses, timeStart, timeEnd);
       
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -53,7 +54,7 @@ export const statisticImportExportAdmin = async (req: Request, res: Response) =>
 export const statisticImportExportFollowTimeAdmin = async (req: Request, res: Response) => {
   const { type, category, warehouses, timeStart, timeEnd } = req.body;
   try {
-    const results = await StatisticManager.statisticImportExportFollowTimeAdmin(type, category, warehouses, timeStart, timeEnd);
+    const results = await Admin.statistic.statisticImportExportFollowTimeAdmin(type, category, warehouses, timeStart, timeEnd);
       
     res.status(201).json({ message: 'Get Statistic successfully', data: results });
   } catch (error) {
@@ -65,7 +66,7 @@ export const statisticImportExportFollowTimeAdmin = async (req: Request, res: Re
 export const statisticInventoryAdmin = async (req: Request, res: Response) => {
   const { warehouses } = req.body;
   try {
-    const results = await StatisticManager.statisticInventoryAdmin(warehouses);
+    const results = await Admin.statistic.statisticInventoryAdmin(warehouses);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -81,7 +82,7 @@ export const statisticAccessUserAdmin = async (req: Request, res: Response) => {
     newTimeValue = parseInt(timeValue);
   } 
   try {
-    const results = await StatisticManager.statisticAccessUserAdmin(newTimeValue, warehouses);
+    const results = await Admin.statistic.statisticAccessUserAdmin(newTimeValue, warehouses);
         
     res.status(201).json({ message: 'Get orders successfully', data: results });
   } catch (error) {
@@ -94,7 +95,7 @@ export const insertAnalytic = async (req: Request, res: Response) => {
   const { type } = req.body;
   
   try {
-    const results = await StatisticManager.insertAnalytic(type);
+    const results = await Collaborator.statistic.insertAnalytic(type);
         
     res.status(201).json({ message: 'Insert data analytic successfully', data: results });
   } catch (error) {
