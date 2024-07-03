@@ -25,7 +25,7 @@ export class ItemManager {
     return [];
   }
 
-  public static async viewDetailsItem(itemId: number): Promise<Item | null> {
+  public async viewDetailsItem(itemId: number): Promise<Item | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(
@@ -43,7 +43,7 @@ export class ItemManager {
     }
   }
 
-  public static async viewItemImages(itemId: number): Promise<any[] | null> {
+  public async viewItemImages(itemId: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`SELECT * FROM image WHERE itemid = $1`, [itemId]);
@@ -59,7 +59,7 @@ export class ItemManager {
     }
   } 
 
-  public static async viewAllItemTypes(): Promise<any[] | null> {
+  public async viewAllItemTypes(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`SELECT * FROM item_type`);
@@ -75,7 +75,7 @@ export class ItemManager {
     }
   } 
 
-  public static async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
+  public async createItem (name: string, quantity: number, itemtypeID: number): Promise<void> {
     const client = await pool.connect();
     const query = `
         INSERT INTO item(name, quantity, itemtypeID)
@@ -94,7 +94,7 @@ export class ItemManager {
     }
   };
 
-  public static async uploadImageItem (path: string, itemID: string): Promise<boolean> {
+  public async uploadImageItem (path: string, itemID: string): Promise<boolean> {
     const client = await pool.connect();
     const query = `
         INSERT INTO "image" (path, itemid)
@@ -116,7 +116,7 @@ export class ItemManager {
     }
   };
 
-  public static async deleteImageItem (imgid: number): Promise<boolean> {
+  public async deleteImageItem (imgid: number): Promise<boolean> {
 
     const client = await pool.connect();
     const query = `

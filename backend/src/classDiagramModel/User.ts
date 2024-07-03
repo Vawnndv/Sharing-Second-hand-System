@@ -1,21 +1,30 @@
 import { Account } from './Account';
+import { AddressManager } from './Manager/AddressManager';
 import { ItemManager } from './Manager/ItemManager';
 import { MapManager } from './Manager/MapManager';
 import { OrderManager } from './Manager/OrderManager';
 import { PostManager } from './Manager/PostManager';
+import { RatingManager } from './Manager/RatingManager';
 import { ReportManager } from './Manager/ReportManager';
+import { UserManager } from './Manager/UserManager';
 
 export class User extends Account {
 
-  protected mapManager: MapManager | undefined;
+  public static mapManager: MapManager = new MapManager();
 
-  protected postManager: PostManager | undefined;
+  public static postManager: PostManager = new PostManager();
 
-  protected itemManager: ItemManager | undefined;
+  public static itemManager: ItemManager = new ItemManager();
 
-  protected orderManager: OrderManager | undefined;
+  public static orderManager: OrderManager = new OrderManager();
 
-  protected reportManager: ReportManager | undefined;
+  public static reportManager: ReportManager = new ReportManager();
+
+  public static userManager: UserManager = new UserManager();
+
+  public static addressManager: AddressManager = new AddressManager()
+
+  public static ratingManager: RatingManager = new RatingManager()
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, address: string, username: string,

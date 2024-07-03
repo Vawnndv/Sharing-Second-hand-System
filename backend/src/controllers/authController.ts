@@ -7,10 +7,10 @@ import jwt from 'jsonwebtoken';
 import { Request, Response } from 'express';
 
 import { Account } from '../classDiagramModel/Account';
-import { UserManager } from '../classDiagramModel/Manager/UserManager';
 import { GmailLogin } from '../classDiagramModel/Login/GmailLogin';
 import { LoginGoogle } from '../classDiagramModel/Login/LoginGoogle';
 import { Guest } from '../classDiagramModel/Guest';
+import { User } from '../classDiagramModel/User';
 
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
@@ -126,7 +126,7 @@ export const refreshAccessToken = asyncHandle(async (req: Request, res: Response
     process.exit(1); // Exit application with error code 1
   }
 
-  const { refreshtoken } = await UserManager.getRefreshTokenOfUser(userid, deviceid);
+  const { refreshtoken } = await User.userManager.getRefreshTokenOfUser(userid, deviceid);
 
   if (!refreshtoken) {
     res.status(403).json({ message: 'RefreshToken not found' });
@@ -214,7 +214,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
 
   if (platform === 'web' && handleGmailLogin.existingUser.roleid > 1) {
     console.log(refreshToken);
-    const refreshtoken = await UserManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {
@@ -232,7 +232,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     res.status(400);
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
-    const refreshtoken = await UserManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     
     res.status(200).json({
       message: 'Login successfully!!!',
@@ -355,7 +355,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, fcmtoken } = req.body;
 
-  await UserManager.removeFcmTokenToUser(userid, fcmtoken);
+  await User.userManager.removeFcmTokenToUser(userid, fcmtoken);
 
   res.status(200).json({
     message: 'Fcmtoken deleted',
@@ -366,7 +366,7 @@ export const removeFcmToken = asyncHandle(async (req: Request, res: Response) =>
 export const removeRefreshToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, deviceid } = req.body;
 
-  await UserManager.removeRefreshTokenOfUser(userid, deviceid);
+  await User.userManager.removeRefreshTokenOfUser(userid, deviceid);
 
   res.status(200).json({
     message: 'Refreshtoken deleted',

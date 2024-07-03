@@ -23,7 +23,7 @@ export class CardManager {
     return true;
   }
 
-  public static async createCardInput (qrcode: string, warehouseid: number, usergiveid: number, orderid: number, itemid: number): Promise<boolean> {
+  public async createCardInput (qrcode: string, warehouseid: number, usergiveid: number, orderid: number, itemid: number): Promise<boolean> {
 
     const client = await pool.connect();
     const query = `
@@ -46,7 +46,7 @@ export class CardManager {
     }
   };
 
-  public static async createCardOutput (warehouseid: number, userreceiveid: number, orderid: number, itemid: number): Promise<boolean> {
+  public async createCardOutput (warehouseid: number, userreceiveid: number, orderid: number, itemid: number): Promise<boolean> {
 
     const client = await pool.connect();
     const query = `

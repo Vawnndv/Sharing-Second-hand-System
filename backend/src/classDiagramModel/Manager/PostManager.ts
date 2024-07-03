@@ -111,7 +111,7 @@ export class PostManager {
     return [];
   }
 
-  public static async getListAddressByWarehouseID(warehouses: string[]): Promise<any> {
+  public async getListAddressByWarehouseID(warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       const query = `
@@ -141,7 +141,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
+  public async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
 
@@ -217,7 +217,7 @@ export class PostManager {
   }
   
 
-  public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
+  public async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
 
@@ -298,7 +298,7 @@ export class PostManager {
 
 
 
-  public static async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
+  public async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -370,7 +370,7 @@ export class PostManager {
   }
   
 
-  public static async getReceivePosts(limit: string, page: string,userId: string): Promise<any> {
+  public async getReceivePosts(limit: string, page: string,userId: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -441,7 +441,7 @@ export class PostManager {
     }
   }
 
-  public static async viewDetailsPost(postID: number): Promise<any> {
+  public async viewDetailsPost(postID: number): Promise<any> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -482,7 +482,7 @@ export class PostManager {
   }
 
 
-  public static async viewPostReceivers(postID: number): Promise<any[]> {
+  public async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
       const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
@@ -500,7 +500,7 @@ export class PostManager {
     }
 
 
-  public static async getDetailsPost(postID: number): Promise<Post | null> {
+  public async getDetailsPost(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
       const result = await client.query('SELECT * FROM posts WHERE postid = $1;', [postID]);
@@ -520,7 +520,7 @@ export class PostManager {
   
 
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, 
+  public async createPost (title: string, location: string, description: string, owner: number, time: Date, 
     itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, 
     statusid: number, givetypeid: number, warehouseid: number, phonenumber: string): Promise<void> {
 
@@ -602,7 +602,7 @@ export class PostManager {
   };
 
 
-  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, 
+  public async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, 
     receivertypeid: number, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
@@ -624,7 +624,7 @@ export class PostManager {
   };
 
 
-  public static async viewPostOwnerInfo(postID: number): Promise<Post | null> {
+  public async viewPostOwnerInfo(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -645,7 +645,7 @@ export class PostManager {
   }
 
 
-  public static async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
+  public async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
 
     const client = await pool.connect();
     const query = `
@@ -678,11 +678,6 @@ export class PostManager {
     return [];
   }
 
-  public searchPost(stringSearch: string): Post[] {
-    // code here
-    return [];
-  }
-
   public addPost(): boolean {
     // code here
     return true;
@@ -702,7 +697,7 @@ export class PostManager {
     // code here
   }
 
-  public static async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string,
+  public async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string,
      time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     let query = `
@@ -766,7 +761,7 @@ export class PostManager {
     }
   };
 
-  public static async deletePostReceivers(postID: string, receiverID: string): Promise<boolean> {
+  public async deletePostReceivers(postID: string, receiverID: string): Promise<boolean> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -785,7 +780,7 @@ export class PostManager {
   }
 
 
-  public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
+  public async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
 
     const client = await pool.connect();
 
@@ -819,7 +814,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostByUserId(userID: string[]): Promise<any> {
+  public async getAllPostByUserId(userID: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       let query = `
@@ -867,7 +862,7 @@ export class PostManager {
     }
   }
 
-  public static async getAmountUserLikePost(postID: string): Promise<any> {
+  public async getAmountUserLikePost(postID: string): Promise<any> {
     const client = await pool.connect();
     try {
       let query = `

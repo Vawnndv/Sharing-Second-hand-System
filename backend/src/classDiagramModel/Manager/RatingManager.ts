@@ -5,7 +5,7 @@ export class RatingManager {
 
   }
 
-  public static async insertRating(userGiveID: string, orderID: string, rate: number) {
+  public async insertRating(userGiveID: string, orderID: string, rate: number) {
     const client = await pool.connect();
     try {
       const query = `
@@ -24,7 +24,7 @@ export class RatingManager {
     }
   }
 
-  public static async getRating(userID: string) {
+  public async getRating(userID: string) {
     const client = await pool.connect();
     try {
       const query = `

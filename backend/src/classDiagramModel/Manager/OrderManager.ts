@@ -13,6 +13,7 @@ import { Post } from '../Post';
 import { Address } from '../Address';
 import { statusOrder } from '../../utils/statusOrder';
 import { CardManager } from './CardManager';
+import { Collaborator } from '../Collaborator';
 
 
 interface FilterOrder {
@@ -139,14 +140,7 @@ export class OrderManager {
 
   }
 
-  public createOrder(orderID: number, title: string, receiverId: number, giverId: number,
-    orderCode: string, qrCode: string, status: string, location: string, description: string,
-    time: string, itemID: number, departure: string, item: Item, trace: Trace, currentStatus: Status): boolean {
-    // code here
-    return true;
-  }
-
-  public static async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any, search:any, typeCard: any): Promise<Order[]> {
+  public async showOrders(userID: string | undefined, type: string | undefined, distance: any, time: any, category: any, sort:any, search:any, typeCard: any): Promise<Order[]> {
     // code here
     const client = await pool.connect();
 
@@ -243,9 +237,9 @@ export class OrderManager {
     
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
-          const giver: User | undefined = await UserManager.getUser(row.usergiveid);
-          const receive: User | undefined = await UserManager.getUser(row.collaboratorreceiveid);
-          const item: Item | null = await ItemManager.viewDetailsItem(row.itemid);
+          const giver: User | undefined = await User.userManager.getUser(row.usergiveid);
+          const receive: User | undefined = await User.userManager.getUser(row.collaboratorreceiveid);
+          const item: Item | null = await User.itemManager.viewDetailsItem(row.itemid);
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
@@ -344,7 +338,7 @@ export class OrderManager {
   }
 
   
-  public static async showOrdersReceiving(userID: string | undefined): Promise<any> {
+  public async showOrdersReceiving(userID: string | undefined): Promise<any> {
     // code here
     const client = await pool.connect();
 
@@ -382,9 +376,9 @@ export class OrderManager {
     
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
-          const giver: User | undefined = await UserManager.getUser(row.usergiveid);
-          const receive: User | undefined = await UserManager.getUser(row.collaboratorreceiveid);
-          const item: Item | null = await ItemManager.viewDetailsItem(row.itemid);
+          const giver: User | undefined = await User.userManager.getUser(row.usergiveid);
+          const receive: User | undefined = await User.userManager.getUser(row.collaboratorreceiveid);
+          const item: Item | null = await User.itemManager.viewDetailsItem(row.itemid);
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
@@ -426,7 +420,7 @@ export class OrderManager {
     }
   }
 
-  public static async showOrdersStatistic(userID: string | undefined, type: string | undefined, time: string | undefined): Promise<Order[]> {
+  public async showOrdersStatistic(userID: string | undefined, type: string | undefined, time: string | undefined): Promise<Order[]> {
     // code here
     const client = await pool.connect();
 
@@ -471,9 +465,9 @@ export class OrderManager {
     
         
         const orders: any = await Promise.all(ordersRow.map(async (row: any) => {
-          const giver: User | undefined = await UserManager.getUser(row.usergiveid);
-          const receive: User | undefined = await UserManager.getUser(row.collaboratorreceiveid);
-          const item: Item | null = await ItemManager.viewDetailsItem(row.itemid);
+          const giver: User | undefined = await User.userManager.getUser(row.usergiveid);
+          const receive: User | undefined = await User.userManager.getUser(row.collaboratorreceiveid);
+          const item: Item | null = await User.itemManager.viewDetailsItem(row.itemid);
   
           let addressGiveDB = await client.query(addressQuery, [row.locationgive]);
           const addressGive = new Address(addressGiveDB.rows[0].addressid, addressGiveDB.rows[0].address, addressGiveDB.rows[0].longitude, addressGiveDB.rows[0].latitude)
@@ -519,7 +513,7 @@ export class OrderManager {
     }
   }
 
-  public static async showOrderDetails(orderID: string | undefined, typeCard: string | undefined): Promise<any | null> {
+  public async showOrderDetails(orderID: string | undefined, typeCard: string | undefined): Promise<any | null> {
     // code here
     const client = await pool.connect();
 
@@ -533,10 +527,10 @@ export class OrderManager {
       
       const ordersRow = ordersResult.rows[0];
   
-      const giver: User | undefined = await UserManager.getUser(ordersRow.usergiveid);
-      const receive: User | undefined = await UserManager.getUser(typeCard === "outputcard" && (ordersRow.givetypeid === 2 || ordersRow.givetypeid === 5) ? ordersRow.userreceiveid : ordersRow.collaboratorreceiveid);
-      const item: Item | null = await ItemManager.viewDetailsItem(ordersRow.itemid);
-      const post: Post | null = await PostManager.getDetailsPost(ordersRow.postid);
+      const giver: User | undefined = await User.userManager.getUser(ordersRow.usergiveid);
+      const receive: User | undefined = await User.userManager.getUser(typeCard === "outputcard" && (ordersRow.givetypeid === 2 || ordersRow.givetypeid === 5) ? ordersRow.userreceiveid : ordersRow.collaboratorreceiveid);
+      const item: Item | null = await User.itemManager.viewDetailsItem(ordersRow.itemid);
+      const post: Post | null = await User.postManager.getDetailsPost(ordersRow.postid);
 
       const queryImageItem = `
         SELECT path FROM "image" 
@@ -589,7 +583,7 @@ export class OrderManager {
     }
   }
 
-  public static async pinOrder(orderID: string | undefined, collaboratorReceiveID: string | undefined): Promise<Boolean> {
+  public async pinOrder(orderID: string | undefined, collaboratorReceiveID: string | undefined): Promise<Boolean> {
     const client = await pool.connect()
 
     let queryGetOrder = `
@@ -624,7 +618,7 @@ export class OrderManager {
     }
   }
 
-  public static async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
+  public async getOrderList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -703,7 +697,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderFinishList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
+  public async getOrderFinishList (userID: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -779,7 +773,7 @@ export class OrderManager {
     }
   };
 
-  public static async getTrackingOrderByID (orderID: string): Promise<any> {
+  public async getTrackingOrderByID (orderID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -810,7 +804,7 @@ export class OrderManager {
     }
   };
 
-  public static async updateCompleteOrder (orderID: string, url: string) : Promise<boolean> {
+  public async updateCompleteOrder (orderID: string, url: string) : Promise<boolean> {
 
     const client = await pool.connect()
 
@@ -831,7 +825,7 @@ export class OrderManager {
     }
   }
 
-  public static async updateStatusOrder (orderID: string, status: string) : Promise<boolean> {
+  public async updateStatusOrder (orderID: string, status: string) : Promise<boolean> {
 
     const client = await pool.connect()
 
@@ -862,7 +856,7 @@ export class OrderManager {
     }
   }
 
-  public static async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
+  public async uploadImageConfirmOrder (orderid: string, imgconfirmreceive: string) : Promise<boolean> {
     const client = await pool.connect()
     try{
       const query = `
@@ -887,7 +881,7 @@ export class OrderManager {
       const resultOrder: QueryResult = await client.query(queryOrder, [orderid])
 
       if (resultOrder.rows[0].givetypeid == 2 || resultOrder.rows[0].givetypeid == 3 || resultOrder.rows[0].givetypeid == 4 || resultOrder.rows[0].givetypeid == 5)
-        await CardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
+        await Collaborator.cardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
 
       return true;
     }catch(error){
@@ -899,7 +893,7 @@ export class OrderManager {
   }
 
   
-  public static async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
+  public async updateOrderReceiver ( orderid: string, userreceiveid: string, givetypeid: string, givetype: string, warehouseid: string ) : Promise<boolean> {
     const client = await pool.connect()
 
     try{
@@ -918,7 +912,7 @@ export class OrderManager {
     }
   }
 
-  public static async getOrderDetails(orderID: number): Promise<Order | null> {
+  public async getOrderDetails(orderID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -979,7 +973,7 @@ export class OrderManager {
     }
   }
 
-  public static async VerifyOrderQR(orderID: number): Promise<Order | null> {
+  public async VerifyOrderQR(orderID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -1001,7 +995,7 @@ export class OrderManager {
     }
   }
 
-  public static async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
+  public async updateStatusOfOrder(orderID: string, statusID: string): Promise<boolean> {
     const client = await pool.connect();
     try {
         const query = `
@@ -1050,7 +1044,7 @@ export class OrderManager {
 
 
   
-  public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, 
+  public async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, 
     qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<void> {
 
     const client = await pool.connect();
@@ -1072,7 +1066,7 @@ export class OrderManager {
     }
   };
 
-  public static async createTrace (currentstatus: string, orderid: number): Promise<void> {
+  public async createTrace (currentstatus: string, orderid: number): Promise<void> {
     const client = await pool.connect();
     const query = `
         INSERT INTO TRACE(currentstatus, orderid)
@@ -1098,19 +1092,19 @@ export class OrderManager {
       if(currentstatus == 'Chờ người cho giao hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForGiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
+        const createTraceHistoryWaitForGiverResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
       }
 
       if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForCollaboratorResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
+        const createTraceHistoryWaitForCollaboratorResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
       }
 
       if(currentstatus == 'Chờ người nhận lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForReceiverResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
+        const createTraceHistoryWaitForReceiverResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
       }
       return result.rows[0];
     } catch (error) {
@@ -1121,7 +1115,7 @@ export class OrderManager {
   };
 
   
-  public static async updateTraceStatus(orderid: number, newstatus: string, statusid: string): Promise<boolean> {
+  public async updateTraceStatus(orderid: number, newstatus: string, statusid: string): Promise<boolean> {
     const client = await pool.connect();
 
     const query =`
@@ -1133,7 +1127,7 @@ export class OrderManager {
 
     try {
       const result: QueryResult = await client.query(query);
-      const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
+      const createTraceHistoryPostItemResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
 
       return result.rows[0];
     } catch (error) {
@@ -1145,7 +1139,7 @@ export class OrderManager {
 
 
 
-  public static async updateReceiveID(postID: string | undefined, receiveID: string | undefined, warehouseid: string | undefined): Promise<boolean> {
+  public async updateReceiveID(postID: string | undefined, receiveID: string | undefined, warehouseid: string | undefined): Promise<boolean> {
     const client = await pool.connect();
 
     const query =`
@@ -1167,7 +1161,7 @@ export class OrderManager {
 
 
 
-  public static async getOrderByPostID(postID: number): Promise<Order | null> {
+  public async getOrderByPostID(postID: number): Promise<Order | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`SELECT * FROM ORDERS JOIN ADDRESS ON locationgive = addressid WHERE postid = $1`, [postID]);
@@ -1183,7 +1177,7 @@ export class OrderManager {
     }
   }
 
-  public static async getOrderListReceive (userID: string): Promise<any> {
+  public async getOrderListReceive (userID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -1238,7 +1232,7 @@ export class OrderManager {
     }
   };
 
-  public static async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean, filterValue: any): Promise<any> {
+  public async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean, filterValue: any): Promise<any> {
 
     const client = await pool.connect();
     let query = `

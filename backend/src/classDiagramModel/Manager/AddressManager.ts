@@ -15,7 +15,7 @@ export class AddressManager {
   }
 
   
-  public static async updateAddress(addressid: number, address: string, longitude: number, latitude: number ): Promise<void> {
+  public async updateAddress(addressid: number, address: string, longitude: number, latitude: number ): Promise<void> {
 
     const client = await pool.connect();
     const query = `

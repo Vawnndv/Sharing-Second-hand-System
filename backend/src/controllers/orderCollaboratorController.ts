@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { OrderManager } from '../classDiagramModel/Manager/OrderManager';
 import { Collaborator } from '../classDiagramModel/Collaborator';
+import { User } from '../classDiagramModel/User';
 
 export const getOrdersCollaborator = async (req: Request, res: Response) => {
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
@@ -12,7 +12,7 @@ export const getOrdersCollaborator = async (req: Request, res: Response) => {
   const search = typeof req.query.search === 'string' ? req.query.search : undefined;
   const typeCard = typeof req.query.typeCard === 'string' ? req.query.typeCard : undefined;
   try {
-    const orders = await OrderManager.showOrders(userID, type, distance, time, category, sort, search, typeCard);
+    const orders = await Collaborator.orderManager.showOrders(userID, type, distance, time, category, sort, search, typeCard);
         
     res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
@@ -24,7 +24,7 @@ export const getOrdersCollaborator = async (req: Request, res: Response) => {
 export const getOrdersReceivingCollaborator = async (req: Request, res: Response) => {
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
   try {
-    const orders = await OrderManager.showOrdersReceiving(userID);
+    const orders = await Collaborator.orderManager.showOrdersReceiving(userID);
         
     res.status(201).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
@@ -37,7 +37,7 @@ export const getOrderDetailsCollaborator = async (req: Request, res: Response) =
   const orderID = typeof req.query.orderID === 'string' ? req.query.orderID : undefined;
   const typeCard = typeof req.query.typeCard === 'string' ? req.query.typeCard : undefined;
   try {
-    const orders = await OrderManager.showOrderDetails(orderID, typeCard);
+    const orders = await Collaborator.orderManager.showOrderDetails(orderID, typeCard);
 
     res.status(200).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
@@ -62,7 +62,7 @@ export const statisticOrderCollaborator = async (req: Request, res: Response) =>
 export const updateReceiveID = async (req: Request, res: Response) => {
   const { postID, receiveID, warehouseid } = req.body;
   try {
-    const response = await OrderManager.updateReceiveID(postID, receiveID, warehouseid);
+    const response = await User.orderManager.updateReceiveID(postID, receiveID, warehouseid);
       
     res.status(201).json({ message: 'Get orders successfully', status: response });
   } catch (error) {
@@ -76,7 +76,7 @@ export const showOrdersStatistic = async (req: Request, res: Response) => {
   const type = typeof req.query.type === 'string' ? req.query.type : undefined;
   const time = typeof req.query.time === 'string' ? req.query.time : undefined;
   try {
-    const orders = await OrderManager.showOrdersStatistic(userID, type, time);
+    const orders = await Collaborator.orderManager.showOrdersStatistic(userID, type, time);
       
     res.status(201).json({ message: 'Get orders successfully', orders: orders });
   } catch (error) {
@@ -89,7 +89,7 @@ export const updateCompleteOrder = async (req: Request, res: Response) => {
   const orderID = req.params.orderID;
   const url = req.body.url;
   try {
-    await OrderManager.updateCompleteOrder(orderID, url);
+    await Collaborator.orderManager.updateCompleteOrder(orderID, url);
       
     res.status(201).json({ message: 'Update status order successfully' });
   } catch (error) {
@@ -102,7 +102,7 @@ export const updatePinOrder = async (req: Request, res: Response) => {
   const orderID = req.params.orderID;
   const collaboratorReceiveID = req.body.collaboratorReceiveID;
   try {
-    const response = await OrderManager.pinOrder(orderID, collaboratorReceiveID);
+    const response = await Collaborator.orderManager.pinOrder(orderID, collaboratorReceiveID);
 
     res.status(201).json({ message: 'Update status order successfully', statusPin: response });
   } catch (error) {
@@ -115,7 +115,7 @@ export const updateStatusOrder = async (req: Request, res: Response) => {
   const orderID = req.params.orderID;
   const status = req.body.status;
   try {
-    await OrderManager.updateStatusOrder(orderID, status);
+    await Collaborator.orderManager.updateStatusOrder(orderID, status);
       
     res.status(201).json({ message: 'Update status order successfully' });
   } catch (error) {

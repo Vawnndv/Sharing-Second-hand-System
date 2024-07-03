@@ -20,7 +20,7 @@ export class Collaborator extends User {
   
   public static orderManager: OrderManager = new OrderManager()
 
-  public static postManager: PostManager = new PostManager();
+  public static postManager: CollaboratPostManager = new CollaboratPostManager();
   static adminDeleteCollaboratorReducer: any;
   static adminEditCollaboratorReducer: any;
 
@@ -28,7 +28,5 @@ export class Collaborator extends User {
     email: string, phoneNumber: string, lastName: string, firstName: string, username: string,
     password: string, address: string) {
     super(userID, roleID, dateOfBirth, avatar, email, phoneNumber, lastName, firstName, username, password, address);
-    this.postManager = new CollaboratPostManager();
-    this.orderManager = new CollaboratorOrderManager();
   }
 }
