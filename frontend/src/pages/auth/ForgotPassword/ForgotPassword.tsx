@@ -56,7 +56,7 @@ function ForgotPassword() {
         setErr(error.message)
       } else {
         // Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại sau.
-        setErr("Network Error")
+        setErr("Lỗi mạng")
       }
     } finally {
       setIsLoading(false); // Reset isLoading to false after success/error

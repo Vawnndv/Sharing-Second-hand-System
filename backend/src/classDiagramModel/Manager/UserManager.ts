@@ -275,6 +275,39 @@ export class UserManager {
     }
   };
 
+  public static async findUserLikePostsById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT postid FROM "like_post" WHERE userid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows.map(row => row.postid);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async findUserReceivePostsById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT postid FROM "postreceiver" WHERE receiverid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows.map(row => row.postid);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
   public static async getRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
     const client = await pool.connect();
     const query = `

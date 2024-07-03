@@ -96,7 +96,7 @@ Axios.interceptors.response.use(
         throw new Error(error.response.data.message);
       }
     } else {
-      throw new Error('Network Error');
+      throw new Error('Lỗi mạng');
     }
   },
 );

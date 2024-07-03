@@ -110,9 +110,8 @@ axiosClient.interceptors.response.use(
         throw new Error(error.response.data.message);
       }
     } else {
-      // return Promise.reject(new Error('Network Error'));
-      throw new Error(error.response.data.message);
-
+      // throw new Error(error.response.data.message);
+      throw new Error('Lôi mạng');
     }
   }
 );

@@ -233,6 +233,7 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
     throw new Error('Tài khoản của bạn không có quyền truy cập vào trang web');
   } else {
     const refreshtoken = await UserManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
+    
     res.status(200).json({
       message: 'Login successfully!!!',
       data: {

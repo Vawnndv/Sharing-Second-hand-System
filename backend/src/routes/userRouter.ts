@@ -1,5 +1,5 @@
 import express from 'express';
-import { changeUserPassword, getProfile, changeUserProfile, getUserLikePosts, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser, updateFcmToken, getUserFcmTokens } from '../controllers/userController';
+import { changeUserPassword, getProfile, changeUserProfile, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser, updateFcmToken, getUserFcmTokens, getUserLikePosts, getUserReceivePosts } from '../controllers/userController';
 import { protect, admin } from '../middlewares/verifyMiddleware';
 
 const userRouter = express.Router();
@@ -11,6 +11,8 @@ userRouter.put('/change-password', protect, changeUserPassword);
 userRouter.post('/change-profile', protect, changeUserProfile);
 
 userRouter.get('/get-like-posts', protect, getUserLikePosts);
+
+userRouter.get('/get-receive-posts', protect, getUserReceivePosts);
 
 userRouter.post('/update-like-post', protect, setUserLikePosts);
 

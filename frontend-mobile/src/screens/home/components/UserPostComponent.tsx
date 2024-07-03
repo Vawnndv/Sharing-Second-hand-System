@@ -10,6 +10,8 @@ import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
 import { limit } from 'firebase/firestore'
 import { filter } from 'lodash'
+import { useDispatch } from 'react-redux'
+import { removeStatusReceivePost } from '../../../redux/reducers/authReducers'
 
 interface Props {
   filterValue: filterValue;
@@ -18,6 +20,7 @@ interface Props {
 const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   moment.locale();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [refresh, setRefresh] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,8 +93,7 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
           setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
         }
           
-      
-      
+        // dispatch(removeStatusReceivePost());
 
     } catch (error) {
       console.log(error);

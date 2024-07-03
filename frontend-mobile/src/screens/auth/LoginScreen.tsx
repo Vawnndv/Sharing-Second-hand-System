@@ -61,6 +61,7 @@ const LoginScreen = ({navigation}: any) => {
         {platform: 'mobile', email: values.email , password: values.password},
         'post'
       );
+      console.log(res);
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
@@ -72,7 +73,7 @@ const LoginScreen = ({navigation}: any) => {
       if (error instanceof Error) {
         setErrorLogin(error.message);
       } else {
-        setErrorLogin("Network Error");
+        setErrorLogin("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);

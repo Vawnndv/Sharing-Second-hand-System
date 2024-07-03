@@ -10,10 +10,11 @@ import WarehouseComponent from './WarehouseComponent';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import postsAPI from '../../../apis/postApi';
 import { appInfo } from '../../../constants/appInfos';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../../../redux/reducers/authReducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { authSelector, removeStatusReceivePost, updateLikePosts, updateReceivePosts } from '../../../redux/reducers/authReducers';
 import { category } from '../../../constants/appCategories';
 import axiosClient from '../../../apis/axiosClient';
+import userAPI from '../../../apis/userApi';
 
 export interface filterValue {
   distance: number;
@@ -25,6 +26,7 @@ export interface filterValue {
 
 const ItemTabComponent = ({navigation}: any) => {
   const auth = useSelector(authSelector)
+  const dispatch = useDispatch();
   const SubTabs = createMaterialTopTabNavigator();
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [warehouses, setWarehouses] = useState<any[]>([]);
@@ -47,6 +49,37 @@ const ItemTabComponent = ({navigation}: any) => {
       }
     }
     getUserAddress()
+  }, [])
+
+  useEffect(() => {
+    const getUserLikePosts = async () => {
+      try {
+        const response: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
+        if(response.data === null){
+          // setIsNewUser(true)
+          dispatch(updateLikePosts([]));
+        } else {
+          dispatch(updateLikePosts(response.data));
+        }
+      } catch(error: any) {
+        dispatch(updateLikePosts([]));
+      }
+    }
+
+    const getUserReceivePost = async () => {
+      try {
+        const response: any = await userAPI.HandleUser(`/get-receive-posts?userId=${auth.id}`);
+        if(response.data === null){
+          dispatch(updateReceivePosts([]));
+        } else {
+          dispatch(updateReceivePosts(response.data));
+        }
+      } catch(error: any) {
+        dispatch(updateReceivePosts([]));
+      }
+    }
+    getUserLikePosts();
+    getUserReceivePost();
   }, [])
 
   const [checkWarehouses, setCheckWarehouses] = useState(Array.from({ length: warehouses.length }, () => true))

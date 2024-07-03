@@ -8,6 +8,8 @@ import { EvilIcons, Ionicons, MaterialCommunityIcons, FontAwesome6} from '@expo/
 import { Checkbox } from 'react-native-paper';
 import { RadioButton } from 'react-native-paper';
 import { fontFamilies } from '../../constants/fontFamilies';
+import { appColors } from '../../constants/appColors';
+import ButtonComponent from '../../components/ButtonComponent';
 
 const { width, height } = Dimensions.get("window")
 
@@ -173,8 +175,8 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                                 <RadioButton
                                                     value={warehouse.warehouseid}
                                                     status={tempSelectedWarehouse === warehouse.warehouseid ? 'checked' : 'unchecked'}
-                                                    uncheckedColor='#693F8B'
-                                                    color='#693F8B'
+                                                    uncheckedColor={appColors.primary2}
+                                                    color={appColors.primary2}
                                                     onPress={() => handleSelectTempWarehouse(warehouse.warehouseid)}/>
                                             </TouchableOpacity>
                                             
@@ -188,7 +190,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                             <View style={stylesConfirmComponent.buttonContainer}>
                                 <TouchableOpacity
                                     onPress={() => {setVisible(false), setRadioSelect(tempSelectedWarehouse)}}
-                                    style={[stylesConfirmComponent.button, {backgroundColor: '#693F8B',}]}>
+                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary2,}]}>
                                     <Text style={{color: 'white'}}>
                                         Xác nhận
                                     </Text>
@@ -232,13 +234,13 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                     <View style={styles.boxLocation}>
                                         <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
                                             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                                <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B'/>
+                                                <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary2}/>
                                                 <TouchableOpacity>
                                                     <RadioButton
                                                         value={item.warehouseid}
                                                         status={radioSelect === item.warehouseid ? 'checked' : 'unchecked'}
-                                                        uncheckedColor='#693F8B'
-                                                        color='#693F8B'
+                                                        uncheckedColor={appColors.primary2}
+                                                        color={appColors.primary2}
                                                         />
                                                 </TouchableOpacity>
                                                 
@@ -247,7 +249,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                             <Text style={{maxWidth: 150, textAlign: 'center'}}>{item.address}</Text>
                                         </View>
                                         
-                                        <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
+                                        <Ionicons name='location' size={50} style={{color: appColors.primary2}}/>
                                     </View>
                                 
                                     
@@ -272,11 +274,20 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                     <EvilIcons name='location' size={35} color='white'/>
                 </TouchableOpacity>
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={() => handleConfirmSelect()}
                     style={styles.confirmButton}>
                     <Text style={{fontSize: 16, color: 'white'}}>Xác nhận chọn kho</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+
+                <ButtonComponent
+                    disable={false}
+                    onPress={() => handleConfirmSelect()}
+                    text={"Xác nhận chọn kho"}
+                    type='primary'
+                    iconFlex="right"
+                    styles={styles.confirmButton}
+                />              
                 
             </KeyboardAvoidingView>
             
@@ -315,12 +326,12 @@ const styles = StyleSheet.create({
     confirmButton: {
         position: 'absolute',
         bottom: 10,
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary2,
         borderRadius: 50,
         paddingHorizontal: 25,
         paddingVertical: 15,
         // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start
-        marginBottom: 10,
+        marginBottom: 5,
         elevation: 8,
         shadowColor: 'black',
         shadowOffset: { width: 10, height: 10 },
@@ -337,7 +348,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary2,
         borderRadius: 100,
     },
     warehouses: {
@@ -350,7 +361,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary2,
         borderRadius: 100,
     },
     pinLocation: {
