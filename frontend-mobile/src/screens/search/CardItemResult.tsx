@@ -12,11 +12,11 @@ import { formatDateTime } from '../../utils/FormatDateTime';
 import moment from 'moment';
 import 'moment/locale/vi';
 import userAPI from '../../apis/userApi';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../../redux/reducers/authReducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { addStatusLikePost, authSelector, removeStatusLikePost, removeStatusReceivePost } from '../../redux/reducers/authReducers';
 import LoadingComponent from '../../components/LoadingComponent';
 
-interface DataItem {
+export interface DataItem {
   userid: string;
   iswarehousepost: boolean;
   avatar: string;
@@ -30,7 +30,7 @@ interface DataItem {
   path: string;
   like_count: number;
   name: string;
-  receiver_count: string;
+  receiver_count: number;
 }
 
 interface Props {
@@ -47,10 +47,10 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
 
   const auth = useSelector(authSelector);
   const navigation: any = useNavigation();
+  const dispatch = useDispatch();
 
   const [likeNumber, setLikeNumber] = useState<number[]>([]);
-  const [likesPosts, setLikePosts] = useState<number[]>([]);
-
+  const [receiveNumber, setReceiveNumber] = useState<number[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(() => {
@@ -64,33 +64,50 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
     }, 1000);
   }, []);
 
-  // useEffect(() => {
-  //   getUserLikePosts();
-  // }, []);
+  useEffect(() => {
+    // getUserLikePosts();
+    const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => {
+      if (auth.statusLikePosts && auth.statusLikePosts.length > 0) {
+        auth.statusLikePosts.forEach((element: number) => {
+          if (Math.abs(element) === Math.abs(item.postid)) {
+            if (element > 0) {
+              item.like_count += 1;
+            } else {
+              item.like_count -= 1;
+            }
+          }
+        });
+      }
+
+      return item.like_count;
+    }) : [];
+    setLikeNumber(newLikeNumber);
+    dispatch(removeStatusLikePost());
+  }, [data, auth.likePosts])
+
 
   useEffect(() => {
-    getUserLikePosts();
-    const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => item.like_count) : [];
-    console.log(newLikeNumber)
-    setLikeNumber(newLikeNumber);
-
-  }, [data])
-  
-  const getUserLikePosts = async () => {
-    const res: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
-    const postIds: number[] = Array.isArray(res.data) && res.data.length > 0 ? res.data.map((item: any) => item.postid) : [];
-
-    setLikePosts(postIds);
-  }
+    const newReceiveNumber: number[] = data.length > 0 ? data.map((item: any) =>{
+      if (auth.statsReceivePosts && auth.statsReceivePosts.length > 0) {
+        auth.statsReceivePosts.forEach((element: number) => {
+          if (Math.abs(element) === Math.abs(item.postid)) {
+            if (element > 0) {
+              item.receiver_count += 1;
+            } else {
+              item.receiver_count -= 1;
+            }
+          }
+        });
+      }
+      
+      return item.receiver_count
+    }) : [];
+    setReceiveNumber(newReceiveNumber);
+    dispatch(removeStatusReceivePost());
+  }, [data, auth.receivePosts])
 
   const setUserLikePosts = async (index: number) => {
-    const newLikePosts = [...likesPosts];
-    newLikePosts.push(data[index].postid);
-    setLikePosts(newLikePosts);
-
-    const newLikeNumber = [...likeNumber];
-    newLikeNumber[index] += 1;
-    setLikeNumber(newLikeNumber);
+    dispatch(addStatusLikePost(data[index].postid));
 
     try {
       const res: any = await userAPI.HandleUser(`/update-like-post?userId=${auth.id}`, {userId: auth.id, postId: data[index].postid}, 'post');
@@ -106,9 +123,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
       setData(newData);
     }
     
-    let newLikePosts = [...likesPosts];
-    newLikePosts = newLikePosts.filter(item => item !== data[index].postid);
-    setLikePosts(newLikePosts);
+    dispatch(addStatusLikePost(-Math.abs(data[index].postid)));
 
     const newLikeNumber = [...likeNumber];
     newLikeNumber[index] -= 1;
@@ -122,7 +137,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   }
 
   const handleItemPress = (index: number) => {
-    if ( likesPosts.includes(data[index].postid)) {
+    if (auth.likePosts.includes(data[index].postid)) {
       deleteUserLikePosts(index);
     } else {
       setUserLikePosts(index);
@@ -191,13 +206,18 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={24} color={appColors.black}/>
+              <Message size={24} color={appColors.primary} variant={auth.receivePosts.includes(item.postid) ? 'Bold' : 'Outline'} />
               <SpaceComponent width={4} />
-              <TextComponent size={14} text={`${item.receiver_count} Người xin`} font={fontFamilies.medium} /> 
+              <TextComponent
+                size={14}
+                text={`${receiveNumber[index]} Người xin`} 
+                font={fontFamilies.medium}
+              />
+
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
-              <Heart size={24} color={appColors.heart} variant={likesPosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
+              <Heart size={24} color={appColors.heart} variant={auth.likePosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
               <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>

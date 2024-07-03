@@ -5,11 +5,11 @@ import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSh
 
 import axios from 'axios';
 import moment from 'moment';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import userAPI from '../apis/userApi';
 import { appInfo } from '../constants/appInfos';
 import { ProfileModel } from '../models/ProfileModel';
-import { authSelector } from '../redux/reducers/authReducers';
+import { authSelector, updateReceivePosts, addStatusReceivePost } from '../redux/reducers/authReducers';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
@@ -93,6 +93,7 @@ const windowHeight = Dimensions.get('window').height;
 const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
+  const dispatch = useDispatch();
 
   const [post, setPost] = useState<Post | any>(null); // Sử dụng Post | null để cho phép giá trị null
   const [postReceivers, setPostReceivers] = useState<PostReceiver[]>([]);
@@ -194,6 +195,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
   };
 
   const handleCancelReceive = () => {
+    dispatch(addStatusReceivePost(-Math.abs(postID)))
     deletePostReceiver()
   };
 
