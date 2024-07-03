@@ -15,11 +15,11 @@ import { RatingManager } from './Manager/RatingManager';
 
 export class Collaborator extends User {
 
-  public static statistic: StatisticManager;
-  public static userManager: UserManager;
-  public static cardManager: CardManager;
-  public static orderManager: OrderManager;
-  public static postManager: CollaboratorPostManager;
+  public static statistic: StatisticManager = new StatisticManager();
+  public static userManager: UserManager = new UserManager();
+  public static cardManager: CardManager = new CardManager();
+  public static orderManager: OrderManager = new OrderManager();
+  public static postManager: CollaboratorPostManager = new CollaboratorPostManager();
 
   static adminDeleteCollaboratorReducer: any;
   static adminEditCollaboratorReducer: any;

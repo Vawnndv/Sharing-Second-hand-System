@@ -1,19 +1,13 @@
 import { Item } from '../Item';
 import { Order } from '../Order';
 
-import { Status } from '../Status';
-import { Trace } from '../Trace';
 import pool from "../../config/DatabaseConfig"
 import { QueryResult } from 'pg';
-import { UserManager } from './UserManager';
 import { User } from '../User';
-import { ItemManager } from './ItemManager';
-import { PostManager } from './PostManager';
 import { Post } from '../Post';
 import { Address } from '../Address';
 import { statusOrder } from '../../utils/statusOrder';
 import { CardManager } from './CardManager';
-import { Collaborator } from '../Collaborator';
 
 
 interface FilterOrder {
@@ -880,8 +874,9 @@ export class OrderManager {
       `
       const resultOrder: QueryResult = await client.query(queryOrder, [orderid])
 
+      const cardManager = new CardManager()
       if (resultOrder.rows[0].givetypeid == 2 || resultOrder.rows[0].givetypeid == 3 || resultOrder.rows[0].givetypeid == 4 || resultOrder.rows[0].givetypeid == 5)
-        await Collaborator.cardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
+        await cardManager.createCardOutput(resultOrder.rows[0].warehouseid, resultOrder.rows[0].userreceiveid, parseInt(orderid), resultOrder.rows[0].itemid)
 
       return true;
     }catch(error){
@@ -1092,19 +1087,19 @@ export class OrderManager {
       if(currentstatus == 'Chờ người cho giao hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForGiverResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
+        const createTraceHistoryWaitForGiverResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
       }
 
       if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForCollaboratorResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
+        const createTraceHistoryWaitForCollaboratorResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
       }
 
       if(currentstatus == 'Chờ người nhận lấy hàng'){
         // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
         // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
-        const createTraceHistoryWaitForReceiverResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
+        const createTraceHistoryWaitForReceiverResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
       }
       return result.rows[0];
     } catch (error) {
@@ -1127,7 +1122,7 @@ export class OrderManager {
 
     try {
       const result: QueryResult = await client.query(query);
-      const createTraceHistoryPostItemResult = await User.orderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
+      const createTraceHistoryPostItemResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid);
 
       return result.rows[0];
     } catch (error) {

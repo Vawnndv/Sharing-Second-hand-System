@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Collaborator } from '../classDiagramModel/Collaborator';
-import { User } from '../classDiagramModel/User';
 
 export const getOrdersCollaborator = async (req: Request, res: Response) => {
   const userID = typeof req.query.userID === 'string' ? req.query.userID : undefined;
@@ -62,7 +61,7 @@ export const statisticOrderCollaborator = async (req: Request, res: Response) =>
 export const updateReceiveID = async (req: Request, res: Response) => {
   const { postID, receiveID, warehouseid } = req.body;
   try {
-    const response = await User.orderManager.updateReceiveID(postID, receiveID, warehouseid);
+    const response = await Collaborator.orderManager.updateReceiveID(postID, receiveID, warehouseid);
       
     res.status(201).json({ message: 'Get orders successfully', status: response });
   } catch (error) {
