@@ -20,6 +20,9 @@ import { current } from '@reduxjs/toolkit';
 import { HandleNotification } from '../../utils/handleNotification';
 import axiosClient from '../../apis/axiosClient';
 import LoadingModal from '../../modals/LoadingModal';
+import LoadingComponent from '../LoadingComponent';
+import { globalStyles } from '../../styles/globalStyles';
+import ButtonComponent from '../ButtonComponent';
 
 
 interface Props {
@@ -773,12 +776,12 @@ const handleGive = async () =>{
     setErrorMessage({...errorMessage, warehouseSelected: ''});
   }
 
-  if (isLoading) {
-    return (
-      <LoadingModal visible={isLoading} />
+  // if (isLoading) {
+  //   return (
+  //     <LoadingModal visible={isLoading} />
 
-    );
-  }
+  //   );
+  // }
 
 
 
@@ -791,11 +794,13 @@ const handleGive = async () =>{
     {isUserPost && (
       <Text style={styles.title}>Thông tin cho đồ </Text>
     )}
-    
+
+
+    <LoadingModal visible={isLoading} />
 
     <TextInput
       label="Tên người cho"
-      value={postOwnerInfo?.firstname + ' ' + postOwnerInfo?.lastname}
+      value={postOwnerInfo? postOwnerInfo?.firstname + ' ' + postOwnerInfo?.lastname : ''}
       // onChangeText={(text) => setFormData({ ...formData, owmerName: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -806,7 +811,7 @@ const handleGive = async () =>{
     
     <TextInput
       label="Số điện thoại"
-      value={postOwnerInfo?.phonenumber}
+      value={postOwnerInfo? postOwnerInfo?.phonenumber : ''}
       // onChangeText={(text) => setFormData({ ...formData, itemQuantity: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -817,7 +822,7 @@ const handleGive = async () =>{
 
     <TextInput
       label="Ngày nhận"
-      value={moment(postOwnerInfo?.timestart).format('DD/MM/YYYY') + ' - ' + moment(postOwnerInfo?.timeend).format('DD/MM/YYYY')}
+      value={postOwnerInfo ? moment(postOwnerInfo?.timestart).format('DD/MM/YYYY') + ' - ' + moment(postOwnerInfo?.timeend).format('DD/MM/YYYY') : ''}
       // onChangeText={(text) => setFormData({ ...formData, postDate: text })}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
@@ -830,6 +835,7 @@ const handleGive = async () =>{
 
     {!isUserPost && !postOwnerInfo?.iswarehousepost && (
       <>
+        <Text style={styles.labelDropdown}>Phương thức nhận đồ</Text>
         <Dropdown
           style={[styles.dropdown, isFocus ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.receiveMethod ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
@@ -842,7 +848,7 @@ const handleGive = async () =>{
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? '  Phương thức nhận đồ' : '...'}
+          placeholder={!isFocus ? '  Chọn phương thức' : '...'}
           searchPlaceholder="Tìm kiếm..."
           value={selectedReceiveMethodDropdown}
           onFocus={() => {
@@ -901,7 +907,7 @@ const handleGive = async () =>{
       <>
         <TextInput
           label="Địa chỉ đến lấy đồ"
-          value={postOwnerInfo?.address}
+          value={postOwnerInfo ? postOwnerInfo?.address : ''}
           style={styles.input}
           underlineColor="gray" // Màu của gạch chân khi không focus
           activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -942,7 +948,7 @@ const handleGive = async () =>{
     {isUserPost && (
       <TextInput
       label="Địa chỉ"
-      value={postOwnerInfo?.address}
+      value={postOwnerInfo ? postOwnerInfo?.address : ''}
       style={styles.input}
       underlineColor="gray" // Màu của gạch chân khi không focus
       activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -971,7 +977,7 @@ const handleGive = async () =>{
       <>
         <TextInput
         label="Thông tin kho"
-        value={formData?.warehouseInfo}
+        value={formData ? formData?.warehouseInfo : ''}
         style={styles.input}
         underlineColor="gray" // Màu của gạch chân khi không focus
         activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
@@ -998,6 +1004,7 @@ const handleGive = async () =>{
 
     {isUserPost && receivetype == 'Cho nhận qua kho' && (
       <>
+        <Text style={styles.labelDropdown}>Phương thức đem đồ đến kho</Text>
         <Dropdown
           style={[styles.dropdown, isFocus ? { borderColor: 'blue', borderBottomWidth: 2 } : errorMessage.bringItemToWarehouseMethod ? {borderColor: appColors.danger, borderBottomWidth: 2} : { borderColor: 'gray'}]}
           placeholderStyle={styles.placeholderStyle}
@@ -1009,7 +1016,7 @@ const handleGive = async () =>{
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? '  Phương thức đem đồ đến kho' : '...'}
+          placeholder={!isFocus ? '  Chọn phương thức' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={bringItemToWarehouseMethodsDropDown}
           onFocus={() => {
@@ -1036,15 +1043,30 @@ const handleGive = async () =>{
       </>
     )}
 
-
-
-
     {!isUserPost && (
-      <Button mode="contained" onPress={handleReceive} disabled={!isValidSubmit}>Xác nhận</Button>
+      // <Button mode="contained" onPress={handleReceive} disabled={!isValidSubmit}>Xác nhận</Button>
+
+      <ButtonComponent
+        disable={!isValidSubmit}
+        onPress={handleReceive}
+        text={"Xác nhận"}
+        type='primary'
+        iconFlex="right"
+        styles={{width: "100%"}}
+      />      
+      
     )}
 
     {isUserPost && (
-      <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit} >Xác nhận</Button>
+      // <Button mode="contained" onPress={handleGive} disabled={!isValidSubmit} >Xác nhận</Button>
+      <ButtonComponent
+        disable={!isValidSubmit}
+        onPress={handleGive}
+        text={"Xác nhận"}
+        type='primary'
+        iconFlex="right"
+        styles={{width: "100%"}}
+      />      
     )}
   </ScrollView>
   );
@@ -1071,9 +1093,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent', // Đặt nền trong suốt để loại bỏ hiệu ứng nền mặc định
     fontSize: 14,
   },
+  labelDropdown: {
+    fontSize: 12,
+    marginLeft: 14,
+    marginBottom: -6
+  },
   button: {
-    marginTop: 10,
+    // marginTop: 5,
     marginBottom: 20,
+    backgroundColor: appColors.primary2,
+    height: 45, 
+    justifyContent: "center", 
+    borderRadius: 15,
+    width: "90%",
+    left: "5%"
   },
   imageContainer: {
     position: 'relative',
