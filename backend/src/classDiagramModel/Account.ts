@@ -28,9 +28,9 @@ export class Account {
 
   protected password: string | undefined;
 
-  public static notiManager: NotiManager = new NotiManager();
+  public static notiManager: NotiManager;
 
-  public static chatManager: ChatManager = new ChatManager();
+  public static chatManager: ChatManager;
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, address: string, username: string,

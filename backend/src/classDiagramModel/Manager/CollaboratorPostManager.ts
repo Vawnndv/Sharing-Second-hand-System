@@ -98,7 +98,7 @@ function filterSearch(distance: string, time: string, category: string[], wareho
 
   return filteredData;
 }
-export class CollaboratPostManager extends PostManager {
+export class CollaboratorPostManager extends PostManager {
   public constructor() {
     super();
   }
