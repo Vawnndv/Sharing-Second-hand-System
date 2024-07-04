@@ -174,8 +174,8 @@ function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
                         value={sortSelect}
                         onChange={(e) => setSortSelect(e.target.value)}
                     >
-                        <FormControlLabel value="Mới nhất" control={<Radio />} label="Mới nhất" />
-                        <FormControlLabel value="Gần nhất" control={<Radio />} label="Gần nhất" />
+                        <FormControlLabel value="Mới nhất" control={<Radio />} label="Mới vừa đăng" />
+                        <FormControlLabel value="Gần nhất" control={<Radio />} label="Gần bạn nhất" />
                     </RadioGroup>
                 </FormControl>
             </Stack>

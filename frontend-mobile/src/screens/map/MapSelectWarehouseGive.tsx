@@ -327,7 +327,6 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         backgroundColor: appColors.primary,
-        borderRadius: 50,
         paddingHorizontal: 25,
         paddingVertical: 15,
         // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start

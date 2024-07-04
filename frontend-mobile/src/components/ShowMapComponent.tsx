@@ -8,6 +8,7 @@ import { fontFamilies } from "../constants/fontFamilies";
 import * as Location from 'expo-location';
 import haversine  from 'haversine'
 import { useEffect, useRef, useState } from "react";
+import { appColors } from "../constants/appColors";
 
 const { width, height } = Dimensions.get("window")
 
@@ -95,7 +96,7 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
                             title={location.address}
                             coordinate={{latitude: location.latitude, longitude: location.longitude}}>
                             
-                                <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
+                                <Ionicons name='location' size={50} style={{color: appColors.primary}}/>
                             
                         </Marker>
                 </MapView>
@@ -137,7 +138,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 10,
         left: 10,
-        backgroundColor: "#693F8B",
+        backgroundColor: appColors.primary,
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',

@@ -69,7 +69,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
     useEffect(() => {
         // Thiết lập giá trị ban đầu dựa trên filterValue khi component được tải
         const { distance: filterDistance, time: filterTime, category: filterCategory, sort: filterSort } = filterValue;
-        console.log(filterValue)
+        console.log(filterValue, distance.indexOf(filterDistance))
         setIndexDistance(distance.indexOf(filterDistance));
         setIndexTime(time.indexOf(filterTime));
         setChecked(filterSort === 'Mới nhất' ? 'first' : 'second');
@@ -120,39 +120,28 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                     horizontal
                     showsHorizontalScrollIndicator={false}>
                     <View style={[styles.groupItem]}>
-                        <TouchableOpacity style={[styles.item, indexDistance === 0 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(0)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 0 && styles.selectTextItem]}>1 km</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexDistance === 1 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(1)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 1 && styles.selectTextItem]}>2 km</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexDistance === 2 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(2)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 2 && styles.selectTextItem]}>5 km</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexDistance === 3 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(3)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 3 && styles.selectTextItem]}>10 km</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexDistance === 4 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(4)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 4 && styles.selectTextItem]}>15 km</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={[styles.item, indexDistance === 5 && styles.selectItem]}
-                            onPress={() => {setIndexDistance(5)}}>
-                            <Text style={[{fontSize: 15}, indexDistance === 5 && styles.selectTextItem]}>25 km</Text>
-                        </TouchableOpacity>
+                        {
+                            time.map((item: any, index: number) => {
+                                if(index < time.length - 1){
+                                    return (
+                                        <TouchableOpacity key={index} style={[styles.item, indexDistance === index && styles.selectItem]}
+                                            onPress={() => {setIndexDistance(index)}}>
+                                            <Text style={[{fontSize: 15}, indexDistance === index && styles.selectTextItem]}>{item} km</Text>
+                                        </TouchableOpacity>
+                                    )
+                                }
+                                
+                            })
+                        }
                         {
                           auth.roleID === 1 ?
-                          <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
-                              onPress={() => {setIndexDistance(6)}}>
-                              <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> {`${'>'} 25 km`}</Text>
+                          <TouchableOpacity style={[styles.item, indexDistance === (distance.length - 1) && styles.selectItem]}
+                              onPress={() => {setIndexDistance((distance.length - 1))}}>
+                              <Text style={[{fontSize: 15}, indexDistance === (distance.length - 1) && styles.selectTextItem]}> {`${'>'} 25 km`}</Text>
                           </TouchableOpacity> :
-                          <TouchableOpacity style={[styles.item, indexDistance === 6 && styles.selectItem]}
-                          onPress={() => {setIndexDistance(6)}}>
-                          <Text style={[{fontSize: 15}, indexDistance === 6 && styles.selectTextItem]}> Tất cả </Text>
+                          <TouchableOpacity style={[styles.item, indexDistance === (distance.length - 1) && styles.selectItem]}
+                          onPress={() => {setIndexDistance((distance.length - 1))}}>
+                          <Text style={[{fontSize: 15}, indexDistance === (distance.length - 1) && styles.selectTextItem]}> Tất cả </Text>
                       </TouchableOpacity>
                         }
                     </View>
@@ -169,6 +158,9 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                         horizontal
                         showsHorizontalScrollIndicator={false}>
                         <View style={styles.groupItem}>
+                            {
+
+                            }
                             <TouchableOpacity style={[styles.item, indexTime === 0 && styles.selectItem]}
                                 onPress={() => {setIndexTime(0)}}>
                                 <Text style={[{fontSize: 15}, indexTime === 0 && styles.selectTextItem]}>1 ngày trước</Text>
@@ -298,7 +290,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                                 value="first"
                                 status={ checked === 'first' ? 'checked' : 'unchecked' }
                             />
-                            <Text>Mới nhất</Text>
+                            <Text>Mới vừa đăng</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.item, {display: 'flex', flexDirection: 'row', alignItems: 'center'}]}
                             onPress={() => setChecked('second')}>
@@ -306,7 +298,7 @@ export default function FilterComponent({hideModal, filterValue, setFilterValue}
                                 value="second"
                                 status={ checked === 'second' ? 'checked' : 'unchecked' }
                             />
-                            <Text>Gần nhất</Text>
+                            <Text>Gần bạn nhất</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>

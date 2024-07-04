@@ -237,6 +237,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         isChecked: boolean;
     }
     
+    console.log("HELLO")
 
     const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
         return (
@@ -245,10 +246,10 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     latitude: parseFloat(item.latitude),
                     longitude: parseFloat(item.longitude),
                 }}
-                onPress={onPress}
+                onPress={() => onPress()}
                 key={index}
             >
-                <View style={styles.boxLocation}>
+                <TouchableOpacity style={styles.boxLocation}>
                     <View style={{ backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary} />
@@ -264,7 +265,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                         <Text style={{ maxWidth: 150, textAlign: 'center' }}>{item.address}</Text>
                     </View>
                     <Ionicons name='location' size={50} style={{ color: appColors.primary }} />
-                </View>
+                </TouchableOpacity>
             </Marker>
         );
     });
