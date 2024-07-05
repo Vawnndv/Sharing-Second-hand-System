@@ -2,10 +2,10 @@
 import { useState, useEffect, MouseEvent } from 'react';
 import './style.scss';
 
-import { Avatar, Stack, Typography, Menu, MenuItem, IconButton } from '@mui/material';
+import { Avatar, Stack, Typography, IconButton } from '@mui/material';
 import moment from 'moment';
 import 'moment/locale/vi';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationModel } from './Notification';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,9 +16,7 @@ type UserItemPros = {
 };
 
 function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
-  // eslint-disable-next-line no-unused-vars
   const [isHovered, setIsHovered] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
 
@@ -34,22 +32,9 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
     setIsHovered(false);
   };
 
-  const handleMoreClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleMarkAsRead = () => {
-    updateRead(item.id);
-    handleClose();
-  };
-
-  const handleRemoveNotification = () => {
+  const handleRemoveNotification = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation(); // Prevent the click event from bubbling up to the parent
     onDeletePressed(item.id);
-    handleClose();
   };
 
   return (
@@ -57,7 +42,7 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
       key={item.id}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={() => navigate(`${item.link}`)}
+      onClick={() => {navigate(`${item.link}`); updateRead(item.id);}}
       sx={{
         cursor: 'pointer', /* Add a pointer cursor for hover indication */
         '&:hover': { /* Apply styles on hover */
@@ -71,33 +56,27 @@ function NotificationItem({ item, onDeletePressed, updateRead }: UserItemPros) {
     >
       <Stack direction='row' alignItems='center' spacing={2} mt={1} pb={2} sx={{ borderBottom: '2px solid #DFE0DF' }}>
         <Avatar src={item.avatar} />
-        <Stack>
-          <Typography variant='body1'>
-            <Typography variant='body1' component="span" sx={{ fontWeight: 'bold' }}>{item.name} </Typography>
+        <Stack flexGrow={1}>
+          <Typography >
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>{item.name} </Typography>
             {item.body}
           </Typography>
-          <Stack direction='row' alignContent="center" justifyContent="space-between">
-            <Typography variant='body1' sx={{ opacity: '0.75' }}>
-              {moment(item.createdAt.seconds * 1000 + item.createdAt.nanoseconds / 1000000).fromNow()}
-            </Typography>
+          <Typography variant='body1' sx={{ opacity: '0.75' }}>
+            {moment(item.createdAt.seconds * 1000 + item.createdAt.nanoseconds / 1000000).fromNow()}
+          </Typography>
+        </Stack>
+        {isHovered && (
+          <Stack sx={{ backgroundColor: 'red', height: '100%', width: '100px'}}>
             <IconButton
               size="large"
               color="inherit"
-              sx={{ padding: 0}}
-              onClick={handleMoreClick}
+              sx={{ padding: 0, marginLeft: 'auto' }}
+              onClick={handleRemoveNotification}
             >
-              <MoreHorizIcon/>
+              <DeleteIcon />
             </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
-            >
-              <MenuItem onClick={handleMarkAsRead}>Đánh dấu đã đọc</MenuItem>
-              <MenuItem onClick={handleRemoveNotification}>Gỡ thông báo</MenuItem>
-            </Menu>
           </Stack>
-        </Stack>
+        )}
       </Stack>
     </Stack>
   );

@@ -11,10 +11,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import postsAPI from '../../../apis/postApi';
 import { appInfo } from '../../../constants/appInfos';
 import { useDispatch, useSelector } from 'react-redux';
-import { authSelector, removeStatusReceivePost, updateLikePosts, updateReceivePosts } from '../../../redux/reducers/authReducers';
+import { authSelector } from '../../../redux/reducers/authReducers';
 import { category } from '../../../constants/appCategories';
 import axiosClient from '../../../apis/axiosClient';
 import userAPI from '../../../apis/userApi';
+import { updateCountOrder, updateLikePosts, updateReceivePosts } from '../../../redux/reducers/userReducers';
 
 export interface filterValue {
   distance: number;
@@ -78,6 +79,7 @@ const ItemTabComponent = ({navigation}: any) => {
         dispatch(updateReceivePosts([]));
       }
     }
+
     getUserLikePosts();
     getUserReceivePost();
   }, [])

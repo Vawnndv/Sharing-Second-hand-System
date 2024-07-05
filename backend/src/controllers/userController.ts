@@ -55,6 +55,23 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   }
 });
 
+export const getUserOfTotalGiveAndReceiveOrder = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    const countNumber = await User.userManager.totalGiveAndReceiveOrder(userId);
+    res.status(200).json({
+      message: 'Get total Give And Receive Order of User successfully!!!',
+      data: {
+        giveCount: countNumber.givecount ?? 0,
+        receiveCount: countNumber.receivecount ?? 0,
+      },
+    });
+  } else {
+    res.status(401);
+    throw new Error('Missing uid');
+  }
+});
+
 export const changeUserPassword = asyncHandle(async (req: Request, res: Response) => {
   const { email, oldPassword, newPassword } = req.body;
   const user = await Account.findUserByEmail(email);

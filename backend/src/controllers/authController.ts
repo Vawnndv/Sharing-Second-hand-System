@@ -35,7 +35,7 @@ const getJsonWebAccessToken = async (id: number) => {
   }
   
   const token = jwt.sign(payload, secret, {
-    expiresIn: '1d',
+    expiresIn: '1m',
   });
 
   return token;
@@ -57,7 +57,7 @@ const getJsonWebRefreshToken = async (id: number) => {
   
   // const REFRESH_TOKEN_KEY = 'khoahoctunhien';
   const token = jwt.sign(payload, secret, {
-    expiresIn: '7d',
+    expiresIn: '7m',
   });
 
   return token;

@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import userAPI from '../apis/userApi';
 import { appInfo } from '../constants/appInfos';
 import { ProfileModel } from '../models/ProfileModel';
-import { authSelector, updateReceivePosts, addStatusReceivePost } from '../redux/reducers/authReducers';
+import { authSelector } from '../redux/reducers/authReducers';
 import AvatarComponent from './AvatarComponent';
 import { ReceiveForm } from './ReceiveForm/ReceiveForm';
 
@@ -28,6 +28,7 @@ import ReportModal from '../modals/ReportModal';
 import axiosClient from '../apis/axiosClient';
 import LoadingModal from '../modals/LoadingModal';
 import LoadingComponent from './LoadingComponent';
+import { addStatusReceivePost } from '../redux/reducers/userReducers';
 
 
 interface Post {

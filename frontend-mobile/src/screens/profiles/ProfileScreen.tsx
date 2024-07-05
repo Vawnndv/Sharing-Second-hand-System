@@ -14,12 +14,13 @@ import { Flag } from 'iconsax-react-native'
 import ReportModal from '../../modals/ReportModal'
 import axiosClient from '../../apis/axiosClient'
 import { AirbnbRating } from "react-native-ratings";
+import { userSelector } from '../../redux/reducers/userReducers'
 
 const ProfileScreen = ({navigation, route}: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileModel>();
   const [profileId, setProfileId] = useState('');
-  const [refresh, setRefresh] = useState(false)
+  // const [refresh, setRefresh] = useState(false)
   const [rating, setRating] = useState<any>(null)
 
   const [visibleModalReport, setVisibleModalReport] = useState(false)
@@ -27,14 +28,16 @@ const ProfileScreen = ({navigation, route}: any) => {
   const dispatch = useDispatch();
 
   const auth = useSelector(authSelector);
+  const user = useSelector(userSelector);
+
   
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      // Thực hiện các hành động cần thiết khi màn hình được focus
-      setRefresh(prevRefresh => !prevRefresh);
-    });
-    return unsubscribe;
-  }, [navigation]);
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     // Thực hiện các hành động cần thiết khi màn hình được focus
+  //     setRefresh(prevRefresh => !prevRefresh);
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
 
   useEffect(() => {
     if (auth) {
@@ -52,13 +55,13 @@ const ProfileScreen = ({navigation, route}: any) => {
     } else {
       setProfileId(auth.id);
     }
-  }, [route.params, refresh]);
+  }, [route.params]);
 
   useEffect(() => {
     if (profileId) {
       getProfile();
     }
-  }, [profileId, refresh]);
+  }, [profileId]);
 
   const getProfile = async () => {
     setIsLoading(true);
@@ -84,11 +87,11 @@ const ProfileScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent 
       isScroll 
-      title={auth.id !== profile?.userId ? 'Tài khoản' : ''} 
-      back={auth.roleID === 1 && auth.id !== profile?.userId} 
-      right={auth.roleID === 1 && auth.id === profile?.userId}
+      title={auth.id === profileId ? '' : 'Tài khoản'} 
+      back={auth.roleID === 1 && auth.id !== profileId} 
+      right={auth.roleID === 1 && auth.id === profileId}
       isLoading={isLoading}
-      option= {(auth.id !== profile?.userId) && (
+      option= {(auth.id !== profileId) && (
         <TouchableOpacity
           onPress={() => 
             setVisibleModalReport(true)
@@ -124,7 +127,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={profile.giveCount}
+                  text={auth.id !== profile?.userId ? profile.giveCount : user.giveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />
@@ -140,7 +143,7 @@ const ProfileScreen = ({navigation, route}: any) => {
               <View style={[globalStyles.center, {flex: 1}]}>
                 <TextComponent
                   title
-                  text={profile.receiveCount}
+                  text={auth.id !== profile?.userId ? profile.receiveCount : user.receiveCount}
                   size={20}
                 />
                 <SpaceComponent height={8} />

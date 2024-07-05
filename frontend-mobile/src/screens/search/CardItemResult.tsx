@@ -13,8 +13,9 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import userAPI from '../../apis/userApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStatusLikePost, authSelector, removeStatusLikePost, removeStatusReceivePost } from '../../redux/reducers/authReducers';
+import { authSelector } from '../../redux/reducers/authReducers';
 import LoadingComponent from '../../components/LoadingComponent';
+import { addStatusLikePost, removeStatusLikePost, removeStatusReceivePost, updateIsLikePostRefresh, userSelector } from '../../redux/reducers/userReducers';
 
 export interface DataItem {
   userid: string;
@@ -46,6 +47,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   moment.locale();
 
   const auth = useSelector(authSelector);
+  const user = useSelector(userSelector);
+
   const navigation: any = useNavigation();
   const dispatch = useDispatch();
 
@@ -67,8 +70,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   useEffect(() => {
     // getUserLikePosts();
     const newLikeNumber: number[] = data.length > 0 ? data.map((item: any) => {
-      if (auth.statusLikePosts && auth.statusLikePosts.length > 0) {
-        auth.statusLikePosts.forEach((element: number) => {
+      if (user.statusLikePosts && user.statusLikePosts.length > 0) {
+        user.statusLikePosts.forEach((element: number) => {
           if (Math.abs(element) === Math.abs(item.postid)) {
             if (element > 0) {
               item.like_count += 1;
@@ -83,13 +86,13 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
     }) : [];
     setLikeNumber(newLikeNumber);
     dispatch(removeStatusLikePost());
-  }, [data, auth.likePosts])
+  }, [data, user.likePosts])
 
 
   useEffect(() => {
     const newReceiveNumber: number[] = data.length > 0 ? data.map((item: any) =>{
-      if (auth.statsReceivePosts && auth.statsReceivePosts.length > 0) {
-        auth.statsReceivePosts.forEach((element: number) => {
+      if (user.statsReceivePosts && user.statsReceivePosts.length > 0) {
+        user.statsReceivePosts.forEach((element: number) => {
           if (Math.abs(element) === Math.abs(item.postid)) {
             if (element > 0) {
               item.receiver_count += 1;
@@ -104,7 +107,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
     }) : [];
     setReceiveNumber(newReceiveNumber);
     dispatch(removeStatusReceivePost());
-  }, [data, auth.receivePosts])
+  }, [data, user.receivePosts])
 
   const setUserLikePosts = async (index: number) => {
     dispatch(addStatusLikePost(data[index].postid));
@@ -121,6 +124,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
       const newData = [...data];
       newData.splice(index, 1); 
       setData(newData);
+    } else {
+      dispatch(updateIsLikePostRefresh(true));
     }
     
     dispatch(addStatusLikePost(-Math.abs(data[index].postid)));
@@ -137,7 +142,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
   }
 
   const handleItemPress = (index: number) => {
-    if (auth.likePosts.includes(data[index].postid)) {
+    if (user.likePosts.includes(data[index].postid)) {
       deleteUserLikePosts(index);
     } else {
       setUserLikePosts(index);
@@ -166,7 +171,8 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
                 !item.iswarehousepost && navigation.navigate(
                   'ProfileScreen',
                   {
-                    id: item.userid
+                    id: item.userid,
+                    // isNavigate
                   },
                 );
               }}
@@ -206,7 +212,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
           <RowComponent justify='flex-end' 
             styles={globalStyles.bottomCard}>
             <RowComponent>
-              <Message size={24} color={appColors.primary} variant={auth.receivePosts.includes(item.postid) ? 'Bold' : 'Outline'} />
+              <Message size={24} color={appColors.primary} variant={user.receivePosts.includes(item.postid) ? 'Bold' : 'Outline'} />
               <SpaceComponent width={4} />
               <TextComponent
                 size={14}
@@ -217,7 +223,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             </RowComponent>
             <SpaceComponent width={16} />
             <RowComponent key={`like-${item.postid}`} onPress={() => handleItemPress(index)}>
-              <Heart size={24} color={appColors.heart} variant={auth.likePosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
+              <Heart size={24} color={appColors.heart} variant={user.likePosts.includes(item.postid) ? 'Bold' : 'Outline' }/>
               <SpaceComponent width={4} />
               <TextComponent size={14} text={`${likeNumber[index]} Thích`} font={fontFamilies.medium} /> 
             </RowComponent>
