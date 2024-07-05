@@ -78,6 +78,19 @@ export default function MapSettingAddress({navigation, route}: any) {
                     latitude: parseFloat(response.data.latitude),
                     longitude: parseFloat(response.data.longitude)
                 })
+                moveCameraToCoordinate({
+                    latitude: parseFloat(response.data.latitude),
+                    longitude: parseFloat(response.data.longitude)
+                })
+            }else{
+                let location: any = await ExpoLocation.getCurrentPositionAsync({});
+                //   (location)
+                const locationTarget = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                }
+                setLocation(locationTarget)
+                moveCameraToCoordinate(locationTarget)
             }
         }
         fetchHomeLocation()
@@ -470,7 +483,6 @@ const styles = StyleSheet.create({
     },
     myLocationButton: {
         position: 'absolute',
-        width: '95%',
         backgroundColor: appColors.primary,
         color: "red",
         flexDirection: 'row',
