@@ -481,7 +481,7 @@ export class PostManager {
     }
   }
 
-  public static async viewDetailsPostForUpdate(postID: number): Promise<any> {
+  public async viewDetailsPostForUpdate(postID: number): Promise<any> {
     const client = await pool.connect();
     try {
       const result = await client.query(`

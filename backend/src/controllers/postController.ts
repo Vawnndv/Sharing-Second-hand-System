@@ -105,7 +105,7 @@ export const getPostDetailsForUpdate = asyncHandle(async (req, res) => {
   const postID: number = parseInt(req.params.postID);
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const postDetails = await PostManager.viewDetailsPostForUpdate(postID);
+    const postDetails = await User.postManager.viewDetailsPostForUpdate(postID);
 
     if (postDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
