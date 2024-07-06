@@ -9,6 +9,7 @@ import * as Location from 'expo-location';
 import haversine  from 'haversine'
 import { useEffect, useRef, useState } from "react";
 import { appColors } from "../constants/appColors";
+import React from "react";
 
 const { width, height } = Dimensions.get("window")
 

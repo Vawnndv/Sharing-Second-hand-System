@@ -7,6 +7,7 @@ import { Modal, Portal, PaperProvider } from 'react-native-paper';
 import { useSelector } from "react-redux";
 import { authSelector } from "../redux/reducers/authReducers";
 import { category } from "../constants/appCategories";
+import React from "react";
 
 let distance: any = []
 
