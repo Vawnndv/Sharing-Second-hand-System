@@ -1051,25 +1051,44 @@ export class OrderManager {
 
   
   public static async createOrder (title: string, departure: string, time: Date, description: string, location: string, status: string, 
-    qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number, locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<void> {
-
-    const client = await pool.connect();
-    const query = `
-      INSERT INTO ORDERS(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid)
-      VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
-      RETURNING *;
-      `;
-      // TODO sửa lại locationgive and locationreceive
-    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid];
+    qrcode: string, ordercode: string, usergiveid: number, itemid: number, postid: number, givetype: string, imgconfirm: string, locationgive: number,
+     locationreceive: number, givetypeid: number, imgconfirmreceive: string, warehouseid: number, userreceiveid: number): Promise<any> {
     
+    const client = await pool.connect();
+    const values : any = [title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid];
+
     try {
-      const result: QueryResult = await client.query(query, values);
-      return result.rows[0];
+      // Bắt đầu giao dịch
+      await client.query('BEGIN');
+
+      // Kiểm tra xem có đơn hàng nào với postid đã cho chưa
+      const checkPostRes: any = await client.query(
+        `SELECT * FROM Posts WHERE postid = ${postid} FOR UPDATE`,
+      );
+      const checkOrderRes: any = await client.query(
+          `SELECT * FROM Orders WHERE postid = ${postid}`,
+      );
+
+      let insertOrderRes: any = null;
+      if(checkOrderRes.rows.length == 0 && checkPostRes.rows[0].statusid == 12){
+        insertOrderRes = await client.query(
+            `INSERT INTO Orders (title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+            RETURNING *`, values
+        );
+        await client.query('COMMIT');
+        return insertOrderRes.rows[0]
+      }
+      
+      await client.query('COMMIT');
+      return null;
     } catch (error) {
-      console.error('Error inserting order:', error);
+      // Hủy bỏ giao dịch nếu có lỗi
+      await client.query('ROLLBACK');
+      return null;
     } finally {
-      client.release(); // Release client sau khi sử dụng
-    }
+      client.release();
+  }
   };
 
   public static async createTrace (currentstatus: string, orderid: number): Promise<void> {

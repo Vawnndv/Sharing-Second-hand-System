@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     width: '100%',
     display: 'flex',
     alignItems: 'center',
-    // padding: 20,
+    padding: 12,
 
   },
 
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    width: '95%'
+    // width: '95%'
   },
   title: {
     fontSize: 20,

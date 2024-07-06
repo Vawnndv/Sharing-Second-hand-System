@@ -116,6 +116,7 @@ export const createOrder = asyncHandle(async (req, res) => {
   const warehouseid = req.body.warehouseid;
   const userreceiveid = req.body.userreceiveid;
 
+
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     const orderCreated = await OrderManager.createOrder(title, departure, time, description, location, status, qrcode, ordercode, usergiveid, itemid, postid, givetype, imgconfirm, locationgive, locationreceive, givetypeid, imgconfirmreceive, warehouseid, userreceiveid);
@@ -125,6 +126,7 @@ export const createOrder = asyncHandle(async (req, res) => {
     console.error('Lỗi khi tạo đơn hàng:', error);
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
+
 });
 
 
