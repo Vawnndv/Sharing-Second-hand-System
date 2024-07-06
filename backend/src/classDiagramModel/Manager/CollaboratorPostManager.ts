@@ -178,7 +178,7 @@ export class CollaboratorPostManager extends PostManager {
       AND current_timestamp >= po.approvedate::timestamp
     ) as Amount
       `
-    }else if(status === 'received'){
+    }else if(status === 'intoWarehouse'){
       query = `
       SELECT COUNT (*) AS total_posts FROM (
         SELECT DISTINCT po.postid
@@ -186,6 +186,21 @@ export class CollaboratorPostManager extends PostManager {
         LEFT JOIN "orders" od ON od.postid = po.postid
           WHERE po.iswarehousepost = true
           AND od.imgconfirmreceive = ' '
+          AND po.warehouseid = (
+            SELECT warehouseid
+            FROM "workat"
+            WHERE userid = ${userID}
+          )) as Amount
+      `
+    }else if(status === 'received'){
+      query = `
+      SELECT COUNT (*) AS total_posts FROM (
+        SELECT DISTINCT po.postid
+        FROM Posts AS po
+        LEFT JOIN "orders" od ON od.postid = po.postid
+          WHERE po.iswarehousepost = true
+          AND po.statusid = 14
+          AND od.status = 'Chờ người nhận lấy hàng'
           AND po.warehouseid = (
             SELECT warehouseid
             FROM "workat"
@@ -516,8 +531,80 @@ export class CollaboratorPostManager extends PostManager {
           `
       }
       let queryWarehousePost = ``
-      if(status === 'Đang được nhận'){
+      if(status === 'Đang vào kho'){
         queryWarehousePost = `AND od.imgconfirmreceive = ' '`
+        postsQuery = `
+          SELECT DISTINCT
+          us.userid,
+          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
+          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
+          po.postid,
+          po.title,
+          po.description,
+          po.createdat,
+          ad.address,
+          ad.longitude,
+          ad.latitude,
+          img.path,
+          itt.nametype,
+          ts.statusname,
+          gr.give_receivetype,
+          po.updatedat,
+          us.firstname,
+		      us.lastname,
+          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
+        FROM Posts AS po
+      LEFT JOIN "orders" od ON od.postid = po.postid
+      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
+        LEFT JOIN "User" us ON po.owner = us.UserID
+        LEFT JOIN Address ad ON po.addressid = ad.addressid
+        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
+        LEFT JOIN item it ON it.itemid = po.itemid
+        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
+        LEFT JOIN "like_post" lp ON po.postid = lp.postid
+        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
+        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
+        LEFT JOIN (
+            SELECT DISTINCT ON (itemid) * FROM Image
+        ) img ON img.itemid = po.itemid
+
+        WHERE po.iswarehousepost = true
+        ${queryWarehousePost}
+        AND po.warehouseid = (
+          SELECT warehouseid
+          FROM "workat"
+          WHERE userid = ${userID}
+        )
+        AND (od.givetypeid=3 OR od.givetypeid=4 )
+        AND (po.statusid = 14 OR po.statusid = 12)
+        GROUP BY
+            us.userid,
+            us.firstname,
+            us.lastname,
+            us.avatar,
+            po.postid,
+            po.title,
+            po.description,
+            po.createdat,
+            ad.address,
+            ad.longitude,
+            ad.latitude,
+            img.path,
+            wh.warehousename,
+            itt.nametype,
+            gr.give_receivetype,
+            ts.statusname,
+            po.updatedat,
+            us.firstname,
+            us.lastname
+        ORDER BY po.createdat DESC
+        LIMIT ${limit}
+        OFFSET ${limit} * ${page};
+          `
+      }
+      if(status === 'Đang được nhận'){
+        queryWarehousePost = `AND od.imgconfirmreceive = ''`
         postsQuery = `
           SELECT DISTINCT
           us.userid,
