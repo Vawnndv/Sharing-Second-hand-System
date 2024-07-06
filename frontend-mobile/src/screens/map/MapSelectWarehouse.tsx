@@ -70,7 +70,7 @@ const stylesConfirmComponent = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
     }
 })
 
@@ -193,8 +193,8 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                                             <TouchableOpacity onPress={() => handleSelectTempWarehouse(index)}>
                                                 <Checkbox
                                                     status={tempSelectedWarehouse[index] ? 'checked' : 'unchecked'}
-                                                    uncheckedColor={appColors.primary2}
-                                                    color={appColors.primary2}
+                                                    uncheckedColor={appColors.primary}
+                                                    color={appColors.primary}
                                                     onPress={() => handleSelectTempWarehouse(index)}/>
                                             </TouchableOpacity>
                                             
@@ -208,7 +208,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                             <View style={stylesConfirmComponent.buttonContainer}>
                                 <TouchableOpacity
                                     onPress={() => {setVisible(false), setCheckWarehousesOnMap(tempSelectedWarehouse)}}
-                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary2,}]}>
+                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary,}]}>
                                     <Text style={{color: 'white'}}>
                                         Xác nhận
                                     </Text>
@@ -237,6 +237,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         isChecked: boolean;
     }
     
+    console.log("HELLO")
 
     const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
         return (
@@ -245,26 +246,26 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     latitude: parseFloat(item.latitude),
                     longitude: parseFloat(item.longitude),
                 }}
-                onPress={onPress}
+                onPress={() => onPress()}
                 key={index}
             >
-                <View style={styles.boxLocation}>
+                <TouchableOpacity style={styles.boxLocation}>
                     <View style={{ backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary2} />
+                            <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary} />
                             <TouchableOpacity onPress={() => console.log('checkbox')}>
                                 <Checkbox
                                     status={isChecked ? 'checked' : 'unchecked'}
-                                    uncheckedColor={appColors.primary2}
-                                    color={appColors.primary2}
+                                    uncheckedColor={appColors.primary}
+                                    color={appColors.primary}
                                 />
                             </TouchableOpacity>
                         </View>
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.warehousename}</Text>
                         <Text style={{ maxWidth: 150, textAlign: 'center' }}>{item.address}</Text>
                     </View>
-                    <Ionicons name='location' size={50} style={{ color: appColors.primary2 }} />
-                </View>
+                    <Ionicons name='location' size={50} style={{ color: appColors.primary }} />
+                </TouchableOpacity>
             </Marker>
         );
     });
@@ -359,7 +360,7 @@ const styles = StyleSheet.create({
     confirmButton: {
         position: 'absolute',
         bottom: 10,
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         paddingHorizontal: 25,
         paddingVertical: 15,
         // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     pinLocation: {
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
 })

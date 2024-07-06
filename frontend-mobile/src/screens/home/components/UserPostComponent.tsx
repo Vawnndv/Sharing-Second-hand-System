@@ -10,8 +10,10 @@ import { filterValue } from './ItemTabComponent'
 import { useNavigation } from '@react-navigation/native'
 import { limit } from 'firebase/firestore'
 import { filter } from 'lodash'
-import { useDispatch } from 'react-redux'
-import { removeStatusReceivePost } from '../../../redux/reducers/authReducers'
+import { useDispatch, useSelector } from 'react-redux'
+import userAPI from '../../../apis/userApi'
+import { updateCountOrder } from '../../../redux/reducers/userReducers'
+import { authSelector } from '../../../redux/reducers/authReducers'
 
 interface Props {
   filterValue: filterValue;
@@ -21,6 +23,8 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
   moment.locale();
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const auth = useSelector(authSelector)
+
 
   const [refresh, setRefresh] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,13 +98,26 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
         }
           
         // dispatch(removeStatusReceivePost());
-
+        getUserCountOrder();
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const getUserCountOrder = async () => {
+    try {
+      const response: any = await userAPI.HandleUser(`/get-count-order?userId=${auth.id}`);
+      if(response.data === null){
+        dispatch(updateCountOrder({"giveCount": "0", "receiveCount": "0"}));
+      } else {
+        dispatch(updateCountOrder(response.data));
+      }
+    } catch(error: any) {
+      dispatch(updateCountOrder({"giveCount": "0", "receiveCount": "0"}));
+    }
+  }
 
   const handleEndReached = () => {
     if (!isLoading && !isEmpty && !isEndOfData) {

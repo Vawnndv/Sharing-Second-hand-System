@@ -7,7 +7,7 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import moment from 'moment';
 import userAPI from '../../apis/userApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { addStatusReceivePost, authSelector, updateReceivePosts } from '../../redux/reducers/authReducers';
+import { authSelector } from '../../redux/reducers/authReducers';
 import ContainerComponent from '../ContainerComponent';
 import ItemTabComponent from '../../screens/home/components/ItemTabComponent';
 import PostDetail from '../PostDetail';
@@ -23,6 +23,7 @@ import LoadingModal from '../../modals/LoadingModal';
 import LoadingComponent from '../LoadingComponent';
 import { globalStyles } from '../../styles/globalStyles';
 import ButtonComponent from '../ButtonComponent';
+import { addStatusReceivePost } from '../../redux/reducers/userReducers';
 
 
 interface Props {
@@ -463,12 +464,8 @@ const handleReceive = async () => {
           body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
         })
 
-        // const newReceivePosts = [...auth.receivePosts];
-        // newReceivePosts.push(postID);
-  
         dispatch(addStatusReceivePost(postID))
         
-        // dispatch(updateReceivePosts(newReceivePosts));
       }else{
 
         await HandleNotification.sendNotification({

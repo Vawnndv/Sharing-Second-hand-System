@@ -1,11 +1,12 @@
-import { ItemManager } from '../classDiagramModel/Manager/ItemManager';
+
 import asyncHandle from 'express-async-handler';
 import { Item } from '../classDiagramModel/Item';
+import { User } from '../classDiagramModel/User';
 
 export const getItemDetails = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
   try {
-    const itemDetails = await ItemManager.viewDetailsItem(itemID);
+    const itemDetails = await User.itemManager.viewDetailsItem(itemID);
    
     if (itemDetails) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
@@ -26,7 +27,7 @@ export const getItemImages = asyncHandle(async (req, res) => {
   const itemID: number = parseInt(req.params.itemID);
  
   try {
-    const itemImages = await ItemManager.viewItemImages(itemID);
+    const itemImages = await User.itemManager.viewItemImages(itemID);
 
     if (itemImages) {
       // Nếu chi tiết bài đăng được tìm thấy, trả về chúng dưới dạng phản hồi JSON
@@ -64,7 +65,7 @@ export const getAllItems = asyncHandle(async (req, res) => {
 export const getAllItemTypes = asyncHandle(async (req, res) => {
   try {
     // Call the static method getAllItems to fetch all items from the database
-    const itemTypes = await ItemManager.viewAllItemTypes();
+    const itemTypes = await User.itemManager.viewAllItemTypes();
     // If items are found, return them as a response
     if (itemTypes) {
       res.status(200).json({ message: 'Item types founded', itemTypes: itemTypes });
@@ -82,7 +83,7 @@ export const getAllItemTypes = asyncHandle(async (req, res) => {
 export const postNewItem = asyncHandle(async (req, res) => {
   const { name, quantity, itemtypeID } = req.body;
   try {
-    const newItem = await ItemManager.createItem(name, quantity, itemtypeID);
+    const newItem = await User.itemManager.createItem(name, quantity, itemtypeID);
     res.status(200).json({ message: 'Item created successfully', item: newItem });
   } catch (error) {
     console.error(error);
@@ -94,7 +95,7 @@ export const postImageItem = asyncHandle(async (req, res) => {
   const { path, itemID } = req.body;
   
   try {
-    const response = await ItemManager.uploadImageItem(path, itemID);
+    const response = await User.itemManager.uploadImageItem(path, itemID);
     res.status(201).json({ message: 'Item created successfully', status:  response });
   } catch (error) {
     console.error(error);

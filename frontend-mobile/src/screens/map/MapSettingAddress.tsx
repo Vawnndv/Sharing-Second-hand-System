@@ -4,7 +4,7 @@ import * as ExpoLocation from 'expo-location';
 import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollView, Keyboard, KeyboardAvoidingView, Alert, useColorScheme} from "react-native"
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
-import { EvilIcons, Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { EvilIcons, Ionicons, MaterialIcons, FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useDebounce } from '../../hooks/useDebounce';
 import { appInfo } from '../../constants/appInfos';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,7 @@ import axiosClient from '../../apis/axiosClient';
 import { appColors } from '../../constants/appColors';
 import { ArrowRight, Location } from 'iconsax-react-native';
 import ButtonComponent from '../../components/ButtonComponent';
+import React from 'react';
 
 
 const getUrlRequest = (query: string) => {
@@ -78,6 +79,19 @@ export default function MapSettingAddress({navigation, route}: any) {
                     latitude: parseFloat(response.data.latitude),
                     longitude: parseFloat(response.data.longitude)
                 })
+                moveCameraToCoordinate({
+                    latitude: parseFloat(response.data.latitude),
+                    longitude: parseFloat(response.data.longitude)
+                })
+            }else{
+                let location: any = await ExpoLocation.getCurrentPositionAsync({});
+                //   (location)
+                const locationTarget = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                }
+                setLocation(locationTarget)
+                moveCameraToCoordinate(locationTarget)
             }
         }
         fetchHomeLocation()
@@ -387,7 +401,7 @@ export default function MapSettingAddress({navigation, route}: any) {
                     <MaterialIcons 
                         name='location-pin' 
                         size={50} 
-                        style={{color: appColors.primary2}}
+                        style={{color: appColors.primary}}
                     />
                 </View>
                 
@@ -447,7 +461,7 @@ const styles = StyleSheet.create({
     searchButton: {
         width: 55,
         height: 55,
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         marginRight: 2,
         borderRadius: 30,
         display: 'flex',
@@ -470,8 +484,7 @@ const styles = StyleSheet.create({
     },
     myLocationButton: {
         position: 'absolute',
-        width: '95%',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         color: "red",
         flexDirection: 'row',
         alignItems: 'center',
@@ -495,7 +508,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     pinLocation: {

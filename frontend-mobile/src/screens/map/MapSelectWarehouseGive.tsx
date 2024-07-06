@@ -10,6 +10,7 @@ import { RadioButton } from 'react-native-paper';
 import { fontFamilies } from '../../constants/fontFamilies';
 import { appColors } from '../../constants/appColors';
 import ButtonComponent from '../../components/ButtonComponent';
+import React from 'react';
 
 const { width, height } = Dimensions.get("window")
 
@@ -175,8 +176,8 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                                 <RadioButton
                                                     value={warehouse.warehouseid}
                                                     status={tempSelectedWarehouse === warehouse.warehouseid ? 'checked' : 'unchecked'}
-                                                    uncheckedColor={appColors.primary2}
-                                                    color={appColors.primary2}
+                                                    uncheckedColor={appColors.primary}
+                                                    color={appColors.primary}
                                                     onPress={() => handleSelectTempWarehouse(warehouse.warehouseid)}/>
                                             </TouchableOpacity>
                                             
@@ -190,7 +191,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                             <View style={stylesConfirmComponent.buttonContainer}>
                                 <TouchableOpacity
                                     onPress={() => {setVisible(false), setRadioSelect(tempSelectedWarehouse)}}
-                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary2,}]}>
+                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary,}]}>
                                     <Text style={{color: 'white'}}>
                                         Xác nhận
                                     </Text>
@@ -234,13 +235,13 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                     <View style={styles.boxLocation}>
                                         <View style={{backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection:'column', alignItems: 'center'}}>
                                             <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                                                <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary2}/>
+                                                <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary}/>
                                                 <TouchableOpacity>
                                                     <RadioButton
                                                         value={item.warehouseid}
                                                         status={radioSelect === item.warehouseid ? 'checked' : 'unchecked'}
-                                                        uncheckedColor={appColors.primary2}
-                                                        color={appColors.primary2}
+                                                        uncheckedColor={appColors.primary}
+                                                        color={appColors.primary}
                                                         />
                                                 </TouchableOpacity>
                                                 
@@ -249,7 +250,7 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
                                             <Text style={{maxWidth: 150, textAlign: 'center'}}>{item.address}</Text>
                                         </View>
                                         
-                                        <Ionicons name='location' size={50} style={{color: appColors.primary2}}/>
+                                        <Ionicons name='location' size={50} style={{color: appColors.primary}}/>
                                     </View>
                                 
                                     
@@ -326,8 +327,7 @@ const styles = StyleSheet.create({
     confirmButton: {
         position: 'absolute',
         bottom: 10,
-        backgroundColor: appColors.primary2,
-        borderRadius: 50,
+        backgroundColor: appColors.primary,
         paddingHorizontal: 25,
         paddingVertical: 15,
         // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     warehouses: {
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: appColors.primary2,
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     pinLocation: {

@@ -98,7 +98,7 @@ function filterSearch(distance: string, time: string, category: string[], wareho
 
   return filteredData;
 }
-export class CollaboratPostManager extends PostManager {
+export class CollaboratorPostManager extends PostManager {
   public constructor() {
     super();
   }
@@ -109,7 +109,7 @@ export class CollaboratPostManager extends PostManager {
   }
   
 
-  public static async getTotalPost(status: string, userID: string): Promise<Number>{
+  public async getTotalPost(status: string, userID: string): Promise<Number>{
     const client = await pool.connect();
 
     let query = ``
@@ -240,7 +240,7 @@ export class CollaboratPostManager extends PostManager {
     }
   }
 
-  public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[], userID: string): Promise<any> {
+  public async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[], userID: string): Promise<any> {
     const client = await pool.connect();
     try {
       let postsQuery = `

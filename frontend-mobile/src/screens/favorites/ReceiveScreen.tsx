@@ -8,9 +8,11 @@ import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { PostData } from '../search/SearchResultScreen';
 import { ContainerComponent } from '../../components';
+import { userSelector } from '../../redux/reducers/userReducers';
 
 const ReceiveScreen = () => {
     const auth = useSelector(authSelector);
+    const user = useSelector(userSelector);
 
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState<any[]>([]);
@@ -27,7 +29,7 @@ const ReceiveScreen = () => {
         setPage(0);
         setIsEmpty(false);
         setData([]);
-    }, [refresh])
+    }, [refresh, user.isReceivePostRefresh])
 
     // useEffect(
     //     React.useCallback(() => {

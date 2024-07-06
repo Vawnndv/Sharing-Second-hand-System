@@ -1,5 +1,5 @@
 import express from 'express';
-import { changeUserPassword, getProfile, changeUserProfile, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser, updateFcmToken, getUserFcmTokens, getUserLikePosts, getUserReceivePosts } from '../controllers/userController';
+import { changeUserPassword, getProfile, changeUserProfile, setUserLikePosts, deleteUserLikePosts, getUserAddress, getAllUser, adminDeleteUser, adminBanUser, getTotalUser, updateFcmToken, getUserFcmTokens, getUserLikePosts, getUserReceivePosts, getUserOfTotalGiveAndReceiveOrder } from '../controllers/userController';
 import { protect, admin } from '../middlewares/verifyMiddleware';
 
 const userRouter = express.Router();
@@ -25,6 +25,8 @@ userRouter.post('/user-list/all', protect, admin, getAllUser);
 userRouter.post('/user-list/total', protect, admin, getTotalUser);
 
 userRouter.delete('/user-list/:id', protect, admin, adminDeleteUser);
+
+userRouter.get('/get-count-order', protect, getUserOfTotalGiveAndReceiveOrder);
 
 userRouter.put('/user-list/banned/:id', protect, admin, adminBanUser);
 

@@ -112,9 +112,6 @@ function Login(props: Props) {
         }
       }
 
-        console.log(userInfo)
-      // if (isSuccess) {
-      // }
       if (isError) {
         toast.error(isError)
         dispatch({ type: 'USER_LOGIN_RESET' })
@@ -243,13 +240,6 @@ function Login(props: Props) {
                 </>
               )} 
               </Button>
-              <Grid container sx={{ justifyContent: 'flex-end' }}>
-                <Grid item>
-                  <Link component={RouterLink} to="/register" variant="body2">
-                    Bạn chưa có tài khoản? Đăng ký
-                  </Link>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Grid>

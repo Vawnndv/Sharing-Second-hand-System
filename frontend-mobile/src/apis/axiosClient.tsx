@@ -5,6 +5,7 @@ import { Platform, ToastAndroid } from "react-native";
 import { appInfo } from "../constants/appInfos";
 import { removeAuth, updateAuth } from "../redux/reducers/authReducers";
 import store from "../redux/store";
+import { removeUser } from "../redux/reducers/userReducers";
 
 const showToast = (message: string) => {
   if (Platform.OS === 'android') {
@@ -41,7 +42,9 @@ const handleLogout = async () => {
     await AsyncStorage.clear();
 
     dispatch(removeAuth({}));
+    dispatch(removeUser({}));
   } catch (error) {
+     await AsyncStorage.clear();
     console.log(`Logout error: ${error}`);
   }
 };
@@ -85,9 +88,15 @@ axiosClient.interceptors.response.use(
       if (error.response.status === 403 && error.response.data.message === 'Not authorized, invalid token') {
         try {
           const dispatch = store.dispatch;
-          const state = store.getState();
-          const auth = state.authReducer.authData;
+          // const state = store.getState();
+          const storage = await AsyncStorage.getItem('auth');
+          const auth = storage ? JSON.parse(storage) : null;
 
+          if (auth === null) {
+            await handleLogout();
+            showToast('Phiên đăng nhập đã hết hạn');
+            return;
+          }
           const res: any = await axiosClient.post(`${appInfo.BASE_URL}/auth/refresh-token`, {
             userid: auth.id, deviceid: auth.deviceid
           });
@@ -105,7 +114,10 @@ axiosClient.interceptors.response.use(
       } else if (error.response.status === 403 && error.response.data.message === 'Tài khoản của bạn đã bị khóa') {
         handleLogout();
         showToast(error.response.data.message);
-      } else {
+      } else if (error.response.status === 403 && error.response.data.message === 'Not authorized, no token') {
+        showToast('Yêu cầu đăng nhập');
+      }
+      else {
         // return Promise.reject(new Error(error.response.data.message));
         throw new Error(error.response.data.message);
       }

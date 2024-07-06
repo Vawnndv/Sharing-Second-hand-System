@@ -8,9 +8,11 @@ import { useSelector } from 'react-redux';
 import { authSelector } from '../../redux/reducers/authReducers';
 import { PostData } from '../search/SearchResultScreen';
 import { ContainerComponent } from '../../components';
+import { userSelector } from '../../redux/reducers/userReducers';
 
 const UserLikePostsScreen = () => {
     const auth = useSelector(authSelector);
+    const user = useSelector(userSelector);
 
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState<any[]>([]);
@@ -28,7 +30,7 @@ const UserLikePostsScreen = () => {
         setIsEmpty(false);
         setData([]);
 
-    }, [refresh])
+    }, [refresh, user.isLikePostRefresh])
 
     // useFocusEffect(
     //     React.useCallback(() => {

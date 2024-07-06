@@ -17,7 +17,7 @@ export class MapManager {
     return [];
   }
 
-  public static async setUserLocation(userID: string, latitude: string, longitude: string, address: string): Promise<boolean> {
+  public async setUserLocation(userID: string, latitude: string, longitude: string, address: string): Promise<boolean> {
 
     const client = await pool.connect();
 

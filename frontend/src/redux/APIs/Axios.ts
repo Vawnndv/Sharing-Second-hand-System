@@ -54,11 +54,14 @@ Axios.interceptors.response.use(
     if (error.response && error.response.data && error.response.data.message) {
       if (error.response.status === 403 && error.response.data.message === 'Not authorized, invalid token') {
         try {
-          const currentState = store.getState();
-          const auth = currentState.userLogin?.userInfo;
+          // const currentState = store.getState();
+          // const auth = currentState.userLogin?.userInfo;
 
-          if (!auth) {
-            throw new Error('User not authenticated');
+          const userInfo = localStorage.getItem('userInfo');
+          const auth = userInfo ? JSON.parse(userInfo) : null;
+
+          if (auth === null) {
+            throw new Error('Phiên đăng nhập đã hết hạn');
           }
 
           const res: any = await Axios.post(`/auth/refresh-token`, {

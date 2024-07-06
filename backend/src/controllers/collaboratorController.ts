@@ -3,9 +3,9 @@ dotenv.config();
 import asyncHandle from 'express-async-handler';
 import { Request, Response } from 'express';
 import { Account } from '../classDiagramModel/Account';
-import { CollaboratorManager } from '../classDiagramModel/Manager/CollaboratorManager';
 import bcrypt from 'bcrypt';
 import { handleSendMail } from './authController';
+import { Admin } from '../classDiagramModel/Admin';
 
 export const getAllCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
@@ -42,7 +42,7 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
   }
 
   console.log(whereClause);
-  const response = await CollaboratorManager.getAllCollaborators(page, pageSize, whereClause, orderByClause);
+  const response = await Admin.userManager.getAllCollaborators(page, pageSize, whereClause, orderByClause);
   // res.json({ Collaborators: Collaborators.rows, total: totalCollaborators.rows[0].count });
 
   res.status(200).json({
@@ -59,7 +59,7 @@ export const getCollaboratorByWarehouse = asyncHandle(async (req: Request, res: 
   // Build WHERE clause based on filterModel (replace with your logic)
   
 
-  const response = await CollaboratorManager.getCollaboratorsByWarehouse(warehouseID);
+  const response = await Admin.userManager.getCollaboratorsByWarehouse(warehouseID);
   // res.json({ Collaborators: Collaborators.rows, total: totalCollaborators.rows[0].count });
 
   res.status(200).json({
@@ -108,7 +108,7 @@ export const adminCreateNewCollaborator = asyncHandle(async (req: Request, res: 
       2,
     );
     if (newUser) {
-      await CollaboratorManager.adminCreateWarehouseWorkCollaborator(newUser.userid, warehouseId);
+      await Admin.userManager.adminCreateWarehouseWorkCollaborator(newUser.userid, warehouseId);
       res.status(200).json({
         message: 'Register new collaborator successfully',
         data: {},
@@ -179,7 +179,7 @@ export const getTotalCollaborator = asyncHandle(async (req: Request, res: Respon
     whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
   }
 
-  const total = await CollaboratorManager.totalAllCollaborators(whereClause);
+  const total = await Admin.userManager.totalAllCollaborators(whereClause);
   // res.json({ users: users.rows, total: totalUsers.rows[0].count });
   res.status(200).json({
     message: 'get Collaborator address successfully',
@@ -195,7 +195,7 @@ export const adminBanCollaborator = asyncHandle(async (req: Request, res: Respon
   const collaborator = await Account.findUserById(collaboratorId);
 
   if (collaborator) {
-    await CollaboratorManager.adminBanCollaborator(collaboratorId, isBanned);
+    await Admin.userManager.adminBanCollaborator(collaboratorId, isBanned);
     res.json({ message: 'Collaborator was Banned successfully' });
   } else {
     res.status(400);
@@ -211,7 +211,7 @@ export const adminDeleteCollaborator = asyncHandle(async (req: Request, res: Res
     const collaborator = await Account.findUserById(collaboratorId);
     // if Collaborators exists update Collaborator data and save it in DB
     if (collaborator) {
-      await CollaboratorManager.adminDeleteCollaborator(collaboratorId);
+      await Admin.userManager.adminDeleteCollaborator(collaboratorId);
     } else {
       res.status(400);
       throw Error('Collaborator not found');
@@ -227,8 +227,8 @@ export const adminEditCollaborator = asyncHandle(async (req: Request, res: Respo
   const collaborator = await Account.findUserById(userId);
 
   if (collaborator) {
-    await CollaboratorManager.adminUpdateCollaborator(userId, firstName, lastName, email, phoneNumber, dob);
-    await CollaboratorManager.adminUpdateWarehouseWorkCollaborator(userId, warehouseId);
+    await Admin.userManager.adminUpdateCollaborator(userId, firstName, lastName, email, phoneNumber, dob);
+    await Admin.userManager.adminUpdateWarehouseWorkCollaborator(userId, warehouseId);
     res.json({ message: 'Collaborator was Banned successfully' });
   } else {
     res.status(400);
@@ -239,7 +239,7 @@ export const adminEditCollaborator = asyncHandle(async (req: Request, res: Respo
 export const getWarehouseInfoOfCollaborator = asyncHandle(async (req: Request, res: Response) => {
 
   const userid: number = parseInt(req.params.userid);
-  const warehouseInfo = await CollaboratorManager.getWarehouseInfoOfCollaborator(userid);
+  const warehouseInfo = await Admin.userManager.getWarehouseInfoOfCollaborator(userid);
   if (warehouseInfo) {
     res.status(200).json({ message: 'Get warehouse address of collaborator successfully', warehouseInfo: warehouseInfo });
   } else {

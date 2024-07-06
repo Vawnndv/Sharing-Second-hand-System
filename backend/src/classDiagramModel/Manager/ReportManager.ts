@@ -14,7 +14,7 @@ export class ReportManager {
     //code here
   }
 
-  public static async insertReport(userID: string, postID: string, reportType: string, description: string, reporterID: string, warehouseID: string): Promise<Boolean> {
+  public async insertReport(userID: string, postID: string, reportType: string, description: string, reporterID: string, warehouseID: string): Promise<Boolean> {
     const client = await pool.connect();
     try {
       const query = `
@@ -33,7 +33,7 @@ export class ReportManager {
     }
   }
 
-  public static async getUserReports(): Promise<any> {
+  public async getUserReports(): Promise<any> {
     const client = await pool.connect();
     try {
       const query = `
@@ -58,7 +58,7 @@ export class ReportManager {
     }
   }
 
-  public static async getPostReports(userID: string) {
+  public async getPostReports(userID: string) {
     const client = await pool.connect();
     try {
       const query = `
@@ -88,7 +88,7 @@ export class ReportManager {
     }
   }
 
-  public static async updateReport(reportID: string): Promise<Boolean> {
+  public async updateReport(reportID: string): Promise<Boolean> {
     const client = await pool.connect();
     try {
       const query = `
