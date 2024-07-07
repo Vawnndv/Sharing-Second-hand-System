@@ -79,8 +79,12 @@ ReTreasure is a platform that connects people who have second-hand items with th
 - **Backend**: Node.js
 - **Database**: PostgreSQL
 - **Deployment**:
-  - **Mobile** (Google Play Store - Closed Beta Testing)
-  - **Web**: Vercel
+  - **Mobile** [Google Play Store - Closed Beta Testing](https://play.google.com/store/apps/details?id=com.retreasure.frontendmobile)
+
+![image](https://github.com/Vawnndv/Sharing-Second-hand-System/assets/90141979/cc1d0890-959d-4b67-b417-ba5b3138dba7)
+
+
+  - **Web** [Vercel](https://sharing-second-hand-system.vercel.app/)
   - **Backend**: Azure
 - **CI/CD**: Continuous integration and deployment for both backend and frontend
 
@@ -115,10 +119,10 @@ To run the application locally, ensure you have the following prerequisites inst
 ## Contributing
 
 Contributions from the following individuals are welcome:
-- [Your GitHub Account](https://github.com/your-account)
-- [ChauHoangTan](https://github.com/ChauHoangTan)
-- [LTPhiHung](https://github.com/LTPhiHung)
-- [hualamchicuong](https://github.com/hualamchicuong)
+- [Nguyễn Đình Văn]((https://github.com/Vawnndv))
+- [Châu Hoàng Tấn](https://github.com/ChauHoangTan)
+- [Lê Trần Phi Hùng](https://github.com/LTPhiHung)
+- [Hứa Lâm Chí Cường](https://github.com/hualamchicuong)
 
 If you encounter any issues or have suggestions for improvements, please feel free to open an issue or submit a pull request.
 
