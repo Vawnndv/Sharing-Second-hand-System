@@ -119,7 +119,7 @@ To run the application locally, ensure you have the following prerequisites inst
 ## Contributing
 
 Contributions from the following individuals are welcome:
-- [Nguyễn Đình Văn]((https://github.com/Vawnndv))
+- [Nguyễn Đình Văn](https://github.com/Vawnndv)
 - [Châu Hoàng Tấn](https://github.com/ChauHoangTan)
 - [Lê Trần Phi Hùng](https://github.com/LTPhiHung)
 - [Hứa Lâm Chí Cường](https://github.com/hualamchicuong)
