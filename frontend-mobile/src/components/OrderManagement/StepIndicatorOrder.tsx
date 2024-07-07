@@ -4,6 +4,7 @@ import StepIndicator from "react-native-step-indicator";
 import { formatDateTime } from "../../utils/FormatDateTime";
 import React, { useEffect } from 'react';
 import orderAPI from '../../apis/orderApi';
+import LoadingComponent from "../LoadingComponent";
 
 const jsonData = [
   {
@@ -80,6 +81,7 @@ export default function StepIndicatorOrder ({orderID}: any) {
   const [currentPosition, setCurrentPosition] = useState(0);
   const [data, setData] = useState<any>([]);
   const [labels, setLabels] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(function() {
     getTrackingList()
@@ -87,6 +89,7 @@ export default function StepIndicatorOrder ({orderID}: any) {
 
   const getTrackingList = async () => {
     try {
+      setIsLoading(true)
       const res = await orderAPI.HandleOrder(
         `/tracking?orderID=${orderID}`,
         'get'
@@ -96,8 +99,10 @@ export default function StepIndicatorOrder ({orderID}: any) {
       setData(responseData);
       setLabels(responseData.map(item => item.statusname));
       setCurrentPosition(responseData.map(item => item.statusname).length)
+      setIsLoading(false)
 
     } catch (error) {
+      setIsLoading(false)
       console.log(error);
     }
   };
@@ -105,27 +110,37 @@ export default function StepIndicatorOrder ({orderID}: any) {
   return (
     <View style={[styles.indicatorContainer, { padding: 10, paddingLeft: 5, height: height - (height / (labels.length < 2 ? 2 : labels.length)) }]}>
       {
-        labels.length === 0 ? (
-          <></>
-        ) : (
-          <StepIndicator
-            customStyles={customStyles}
-            currentPosition={currentPosition}
-            labels={labels}
-            direction="vertical"
-            stepCount={labels.length}
-            renderLabel={({position, label}) => {
-              return (
-                <View style={{ padding: 10, paddingLeft: 5, width: width - 100}}>
-                  <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{data[position].statusname}</Text>
-                  {/* <Text style={{ fontSize: 14, color: 'grey' }}>{jsonData[position].status}</Text> */}
-                  <Text style={{ fontSize: 14, color: 'grey' }}>{formatDateTime(data[position].createdat)}</Text>
-                </View>
-              );
-             }}
-          />
-        )
+        isLoading ? (
+          <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <LoadingComponent isLoading={isLoading} /> 
+          </View> ) : (
+            <>
+              {
+                labels.length === 0 ? (
+                  <></>
+                ) : (
+                  <StepIndicator
+                    customStyles={customStyles}
+                    currentPosition={currentPosition}
+                    labels={labels}
+                    direction="vertical"
+                    stepCount={labels.length}
+                    renderLabel={({position, label}) => {
+                      return (
+                        <View style={{ padding: 10, paddingLeft: 5, width: width - 100}}>
+                          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>{data[position].statusname}</Text>
+                          {/* <Text style={{ fontSize: 14, color: 'grey' }}>{jsonData[position].status}</Text> */}
+                          <Text style={{ fontSize: 14, color: 'grey' }}>{formatDateTime(data[position].createdat)}</Text>
+                        </View>
+                      );
+                    }}
+                  />
+                )
+              }
+            </>
+          )
       }
+      
     </View>
   );
 }

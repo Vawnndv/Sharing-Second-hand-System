@@ -738,6 +738,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
+        po.iswarehousepost,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
         CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po

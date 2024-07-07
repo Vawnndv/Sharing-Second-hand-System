@@ -40,10 +40,11 @@ interface Props {
   handleEndReached: () => void;
   setData?: (newData: any[]) => void;
   isRefresh?: boolean;
-  handleRefresh?: any
+  handleRefresh?: any;
+  isPosts?: boolean;
 }
 
-const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh, handleRefresh }) => {
+const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh, handleRefresh, isPosts }) => {
   moment.locale();
 
   const auth = useSelector(authSelector);
@@ -149,9 +150,19 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
     }
   };
 
+  // Filter data based on isPosts prop
+  const filteredData = data.filter((item) => {
+    if (isPosts === true) {
+      return !item.iswarehousepost;
+    } else if (isPosts === false) {
+      return item.iswarehousepost === true;
+    }
+    return true;
+  });
+
   return (
     <FlatList
-      data={data}
+      data={filteredData}
       renderItem={({item, index}) => (
         <CardComponent 
           key={index}

@@ -36,7 +36,7 @@ const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
             name="ChatUser"
             component={ChatUserScreen}
             options={{
-              tabBarLabel: 'Người dùng',
+              tabBarLabel: 'Cộng tác viên liên hệ',
               tabBarStyle: styles.tabItem,
             }}
           />

@@ -55,14 +55,13 @@ const UploadModal = (props: Props) => {
                 <MaterialCommunityIcons name='image-outline' size={30} color={appColors.primary} />
                 <StyledText small>Thư viện</StyledText>
               </TouchableOpacity>
-              <SpaceComponent width={24} />
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={localStyles.optionBtn}
                 onPress={onRemovePress}
               >
                 <MaterialCommunityIcons name='trash-can-outline' size={30} color={appColors.danger} />
                 <StyledText small>Xóa</StyledText>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
         )}

@@ -26,7 +26,7 @@ export const checkMessages = async (roomID: string, authId: string) => {
       let unreadCount = 0;
       if (allMessages.length > 0) {
         if (allMessages[0] && allMessages[0].isRead === undefined) {
-        } else if (!allMessages[0].isRead && allMessages[0].userid !== currentUserId) {
+        } else if (!allMessages[0].isRead && allMessages[0].userid != currentUserId) {
           unreadCount += 1;
         }
       }
