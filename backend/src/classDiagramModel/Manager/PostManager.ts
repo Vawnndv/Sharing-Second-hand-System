@@ -160,7 +160,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname as status,
         us.firstname,
         us.lastname,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
@@ -173,7 +173,7 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-      LEFT JOIN orders od ON od.postid = po.postid
+	  LEFT JOIN trace_status ts ON po.statusid = ts.statusid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
@@ -193,7 +193,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           us.firstname,
           us.lastname
       ORDER BY po.createdat DESC
@@ -237,7 +237,7 @@ export class PostManager {
 		    wh.warehousename,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname as status,
         us.firstname,
 		    us.lastname,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
@@ -250,7 +250,7 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON po.warehouseid = wh.warehouseid
-      LEFT JOIN orders od ON od.postid = po.postid
+      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
@@ -272,7 +272,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           us.firstname,
 		      us.lastname
       ORDER BY po.createdat DESC
