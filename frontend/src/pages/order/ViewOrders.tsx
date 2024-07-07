@@ -14,7 +14,7 @@ function getStatusAndMethod(status: number, locationOfItem: number) {
   let methodArray: any = [];
 
   if (locationOfItem === 1) {
-      methodArray = ['2', '3', '4', '5'];
+      methodArray = ['1', '2', '3', '4', '5'];
   } else if (locationOfItem === 2) {
       methodArray = ['1'];
   }
@@ -24,6 +24,7 @@ function getStatusAndMethod(status: number, locationOfItem: number) {
     return { status: ['Hoàn tất'], method: methodArray };
 
   // TH Theo dõi những đơn hàng
+  // Thong qua kho
   if (locationOfItem === 1) {
       if (status === 1) {
           statusArray = ['Chờ người cho giao hàng', 'Chờ cộng tác viên lấy hàng'];
@@ -34,6 +35,7 @@ function getStatusAndMethod(status: number, locationOfItem: number) {
       } else if (status === 4) {
           statusArray = [];
       }
+  // Khong thong qua kho
   } else if (locationOfItem === 2) {
       if (status === 1) {
           statusArray = ['Đã duyệt', 'Chờ người nhận lấy hàng'];
