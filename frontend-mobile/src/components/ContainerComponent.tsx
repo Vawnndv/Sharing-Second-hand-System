@@ -104,9 +104,17 @@ const ContainerComponent = (props: Props) => {
       )}
     </View>
   ) : (
-    <View style={{flex: 1}}>
-      {children}
-    </View>
+    <>
+      {isLoading ? (
+        <View style={{flex: 1}}>
+          <LoadingComponent isLoading={isLoading} />
+        </View>
+      ) : (
+        <View style={{flex: 1}}>
+          {children}
+        </View>
+      )}
+    </>
   );
 
   return (

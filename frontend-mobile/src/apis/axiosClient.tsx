@@ -93,8 +93,7 @@ axiosClient.interceptors.response.use(
           const auth = storage ? JSON.parse(storage) : null;
 
           if (auth === null) {
-            await handleLogout();
-            showToast('Phiên đăng nhập đã hết hạn');
+            showToast('Yêu cầu đăng nhập');
             return;
           }
           const res: any = await axiosClient.post(`${appInfo.BASE_URL}/auth/refresh-token`, {

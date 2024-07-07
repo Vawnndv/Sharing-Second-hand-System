@@ -61,7 +61,7 @@ Axios.interceptors.response.use(
           const auth = userInfo ? JSON.parse(userInfo) : null;
 
           if (auth === null) {
-            throw new Error('Phiên đăng nhập đã hết hạn');
+            throw new Error('Yêu cầu đăng nhập');
           }
 
           const res: any = await Axios.post(`/auth/refresh-token`, {
