@@ -272,7 +272,7 @@ export class CollaboratorPostManager extends PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        ts.statusname,
+        ts.statusname as status,
         gr.give_receivetype,
         us.firstname,
 		    us.lastname,
@@ -337,7 +337,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           us.firstname,
 		      us.lastname,
@@ -406,7 +406,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           po.updatedat,
           us.firstname,
@@ -475,7 +475,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           po.updatedat,
           us.firstname,
@@ -521,7 +521,7 @@ export class CollaboratorPostManager extends PostManager {
             wh.warehousename,
             itt.nametype,
             gr.give_receivetype,
-            ts.statusname,
+            ts.statusname as status,
             po.updatedat,
             us.firstname,
             us.lastname
@@ -547,7 +547,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           po.updatedat,
           us.firstname,
@@ -576,7 +576,7 @@ export class CollaboratorPostManager extends PostManager {
           FROM "workat"
           WHERE userid = ${userID}
         )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
+        AND (od.givetypeid = 3 OR od.givetypeid = 4 )
         AND (po.statusid = 14 OR po.statusid = 12)
         GROUP BY
             us.userid,
@@ -619,7 +619,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           po.updatedat,
           us.firstname,
@@ -642,14 +642,13 @@ export class CollaboratorPostManager extends PostManager {
         ) img ON img.itemid = po.itemid
 
         WHERE po.iswarehousepost = true
-        ${queryWarehousePost}
         AND po.warehouseid = (
           SELECT warehouseid
           FROM "workat"
           WHERE userid = ${userID}
         )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
-        AND (po.statusid = 14 OR po.statusid = 12)
+        AND (od.givetypeid = 1 )
+        AND (po.statusid = 14)
         GROUP BY
             us.userid,
             us.firstname,
@@ -691,7 +690,7 @@ export class CollaboratorPostManager extends PostManager {
           ad.latitude,
           img.path,
           itt.nametype,
-          ts.statusname,
+          ts.statusname as status,
           gr.give_receivetype,
           po.updatedat,
           us.firstname,
