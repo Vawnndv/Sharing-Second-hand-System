@@ -424,7 +424,8 @@ useEffect( () => {
 
 const handleReceive = async () => {
 
-  setIsLoading(true)
+  setIsLoading(true);
+
   if(!post.iswarehousepost){
     try {
       const postid = postID;
@@ -507,95 +508,115 @@ const handleReceive = async () => {
       console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
       Alert.alert('Thất bại', 'Gửi yêu cầu nhận hàng thất bại.');
     }
-  }else{
-    let status = 'Chờ người nhận lấy hàng';
-    let statusid = 3;
-    let orderID = null;
+  }
+  else{
+      let status = 'Chờ người nhận lấy hàng';
+      let statusid = 3;
+      let orderID = null;
 
-    const title = post.title;
-    const location = ' ';
-    const description = post.description;
-    const departure = post.location;
-    const time = new Date();
-    const itemid = post.itemid;
-    const qrcode = ' ';
-    const ordercode = ' ';
-    const usergiveid = post.owner;
-    const postid = post.postid;
-    const imgconfirm = ' ';
-    const locationgive = post.addressid;
-    let userreceiveid = receiveid;
-    let locationreceive = post.addressid;
-    let givetypeid : any = receivetypeid;
-    const imgconfirmreceive = ' ';
-    let givetype = receivetype;
-    let warehouseidPost = post.warehouseid;
-  
-      // let warehouseid = null;
-  
-    try{
-      const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
-        title,
-        location,
-        description,
-        departure,
-        time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
-        itemid,
-        status,
-        qrcode,
-        ordercode,
-        usergiveid,
-        postid,
-        imgconfirm,
-        locationgive,
-        locationreceive,
-        givetypeid: 1,
-        imgconfirmreceive,
-        givetype: "Cho nhận trực tiếp",
-        warehouseid: warehouseidPost,
-        userreceiveid: auth.id
-      });
-  
-      orderID = response.orderCreated.orderid;    
-        // if(receivetype === )
-  
-      const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
-        currentstatus: status,
-        orderid: orderID,
-      });
-
-      const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
-        postid: post.postid,
-        statusid: 14,
-        isApproveAction: false
-    });
+      const title = post.title;
+      const location = ' ';
+      const description = post.description;
+      const departure = post.location;
+      const time = new Date();
+      const itemid = post.itemid;
+      const qrcode = ' ';
+      const ordercode = ' ';
+      const usergiveid = post.owner;
+      const postid = post.postid;
+      const imgconfirm = ' ';
+      const locationgive = post.addressid;
+      let userreceiveid = receiveid;
+      let locationreceive = post.addressid;
+      let givetypeid : any = receivetypeid;
+      const imgconfirmreceive = ' ';
+      let givetype = receivetype;
+      let warehouseidPost = post.warehouseid;
+    
+        // let warehouseid = null;
 
 
-      const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
-        warehouseID: post.warehouseid
-      })
-      resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
-        await HandleNotification.sendNotification({
-          userReceiverId: collab.userid,
-          userSendId: auth.id,
-          name: `${auth?.firstName} ${auth.lastName}`,
-          // postid: postID,
-          avatar: auth.avatar,
-          link: `post/${postID}`,
-          title: 'Xin sản phẩm của bạn',
-          body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
-        })
-      })
-  
-  
-      Alert.alert('Thành công', 'Nhận món đồ thành công.');
-      setIsCompleted(true);
-      navigation.navigate('Home', {screen: 'HomeScreen'})
-  
-    } catch(error){
-      Alert.alert('Thất bại', 'Cho món đồ thất bại.');
-        setIsCompleted(false);
-    }
+
+      try{
+        const response: any = await axiosClient.post(`${appInfo.BASE_URL}/order/createOrder`, {
+          title,
+          location,
+          description,
+          departure,
+          time: new Date(time).toISOString(), // Đảm bảo rằng thời gian được gửi ở định dạng ISO nếu cần
+          itemid,
+          status,
+          qrcode,
+          ordercode,
+          usergiveid,
+          postid,
+          imgconfirm,
+          locationgive,
+          locationreceive,
+          givetypeid: 1,
+          imgconfirmreceive,
+          givetype: "Cho nhận trực tiếp",
+          warehouseid: warehouseidPost,
+          userreceiveid: auth.id
+        });
+        console.log(response.orderCreated);
+    
+        if(response.orderCreated === null){
+          // console.log(response.orderCreated);
+          Alert.alert('Thất bại', 'Món đồ đã có người nhận.');
+          setIsCompleted(true);
+          navigation.navigate('Home', {screen: 'HomeScreen'});
+        }
+        else{
+          orderID = response.orderCreated.orderid;    
+            // if(receivetype === )
+      
+          const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
+            currentstatus: status,
+            orderid: orderID,
+          });
+
+          const resUpdatePost = await axiosClient.post(`${appInfo.BASE_URL}/posts/update-post-status`, {
+            postid: post.postid,
+            statusid: 14,
+            isApproveAction: false
+        });
+
+
+          const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
+            warehouseID: post.warehouseid
+          })
+          resGetCollab.data.collaborators.map(async (collab: any, index: number) => {
+            await HandleNotification.sendNotification({
+              userReceiverId: collab.userid,
+              userSendId: auth.id,
+              name: `${auth?.firstName} ${auth.lastName}`,
+              // postid: postID,
+              avatar: auth.avatar,
+              link: `post/${postID}`,
+              title: 'Xin sản phẩm của bạn',
+              body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
+            })
+          })
+      
+      
+          Alert.alert('Thành công', 'Nhận món đồ thành công.');
+          setIsCompleted(true);
+          navigation.navigate('Home', {screen: 'HomeScreen'})
+      }
+    
+      } catch(error){
+        console.log(error);
+        Alert.alert('Thất bại', 'Nhận món đồ thất bại.');
+          setIsCompleted(false);
+      }
+    
+  // else {
+  //     console.log(res.postDetail.statusid)
+  //     Alert.alert('Thất bại', 'Món đồ đã có người nhận.');
+  //     setIsCompleted(true);
+  //     navigation.navigate('Home', {screen: 'HomeScreen'});
+  //   }
   }
   setIsLoading(false)
 
@@ -638,7 +659,7 @@ const handleGive = async () =>{
     const imgconfirm = ' ';
     const locationgive = post.addressid;
     let userreceiveid = receiveid;
-    let locationreceive = null;
+    let locationreceive = post.addressid;
     let givetypeid : any = receivetypeid;
     const imgconfirmreceive = ' ';
     let givetype = receivetype;
@@ -735,6 +756,7 @@ const handleGive = async () =>{
     navigation.navigate('Home', {screen: 'HomeScreen'})
 
   } catch(error){
+    console.log(error);
     Alert.alert('Thất bại', 'Cho món đồ thất bại.');
       setIsCompleted(false);
   }
@@ -748,21 +770,6 @@ const handleGive = async () =>{
   }
   
 
-
-
-  const handleWarehouseChange = (warehouseid: number) => {
-    // Tìm warehousename dựa vào warehouseid
-    const selectedWarehouse = wareHouses.find(wareHouse => wareHouse.warehouseid === warehouseid);
-    
-    if (selectedWarehouse) {
-      // Nếu tìm thấy warehouse, cập nhật formData với warehousename mới
-      setFormData({
-        ...formData,
-        warehouseInfo: selectedWarehouse.warehousename + ', ' + selectedWarehouse.address,
-        warehouseID: selectedWarehouse.warehouseid,
-      });
-    }
-  };
 
 
   const handleBringItemToWareHouseChange = (methodBringItemToWarehouse: string) => {

@@ -17,6 +17,7 @@ import axiosClient from '../../apis/axiosClient';
 import { appColors } from '../../constants/appColors';
 import { ArrowRight, Location } from 'iconsax-react-native';
 import ButtonComponent from '../../components/ButtonComponent';
+import React from 'react';
 
 
 const getUrlRequest = (query: string) => {

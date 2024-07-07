@@ -24,6 +24,7 @@ import * as FileSystem  from 'expo-file-system';
 import ConfirmCategoryReceiveModal from "../../modals/ConfirmCategoryReceiveModal";
 import RatingModal from "../../modals/RatingModal";
 import { current } from "@reduxjs/toolkit";
+import React from "react";
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -260,7 +261,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             const response: any = await axiosClient.get(`${appInfo.BASE_URL}/orderDetailsCollab?orderID=${orderID}`)
             setOrders(response.orders)
             console.log("'" + response.orders[0].imgConfirm + "'")
-            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ''){
+            if(response.orders[0].imgConfirm !== null && response.orders[0].imgConfirm !== ' '){
                 setImage({
                     uri: response.orders[0].imgConfirm
                 })

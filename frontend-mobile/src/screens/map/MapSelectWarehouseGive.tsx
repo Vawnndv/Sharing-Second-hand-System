@@ -10,6 +10,7 @@ import { RadioButton } from 'react-native-paper';
 import { fontFamilies } from '../../constants/fontFamilies';
 import { appColors } from '../../constants/appColors';
 import ButtonComponent from '../../components/ButtonComponent';
+import React from 'react';
 
 const { width, height } = Dimensions.get("window")
 

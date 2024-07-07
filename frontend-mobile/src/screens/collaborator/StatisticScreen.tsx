@@ -18,6 +18,7 @@ import { LoadingModal } from "../../modals";
 import DropdownComponent from "../../components/DropdownComponent"
 import { appColors } from "../../constants/appColors";
 import axiosClient from "../../apis/axiosClient";
+import React from "react";
 
 const screenWidth = Dimensions.get('window').width;
 
