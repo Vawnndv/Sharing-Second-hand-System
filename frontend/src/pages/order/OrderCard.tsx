@@ -25,7 +25,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
 
   const handleNavigateToUserProfile = (userID: string, event: any) => {
     event.stopPropagation();
-    navigate(`/profile?profileID=${userID}`)
+    navigate(`/about-profile?profileID=${userID}`)
   }
 
   moment.locale();

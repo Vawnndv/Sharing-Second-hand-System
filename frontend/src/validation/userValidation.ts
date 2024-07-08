@@ -66,6 +66,7 @@ const ProfileValidation = yup.object().shape({
     .max(20, 'Họ của bạn không được quá 20 ký tự')
     .matches(/^[a-zA-ZÀ-ỹ ]*$/, 'Họ chỉ được chứa các ký tự chữ cái'),
   email: yup.string().email().required('Vui lòng nhập đại chỉ email').trim(),
+  address: yup.string().email().required('Vui lòng nhập đại chỉ').trim(),
   phone: yup
     .string()
     .trim()

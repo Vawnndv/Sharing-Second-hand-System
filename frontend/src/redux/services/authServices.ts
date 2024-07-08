@@ -18,6 +18,7 @@ export interface UserInfo {
   accessToken: string;
   dob: string;
   deviceid: string;
+  address?: string;
 }
 
 // Login user API

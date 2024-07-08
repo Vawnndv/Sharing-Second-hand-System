@@ -357,7 +357,7 @@ function ViewPostDetail() {
 
     const handleNavigateToUserProfile = (userID: string, event: any) => {
         event.stopPropagation();
-        navigate(`/profile?profileID=${userID}`)
+        navigate(`/about-profile?profileID=${userID}`)
     }
     
     return ( 
