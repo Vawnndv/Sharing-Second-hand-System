@@ -212,7 +212,7 @@ function WarehouseTable(props: Props) {
               </IconButton>
             </Tooltip>
             <Tooltip title="Cập nhật kho">
-              <IconButton onClick={() => { handleOpenDialog(params.row); setWarehouseRow(params.row) }}>
+              <IconButton onClick={() => { handleOpen(); setWarehouseRow(params.row) }}>
                 <Edit />
               </IconButton>
             </Tooltip>
