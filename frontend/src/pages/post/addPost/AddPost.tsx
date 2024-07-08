@@ -39,7 +39,8 @@ export default function AddPost() {
   const [phoneNumber, setPhoneNumber] = useState('')
 
   const today = dayjs();
-  const [date, setDate] = useState<[Dayjs, Dayjs]>([today, today]);
+  const nextWeek = dayjs().add(1, 'week')
+  const [date, setDate] = useState<[Dayjs, Dayjs]>([today, nextWeek]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [location, setLocation] = useState<any>(null);

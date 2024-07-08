@@ -109,7 +109,8 @@ function Statistic() {
     const [tabImportExportValue, setTabImportExportValue] = useState('Thống kê theo loại');
 
     const today = dayjs();
-    const [date, setDate] = React.useState<[Dayjs, Dayjs]>([dayjs('2024-06-01'), today]);
+    const threeDaysAgo = dayjs().subtract(3, 'days')
+    const [date, setDate] = React.useState<[Dayjs, Dayjs]>([threeDaysAgo, today]);
     console.log(date)
     const handleChange = (event: any, newValue: any) => {
         setTabValue(newValue);

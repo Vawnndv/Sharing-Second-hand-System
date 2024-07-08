@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Home from './pages/home/Home';
 import NotFound from './pages/NotFound';
 import Login from './pages/auth/Login/Login';
@@ -29,6 +29,22 @@ import AddPost from './pages/post/addPost/AddPost';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+// Đặt setTimeout để chờ đến 7h sáng tiếp theo
+    const timeoutId = setTimeout(() => {
+      // Gọi API lúc 7h sáng
+      // callApi();
+
+      // Thiết lập setInterval để gọi API mỗi 24 giờ
+      const intervalId = setInterval(() => console.log('hello'), 20000);
+      // Dọn dẹp interval khi component unmount
+      return () => clearInterval(intervalId);
+    }, 6000);
+
+    // Dọn dẹp timeout khi component unmount
+    return () => clearTimeout(timeoutId);
+  }, [])
 
   return (
     <Routes>

@@ -48,7 +48,7 @@ function Profile() {
   const [location, setLocation] = useState<any>(null)
   
   const [searchParams] = useSearchParams();
-  const profileID = searchParams.get('profileID')
+  const profileID: any = searchParams.get('profileID')
 
   const {
     isLoading: updateLoading,
@@ -86,18 +86,24 @@ function Profile() {
   // useEffect
   useEffect(() => {
     if (!initialized.current) {
-      initialized.current = true;
       const fetchUserInfo = async () => {
         if (authInfo?.id) {
-          dispatch(getProfileAction(authInfo.id));
+          
+          if(authInfo?.id === profileID){
+            dispatch(getProfileAction(authInfo.id));
+          }else{
+            dispatch(getProfileAction(profileID));
+          }
+          
         }
       };
 
       fetchUserInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+   
+  }, [profileID]);
+  
   useEffect(() => {
     if (userInfo) {
       setValue('firstName', userInfo?.firstName);
