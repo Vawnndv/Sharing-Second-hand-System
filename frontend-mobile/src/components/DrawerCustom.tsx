@@ -14,6 +14,7 @@ import ButtonComponent from './ButtonComponent';
 import { fontFamilies } from '../constants/fontFamilies';
 import { usePushNotifications } from '../utils/usePushNotification';
 import authenticationAPI from '../apis/authApi';
+import { removeUser } from '../redux/reducers/userReducers';
 
 const DrawerCustom = ({navigation}: any) => {
   const auth = useSelector(authSelector);
@@ -108,7 +109,11 @@ const DrawerCustom = ({navigation}: any) => {
       
       await AsyncStorage.clear();
       dispatch(removeAuth({}));
+      dispatch(removeUser({}));
     } catch (error) {
+      await AsyncStorage.clear();
+      dispatch(removeAuth({}));
+      dispatch(removeUser({}));
       console.log(`Log out error: ${error}`);
     }
   }

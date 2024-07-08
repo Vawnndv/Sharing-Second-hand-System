@@ -1,5 +1,6 @@
 import { View, StyleSheet, TouchableOpacity, ScrollView, Text, Modal, Alert, TouchableWithoutFeedback } from "react-native";
 import FilterComponent from "../components/FilterComponent";
+import React from "react";
 
 export default function FilterModal({visible, setVisible, hideModal, showModal, filterValue, setFilterValue}: any) {
     // const [visible, setVisible] = useState(false);

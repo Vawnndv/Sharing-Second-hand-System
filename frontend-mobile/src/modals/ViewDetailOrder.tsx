@@ -65,6 +65,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const [visibleRating, setVisibleRating] = useState(false)
   const [isShowQR, setIsShowQR] = useState(false)
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingUpload, setIsLoadingUpload] = useState(false);
   const [data, setData] = useState<Data>();
 
   const modelURL = 'https://teachablemachine.withgoogle.com/models/5tKZ1qkgC/';
@@ -73,14 +74,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
 
   const [model, setModel] = useState<any>(null);
   const [currentCategory, setCurrentCategory] = useState('')
-
-
-  // const loadLabels = () => {
-  //   const metadata = require('../../assets/model/metadata.json');
-  //   if (metadata && metadata.labels) {
-  //     setLabels(metadata.labels);
-  //   }
-  // };
 
   const loadModel = async () => {
     try {
@@ -151,7 +144,7 @@ export default function ViewDetailOrder({navigation, route}: any) {
   const predictImage = async (imageUri: any) => {
     try {
       if(imageUri){
-        setIsLoading(true);
+        setIsLoadingUpload(true);
         // Chuyển đổi hình ảnh thành tensor
         const imageTensor = await imageToTensor(imageUri);
         if (!imageTensor) {
@@ -182,14 +175,14 @@ export default function ViewDetailOrder({navigation, route}: any) {
           probability: Math.max(...predictionArray[0])
         };
         console.log('predict Result: ', predictionResult.label + ' ' + predictionResult.probability);
-        setIsLoading(false);
+        setIsLoadingUpload(false);
 
   
   
         return predictionResult;
       }
       else{
-        setIsLoading(false);
+        setIsLoadingUpload(false);
   
       }
     } catch (error) {
@@ -236,12 +229,13 @@ export default function ViewDetailOrder({navigation, route}: any) {
 
   const getOrderDetails = async () => {
     try {
-
+      setIsLoading(true);
       const res = await orderAPI.HandleOrder(
         `/${orderid}`,
         'get'
       );
       setData(res.data)
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -333,16 +327,13 @@ export default function ViewDetailOrder({navigation, route}: any) {
           </View>
         ) : (
           <View style={styles.body}>
+            <LoadingModal visible={isLoadingUpload}/>
             <CardComponent
-              // key={index}
               color={appColors.white4}
               isShadow
               onPress={() => navigation.navigate('ItemDetailScreen', {
                 postID : data?.postid,
               })}
-              // onPress={() => [navigation.navigate('MapSettingAddressScreen',{
-              //   useTo: 'setAddress'
-              // }), setModalVisible(false), console.log('navigate to map')]}
               styles={styles.info}
             >
               <Image
@@ -371,14 +362,14 @@ export default function ViewDetailOrder({navigation, route}: any) {
                 userID == data?.userreceiveid ? (
                   data?.isreciever ? (
                     !(image || data?.imgconfirmreceive && data?.imgconfirmreceive != ' ') && 
-                    <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                    <Button mode="contained" onPress={handleConfirm} buttonColor='red' style={{width: '40%', marginVertical: 10, borderRadius: 10}}>
                       Xác nhận
                     </Button>
                   ) : ( <></> )
                 ) : (
                   userID == data?.usergiveid ? (
                     data?.status == statusOrder.AWAITING_APPROVAL.statusname &&
-                    <Button mode="contained" onPress={handleCancelGive} buttonColor='red' style={{width: '40%', marginVertical: 10}}>
+                    <Button mode="contained" onPress={handleCancelGive} buttonColor='red' style={{width: '40%', marginVertical: 10, borderRadius: 10}}>
                       Hủy cho
                     </Button>
                   ) : (
@@ -472,10 +463,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
     gap: 5
   },
   info: {
-    // borderRadius: 5,
-    // borderColor: 'grey',
-    // borderWidth: 1,
-    // display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },

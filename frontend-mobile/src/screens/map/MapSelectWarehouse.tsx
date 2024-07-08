@@ -10,6 +10,8 @@ import { fontFamilies } from '../../constants/fontFamilies';
 import axiosClient from '../../apis/axiosClient';
 import { appInfo } from '../../constants/appInfos';
 import React from 'react';
+import { appColors } from '../../constants/appColors';
+import ButtonComponent from '../../components/ButtonComponent';
 
 const { width, height } = Dimensions.get("window")
 
@@ -68,7 +70,7 @@ const stylesConfirmComponent = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary,
     }
 })
 
@@ -191,8 +193,8 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                                             <TouchableOpacity onPress={() => handleSelectTempWarehouse(index)}>
                                                 <Checkbox
                                                     status={tempSelectedWarehouse[index] ? 'checked' : 'unchecked'}
-                                                    uncheckedColor='#693F8B'
-                                                    color='#693F8B'
+                                                    uncheckedColor={appColors.primary}
+                                                    color={appColors.primary}
                                                     onPress={() => handleSelectTempWarehouse(index)}/>
                                             </TouchableOpacity>
                                             
@@ -206,7 +208,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                             <View style={stylesConfirmComponent.buttonContainer}>
                                 <TouchableOpacity
                                     onPress={() => {setVisible(false), setCheckWarehousesOnMap(tempSelectedWarehouse)}}
-                                    style={[stylesConfirmComponent.button, {backgroundColor: '#693F8B',}]}>
+                                    style={[stylesConfirmComponent.button, {backgroundColor: appColors.primary,}]}>
                                     <Text style={{color: 'white'}}>
                                         Xác nhận
                                     </Text>
@@ -235,6 +237,7 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         isChecked: boolean;
     }
     
+    console.log("HELLO")
 
     const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
         return (
@@ -243,26 +246,26 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     latitude: parseFloat(item.latitude),
                     longitude: parseFloat(item.longitude),
                 }}
-                onPress={onPress}
+                onPress={() => onPress()}
                 key={index}
             >
-                <View style={styles.boxLocation}>
+                <TouchableOpacity style={styles.boxLocation}>
                     <View style={{ backgroundColor: 'white', borderRadius: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <MaterialCommunityIcons name='warehouse' size={25} color='#693F8B' />
+                            <MaterialCommunityIcons name='warehouse' size={25} color={appColors.primary} />
                             <TouchableOpacity onPress={() => console.log('checkbox')}>
                                 <Checkbox
                                     status={isChecked ? 'checked' : 'unchecked'}
-                                    uncheckedColor='#693F8B'
-                                    color='#693F8B'
+                                    uncheckedColor={appColors.primary}
+                                    color={appColors.primary}
                                 />
                             </TouchableOpacity>
                         </View>
                         <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{item.warehousename}</Text>
                         <Text style={{ maxWidth: 150, textAlign: 'center' }}>{item.address}</Text>
                     </View>
-                    <Ionicons name='location' size={50} style={{ color: '#693F8B' }} />
-                </View>
+                    <Ionicons name='location' size={50} style={{ color: appColors.primary }} />
+                </TouchableOpacity>
             </Marker>
         );
     });
@@ -307,12 +310,19 @@ export default function MapSelectWarehouse({navigation, route}: any) {
                     <EvilIcons name='location' size={35} color='white'/>
                 </TouchableOpacity>
 
-                <TouchableOpacity
+                {/* <TouchableOpacity
                     onPress={() => handleConfirmSelect()}
                     style={styles.confirmButton}>
                     <Text style={{fontSize: 16, color: 'white'}}>Xác nhận chọn kho</Text>
-                </TouchableOpacity>
-                
+                </TouchableOpacity> */}
+                <ButtonComponent
+                    disable={false}
+                    onPress={() => handleConfirmSelect()}
+                    text={"Xác nhận chọn kho"}
+                    type='primary'
+                    iconFlex="right"
+                    styles={styles.confirmButton}
+                />      
             </KeyboardAvoidingView>
             
             <ConfirmComponent />
@@ -350,12 +360,11 @@ const styles = StyleSheet.create({
     confirmButton: {
         position: 'absolute',
         bottom: 10,
-        backgroundColor: '#693F8B',
-        borderRadius: 50,
+        backgroundColor: appColors.primary,
         paddingHorizontal: 25,
         paddingVertical: 15,
         // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start
-        marginBottom: 10,
+        marginBottom: 5,
         elevation: 8,
         shadowColor: 'black',
         shadowOffset: { width: 10, height: 10 },
@@ -372,7 +381,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     pinLocation: {
@@ -401,7 +410,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
 })

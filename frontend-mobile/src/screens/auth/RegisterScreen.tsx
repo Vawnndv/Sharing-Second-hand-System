@@ -71,7 +71,7 @@ const RegisterScreen = ({navigation}: any) => {
       if (error instanceof Error) {
         setErrorRegister(error.message);
       } else {
-        setErrorRegister("Network Error");
+        setErrorRegister("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);
@@ -82,7 +82,7 @@ const RegisterScreen = ({navigation}: any) => {
     <>
       <ContainerComponent isScroll back>
         <SectionComponent>
-          <TextComponent text="Đăng ký" title size={24} color={appColors.primary} />
+          <TextComponent text="Đăng ký" title size={32} color={appColors.primary} styles={{textAlign: "center"}} />
           <SpaceComponent height={21} />
           <InputComponent
             value={values.lastname}

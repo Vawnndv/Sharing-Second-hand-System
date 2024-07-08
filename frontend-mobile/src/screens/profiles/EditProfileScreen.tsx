@@ -109,7 +109,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
       if (error instanceof Error) {
         setErrorRegister(error.message);
       } else {
-        setErrorRegister("Network Error");
+        setErrorRegister("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);

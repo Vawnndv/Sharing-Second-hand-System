@@ -13,10 +13,12 @@ import { useDispatch } from 'react-redux'
 import { addAuth } from '../../../redux/reducers/authReducers'
 import { LoadingModal } from '../../../modals'
 import { usePushNotifications } from '../../../utils/usePushNotification'
+import { AntDesign } from '@expo/vector-icons'
 // GoogleSignin.configure({
 //   webClientId: '207453487106-codnbkrd7v3mu6gljp17n9u521vm35ep.apps.googleusercontent.com',
 // });
 
+import {GoogleIcon} from '../../../../assets/svgs';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -100,7 +102,9 @@ const SocialLogin = () => {
         textColor={appColors.text}
         text="Đăng nhập với Google"
         textFont={fontFamilies.regular}
-        // icon={<Google />}
+        icon={
+          <GoogleIcon />
+        }
         iconFlex="left"
       />
       {/* <ButtonComponent 

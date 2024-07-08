@@ -61,6 +61,7 @@ const LoginScreen = ({navigation}: any) => {
         {platform: 'mobile', email: values.email , password: values.password},
         'post'
       );
+      console.log(res);
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
@@ -72,7 +73,7 @@ const LoginScreen = ({navigation}: any) => {
       if (error instanceof Error) {
         setErrorLogin(error.message);
       } else {
-        setErrorLogin("Network Error");
+        setErrorLogin("Lỗi mạng");
       }
       setIsLoading(false);
       setIsDisable(false);
@@ -87,10 +88,10 @@ const LoginScreen = ({navigation}: any) => {
           marginTop: 25,
         }}
       >
-        <View style={styles.logoContainer}>
+        {/* <View style={styles.logoContainer}>
           <Image source={require("../../../assets/images/retreasure_title_logo.png")} style={styles.logo} />
-        </View>
-        <TextComponent text="Đăng nhập" title size={24} color={appColors.primary} styles={{textAlign: 'center'}} />
+        </View> */}
+        <TextComponent text="Đăng nhập" title size={32} color={appColors.primary} styles={{textAlign: 'center'}} />
         <SpaceComponent height={21} />
         <InputComponent
           value={values.email }

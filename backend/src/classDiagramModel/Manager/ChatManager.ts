@@ -16,7 +16,7 @@ export class ChatManager {
     return [];
   }
 
-  public static async createNewChat (firstuserid: string, seconduserid: string, postid: string): Promise<any> {
+  public async createNewChat (firstuserid: string, seconduserid: string, postid: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -35,7 +35,7 @@ export class ChatManager {
     }
   };
 
-  public static async getUserChatList (userID: string): Promise<any> {
+  public async getUserChatList (userID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -80,7 +80,7 @@ export class ChatManager {
     }
   };
 
-  public static async getUserChatListUser (userID: string): Promise<any> {
+  public async getUserChatListUser (userID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -111,7 +111,7 @@ export class ChatManager {
     }
   };
 
-  public static async getChatListCollaborator (userID: string, searchQuery: string): Promise<any> {
+  public async getChatListCollaborator (userID: string, searchQuery: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -135,7 +135,7 @@ export class ChatManager {
     }
   };
 
-  public static async getChatListUser (userID: string, searchQuery: string): Promise<any> {
+  public async getChatListUser (userID: string, searchQuery: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -155,7 +155,7 @@ export class ChatManager {
     }
   };
 
-  public static async getChatWarehouse (userID: string): Promise<any> {
+  public async getChatWarehouse (userID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -174,7 +174,7 @@ export class ChatManager {
     }
   };
 
-  public static async createNewChatUser (firstuserid: string, seconduserid: string): Promise<any> {
+  public async createNewChatUser (firstuserid: string, seconduserid: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `
@@ -193,7 +193,7 @@ export class ChatManager {
     }
   };
 
-  public static async getWareHouseByUserID (userID: string): Promise<any> {
+  public async getWareHouseByUserID (userID: string): Promise<any> {
 
     const client = await pool.connect();
     let query = `

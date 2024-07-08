@@ -8,6 +8,15 @@
     border-radius: 0.25rem;
 }
 
+.user-image-preview-container {
+    width: 14rem; 
+    height: 14rem; 
+    margin-top: 0.7rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    border: 2px solid #466874; 
+    border-radius: 0.25rem;
+}
 .image-preview {
     width: 100%;
     height: 100%;

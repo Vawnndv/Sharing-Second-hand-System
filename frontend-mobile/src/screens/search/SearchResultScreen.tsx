@@ -52,13 +52,14 @@ const SearchResultScreen = ({ route, navigation }: any) => {
     setData([]);
     setIsEndOfData(false);
     setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-  }, [filterValue, isPosts, warehousesID]);
+  }, [filterValue, isPosts, warehousesID, refresh]);
 
   useEffect(() => {
     if (shouldFetchData) {
       fetchData(); // Fetch dữ liệu chỉ khi shouldFetchData là true
+      setShouldFetchData(false)
     }
-  }, [shouldFetchData, refresh]);
+  }, [shouldFetchData]);
 
   const handleRefresh = () => {
     setRefresh(prevRefresh => !prevRefresh);
@@ -142,6 +143,7 @@ const SearchResultScreen = ({ route, navigation }: any) => {
           handleEndReached={handleEndReached}
           isLoading={isLoading}
           handleRefresh={handleRefresh}
+          isPosts={isPosts}
         />
       )}
     </ContainerComponent>

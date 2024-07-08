@@ -4,7 +4,7 @@ import asyncHandle from 'express-async-handler';
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { Account } from '../classDiagramModel/Account';
-import { UserManager } from '../classDiagramModel/Manager/UserManager';
+import { User } from '../classDiagramModel/User';
 import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
@@ -31,7 +31,7 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
     const user = await Account.findUserById(userId);
-    const countNumber = await UserManager.totalGiveAndReceiveOrder(userId);
+    const countNumber = await User.userManager.totalGiveAndReceiveOrder(userId);
     res.status(200).json({
       message: 'Get user profile successfully!!!',
       data: {
@@ -45,6 +45,23 @@ export const getProfile = asyncHandle(async (req: Request, res: Response) => {
         username: user.username ?? '',
         avatar: user.avatar ?? '',
         address: user.address ?? '',
+        giveCount: countNumber.givecount ?? 0,
+        receiveCount: countNumber.receivecount ?? 0,
+      },
+    });
+  } else {
+    res.status(401);
+    throw new Error('Missing uid');
+  }
+});
+
+export const getUserOfTotalGiveAndReceiveOrder = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    const countNumber = await User.userManager.totalGiveAndReceiveOrder(userId);
+    res.status(200).json({
+      message: 'Get total Give And Receive Order of User successfully!!!',
+      data: {
         giveCount: countNumber.givecount ?? 0,
         receiveCount: countNumber.receivecount ?? 0,
       },
@@ -129,10 +146,24 @@ export const changeUserProfile = asyncHandle(async (req: Request, res: Response)
 export const getUserLikePosts = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
-    const likePosts = await Account.findUserLikePostsById(userId);
+    const likePosts = await User.userManager.findUserLikePostsById(userId);
     res.status(200).json({
       message: 'Get user like posts successfully !!!',
       data: likePosts,
+    });
+  } else {
+    res.status(401);
+    throw new Error('Missing uid');
+  }
+});
+
+export const getUserReceivePosts = asyncHandle(async (req: Request, res: Response) => {
+  const { userId } = req.query;
+  if (typeof userId === 'string' && userId) {
+    const receivePosts = await User.userManager.findUserReceivePostsById(userId);
+    res.status(200).json({
+      message: 'Get user receive posts successfully !!!',
+      data: receivePosts,
     });
   } else {
     res.status(401);
@@ -144,9 +175,9 @@ export const setUserLikePosts = asyncHandle(async (req: Request, res: Response) 
   const { userId, postId } = req.body;
   if (postId && postId) {
     const likePosts = await Account.setUserLikePostsById(userId, postId);
-
+    
     res.status(200).json({
-      message: `Ins user id ${userId} like posts id ${postId} successfully !!!`,
+      message: `Insert user id ${userId} like posts id ${postId} successfully !!!`,
       data: likePosts,
     });
   } else {
@@ -173,7 +204,7 @@ export const deleteUserLikePosts = asyncHandle(async (req: Request, res: Respons
 export const getUserAddress = asyncHandle(async (req: Request, res: Response) => {
   const { userId } = req.query;
   if (typeof userId === 'string' && userId) {
-    const response = await UserManager.getUserAddress(userId);
+    const response = await User.userManager.getUserAddress(userId);
 
     res.status(200).json({
       message: 'get user address successfully',
@@ -188,7 +219,7 @@ export const getUserAddress = asyncHandle(async (req: Request, res: Response) =>
 export const updateFcmToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, fcmtoken } = req.body;
 
-  await UserManager.addFcmTokenToUser(userid, fcmtoken);
+  await User.userManager.addFcmTokenToUser(userid, fcmtoken);
 
   res.status(200).json({
     message: 'Fcmtoken addded',
@@ -221,9 +252,9 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
 //   const { page, pageSize } = req.query;
 //   if (typeof page === 'string' && page && typeof pageSize === 'string' && pageSize) {
 //     console.log(req.query);
-//     const total = await UserManager.totalAllUser();
+//     const total = await User.userManager.totalAllUser();
 
-//     const response = await UserManager.getAllUser(page, pageSize);
+//     const response = await User.userManager.getAllUser(page, pageSize);
 //     res.status(200).json({
 //       message: 'get user address successfully',
 //       data: {
@@ -272,7 +303,7 @@ export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
     orderByClause = ' ORDER BY u.createdat DESC ';
   }
 
-  const response = await UserManager.getAllUsers(page, pageSize, whereClause, orderByClause);
+  const response = await User.userManager.getAllUsers(page, pageSize, whereClause, orderByClause);
   // res.json({ users: users.rows, total: totalUsers.rows[0].count });
 
   res.status(200).json({
@@ -302,7 +333,7 @@ export const getTotalUser = asyncHandle(async (req: Request, res: Response) => {
     whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
   }
 
-  const total = await UserManager.totalAllUser(whereClause);
+  const total = await User.userManager.totalAllUser(whereClause);
   // res.json({ users: users.rows, total: totalUsers.rows[0].count });
 
   res.status(200).json({
@@ -330,7 +361,7 @@ export const adminBanUser =  asyncHandle(async (req: Request, res: Response) => 
       html:  user.isbanned ? `<h3 style="font-weight: normal;">Tài khoản của bạn đã được mở khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>` : `<h3 style="font-weight: normal;">Tài khoản của bạn đã bị khóa vào lúc ${currentTime}. Xin vui lòng liên hệ với admin qua email ${process.env.USERNAME_EMAIL} để biết thêm thông tin chi tiết.</h3>`,
     };
 
-    await UserManager.adminBanUser(userId, isBanned);
+    await User.userManager.adminBanUser(userId, isBanned);
     await handleSendMail(data);
     res.json( { message: 'User was Banned successfully' });
   } else {
@@ -347,7 +378,7 @@ export const adminDeleteUser = asyncHandle(async (req: Request, res: Response) =
     const user = await Account.findUserById(userId);
     // if users exists update user data and save it in DB
     if (user) {
-      await UserManager.adminDeleteUser(userId);
+      await User.userManager.adminDeleteUser(userId);
     } else {
       res.status(400);
       throw Error('User not found' );

@@ -111,7 +111,7 @@ export class PostManager {
     return [];
   }
 
-  public static async getListAddressByWarehouseID(warehouses: string[]): Promise<any> {
+  public async getListAddressByWarehouseID(warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       const query = `
@@ -141,7 +141,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
+  public async getAllPostsFromUserPost(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
 
@@ -160,7 +160,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname as status,
         us.firstname,
         us.lastname,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
@@ -173,7 +173,7 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-      LEFT JOIN orders od ON od.postid = po.postid
+	  LEFT JOIN trace_status ts ON po.statusid = ts.statusid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
@@ -193,7 +193,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           us.firstname,
           us.lastname
       ORDER BY po.createdat DESC
@@ -217,7 +217,7 @@ export class PostManager {
   }
   
 
-  public static async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
+  public async getAllPostFromWarehouse(limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string,  warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     try {
 
@@ -237,7 +237,7 @@ export class PostManager {
 		    wh.warehousename,
         img.path,
         itt.nametype,
-        od.status,
+        ts.statusname as status,
         us.firstname,
 		    us.lastname,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
@@ -250,7 +250,7 @@ export class PostManager {
       LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
       LEFT JOIN "like_post" lp ON po.postid = lp.postid
       LEFT JOIN warehouse wh ON po.warehouseid = wh.warehouseid
-      LEFT JOIN orders od ON od.postid = po.postid
+      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
       LEFT JOIN (
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
@@ -272,7 +272,7 @@ export class PostManager {
           img.path,
           wh.warehousename,
           itt.nametype,
-          od.status,
+          ts.statusname,
           us.firstname,
 		      us.lastname
       ORDER BY po.createdat DESC
@@ -296,629 +296,65 @@ export class PostManager {
     }
   }
 
-  public static async getTotalPost(status: string, userID: string){
-    const client = await pool.connect();
 
-    let query = ``
-    if(status === 'userPost'){
-      query = `
-        SELECT COUNT (*) AS total_posts FROM (
-          SELECT DISTINCT po.postid
-          FROM Posts AS po
-          WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
-        ) as Amount
-      `
-    }else if(status === 'warehousePost'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-        SELECT DISTINCT po.postid
-        FROM Posts AS po
-        WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
-      ) as Amount
-      `
-    }else if (status === 'waitForApprove'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-      SELECT DISTINCT po.postid
-        FROM Posts AS po
-      LEFT JOIN "User" us ON po.owner = us.UserID
-      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
-        WHERE po.statusid = 2
-        AND po.warehouseid = (
-          SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-        )
-    ) as Amount
-      `
-    }else if(status === 'justApprove'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-      SELECT DISTINCT po.postid
-        FROM Posts AS po
-      LEFT JOIN "User" us ON po.owner = us.UserID
-      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
-        WHERE po.statusid = 12
-        AND po.warehouseid = (
-          SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-        )
-      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-      AND current_timestamp >= po.approvedate::timestamp
-    ) as Amount
-      `
-    }else if(status === 'justCancel'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-      SELECT DISTINCT po.postid
-        FROM Posts AS po
-      LEFT JOIN "User" us ON po.owner = us.UserID
-      LEFT JOIN trace_status ts ON po.statusid = ts.statusid
-        WHERE po.statusid = 6
-        AND po.warehouseid = (
-          SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-        )
-      AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-      AND current_timestamp >= po.approvedate::timestamp
-    ) as Amount
-      `
-    }else if(status === 'received'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-        SELECT DISTINCT po.postid
-        FROM Posts AS po
-        LEFT JOIN "orders" od ON od.postid = po.postid
-          WHERE po.iswarehousepost = true
-          AND od.imgconfirmreceive = ' '
-          AND po.warehouseid = (
-            SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-          )) as Amount
-      `
-    }else if(status === 'given'){
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-        SELECT DISTINCT po.postid
-        FROM Posts AS po
-        LEFT JOIN "orders" od ON od.postid = po.postid
-          WHERE po.iswarehousepost = true
-          AND od.imgconfirmreceive != ' '
-          AND po.warehouseid = (
-            SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-          )) as Amount
-      `
-    }else{
-      query = `
-      SELECT COUNT (*) AS total_posts FROM (
-      SELECT DISTINCT po.postid
-        FROM Posts AS po
-      LEFT JOIN "User" us ON po.owner = us.UserID
-      LEFT JOIN "orders" od ON od.postid = po.postid
-        WHERE (od.status LIKE 'Hàng đã nhập kho')
-        AND po.warehouseid = (
-          SELECT warehouseid
-            FROM "workat"
-            WHERE userid = ${userID}
-        )
-      AND (od.givetypeid=3 OR od.givetypeid=4 )
-      AND (po.statusid = 14 OR po.statusid = 12)
-    ) as Amount
-      `
-    }
 
-    try {
-      const result: QueryResult = await client.query(query)
-      if(result.rows.length === 0){
-        return 0
-      }
-
-      return result.rows[0].total_posts
-    } catch (error) {
-      console.log(error)
-      return 0
-    }finally {
-      client.release(); // Release client sau khi sử dụng
-    }
-  }
-
-  public static async getAllPostByStatus(status: string, limit: string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[], userID: string): Promise<any> {
-    const client = await pool.connect();
-    try {
-      let postsQuery = `
-      SELECT DISTINCT
-        us.userid,
-        CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-        CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-        po.postid,
-        po.title,
-        po.description,
-        po.createdat,
-        ad.address,
-        ad.longitude,
-        ad.latitude,
-        img.path,
-        itt.nametype,
-        ts.statusname,
-        gr.give_receivetype,
-        us.firstname,
-		    us.lastname,
-        CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-        CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-      FROM Posts AS po
-      LEFT JOIN "User" us ON po.owner = us.UserID
-      LEFT JOIN Address ad ON po.addressid = ad.addressid
-      LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-      LEFT JOIN item it ON it.itemid = po.itemid
-      LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-      LEFT JOIN "like_post" lp ON po.postid = lp.postid
-      LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-	  LEFT JOIN trace_status ts ON po.statusid = ts.statusid
-      LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-      LEFT JOIN (
-          SELECT DISTINCT ON (itemid) * FROM Image
-      ) img ON img.itemid = po.itemid
-
-	  WHERE (ts.statusname LIKE '${status}')
-    AND po.warehouseid = (
-	  	SELECT warehouseid
-      FROM "workat"
-      WHERE userid = ${userID}
-	  )
-      GROUP BY
-          us.userid,
-          us.firstname,
-          us.lastname,
-          us.avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          wh.warehousename,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          us.firstname,
-		      us.lastname
-      ORDER BY po.createdat DESC
-      LIMIT ${limit}
-      OFFSET ${limit} * ${page};
-      `;
-
-      if(status === 'Vừa duyệt'){
-        postsQuery = `
-          SELECT DISTINCT
-          us.userid,
-          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          us.firstname,
-		      us.lastname,
-      po.updatedat,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-        FROM Posts AS po
-      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
-        LEFT JOIN "User" us ON po.owner = us.UserID
-        LEFT JOIN Address ad ON po.addressid = ad.addressid
-        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-        LEFT JOIN item it ON it.itemid = po.itemid
-        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN "like_post" lp ON po.postid = lp.postid
-        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-        LEFT JOIN (
-            SELECT DISTINCT ON (itemid) * FROM Image
-        ) img ON img.itemid = po.itemid
-
-        WHERE (ts.statusname LIKE 'Đã duyệt')
-        AND po.warehouseid = (
-          SELECT warehouseid
-          FROM "workat"
-          WHERE userid = ${userID}
-        )
-        AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-        AND current_timestamp >= po.approvedate::timestamp
-        GROUP BY
-            us.userid,
-            us.firstname,
-            us.lastname,
-            us.avatar,
-            po.postid,
-            po.title,
-            po.description,
-            po.createdat,
-            ad.address,
-            ad.longitude,
-            ad.latitude,
-            img.path,
-            wh.warehousename,
-            itt.nametype,
-            gr.give_receivetype,
-        ts.statusname,
-        po.updatedat,
-        us.firstname,
-		    us.lastname
-        ORDER BY po.createdat DESC
-        LIMIT ${limit}
-        OFFSET ${limit} * ${page};
-          `
-      }
-      if(status === 'Vừa hủy'){
-        postsQuery = `
-          SELECT DISTINCT
-          us.userid,
-          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          po.updatedat,
-          us.firstname,
-          us.lastname,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-        FROM Posts AS po
-      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
-        LEFT JOIN "User" us ON po.owner = us.UserID
-        LEFT JOIN Address ad ON po.addressid = ad.addressid
-        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-        LEFT JOIN item it ON it.itemid = po.itemid
-        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN "like_post" lp ON po.postid = lp.postid
-        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-        LEFT JOIN (
-            SELECT DISTINCT ON (itemid) * FROM Image
-        ) img ON img.itemid = po.itemid
-
-        WHERE (ts.statusname LIKE 'Đã hủy')
-        AND po.warehouseid = (
-          SELECT warehouseid
-          FROM "workat"
-          WHERE userid = ${userID}
-        )
-        AND current_timestamp <= po.approvedate::timestamp + INTERVAL '1 day'
-        AND current_timestamp >= po.approvedate::timestamp
-        GROUP BY
-            us.userid,
-            us.firstname,
-            us.lastname,
-            us.avatar,
-            po.postid,
-            po.title,
-            po.description,
-            po.createdat,
-            ad.address,
-            ad.longitude,
-            ad.latitude,
-            img.path,
-            wh.warehousename,
-            itt.nametype,
-            gr.give_receivetype,
-            ts.statusname,
-            po.updatedat,
-            us.firstname,
-            us.lastname
-        ORDER BY po.createdat DESC
-        LIMIT ${limit}
-        OFFSET ${limit} * ${page};
-          `
-      }
-      if(status === 'Chờ được đăng'){
-        postsQuery = `
-          SELECT DISTINCT
-          us.userid,
-          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          po.updatedat,
-          us.firstname,
-		      us.lastname,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-        FROM Posts AS po
-      LEFT JOIN "orders" od ON od.postid = po.postid
-      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
-        LEFT JOIN "User" us ON po.owner = us.UserID
-        LEFT JOIN Address ad ON po.addressid = ad.addressid
-        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-        LEFT JOIN item it ON it.itemid = po.itemid
-        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN "like_post" lp ON po.postid = lp.postid
-        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-        LEFT JOIN (
-            SELECT DISTINCT ON (itemid) * FROM Image
-        ) img ON img.itemid = po.itemid
-
-        WHERE (od.status LIKE 'Hàng đã nhập kho')
-        AND po.warehouseid = (
-          SELECT warehouseid
-          FROM "workat"
-          WHERE userid = ${userID}
-        )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
-        AND (po.statusid = 14 OR po.statusid = 12)
-        GROUP BY
-            us.userid,
-            us.firstname,
-            us.lastname,
-            us.avatar,
-            po.postid,
-            po.title,
-            po.description,
-            po.createdat,
-            ad.address,
-            ad.longitude,
-            ad.latitude,
-            img.path,
-            wh.warehousename,
-            itt.nametype,
-            gr.give_receivetype,
-            ts.statusname,
-            po.updatedat,
-            us.firstname,
-            us.lastname
-        ORDER BY po.createdat DESC
-        LIMIT ${limit}
-        OFFSET ${limit} * ${page};
-          `
-      }
-      let queryWarehousePost = ``
-      if(status === 'Đang được nhận'){
-        queryWarehousePost = `AND od.imgconfirmreceive = ' '`
-        postsQuery = `
-          SELECT DISTINCT
-          us.userid,
-          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          po.updatedat,
-          us.firstname,
-		      us.lastname,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-        FROM Posts AS po
-      LEFT JOIN "orders" od ON od.postid = po.postid
-      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
-        LEFT JOIN "User" us ON po.owner = us.UserID
-        LEFT JOIN Address ad ON po.addressid = ad.addressid
-        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-        LEFT JOIN item it ON it.itemid = po.itemid
-        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN "like_post" lp ON po.postid = lp.postid
-        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-        LEFT JOIN (
-            SELECT DISTINCT ON (itemid) * FROM Image
-        ) img ON img.itemid = po.itemid
-
-        WHERE po.iswarehousepost = true
-        ${queryWarehousePost}
-        AND po.warehouseid = (
-          SELECT warehouseid
-          FROM "workat"
-          WHERE userid = ${userID}
-        )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
-        AND (po.statusid = 14 OR po.statusid = 12)
-        GROUP BY
-            us.userid,
-            us.firstname,
-            us.lastname,
-            us.avatar,
-            po.postid,
-            po.title,
-            po.description,
-            po.createdat,
-            ad.address,
-            ad.longitude,
-            ad.latitude,
-            img.path,
-            wh.warehousename,
-            itt.nametype,
-            gr.give_receivetype,
-            ts.statusname,
-            po.updatedat,
-            us.firstname,
-            us.lastname
-        ORDER BY po.createdat DESC
-        LIMIT ${limit}
-        OFFSET ${limit} * ${page};
-          `
-      }
-      if(status === 'Đã cho thành công'){
-        queryWarehousePost = `AND od.imgconfirmreceive != ' '`
-        postsQuery = `
-          SELECT DISTINCT
-          us.userid,
-          CASE WHEN po.iswarehousepost = true THEN wh.warehousename ELSE CONCAT(us.firstname, ' ', us.lastname) END AS name,
-          CASE WHEN po.iswarehousepost = true THEN '' ELSE us.avatar END AS avatar,
-          po.postid,
-          po.title,
-          po.description,
-          po.createdat,
-          ad.address,
-          ad.longitude,
-          ad.latitude,
-          img.path,
-          itt.nametype,
-          ts.statusname,
-          gr.give_receivetype,
-          po.updatedat,
-          us.firstname,
-		      us.lastname,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
-        FROM Posts AS po
-      LEFT JOIN "orders" od ON od.postid = po.postid
-      LEFT JOIN "trace_status" ts ON po.statusid = ts.statusid
-        LEFT JOIN "User" us ON po.owner = us.UserID
-        LEFT JOIN Address ad ON po.addressid = ad.addressid
-        LEFT JOIN "postreceiver" pr ON po.postid = pr.postid
-        LEFT JOIN item it ON it.itemid = po.itemid
-        LEFT JOIN item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN "like_post" lp ON po.postid = lp.postid
-        LEFT JOIN warehouse wh ON ad.addressid = wh.addressid
-        LEFT JOIN "give_receivetype" gr ON gr.give_receivetypeid = po.givetypeid
-        LEFT JOIN (
-            SELECT DISTINCT ON (itemid) * FROM Image
-        ) img ON img.itemid = po.itemid
-
-        WHERE po.iswarehousepost = true
-        ${queryWarehousePost}
-        AND po.warehouseid = (
-          SELECT warehouseid
-          FROM "workat"
-          WHERE userid = ${userID}
-        )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
-        AND (po.statusid = 14 OR po.statusid = 12)
-        GROUP BY
-            us.userid,
-            us.firstname,
-            us.lastname,
-            us.avatar,
-            po.postid,
-            po.title,
-            po.description,
-            po.createdat,
-            ad.address,
-            ad.longitude,
-            ad.latitude,
-            img.path,
-            wh.warehousename,
-            itt.nametype,
-            gr.give_receivetype,
-            ts.statusname,
-            po.updatedat,
-            us.firstname,
-            us.lastname
-        ORDER BY po.createdat DESC
-        LIMIT ${limit}
-        OFFSET ${limit} * ${page};
-          `
-      }
-
-      const result: QueryResult = await client.query(postsQuery);
-      if (result.rows.length === 0) {
-        return null;
-      }
-
-      const warehouseList = await this.getListAddressByWarehouseID(warehouses);
-
-      return filterSearch(distance, time, category, warehouseList, sort, latitude, longitude, false, result.rows); 
-    } catch (error) {
-      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
-      throw error; // Ném lỗi để controller có thể xử lý
-    } finally {
-      client.release(); // Release client sau khi sử dụng
-    }
-  }
-
-  public static async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
+  public async getUserLikePosts(limit: string, page: string,userId: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
-        SELECT  
-          p.description, 
-          p.postid,
-          p.itemid,
-          p.updatedat, 
-          p.createdat,
-          COALESCE(u.avatar, w.avatar) AS avatar,
-          COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename) AS name,
-          a.address,
-          a.longitude,
-          a.latitude,
-          itt.nametype,
-          MIN(i.path) AS path,
-          CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
+          SELECT  
+            p.description, 
+            p.postid,
+            p.itemid,
+            p.updatedat, 
+            p.createdat,
+            COALESCE(u.avatar, w.avatar) AS avatar,
+            COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename) AS name,
+            a.address,
+            a.longitude,
+            a.latitude,
+            itt.nametype,
+            MIN(i.path) AS path,
+            CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
+            CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count,
+            MAX(lp.createdat) AS max_like_createdat
         FROM 
-          "posts" p
+            "posts" p
         LEFT JOIN 
-          "User" u ON u.userId = p.owner AND u.userId NOT IN (SELECT userId FROM workAt)
+            "User" u ON u.userid = p.owner AND u.userid NOT IN (SELECT userid FROM workAt)
         LEFT JOIN 
-          "workat" wa ON p.owner = wa.userid
+            "workat" wa ON p.owner = wa.userid
         LEFT JOIN 
-          "warehouse" w ON wa.warehouseid = w.warehouseid
+            "warehouse" w ON wa.warehouseid = w.warehouseid
+        JOIN 
+            "address" a ON a.addressid = p.addressid
+        JOIN 
+            item it ON it.itemid = p.itemid
+        JOIN 
+            item_type itt ON itt.itemtypeid = it.itemtypeid
         LEFT JOIN 
-          "address" a ON a.addressid = p.addressid
-        LEFT JOIN 
-          item it ON it.itemid = p.itemid
-        LEFT JOIN 
-          item_type itt ON itt.itemtypeid = it.itemtypeid
-        LEFT JOIN 
-          "image" i ON p.itemid = i.itemid
-        LEFT JOIN 
-          "like_post" lp ON p.postid = lp.postid
+            "image" i ON p.itemid = i.itemid
         LEFT JOIN
-          "postreceiver" pr ON p.postid = pr.postid  
+            "postreceiver" pr ON p.postid = pr.postid
+        LEFT JOIN 
+            "like_post" lp ON p.postid = lp.postid
         WHERE 
-          (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) AND lp.userid = ${userId}
+            (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) 
+            AND p.postid IN (SELECT postid FROM "like_post" WHERE userid = ${userId})
         GROUP BY 
-          p.description, 
-          p.postid,
-          p.itemid,
-          p.updatedat, 
-          p.createdat,
-          COALESCE(u.avatar, w.avatar),
-          COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename),
-          a.address,
-          a.longitude,
-          a.latitude,
-          itt.nametype
+            p.description, 
+            p.postid,
+            p.itemid,
+            p.updatedat, 
+            p.createdat,
+            COALESCE(u.avatar, w.avatar),
+            COALESCE(CONCAT(u.firstname, ' ', u.lastname), w.warehousename),
+            a.address,
+            a.longitude,
+            a.latitude,
+            itt.nametype
         ORDER BY
-          p.createdat DESC
+            max_like_createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
       `;
@@ -932,8 +368,9 @@ export class PostManager {
       client.release(); // Release client sau khi sử dụng
     }
   }
+  
 
-  public static async getReceivePosts(limit: string, page: string,userId: string): Promise<any> {
+  public async getReceivePosts(limit: string, page: string,userId: string): Promise<any> {
     const client = await pool.connect();
     try {
       const postsQuery = `
@@ -951,11 +388,12 @@ export class PostManager {
           itt.nametype,
           MIN(i.path) AS path,
           CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
-          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
+          CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count,
+          MAX(lp.createdat) AS max_like_createdat
       FROM 
           "posts" p
       LEFT JOIN 
-          "User" u ON u.userId = p.owner AND u.userId NOT IN (SELECT userId FROM workAt)
+          "User" u ON u.userid = p.owner AND u.userid NOT IN (SELECT userid FROM workAt)
       LEFT JOIN 
           "workat" wa ON p.owner = wa.userid
       LEFT JOIN 
@@ -972,11 +410,9 @@ export class PostManager {
           "like_post" lp ON p.postid = lp.postid
       LEFT JOIN
           "postreceiver" pr ON p.postid = pr.postid
-      LEFT JOIN
-          "postreceiver" prt ON p.postid = prt.postid
       WHERE 
           (u.userId IS NOT NULL OR w.warehouseid IS NOT NULL) 
-          AND prt.receiverid = ${userId}
+		      AND p.postid IN (SELECT postid FROM "postreceiver" WHERE receiverid = ${userId})
       GROUP BY 
           p.description, 
           p.postid,
@@ -990,7 +426,7 @@ export class PostManager {
           a.latitude,
           itt.nametype
       ORDER BY
-          p.createdat DESC
+        max_like_createdat DESC
         LIMIT ${limit}
         OFFSET ${limit} * ${page};
       `;
@@ -1005,7 +441,7 @@ export class PostManager {
     }
   }
 
-  public static async viewDetailsPost(postID: number): Promise<any> {
+  public async viewDetailsPost(postID: number): Promise<any> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -1045,8 +481,32 @@ export class PostManager {
     }
   }
 
+  public async viewDetailsPostForUpdate(postID: number): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+      SELECT 
+        *
+      FROM 
+          POSTS
+      WHERE 
+          POSTS.postid = $1
+      FOR UPDATE`,[postID]);
 
-  public static async viewPostReceivers(postID: number): Promise<any[]> {
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0];
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      throw error; // Ném lỗi để controller có thể xử lý
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
+
+
+  public async viewPostReceivers(postID: number): Promise<any[]> {
     const client = await pool.connect();
     try {
       const result = await client.query('SELECT receiverid, receivertypeid, postid, avatar, firstname, lastname, postreceiver.comment, postreceiver.time, give_receivetype, warehouseid FROM "User" JOIN postreceiver ON userid = receiverid JOIN give_receivetype ON receivertypeid = give_receivetypeid AND postid = $1;', [postID]);
@@ -1064,7 +524,7 @@ export class PostManager {
     }
 
 
-  public static async getDetailsPost(postID: number): Promise<Post | null> {
+  public async getDetailsPost(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
       const result = await client.query('SELECT * FROM posts WHERE postid = $1;', [postID]);
@@ -1084,7 +544,9 @@ export class PostManager {
   
 
 
-  public static async createPost (title: string, location: string, description: string, owner: number, time: Date, itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, statusid: number, givetypeid: number, warehouseid: number, phonenumber: string): Promise<void> {
+  public async createPost (title: string, location: string, description: string, owner: number, time: Date, 
+    itemid : number, timestart: Date, timeend: Date, isNewAddress: string, postLocation: any, isWarehousePost: string, 
+    statusid: number, givetypeid: number, warehouseid: number, phonenumber: string): Promise<void> {
 
     const client = await pool.connect();
 
@@ -1164,7 +626,8 @@ export class PostManager {
   };
 
 
-  public static async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, receivertypeid: number, warehouseid: number): Promise<void> {
+  public async createPostReceiver (postid: number, receiverid: number, comment: string, time: Date, 
+    receivertypeid: number, warehouseid: number): Promise<void> {
 
     const client = await pool.connect();
     const query = `
@@ -1185,7 +648,7 @@ export class PostManager {
   };
 
 
-  public static async viewPostOwnerInfo(postID: number): Promise<Post | null> {
+  public async viewPostOwnerInfo(postID: number): Promise<Post | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -1206,7 +669,7 @@ export class PostManager {
   }
 
 
-  public static async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
+  public async updatePostDetail (postid: number, title: string, description: string, timestart: Date, timeend: Date ): Promise<void> {
 
     const client = await pool.connect();
     const query = `
@@ -1239,11 +702,6 @@ export class PostManager {
     return [];
   }
 
-  public searchPost(stringSearch: string): Post[] {
-    // code here
-    return [];
-  }
-
   public addPost(): boolean {
     // code here
     return true;
@@ -1263,7 +721,8 @@ export class PostManager {
     // code here
   }
 
-  public static async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string, time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
+  public async searchPost (keyword: string, limit: string, iswarehousepost:string, page: string, distance: string,
+     time: string, category: string[], sort: string, latitude: string, longitude: string, warehouses: string[]): Promise<any> {
     const client = await pool.connect();
     let query = `
       SELECT DISTINCT
@@ -1279,6 +738,7 @@ export class PostManager {
         ad.latitude,
         img.path,
         itt.nametype,
+        po.iswarehousepost,
         CAST(COUNT(DISTINCT lp.likeid) AS INTEGER) AS like_count,
         CAST(COUNT(DISTINCT pr.receiverid) AS INTEGER) AS receiver_count
       FROM Posts AS po
@@ -1326,7 +786,7 @@ export class PostManager {
     }
   };
 
-  public static async deletePostReceivers(postID: string, receiverID: string): Promise<boolean> {
+  public async deletePostReceivers(postID: string, receiverID: string): Promise<boolean> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -1345,7 +805,7 @@ export class PostManager {
   }
 
 
-  public static async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
+  public async updatePostStatus (postid: number, statusid: number, isApproveAction: any) : Promise<any> {
 
     const client = await pool.connect();
 
@@ -1379,7 +839,7 @@ export class PostManager {
     }
   }
 
-  public static async getAllPostByUserId(userID: string[]): Promise<any> {
+  public async getAllPostByUserId(userID: string[]): Promise<any> {
     const client = await pool.connect();
     try {
       let query = `
@@ -1427,7 +887,7 @@ export class PostManager {
     }
   }
 
-  public static async getAmountUserLikePost(postID: string): Promise<any> {
+  public async getAmountUserLikePost(postID: string): Promise<any> {
     const client = await pool.connect();
     try {
       let query = `

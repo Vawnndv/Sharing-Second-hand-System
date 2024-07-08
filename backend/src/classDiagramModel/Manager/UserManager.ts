@@ -7,7 +7,7 @@ export class UserManager {
 
   }
 
-  public static async getUser(userID: string): Promise<User | undefined>{
+  public async getUser(userID: string): Promise<User | undefined>{
     const client = await pool.connect();
     try{
       const query = `
@@ -45,7 +45,7 @@ export class UserManager {
 
   }
 
-  public static async getUserAddress(userID: string): Promise<any> {
+  public async getUserAddress(userID: string): Promise<any> {
     const client = await pool.connect()
 
     const query = `
@@ -72,7 +72,7 @@ export class UserManager {
     }
   }
 
-  public static async getAllUsers(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
+  public async getAllUsers(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
     const client = await pool.connect()
 
     const query = `SELECT 
@@ -111,7 +111,7 @@ export class UserManager {
     }
   }
 
-  public static async totalAllUser(whereClause: string): Promise<any> {
+  public async totalAllUser(whereClause: string): Promise<any> {
     const client = await pool.connect()
     const query = 
     // 'SELECT COUNT(*) FROM users' + whereClause;
@@ -137,7 +137,7 @@ export class UserManager {
 
 
   
-  public static async totalGiveAndReceiveOrder(userid: string): Promise<any> {
+  public async totalGiveAndReceiveOrder(userid: string): Promise<any> {
     const client = await pool.connect()
     const query = 
       `SELECT
@@ -155,7 +155,7 @@ export class UserManager {
     }
   }
 
-  public static async adminBanUser(userid: number, isBanned: boolean): Promise<any> {
+  public async adminBanUser(userid: number, isBanned: boolean): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
@@ -175,7 +175,7 @@ export class UserManager {
   };
 
 
-  public static async adminDeleteUser(userid: string): Promise<any> {
+  public async adminDeleteUser(userid: string): Promise<any> {
     const client = await pool.connect();
 
     const query = `
@@ -197,7 +197,7 @@ export class UserManager {
   };
 
   
-  public static async addFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
+  public async addFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
     const client = await pool.connect();
     const query = `
         INSERT INTO fcmtoken(userid, fcmtoken) 
@@ -217,7 +217,7 @@ export class UserManager {
     }
   };
 
-  public static async addRefreshTokenToUser(userid: string, refreshtoken: string): Promise<any> {
+  public async addRefreshTokenToUser(userid: string, refreshtoken: string): Promise<any> {
     const client = await pool.connect();
     const query = `
         INSERT INTO refreshtoken(userid, refreshtoken) 
@@ -237,7 +237,7 @@ export class UserManager {
     }
   }
 
-  public static async removeFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
+  public async removeFcmTokenToUser(userid: string, fcmtoken: string): Promise<any> {
     
     const client = await pool.connect();
     try {
@@ -256,7 +256,7 @@ export class UserManager {
     }
   };
 
-  public static async removeRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
+  public async removeRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
     
     const client = await pool.connect();
     try {
@@ -275,7 +275,40 @@ export class UserManager {
     }
   };
 
-  public static async getRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
+  public async findUserLikePostsById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT postid FROM "like_post" WHERE userid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows.map(row => row.postid);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async findUserReceivePostsById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT postid FROM "postreceiver" WHERE receiverid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows.map(row => row.postid);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+  public async getRefreshTokenOfUser(userid: string, deviceid: string): Promise<any> {
     const client = await pool.connect();
     const query = `
         SELECT refreshtoken FROM refreshtoken WHERE userid = $1 AND deviceid = $2;

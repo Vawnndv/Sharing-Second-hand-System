@@ -28,9 +28,9 @@ export class Account {
 
   protected password: string | undefined;
 
-  protected notiManager: NotiManager | undefined;
+  public static notiManager: NotiManager = new NotiManager();
 
-  protected chat: ChatManager | undefined;
+  public static chatManager: ChatManager = new ChatManager();
 
   public constructor(userID: string, roleID: string, dateOfBirth: string, avatar: string,
     email: string, phoneNumber: string, lastName: string, firstName: string, address: string, username: string,
@@ -178,12 +178,29 @@ export class Account {
   public static async findUserLikePostsById(userId: string): Promise<any> {
     const client = await pool.connect();
     try {
-      const result = await client.query('SELECT * FROM "like_post" WHERE userid = $1', [userId]);
+      const result = await client.query('SELECT postid FROM "like_post" WHERE userid = $1', [userId]);
       if (result.rows.length === 0) {
         return null;
       }
   
-      return result.rows;
+      return result.rows.map(row => row.postid);
+    } catch(error) {
+      console.log(error);
+      return null;
+    } finally {
+      client.release();
+    }
+  }
+
+  public static async findUserPostReceivesById(userId: string): Promise<any> {
+    const client = await pool.connect();
+    try {
+      const result = await client.query('SELECT postid FROM "postreceiver" WHERE receiverid = $1', [userId]);
+      if (result.rows.length === 0) {
+        return null;
+      }
+  
+      return result.rows.map(row => row.postid);
     } catch(error) {
       console.log(error);
       return null;

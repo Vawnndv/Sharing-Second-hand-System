@@ -7,6 +7,8 @@ import toast from 'react-hot-toast';
 import { ForgotPasswordValidation } from '../../../validation/userValidation';
 import './style.scss';
 import { forgotPasswordService } from '../../../redux/services/authServices';
+import Link from '@mui/material/Link';
+import { Link as RouterLink } from 'react-router-dom';
 
 const defaultTheme = createTheme({
   palette: {
@@ -56,7 +58,7 @@ function ForgotPassword() {
         setErr(error.message)
       } else {
         // Đã xảy ra lỗi kết nối mạng. Vui lòng thử lại sau.
-        setErr("Network Error")
+        setErr("Lỗi mạng")
       }
     } finally {
       setIsLoading(false); // Reset isLoading to false after success/error
@@ -116,6 +118,13 @@ function ForgotPassword() {
               <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ mt: 3, mb: 2, py: 1 }}>
                 Quên mật khẩu
               </Button>
+              <Grid container sx={{ justifyContent: 'center', mt: 2 }}>
+                <Grid item>
+                  <Link component={RouterLink} to="/login" variant="body2">
+                    Quay trở lại trang login
+                  </Link>
+                </Grid>
+              </Grid>
             </Box>
           </Box>
         </Container>

@@ -178,9 +178,9 @@ function ChatRoom({ typeChat }: any) {
   };
 
   return (
-    <Box sx={{ flex: 1, mx: 2, my: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
+    <Box sx={{ flex: 1, px: 2, my: 2, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
       {isLoading ? (
-      <Box sx={{ display: 'flex', justifyContent: 'center', height: 'calc(100vh - 200px)' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', height: 'calc(100vh - 300px)' }}>
         <CircularProgress />
       </Box>
       ) : (

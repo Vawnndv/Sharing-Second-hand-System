@@ -24,7 +24,7 @@ export class WarehouseManager {
     return true;
   }
 
-  public static async viewAllWarehouse(): Promise<any[] | null> {
+  public async viewAllWarehouse(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -45,7 +45,7 @@ export class WarehouseManager {
     }
   }
 
-  public static async viewAllWarehouseAdmin(): Promise<any[] | null> {
+  public async viewAllWarehouseAdmin(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -64,7 +64,7 @@ export class WarehouseManager {
     }
   }
 
-  public static async viewWarehouse(warehouseid: number): Promise<any[] | null> {
+  public async viewWarehouse(warehouseid: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`SELECT warehouseid, address.address, phonenumber, warehousename, warehouse.addressid, longitude, latitude, isactivated  FROM warehouse JOIN address ON warehouse.addressid = address.addressid WHERE warehouseid = $1`,[warehouseid]);
@@ -81,7 +81,7 @@ export class WarehouseManager {
     }
   } 
 
-  public static async getWarehouseByUserID(userID: number): Promise<any[] | null> {
+  public async getWarehouseByUserID(userID: number): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -89,7 +89,7 @@ export class WarehouseManager {
         FROM warehouse 
         JOIN address ON warehouse.addressid = address.addressid 
         JOIN workat ON workat.warehouseid = warehouse.warehouseid
-        WHERE workat.userid = 82
+        WHERE workat.userid = ${userID}
         `);
       if (result.rows.length === 0) {
         console.log('Không tìm thấy kho');
@@ -104,7 +104,7 @@ export class WarehouseManager {
     }
   } 
 
-  public static async getAllWarehouseAllInfo(page: string, pageSize: string, whereClause: string, orderByClause: string, havingClause: string): Promise<any[] | null> {
+  public async getAllWarehouseAllInfo(page: string, pageSize: string, whereClause: string, orderByClause: string, havingClause: string): Promise<any[] | null> {
     const client = await pool.connect();
     const query = `
     SELECT 
@@ -154,7 +154,7 @@ export class WarehouseManager {
     }
   };
 
-  public static async getWarehouseNameList(): Promise<any[] | null> {
+  public async getWarehouseNameList(): Promise<any[] | null> {
     const client = await pool.connect();
     try {
       const result = await client.query(`
@@ -178,7 +178,7 @@ export class WarehouseManager {
     }
   }
 
-  public static async createWarehouse (phonenumber: string, warehouseName: string, warehouseLocation: any, avatar: string, isNewAddress: string): Promise<void> {
+  public async createWarehouse (phonenumber: string, warehouseName: string, warehouseLocation: any, avatar: string, isNewAddress: string): Promise<void> {
 
     const client = await pool.connect();
 
@@ -214,7 +214,7 @@ export class WarehouseManager {
     }
   };
 
-  public static async updateWarehouseStatus (warehouseid: number, status: boolean){
+  public async updateWarehouseStatus (warehouseid: number, status: boolean){
     const client = await pool.connect();
 
       const updateWarehouseStatus = `
@@ -233,7 +233,7 @@ export class WarehouseManager {
       }
   }
 
-  public static async updateWarehouse (phonenumber: string, warehousename: string, warehouseLocation: any, avatar: string, isNewAddress: string, warehouseid: string): Promise<void> {
+  public async updateWarehouse (phonenumber: string, warehousename: string, warehouseLocation: any, avatar: string, isNewAddress: string, warehouseid: string): Promise<void> {
 
     const client = await pool.connect();
 

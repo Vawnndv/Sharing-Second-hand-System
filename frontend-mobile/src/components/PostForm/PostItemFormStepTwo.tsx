@@ -131,11 +131,11 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     }
    
     const fetchAllData = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
 
       await fetchUserData();
-      await fetchUserAddressData()
-      await fetchImages()
+      await fetchUserAddressData();
+      await fetchImages();
       
       setIsLoading(false)
     }
@@ -565,9 +565,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   button: {
-    marginTop: 10,
-    marginBottom: 10,
-    backgroundColor: appColors.primary2
+    marginTop: 5,
+    marginBottom: 20,
+    backgroundColor: appColors.primary2,
+    height: 45, 
+    justifyContent: "center", 
+    borderRadius: 15,
+    width: "90%",
+    left: "5%"
   },
   datePicker: {
     width: '100%',

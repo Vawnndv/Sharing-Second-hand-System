@@ -1,11 +1,12 @@
-import { WarehouseManager } from '../classDiagramModel/Manager/WarehouseManager';
+
+import { Admin } from '../classDiagramModel/Admin';
 import asyncHandle from 'express-async-handler';
 
 
 export const getAllWarehouses = asyncHandle(async (req, res) => {
   try {
     // Call the static method getAllItems to fetch all items from the database
-    const warehouses = await WarehouseManager.viewAllWarehouse();
+    const warehouses = await Admin.warehouseManager.viewAllWarehouse();
     // If items are found, return them as a response
     if (warehouses) {
       res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
@@ -23,7 +24,7 @@ export const getAllWarehouses = asyncHandle(async (req, res) => {
 export const getAllWarehousesAdmin = asyncHandle(async (req, res) => {
   try {
     // Call the static method getAllItems to fetch all items from the database
-    const warehouses = await WarehouseManager.viewAllWarehouseAdmin();
+    const warehouses = await Admin.warehouseManager.viewAllWarehouseAdmin();
     // If items are found, return them as a response
     if (warehouses) {
       res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
@@ -93,7 +94,7 @@ export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
       orderByClause = ' ORDER BY createdat DESC ';
     }
     // Call the static method getAllItems to fetch all items from the database
-    const warehouses = await WarehouseManager.getAllWarehouseAllInfo(page, pageSize, whereClause, orderByClause, havingClause);
+    const warehouses = await Admin.warehouseManager.getAllWarehouseAllInfo(page, pageSize, whereClause, orderByClause, havingClause);
     // If items are found, return them as a response
     if (warehouses) {
       res.status(200).json({ message: 'Warehouses founded', wareHouses: warehouses });
@@ -113,7 +114,7 @@ export const getWarehouse = asyncHandle(async (req, res) => {
     const warehouseid: number = parseInt(req.params.warehouseid);
 
     // Call the static method getAllItems to fetch all items from the database
-    const warehouse = await WarehouseManager.viewWarehouse(warehouseid);
+    const warehouse = await Admin.warehouseManager.viewWarehouse(warehouseid);
     // If items are found, return them as a response
     if (warehouse) {
       res.status(200).json({ message: 'Warehouses founded', wareHouse: warehouse });
@@ -133,7 +134,7 @@ export const getWarehouseByUserID = asyncHandle(async (req, res) => {
     const userid: number = parseInt(req.params.userid);
 
     // Call the static method getAllItems to fetch all items from the database
-    const warehouse = await WarehouseManager.getWarehouseByUserID(userid);
+    const warehouse = await Admin.warehouseManager.getWarehouseByUserID(userid);
     // If items are found, return them as a response
     if (warehouse) {
       res.status(200).json({ message: 'Warehouses founded', wareHouse: warehouse });
@@ -157,7 +158,7 @@ export const createWarehouse = asyncHandle(async (req, res) => {
   const isNewAddress = req.body.isNewAddress;
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    const warehouseCreated = await WarehouseManager.createWarehouse(phonenumber, warehouseName, warehouseLocation, avatar, isNewAddress);
+    const warehouseCreated = await Admin.warehouseManager.createWarehouse(phonenumber, warehouseName, warehouseLocation, avatar, isNewAddress);
     res.status(200).json({ message: 'Create warehouse successfully', warehouseCreated: warehouseCreated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -177,7 +178,7 @@ export const updateWarehouse = asyncHandle(async (req, res) => {
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const warehouseUpdated = await WarehouseManager.updateWarehouse(phonenumber, warehouseName, warehouseLocation, avatar, isNewAddress, warehouseid);
+    const warehouseUpdated = await Admin.warehouseManager.updateWarehouse(phonenumber, warehouseName, warehouseLocation, avatar, isNewAddress, warehouseid);
     res.status(200).json({ message: 'Update warehouse successfully', warehouseUpdated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -193,7 +194,7 @@ export const updateWarehouseStatus = asyncHandle(async (req, res) => {
   try {
     // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const warehouseUpdated = await WarehouseManager.updateWarehouseStatus(warehouseid, status);
+    const warehouseUpdated = await Admin.warehouseManager.updateWarehouseStatus(warehouseid, status);
     res.status(200).json({ message: 'Update warehouse status successfully', warehouseUpdated });
   } catch (error) {
     // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
@@ -206,7 +207,7 @@ export const updateWarehouseStatus = asyncHandle(async (req, res) => {
 
 export const getWarehouseNameList = asyncHandle(async (_req, res) => {
   try {
-    const warehouseList = await WarehouseManager.getWarehouseNameList();
+    const warehouseList = await Admin.warehouseManager.getWarehouseNameList();
     // If items are found, return them as a response
     if (warehouseList) {
       res.status(200).json({ message: 'Get Warehouses Name List Successfully', data: { warehouseList } });

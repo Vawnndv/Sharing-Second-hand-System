@@ -97,7 +97,24 @@ function ViewDetailOrder() {
                   </Box>
                 }
                 {
-                  order.imgconfirmreceive &&
+                  order.timestart && order.timeend &&
+                  <Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                      <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày bắt đầu nhận: </Typography>
+                      <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color="red">
+                        {formatDateTime(order?.timestart)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
+                      <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày kết thúc: </Typography>
+                      <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color="red">
+                        {formatDateTime(order?.timeend)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                }
+                {
+                  order.imgconfirmreceive && order.imgconfirmreceive !== ' ' &&
                   <Box sx={{mb: 2}}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
                       <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày nhận người nhận: </Typography>

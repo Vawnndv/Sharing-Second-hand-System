@@ -6,7 +6,6 @@ import { CircleComponent, TextComponent } from '../components';
 import { appColors } from '../constants/appColors';
 import AddNavigator from './AddNavigator';
 import HomeNavigator from './HomeNavigator';
-import MessagesNavigator from './MessagesNavigator';
 import ProfileNavigator from './ProfileNavigator';
 import ScanNavigator from './ScanNavigator';
 import ChatNavigator from './ChatNavigator';
@@ -176,6 +175,7 @@ const TabNavigator = () => {
             }
           })(route),
         })} 
+        initialParams={{ id: auth.id }}
       />  
     </Tab.Navigator>
   );

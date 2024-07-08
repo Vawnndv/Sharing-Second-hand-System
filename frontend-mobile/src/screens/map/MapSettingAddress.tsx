@@ -1,10 +1,10 @@
 import MapView, {Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 
-import * as Location from 'expo-location';
-import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollView, Keyboard, KeyboardAvoidingView, Alert} from "react-native"
+import * as ExpoLocation from 'expo-location';
+import {Dimensions, View, StyleSheet, TextInput, TouchableOpacity, Text, ScrollView, Keyboard, KeyboardAvoidingView, Alert, useColorScheme} from "react-native"
 import ContainerComponent from '../../components/ContainerComponent';
 import { useEffect, useRef, useState } from 'react';
-import { EvilIcons, Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
+import { EvilIcons, Ionicons, MaterialIcons, FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useDebounce } from '../../hooks/useDebounce';
 import { appInfo } from '../../constants/appInfos';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,10 @@ import { isLoading } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
 import { GOOGLE_MAP_API_KEY, BING_MAP_API_KEY } from '@env';
 import axiosClient from '../../apis/axiosClient';
+import { appColors } from '../../constants/appColors';
+import { ArrowRight, Location } from 'iconsax-react-native';
+import ButtonComponent from '../../components/ButtonComponent';
+import React from 'react';
 
 
 const getUrlRequest = (query: string) => {
@@ -63,6 +67,9 @@ export default function MapSettingAddress({navigation, route}: any) {
     const auth = useSelector(authSelector);
     const navitation = useNavigation()
 
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === 'dark';
+
     useEffect(() => {
         const fetchHomeLocation = async () => {
             const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
@@ -72,6 +79,19 @@ export default function MapSettingAddress({navigation, route}: any) {
                     latitude: parseFloat(response.data.latitude),
                     longitude: parseFloat(response.data.longitude)
                 })
+                moveCameraToCoordinate({
+                    latitude: parseFloat(response.data.latitude),
+                    longitude: parseFloat(response.data.longitude)
+                })
+            }else{
+                let location: any = await ExpoLocation.getCurrentPositionAsync({});
+                //   (location)
+                const locationTarget = {
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                }
+                setLocation(locationTarget)
+                moveCameraToCoordinate(locationTarget)
             }
         }
         fetchHomeLocation()
@@ -93,13 +113,13 @@ export default function MapSettingAddress({navigation, route}: any) {
     }
 
     const handleGetMyLocation = async () => {
-        let { status } = await Location.requestForegroundPermissionsAsync();
+        let { status } = await ExpoLocation.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
             Alert.alert('Quyền truy cập vào vị trí đã bị hoãn');
             return;
           }
     
-          let location: any = await Location.getCurrentPositionAsync({});
+          let location: any = await ExpoLocation.getCurrentPositionAsync({});
         //   (location)
           const locationTarget = {
             latitude: location.coords.latitude,
@@ -345,24 +365,44 @@ export default function MapSettingAddress({navigation, route}: any) {
                 {
                     (useTo === 'setAddress')
                     &&
-                    <TouchableOpacity style={styles.myLocationButton}
-                        onPress={() => handleGetCenterMyLocation()}>
-                        <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
-                    </TouchableOpacity>
+                    // <TouchableOpacity style={styles.myLocationButton}
+                    //     onPress={() => handleGetCenterMyLocation()}>
+                    //     <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
+                    // </TouchableOpacity>
+                    <ButtonComponent
+                        disable={false}
+                        onPress={() => handleGetCenterMyLocation()}
+                        text={"Xác nhận vị trí của tôi"}
+                        type='primary'
+                        iconFlex="right"
+                        styles={styles.myLocationButton}
+                    />
                 }
 
                 {
                     (useTo === 'setPostAddress')
                     &&
-                    <TouchableOpacity style={styles.myLocationButton}
-                        onPress={() => handleGetCenterGiveLocation()}>
-                        <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí cho</Text>
-                    </TouchableOpacity>
+                    // <TouchableOpacity style={styles.myLocationButton}
+                    //     onPress={() => handleGetCenterGiveLocation()}>
+                    //     <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí cho</Text>
+                    // </TouchableOpacity>
+                    <ButtonComponent
+                        disable={false}
+                        onPress={() => handleGetCenterGiveLocation()}
+                        text={"Xác nhận vị trí cho"}
+                        type='primary'
+                        iconFlex="right"
+                        styles={styles.myLocationButton}
+                    />
                 }
                 
 
                 <View style={styles.pinLocation}>
-                    <Ionicons name='location' size={50} style={{color: '#693F8B'}}/>
+                    <MaterialIcons 
+                        name='location-pin' 
+                        size={50} 
+                        style={{color: appColors.primary}}
+                    />
                 </View>
                 
             </KeyboardAvoidingView>
@@ -388,7 +428,7 @@ const styles = StyleSheet.create({
     containerSearch: {
         width: '95%',
         position: 'absolute',
-        top: 20,
+        top: 10,
         flexDirection: 'column'
     },
     search: {
@@ -415,13 +455,13 @@ const styles = StyleSheet.create({
     },
     inputSearch: {
         flex: 1,
-        paddingVertical: 10,
+        paddingVertical: 15,
         paddingHorizontal: 10,
     },
     searchButton: {
-        width: 45,
-        height: 45,
-        backgroundColor:"#693F8B",
+        width: 55,
+        height: 55,
+        backgroundColor: appColors.primary,
         marginRight: 2,
         borderRadius: 30,
         display: 'flex',
@@ -431,10 +471,10 @@ const styles = StyleSheet.create({
         borderWidth: 1
     },
     clearButton: {
-        width: 45,
-        height: 45,
+        width: 55,
+        height: 55,
         backgroundColor:"#641620",
-        marginRight: 2,
+        marginLeft: 2,
         borderRadius: 30,
         display: 'flex',
         justifyContent: 'center',
@@ -444,10 +484,8 @@ const styles = StyleSheet.create({
     },
     myLocationButton: {
         position: 'absolute',
-        width: '95%',
-        backgroundColor: "#693F8B",
+        backgroundColor: appColors.primary,
         color: "red",
-        borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
         elevation: 8,
@@ -455,8 +493,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 10, height: 10 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
-        bottom: 10,
-        paddingVertical: 15,
+        bottom: 0,
         display: 'flex',
         justifyContent: 'center',
         zIndex: 0
@@ -471,7 +508,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         alignItems:'center',
-        backgroundColor: '#693F8B',
+        backgroundColor: appColors.primary,
         borderRadius: 100,
     },
     pinLocation: {

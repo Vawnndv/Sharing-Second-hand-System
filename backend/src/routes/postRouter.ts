@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus, getAllPostByUserId, EditPost, getAmountUserLikePost, getTotalPost, getReceivePosts } from '../controllers/postController';
+import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus, getAllPostByUserId, EditPost, getAmountUserLikePost, getTotalPost, getReceivePosts, getPostDetailsForUpdate } from '../controllers/postController';
 import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
@@ -14,6 +14,7 @@ router.get('/get-amount-user-like-post', protect, getAmountUserLikePost);
 router.get('/postowner/:postID', protect, getPostOwnerInfo);
 router.post('/search', protect, searchPost);
 router.get('/:postID', protect, getPostDetails);
+router.get('/forUpdate/:postID', protect, getPostDetailsForUpdate);
 router.get('/postreceivers/:postID', protect, getPostReceivers);
 router.post('/createPost', protect, createPost);
 

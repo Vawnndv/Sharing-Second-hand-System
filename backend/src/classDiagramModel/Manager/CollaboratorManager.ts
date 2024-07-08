@@ -15,7 +15,7 @@ export class CollaboratorManager extends UserManager {
   }
 
   
-  public static async getAllCollaborators(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
+  public async getAllCollaborators(page: string, pageSize: string, whereClause: string, orderByClause: string): Promise<any> {
     const client = await pool.connect()
   
     const query = `SELECT 
@@ -56,7 +56,7 @@ export class CollaboratorManager extends UserManager {
   }
   
 
-  public static async getCollaboratorsByWarehouse(warehouseID: string): Promise<any> {
+  public async getCollaboratorsByWarehouse(warehouseID: string): Promise<any> {
     const client = await pool.connect()
   
     const query = `SELECT 
@@ -85,7 +85,7 @@ export class CollaboratorManager extends UserManager {
   }
 
   
-  public static async totalAllCollaborators(whereClause: string): Promise<any> {
+  public async totalAllCollaborators(whereClause: string): Promise<any> {
     const client = await pool.connect()
     const query = 
     // 'SELECT COUNT(*) FROM users' + whereClause;
@@ -110,7 +110,7 @@ export class CollaboratorManager extends UserManager {
   }
 
   
-  public static async adminBanCollaborator(userid: number, isBanned: boolean): Promise<any> {
+  public async adminBanCollaborator(userid: number, isBanned: boolean): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
@@ -130,7 +130,7 @@ export class CollaboratorManager extends UserManager {
   };
 
 
-  public static async adminDeleteCollaborator(userid: string): Promise<any> {
+  public async adminDeleteCollaborator(userid: string): Promise<any> {
     const client = await pool.connect();
 
 
@@ -152,7 +152,7 @@ export class CollaboratorManager extends UserManager {
     }
   };
 
-  public static async adminUpdateCollaborator(userid: number, firstname: string, lastname: string ,email: string, phonenumber: string, dob: string): Promise<any> {
+  public async adminUpdateCollaborator(userid: number, firstname: string, lastname: string ,email: string, phonenumber: string, dob: string): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "User"
@@ -173,7 +173,7 @@ export class CollaboratorManager extends UserManager {
     }
   };
 
-  public static async adminUpdateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
+  public async adminUpdateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
       UPDATE "workat"
@@ -194,7 +194,7 @@ export class CollaboratorManager extends UserManager {
     }
   };
 
-  public static async adminCreateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
+  public async adminCreateWarehouseWorkCollaborator(userid: number, warehouseid: number): Promise<any> {
     const client = await pool.connect();
     const query = `
       INSERT INTO public.workat(warehouseid, userid, position)
@@ -213,7 +213,7 @@ export class CollaboratorManager extends UserManager {
     }
   };
 
-  public static async getWarehouseInfoOfCollaborator(userid: number): Promise<any> {
+  public async getWarehouseInfoOfCollaborator(userid: number): Promise<any> {
     const client = await pool.connect()
     const query = 'SELECT WAREHOUSE.addressid, WORKAT.warehouseid from WORKAT JOIN WAREHOUSE ON WORKAT.warehouseid = WAREHOUSE.warehouseid WHERE userid = $1';
 
