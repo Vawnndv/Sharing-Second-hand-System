@@ -128,7 +128,7 @@ If you encounter any issues or have suggestions for improvements, please feel fr
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the MIT License.
 
 Unless otherwise stated in individual files or directories, you are free to use, modify, and distribute the code in this repository for your own projects under the terms of the MIT License.
 
