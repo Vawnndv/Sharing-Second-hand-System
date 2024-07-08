@@ -26,6 +26,7 @@ import EditPost from './pages/post/editPost/editPost';
 import PostsCreen from './pages/post/postsPage/PostsScreen';
 import ReportScreen from './pages/report/ReportScreen';
 import AddPost from './pages/post/addPost/AddPost';
+import AboutProfileUser from './pages/auth/Profile/AboutProfileUser';
 
 export function App() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -62,6 +63,7 @@ export function App() {
           <Route path="*" element={<NotFound />} />
           <Route path="/password" element={<Password />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/about-profile" element={<AboutProfileUser />} />
           <Route path="/report" element={<ReportScreen />} />
           <Route path="/statistic" element={<Statistic />} />
           <Route path="/chat" element={<ChatScreen />} />

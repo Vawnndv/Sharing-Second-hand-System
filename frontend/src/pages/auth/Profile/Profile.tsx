@@ -110,6 +110,7 @@ function Profile() {
       setValue('lastName', userInfo?.lastName);
       setValue('email', userInfo?.email);
       setValue('phone', userInfo?.phoneNumber);
+      setValue('address', userInfo.address ?? '');
       if (userInfo?.dob !== '') {
         setDate(dayjs(userInfo?.dob));
       }
@@ -141,9 +142,9 @@ function Profile() {
 
   useEffect(() => {
     if(location !== null){
-        ///
+      setValue('address', location.address);
     }
-  }, [])
+  }, [location])
 
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -211,7 +212,9 @@ function Profile() {
                     <ImagePreview image={imageUrl} name="user-image" />
                   </Grid>
                   <Grid item xs={12}>
-                    <TextField fullWidth {...register('email')} id="email" label="Địa chỉ email" name="email" disabled />
+                    <TextField fullWidth {...register('email')} id="email" label="Địa chỉ email" name="email"  InputProps={{
+                        readOnly: true,
+                      }} />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -224,8 +227,6 @@ function Profile() {
                       {...register('firstName')}
                       error={!!errors.firstName}
                       helperText={errors.firstName?.message || ''}
-                      // eslint-disable-next-line eqeqeq
-                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -238,28 +239,57 @@ function Profile() {
                       {...register('lastName')}
                       error={!!errors.lastName}
                       helperText={errors.lastName?.message || ''}
-                      // eslint-disable-next-line eqeqeq
-                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
-                  <Grid item xs={12} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
                     <TextField
                       fullWidth
+                      required
                       id="phone"
                       label="Số điện thoại"
                       {...register('phone')}
                       error={!!errors.phone}
                       helperText={errors.phone?.message || ''}
-                      // eslint-disable-next-line eqeqeq
-                      disabled={profileID != authInfo?.id}
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6} sx={{ mt: 1 }}>
+                  <Grid item xs={12} sm={6} md={6}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterDayjs}
+                    >
+                      <DemoContainer components={['DatePicker']}>
+                        <DatePicker
+                          sx={{ width: '100%' }}
+                          label='Ngày sinh *'
+                          value={date}
+                          onChange={newValue =>
+                            setDate(newValue)
+                          }
+                          format="DD/MM/YYYY"
+                        />
+                      </DemoContainer>
+                    </LocalizationProvider>
+                  </Grid>
+                  
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                        fullWidth
+                        id="address"
+                        label="Địa chỉ"
+                        //   name="address"
+                        value={userInfo?.address || ''}
+                        {...register('address')}
+                        error={!!errors.lastName}
+                        helperText={errors.lastName?.message || ''}
+                        InputProps={{
+                          readOnly: true,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12} md={12} sx={{ mt: 1 }}>
                       <Button fullWidth sx={{height: '55px', width: '100%'}} variant="outlined" startIcon={<LocationOnIcon />}
                           onClick={handleOpen}
-                          // eslint-disable-next-line eqeqeq
-                          disabled={profileID != authInfo?.id}>
+                      >
                           Cập nhật vị trí
                       </Button>
                       <Modal
@@ -275,29 +305,8 @@ function Profile() {
                       </Modal>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={6}>
-                    <LocalizationProvider
-                      dateAdapter={AdapterDayjs}
-                    >
-                      <DemoContainer components={['DatePicker']}>
-                        <DatePicker
-                          sx={{ width: '100%' }}
-                          label='Ngày sinh'
-                          value={date}
-                          onChange={newValue =>
-                            setDate(newValue)
-                          }
-                          format="DD/MM/YYYY"
-                          // eslint-disable-next-line eqeqeq
-                          disabled={profileID != authInfo?.id}
-                        />
-                      </DemoContainer>
-                    </LocalizationProvider>
-                  </Grid>
                 </Grid>
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}
-                  // eslint-disable-next-line eqeqeq
-                  disabled={profileID != authInfo?.id}>
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}>
                   {updateLoading ? 'Đang tải...' : 'Cập nhật'}
                 </Button>
               </Box>
