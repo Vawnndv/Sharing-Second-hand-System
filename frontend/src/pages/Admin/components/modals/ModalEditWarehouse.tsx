@@ -189,8 +189,8 @@ function ModalEditWarehouse(props: Props) {
             component="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
-                Cập nhật kho
+            <Typography id="modal-modal-title" variant="h4"  sx={{ fontWeight:'bold', color: 'primary.main' }}>
+                Cập nhật thông tin kho
             </Typography>
 
             

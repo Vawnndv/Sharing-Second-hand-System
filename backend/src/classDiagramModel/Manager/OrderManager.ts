@@ -129,6 +129,15 @@ function buildStatusQuery(statusArray: string[], type: QueryType) {
   return statusQuery + ')';
 }
 
+function buildRoleCheckQuery(method: string[]): string {
+  if (method.includes('1') && method.length == 1) {
+    // Select by role user
+    return 'AND u.roleid = 1';
+  }
+  // Select by role admin or collaborator
+  return 'AND (u.roleid = 2 OR u.roleid = 3)';
+}
+
 export class OrderManager {
   public constructor() {
 
@@ -1245,8 +1254,15 @@ export class OrderManager {
     }
   };
 
-  public async getOrderListByStatus (userID: string, status: string[], method: string[], limit: string, page: string, isOverdue: boolean, filterValue: any): Promise<any> {
-
+  public async getOrderListByStatus(
+    userID: string,
+    status: string[],
+    method: string[],
+    limit: string,
+    page: string,
+    isOverdue: boolean,
+    filterValue: any
+  ): Promise<any> {
     const client = await pool.connect();
     let query = `
     SELECT
@@ -1276,14 +1292,15 @@ export class OrderManager {
     LEFT JOIN Address ad ON ad.addressid = po.addressid
     LEFT JOIN Address adg ON adg.AddressID = o.LocationGive
     LEFT JOIN Address adr ON adr.AddressID = o.LocationReceive
-		LEFT JOIN Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
+    LEFT JOIN Item_Type itt ON itt.ItemTypeID = it.ItemTypeID
     LEFT JOIN Workat w ON w.userid = ${userID}
     LEFT JOIN Warehouse wh ON w.warehouseid = wh.warehouseid
     WHERE
       wh.warehouseid = o.warehouseid
       {placeholder1}
       {placeholder2}
-    ${isOverdue === true ? 'AND po.timeend < CURRENT_TIMESTAMP' : ''}
+      ${isOverdue === true ? "AND po.timeend < CURRENT_TIMESTAMP" : "AND po.timeend >= CURRENT_TIMESTAMP"}
+      ${buildRoleCheckQuery(method)}
     GROUP BY
         u.avatar,
         u.firstname,
@@ -1301,24 +1318,38 @@ export class OrderManager {
         o.CreatedAt,
         itt.NameType
     `;
-    
+
     try {
-        // Thực hiện truy vấn chính để lấy dữ liệu theo phân trang
-        const result = await client.query(query
-          .replace('{placeholder1}', buildStatusQuery(status, QueryType.Status))
-          .replace('{placeholder2}', buildStatusQuery(method, QueryType.Method))
-        );
+      const result = await client.query(
+        query
+          .replace("{placeholder1}", buildStatusQuery(status, QueryType.Status))
+          .replace("{placeholder2}", buildStatusQuery(method, QueryType.Method))
+      );
 
-        const resultAfterFilter = filterOrders(filterValue.distance, filterValue.time, filterValue.category, filterValue.sort, filterValue.latitude, filterValue.longitude, false, result.rows)
-        
-        const totalItems = resultAfterFilter.length;
+      const resultAfterFilter = filterOrders(
+        filterValue.distance,
+        filterValue.time,
+        filterValue.category,
+        filterValue.sort,
+        filterValue.latitude,
+        filterValue.longitude,
+        false,
+        result.rows
+      );
 
-        // Trả về cả dữ liệu và tổng số lượng item trong một đối tượng
-        return { orders: resultAfterFilter.slice(parseInt(page) * parseInt(limit), parseInt(page) * parseInt(limit) + parseInt(limit)), totalItems: totalItems };
+      const totalItems = resultAfterFilter.length;
+
+      return {
+        orders: resultAfterFilter.slice(
+          parseInt(page) * parseInt(limit),
+          parseInt(page) * parseInt(limit) + parseInt(limit)
+        ),
+        totalItems: totalItems,
+      };
     } catch (error) {
-        console.error('Error get orders:', error);
+      console.error("Error get orders:", error);
     } finally {
-        client.release(); // Release client sau khi sử dụng
+      client.release();
     }
   }
 
