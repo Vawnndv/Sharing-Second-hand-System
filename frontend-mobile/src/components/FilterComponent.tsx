@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { authSelector } from "../redux/reducers/authReducers";
 import { category } from "../constants/appCategories";
 import React from "react";
+import { appColors } from "../constants/appColors";
 
 let distance: any = []
 
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     selectItem: {
-        backgroundColor: '#782292',
+        backgroundColor: appColors.primary,
     },
     selectTextItem: {
         color: 'white'
@@ -363,6 +364,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 30,
         paddingVertical: 15,
         borderRadius: 200,
-        backgroundColor: '#782292'
+        backgroundColor: appColors.primary
     }
 })

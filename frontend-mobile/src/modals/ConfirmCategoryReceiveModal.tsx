@@ -5,6 +5,7 @@ import { appInfo } from "../constants/appInfos";
 import { useState } from "react";
 import axiosClient from "../apis/axiosClient";
 import LoadingModal from "./LoadingModal";
+import React from "react";
 
 interface Props {
     setVisible: any;

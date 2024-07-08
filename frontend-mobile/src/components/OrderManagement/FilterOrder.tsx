@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FilterModal from '../../modals/FilterModal';
 import React, { useState } from 'react';
+import { appColors } from '../../constants/appColors';
 
 
 export default function FilterOrder({filterValue, setFilterValue}: any) {
@@ -21,7 +22,7 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
         // }}
         onPress={showModal}
       >
-        <Ionicons name="options" size={26} color={'#552466'}/>
+        <Ionicons name="options" size={26} color={appColors.primary}/>
       </TouchableOpacity>
 
       <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>

@@ -1,7 +1,7 @@
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-
+import dayjs from 'dayjs';
 
 import axios from 'axios';
 import moment from 'moment';
@@ -29,6 +29,7 @@ import axiosClient from '../apis/axiosClient';
 import LoadingModal from '../modals/LoadingModal';
 import LoadingComponent from './LoadingComponent';
 import { addStatusReceivePost } from '../redux/reducers/userReducers';
+import PostOutdatedModal from '../modals/PostOutdatedModal';
 
 
 interface Post {
@@ -128,6 +129,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
   const [amountLike, setAmountLike] = useState(0)
 
+  const [visiblePostOutdated, setVisiblePostOutdated] = useState(false)
+  const [refreshData, setRefreshData] = useState(false);
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -245,6 +248,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
         itemIDs = res.postDetail.itemid;
         owner = res.postDetail.owner;
         setIsUserPost(res.postDetail.owner == auth.id);
+        // if(res.postDetail.timeend)
+
+        const today = dayjs()
+        const specificDay = dayjs(res.postDetail.timeend)
+        if(specificDay.isBefore(today)){
+          setVisiblePostOutdated(true)
+        }
         if (setIsOwnPost) {
           setIsOwnPost(auth.id !== res.postDetail.owner);
         }
@@ -306,7 +316,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
     useFocusEffect(
       useCallback(() => {
         fetchAllData();
-      }, [postID, fetchFlag])
+      }, [postID, fetchFlag, refreshData])
     );
   
     useEffect(() => {
@@ -668,6 +678,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
           post !== null && 
           <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseid}/>
         }
+        <PostOutdatedModal visible={visiblePostOutdated} setVisible={setVisiblePostOutdated} refreshData={refreshData} setRefreshDate={setRefreshData}/>
         
       </ScrollView>
     )
