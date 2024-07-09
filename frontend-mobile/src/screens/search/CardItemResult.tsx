@@ -46,7 +46,6 @@ interface Props {
 
 const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, setData, isRefresh, handleRefresh, isPosts }) => {
   moment.locale();
-
   const auth = useSelector(authSelector);
   const user = useSelector(userSelector);
 
@@ -170,6 +169,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
           isShadow
           onPress={() => navigation.navigate('ItemDetailScreen', {
             postID : item.postid,
+            handleRefresh: handleRefresh
           })}
         >
           <RowComponent

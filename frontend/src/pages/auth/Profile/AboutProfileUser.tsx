@@ -1,4 +1,4 @@
-import { Box, Container, Grid, Paper, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
+import { Box, Button, Container, Grid, Paper, TextField, ThemeProvider, Typography, createTheme } from '@mui/material';
 import { useEffect, useRef } from 'react';
 // eslint-disable-next-line no-restricted-imports
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -11,6 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import Loader from '../../../components/notification/Loader';
 import { getProfileAction } from '../../../redux/actions/userActions';
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
+import BlockIcon from '@mui/icons-material/Block';
 import './style.scss';
 import dayjs from 'dayjs';
 
@@ -96,17 +97,34 @@ function AboutProfileUser() {
                             <ImagePreview image={userInfo?.avatar || ''} name="user-image" isAboutProfile />
                         </Box>
                     </Grid>
-                    <Grid item xs={12} sx={{ mt: 1}}>
+                    <Grid item xs={12} sx={{ width: '100%', mt: 1, flexDirection:'column', justifyContent:'center', alignItems: 'center'}}>
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        width: '100%' 
+                      }}
+                    >
                         <TextField 
-                            fullWidth 
-                            id="email" 
-                            label="Địa chỉ email" 
-                            name="email"  
-                            value={userInfo?.email || ''}
-                            InputProps={{
-                                readOnly: true,
-                            }}
+                          sx={{flexGrow: 1}}
+                          id="email" 
+                          label="Địa chỉ email" 
+                          name="email"  
+                          value={userInfo?.email || ''}
+                          InputProps={{
+                              readOnly: true,
+                          }}
                         />
+                        <Button
+                         sx={{
+                          ml: 1,
+                          py: 1.8
+                         }}
+                         color='error'
+                         variant='contained' endIcon={<BlockIcon/>}>Cấm tài khoản</Button>
+                    </Box>
+                        
+                        
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField

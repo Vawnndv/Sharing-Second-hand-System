@@ -5,6 +5,7 @@ import { appColors } from "../constants/appColors";
 import { appInfo } from "../constants/appInfos";
 import LoadingModal from "./LoadingModal";
 import axiosClient from "../apis/axiosClient";
+import React from "react";
 
 export default function ReportModal({ visible, setVisible, title, reportType, userID, postID, reporterID, warehouseID }: any) {
     

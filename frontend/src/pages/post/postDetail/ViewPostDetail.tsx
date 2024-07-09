@@ -179,7 +179,8 @@ function ViewPostDetail() {
                     avatar: userInfo?.avatar,
                     link: `post/${postid}`,
                     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-                    body: `Bài viết của bạn "${post?.name}" đã được duyệt thành công!`,
+                    title:  'Bài viết đã được duyệt',
+                    body: `bài viết của bạn "${post?.name}" đã được duyệt thành công!`,
                   })
                 toast.success(`Duyệt bài thành công`);      
             } catch (error) {
@@ -340,7 +341,8 @@ function ViewPostDetail() {
                 avatar: userInfo?.avatar,
                 link: `post/${postid}`,
                 name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-                body: `Bài viết của bạn "${post?.name}" đã bị hủy`,
+                title: 'Bài viết đã bị hủy',
+                body: `bài viết của bạn "${post?.name}" đã bị hủy`,
               })
             toast.success('Hủy bài đăng thành công!');
             navigate(-1);

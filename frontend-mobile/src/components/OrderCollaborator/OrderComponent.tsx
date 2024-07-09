@@ -5,6 +5,7 @@ import IconEvil from 'react-native-vector-icons/EvilIcons';
 import { appInfo } from "../../constants/appInfos";
 import { appColors } from "../../constants/appColors";
 import TextComponent from "../TextComponent";
+import React from "react";
 interface OrderFunctionProbs {
     avatar: string,
     name: string,

@@ -1,3 +1,4 @@
+import React from "react";
 import { Button, StyleSheet, TouchableOpacity } from "react-native";
 import { Modal, Text, View } from "react-native";
 

@@ -362,3 +362,28 @@ export const  EditPost = asyncHandle(async (req, res) => {
     res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
   }
 });
+
+export const getAllPostsOutDate = asyncHandle(async (req, res) => {
+  try {
+    const result = await Collaborator.postManager.getAllPostsOutDate();
+    res.status(200).json({ message: 'Get all posts outdated successfully', allPost: result });
+    
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Error when get post:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});
+
+export const updateTimeEndPost = asyncHandle(async (req, res) => {
+  try {
+    const { postID, timeEnd } = req.body;
+    const result = await Collaborator.postManager.updateTimeEndPost(postID, timeEnd);
+    res.status(200).json({ message: 'Get all posts outdated successfully', result: result });
+    
+  } catch (error) {
+    // Nếu có lỗi xảy ra, trả về một phản hồi lỗi và ghi log lỗi
+    console.error('Error when get post:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ nội bộ.' });
+  }
+});

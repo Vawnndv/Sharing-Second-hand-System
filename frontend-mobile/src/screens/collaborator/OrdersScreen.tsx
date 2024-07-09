@@ -36,6 +36,8 @@ export default function OrdersScreen({navigation}: any) {
     const [orders, setOrders] = useState([])
     const [ordersGiving, setOrdersGiving] = useState([])
 
+    const [refreshOrder, setRefreshOrder] = useState(false)
+
     const [filterValue, setFilterValue] = useState({
         distance: -1,
         time: -1,
@@ -115,6 +117,7 @@ export default function OrdersScreen({navigation}: any) {
     //     return unsubscribe;
     //   }, [navigation]);
 
+    
     const onRefresh = useCallback(() => {
         setRefreshing(true);
     
@@ -123,7 +126,11 @@ export default function OrdersScreen({navigation}: any) {
           // Ví dụ này chỉ là load lại dữ liệu cũ, bạn có thể thay thế bằng API call
           setRefreshing(false);
         }, 1000);
-      }, []);
+      }, [refreshOrder]);
+
+    const handleRefresh = () => {
+        onRefresh()
+    }
     return(
         <ContainerComponent>
             {/* <ShowMapComponent location={{latitude: 10.768879, longitude: 106.656034, address: 'Nhà thi đấu Phú Thọ'}} setLocation={''}/> */}
@@ -194,6 +201,7 @@ export default function OrdersScreen({navigation}: any) {
                                         <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
                                             orderID: order.orderID,
                                             status: order.status,
+                                            handleRefresh
                                         })} key={index}
                                         style={{
                                             paddingHorizontal: 20,
@@ -226,6 +234,7 @@ export default function OrdersScreen({navigation}: any) {
                                         <TouchableOpacity onPress={() => navigation.navigate('OrderDetailsScreen',  {
                                             orderID: order.orderID,
                                             status: order.status,
+                                            handleRefresh
                                         })} key={index}
                                         style={{
                                             paddingHorizontal: 20,

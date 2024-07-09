@@ -762,4 +762,30 @@ export class CollaboratorPostManager extends PostManager {
       client.release(); // Release client sau khi sử dụng
     }
   }
+
+  public async getAllPostsOutDate(): Promise<any>{
+    const client = await pool.connect();
+
+    const query = `
+      SELECT * 
+      FROM posts
+      WHERE iswarehousepost = false
+      AND statusid = 12
+      AND NOW() >= timeend
+    `
+    try {
+      const result: QueryResult = await client.query(query)
+      if(result.rows.length > 0){
+        return result.rows
+      }else{
+        return []
+      }
+      
+    } catch (error) {
+      console.log(error)
+      return []
+    }finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  }
 }

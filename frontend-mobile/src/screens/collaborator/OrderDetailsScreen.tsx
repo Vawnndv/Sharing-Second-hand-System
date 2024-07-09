@@ -33,7 +33,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
 
     const auth = useSelector(authSelector)
     
-    const {orderID, status} = route.params
+    const {orderID, status, handleRefresh} = route.params
 
     const [orders, setOrders] = useState<any[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -196,6 +196,10 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                         statusID: 3
                     });
                 }
+                if(handleRefresh){
+                    handleRefresh()
+                }
+                
                 Alert.alert('Thông báo','Xác nhận đơn hàng thành công!')
                 navigation.goBack();
     
@@ -213,7 +217,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
                 if(orders[0].order.item !== currentCategory){
                     // console.log(orders[0].order.giver.userID)
                     setVisibleConfirmCategory(true)
-                    console.log(image)
                 }
             }
             
@@ -227,6 +230,7 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     }
 
     const receiveOrder = async () => {
+        
         setIsVisibleModalConfirm(true)
     }
 
@@ -251,6 +255,9 @@ export default function OrderDetailsScreen({navigation, route}: any) {
     
     useEffect(() => {
         if(confirm === true) {
+            if(handleRefresh){
+                handleRefresh()
+            }
             updateReceiver()
         }
     }, [confirm])
