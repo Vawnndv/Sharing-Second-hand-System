@@ -43,6 +43,7 @@ export function App() {
     const callAPI = async () => {
       try{
         const response: any = await Axios.get('/posts/getAllPosts/outdated');
+        console.log(response.allPost);
         for(let i = 0; i < response.allPost.length; i+=1){
           console.log("item.title", response.allPost[i].title)
           // eslint-disable-next-line no-await-in-loop
@@ -81,18 +82,19 @@ export function App() {
 
     const now = new Date();
     const nowTime = now.getTime();
-    const next7am = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 0, 0, 0).getTime();
-    const timeTo7am = next7am > nowTime ? next7am - nowTime : next7am + 86400000 - nowTime;
+    const next9am = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0, 0).getTime();
+    const timeTo9am = next9am > nowTime ? next9am - nowTime : next9am + 86400000 - nowTime;
+    console.log(timeTo9am)
     const timeoutId = setTimeout(() => {
       // Gọi API lúc 7h sáng
       
 
       // Thiết lập setInterval để gọi API mỗi 24 giờ
-      
+      callAPI()
       const intervalId = setInterval(() => callAPI(), 86400000);
       // Dọn dẹp interval khi component unmount
       return () => clearInterval(intervalId);
-    }, timeTo7am);
+    }, timeTo9am);
 
     // Dọn dẹp timeout khi component unmount
     return () => clearTimeout(timeoutId);
