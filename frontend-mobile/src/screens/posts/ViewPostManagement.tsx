@@ -39,7 +39,7 @@ const ViewPostManagement = ({navigation, route}: any) => {
     navigation.navigate('EditPostScreen', {
       title: 'Gửi bài viết thành công!!',
       postID: postid,
-      content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viết kiểm duyệt',
+      content: 'Cảm ơn bạn rất nhiều vì đã cho món đồ, bài viết của bạn sẽ sớm được đội ngũ cộng tác viên kiểm duyệt',
     })
   };
 

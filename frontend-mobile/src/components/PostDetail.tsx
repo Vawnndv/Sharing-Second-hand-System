@@ -45,6 +45,7 @@ interface Post {
   timeend?: Date; // DATE có thể null
   longitude?: string;
   latitude?: string;
+  
 }
 
 
@@ -72,6 +73,7 @@ interface PostDetailProps {
   visibleModalReport?: boolean;
   setVisibleModalReport?: (val: boolean) => void;
   setIsOwnPost?: (val: boolean) => void;
+  handleRefresh: any;
 }
 
 interface PostReceiver {
@@ -92,7 +94,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost} ) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost, handleRefresh} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   const dispatch = useDispatch();
@@ -254,6 +256,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
         const specificDay = dayjs(res.postDetail.timeend)
         if(specificDay.isBefore(today)){
           setVisiblePostOutdated(true)
+        }else{
+          setVisiblePostOutdated(false)
         }
         if (setIsOwnPost) {
           setIsOwnPost(auth.id !== res.postDetail.owner);
@@ -337,6 +341,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
     setGoToReceiveForm(false);
     navigation.navigate('ReceiveFormScreen', {
       postID: postID,
+      handleRefresh
     });
     // setPost(null);
   }
@@ -349,12 +354,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
       receivetype: receivemethod,
       receivetypeid: receivetypeid,
       warehouseid: warehouseid,
+      handleRefresh
     });
     // setPost(null);
-    <ReceiveForm
-      postID = {postID}
-      setIsFetchData = {setIsFetchData}
-    />
+    // <ReceiveForm
+    //   postID = {postID}
+    //   setIsFetchData = {setIsFetchData}
+    // />
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
@@ -678,7 +684,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
           post !== null && 
           <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseid}/>
         }
-        <PostOutdatedModal visible={visiblePostOutdated} setVisible={setVisiblePostOutdated} refreshData={refreshData} setRefreshDate={setRefreshData}/>
+        {
+          post !== null && auth.id == post.owner &&
+          <PostOutdatedModal visible={visiblePostOutdated} setVisible={setVisiblePostOutdated} refreshData={refreshData} setRefreshDate={setRefreshData} postid={postID}/>
+        }
+        
         
       </ScrollView>
     )

@@ -51,7 +51,7 @@ export default function AddPost() {
 
   const [itemTypes, setItemTypes] = useState<any>([])
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  const [itemCategory, setItemCategory] = useState(null)
+  const [itemCategory, setItemCategory] = useState(1)
 
   useEffect(() => {
     const fetchWareHouse = async () => {
@@ -314,7 +314,7 @@ export default function AddPost() {
     setPhoneNumber('')
     setAmount('')
     setDescription('')
-    setItemCategory(null)
+    setItemCategory(1)
     setItemName('')
     setDate([today,today])
     setItemNewImages([])

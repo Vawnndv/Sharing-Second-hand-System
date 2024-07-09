@@ -10,6 +10,7 @@ import { authSelector } from '../../redux/reducers/authReducers';
 
 const ItemDetailScreen = ({navigation, route}: any) => {
   const postID = route.params.postID;
+  const handleRefresh = route.params.handleRefresh
 
   const [visibleModalReport, setVisibleModalReport] = useState(false)
   const [isOwnPost, setIsOwnPost] = useState(false);
@@ -34,7 +35,7 @@ const ItemDetailScreen = ({navigation, route}: any) => {
         
       )}
     >
-      <PostDetail navigation={navigation} route={route} postID={postID} visibleModalReport={visibleModalReport} setVisibleModalReport={setVisibleModalReport} setIsOwnPost={setIsOwnPost}/>
+      <PostDetail navigation={navigation} route={route} postID={postID} visibleModalReport={visibleModalReport} setVisibleModalReport={setVisibleModalReport} setIsOwnPost={setIsOwnPost} handleRefresh={handleRefresh}/>
     </ContainerComponent>
   )
 }

@@ -105,7 +105,6 @@ const VerificationScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent
       back
-      isImageBackground
       isScroll
     >
       <SectionComponent>

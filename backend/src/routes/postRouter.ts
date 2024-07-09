@@ -1,5 +1,5 @@
 import express from 'express';
-import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus, getAllPostByUserId, EditPost, getAmountUserLikePost, getTotalPost, getReceivePosts, getPostDetailsForUpdate, getAllPostsOutDate } from '../controllers/postController';
+import { getPostOwnerInfo, getPostDetails, getPostReceivers, createPost, getAllPostFromUserPost, getAllPostFromWarehouse, searchPost, createPostReceiver, getUserLikePosts, deletePostReceivers, getAllPostByStatus, updatePostStatus, getAllPostByUserId, EditPost, getAmountUserLikePost, getTotalPost, getReceivePosts, getPostDetailsForUpdate, getAllPostsOutDate, updateTimeEndPost } from '../controllers/postController';
 import { protect } from '../middlewares/verifyMiddleware';
 
 const router = express.Router();
@@ -24,7 +24,7 @@ router.post('/update-post-status', protect, updatePostStatus);
 router.post('/editPost', protect, EditPost);
 router.post('/getTotalPost', protect, getTotalPost);
 router.get('/getAllPosts/outdated', protect, getAllPostsOutDate);
-
+router.post('/updateTimeEndPost', protect, updateTimeEndPost);
 // router.get('/posts/', getFilterPostList);
 
 

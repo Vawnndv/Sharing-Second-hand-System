@@ -178,6 +178,7 @@ export class PostManager {
           SELECT DISTINCT ON (itemid) * FROM Image
       ) img ON img.itemid = po.itemid
       WHERE po.iswarehousepost = false AND po.givetypeid != 3 AND po.givetypeid != 4 AND (po.statusid = 12)
+      AND NOW() < po.timeend
       GROUP BY
           us.userid,
           us.firstname,
@@ -900,6 +901,24 @@ export class PostManager {
     } catch (error) {
       console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
       throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async updateTimeEndPost(postID: string, timeEnd: string): Promise<boolean> {
+    const client = await pool.connect();
+    try {
+      let query = `
+        UPDATE posts
+        SET timeend = '${timeEnd}'
+        WHERE postid = ${postID}
+      `
+      const result: QueryResult = await client.query(query);
+      return true;
+    } catch (error) {
+      console.error('Lỗi khi truy vấn cơ sở dữ liệu:', error);
+      return false;
     } finally {
       client.release();
     }

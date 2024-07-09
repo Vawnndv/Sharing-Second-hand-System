@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Platform, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Modal, Text, View } from "react-native";
@@ -9,20 +9,26 @@ import axiosClient from "../apis/axiosClient";
 import React from "react";import { TextInput } from "react-native-paper";
 import dayjs from "dayjs";
 import moment from "moment";
+import { useNavigation } from "@react-navigation/native";
+import ConfirmComponent from "../components/ConfirmComponent";
 
 interface Props {
     visible: boolean,
     setVisible: any,
     refreshData: boolean,
-    setRefreshDate: any
+    setRefreshDate: any,
+    postid: number
 }
 
 export default function PostOutdatedModal(props: Props) {
     
-    const {visible, setVisible, refreshData, setRefreshDate} = props;
+    const {visible, setVisible, refreshData, setRefreshDate, postid} = props;
     const [description, setDescription] = useState('');
     const [isLoading, setIsLoading] = useState(false)
     
+    const [confirmDelete, setConfirmDelete] = useState(false)
+    const [visibleModalConfirm, setVisibleModalConfirm] = useState(false)
+
     const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false); 
     const minimumDate = new Date()
     minimumDate.setDate(minimumDate.getDate() + 1)
@@ -38,11 +44,40 @@ export default function PostOutdatedModal(props: Props) {
 
     const handleConfirm = () => {
 
+        const callAPIUpdateTimeEndPost = async () => {
+            const res = await axiosClient.post('/posts/updateTimeEndPost', {
+                postID: postid,
+                timeEnd: `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDate()}`
+            })
+        }
+        callAPIUpdateTimeEndPost()
+        setRefreshDate(!refreshData)
+        Alert.alert('Thông báo', 'Bạn đã gia hạn bài viết thành công!')
     }
 
     const handleDeletePost = () => {
+        setVisibleModalConfirm(true)
         
     }
+
+    const handleConfirmDelete = (check: boolean) => {
+        setConfirmDelete(check)
+    }
+
+    const navigation: any = useNavigation()
+    useEffect(() => {
+        const cancelPost = async () => {
+            const res = await axiosClient.post(`/posts/update-post-status`, {
+                postid: postid,
+                statusid: 6
+            })
+        }
+        if(confirmDelete){
+            cancelPost()
+            Alert.alert('Thông báo', 'Bạn đã hủy bài viết thành công!')
+            navigation.navigate('HomeScreen')
+        }
+    }, [confirmDelete])
     
     return (
         <Modal
@@ -108,11 +143,13 @@ export default function PostOutdatedModal(props: Props) {
                     is24Hour={true}
                     display="default"
                     minimumDate={minimumDate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
-                    maximumDate={endDate ? moment(endDate).toDate() : moment().add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+                    
                     onChange={onChangeStartDate}
                 />
             )}
             <LoadingModal visible={isLoading} />
+            <ConfirmComponent visible={visibleModalConfirm} setVisible={setVisibleModalConfirm} 
+            title='Bạn có thật sự muốn hủy bài viết này?' setConfirm={handleConfirmDelete} setIsLoading={setIsLoading}/>
         </Modal>
     );
 }
