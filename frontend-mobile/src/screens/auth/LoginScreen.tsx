@@ -85,7 +85,7 @@ const LoginScreen = ({navigation}: any) => {
       <SectionComponent 
         styles={{
           justifyContent: 'center',
-          marginTop: 25,
+          marginTop: 48,
         }}
       >
         {/* <View style={styles.logoContainer}>
