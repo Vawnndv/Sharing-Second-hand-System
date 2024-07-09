@@ -105,13 +105,12 @@ const VerificationScreen = ({navigation, route}: any) => {
   return (
     <ContainerComponent
       back
-      isImageBackground
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Xác minh đăng ký"  size={24} title color={appColors.primary} />
-        <SpaceComponent height={12} />
-        <TextComponent text={`Chúng tôi đã gửi mã xác minh cho bạn vào ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} />
+        <TextComponent text="Xác minh đăng ký" size={32} title color={appColors.primary} styles={{textAlign: "center"}} />
+        <SpaceComponent height={21} />
+        <TextComponent text={`Chúng tôi đã gửi mã xác minh cho bạn vào ${email.replace(/.{1,5}/, (m: any) => '*'.repeat(m.length),)}`} styles={{textAlign: "center"}} />
         <SpaceComponent height={26} />
         <RowComponent justify="space-around">
           <TextInput

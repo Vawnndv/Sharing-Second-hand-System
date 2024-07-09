@@ -311,7 +311,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         handleValidate(response,'postdescription')
         setCountClickGenerate(countClickGenerate + 1);
       } catch (error) {
-        Alert.alert("Thông báo", "Tạo mô tả tự động đã gặp vấn đề, xin vui lòng thử lại!")
+        Alert.alert("Thông báo", "Tạo mô tả tự động đang gặp sự cố, xin vui lòng thử lại!")
         console.log(error)
         setIsLoading(false);
       }

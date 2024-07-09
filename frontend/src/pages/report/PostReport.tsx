@@ -47,7 +47,7 @@ function PostReport() {
   };
 
   const handleViewPostDetails = (postid: string) => {
-    navigate(`/post/${postid}`);
+    navigate(`/post/${postid}`, { state: {canApproval: false, canDelete: true, isWaitForPost: false}});
   };
 
   const handleResolve = async (reportID: string) => {

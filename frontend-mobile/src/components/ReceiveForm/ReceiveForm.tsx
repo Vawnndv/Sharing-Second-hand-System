@@ -35,7 +35,7 @@ interface Props {
   navigation?: any;
   route?: any;
   isFetchData?: any;
-  setIsFetchData: (val: any) => void;
+  handleRefresh: any;
 }
 
 
@@ -104,7 +104,7 @@ export interface ErrorProps  {
 }
 
 
-export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid, setIsFetchData }) => {
+export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiveid, receivetype, receivetypeid, warehouseid, handleRefresh }) => {
 
   // const navigation: any = useNavigation();
   const dispatch = useDispatch();
@@ -602,8 +602,11 @@ const handleReceive = async () => {
       
           Alert.alert('Thành công', 'Nhận món đồ thành công.');
           setIsCompleted(true);
+          if(handleRefresh){
+            handleRefresh()
+          }
           navigation.navigate('Home', {screen: 'HomeScreen'})
-      }
+        }
     
       } catch(error){
         console.log(error);
@@ -710,6 +713,9 @@ const handleGive = async () =>{
         isApproveAction: false
     });
 
+    if(handleRefresh){
+      handleRefresh()
+    }
     Alert.alert('Thành công', 'Cho món đồ thành công.');
     setIsCompleted(true);
 

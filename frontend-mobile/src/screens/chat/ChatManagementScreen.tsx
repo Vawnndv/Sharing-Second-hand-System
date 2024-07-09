@@ -6,6 +6,7 @@ import ChatScreen from './ChatScreen';
 import ChatUserScreen from './ChatUserScreen';
 import ContainerComponent from '../../components/ContainerComponent';
 import { UnreadCountContext } from './UnreadCountContext';
+import TabComponent from '../../components/TabComponent';
 
 const SubTabs = createMaterialTopTabNavigator();
 
@@ -16,28 +17,25 @@ const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
     <UnreadCountContext.Provider value={{ setUnreadCount }}>
       <ContainerComponent back={isMenuNavigate} right={!isMenuNavigate} title={isMenuNavigate ? 'Tin nhắn' : ''}>
         <SubTabs.Navigator
-          style={styles.tabs}
-          screenOptions={({ route }) => ({
-            tabBarLabelStyle: styles.tabLabel,
-            tabBarIndicatorStyle: styles.tabIndicator,
-            tabBarActiveTintColor: '#552466',
-            tabBarInactiveTintColor: '#666',
-          })}
+         tabBar={props => (
+          <TabComponent
+            {...props}
+            isHome={true}
+          />
+        )}
         >
           <SubTabs.Screen
             name="ChatPost"
             component={ChatScreen}
             options={{
               tabBarLabel: 'Trao đổi đồ',
-              tabBarStyle: styles.tabItem,
             }}
           />
           <SubTabs.Screen
             name="ChatUser"
             component={ChatUserScreen}
             options={{
-              tabBarLabel: 'Cộng tác viên liên hệ',
-              tabBarStyle: styles.tabItem,
+              tabBarLabel: 'Liên hệ',
             }}
           />
         </SubTabs.Navigator>
@@ -45,25 +43,5 @@ const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
     </UnreadCountContext.Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  tabs: {
-    flexDirection: 'column',
-    backgroundColor: '#fff',
-  },
-  tabItem: {
-    width: '70%',
-    backgroundColor: 'transparent',
-  },
-  tabLabel: {
-    textTransform: 'capitalize',
-    fontWeight: 'bold',
-    fontSize: 17,
-  },
-  tabIndicator: {
-    backgroundColor: '#552466',
-    height: 3,
-  },
-});
 
 export default ChatManagementScreen;

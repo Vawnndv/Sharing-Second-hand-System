@@ -240,7 +240,7 @@ export default function Header({setIndex}: any) {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
+          <Avatar alt="Remy Sharp" src={`${ userInfo?.avatar ?? "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -280,7 +280,7 @@ export default function Header({setIndex}: any) {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center', gap: 2 } }}>
-            <Typography>Hi, {userInfo?.firstName}</Typography>
+            <Typography>Hi, {userInfo?.lastName} {userInfo?.firstName}</Typography>
             <IconButton
               size="large"
               edge="end"

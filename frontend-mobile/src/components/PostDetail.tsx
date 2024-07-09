@@ -1,7 +1,7 @@
 import { Ionicons, SimpleLineIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Dimensions, Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-
+import dayjs from 'dayjs';
 
 import axios from 'axios';
 import moment from 'moment';
@@ -29,6 +29,7 @@ import axiosClient from '../apis/axiosClient';
 import LoadingModal from '../modals/LoadingModal';
 import LoadingComponent from './LoadingComponent';
 import { addStatusReceivePost } from '../redux/reducers/userReducers';
+import PostOutdatedModal from '../modals/PostOutdatedModal';
 
 
 interface Post {
@@ -44,6 +45,7 @@ interface Post {
   timeend?: Date; // DATE có thể null
   longitude?: string;
   latitude?: string;
+  
 }
 
 
@@ -71,6 +73,7 @@ interface PostDetailProps {
   visibleModalReport?: boolean;
   setVisibleModalReport?: (val: boolean) => void;
   setIsOwnPost?: (val: boolean) => void;
+  handleRefresh: any;
 }
 
 interface PostReceiver {
@@ -91,7 +94,7 @@ const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
 
-const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost} ) =>{
+const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetchFlag, visibleModalReport, setVisibleModalReport, setIsOwnPost, handleRefresh} ) =>{
   // const navigation = useNavigation();
   // const  Avatar = sampleUserOwner.Avatar;
   const dispatch = useDispatch();
@@ -128,6 +131,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
   const [amountLike, setAmountLike] = useState(0)
 
+  const [visiblePostOutdated, setVisiblePostOutdated] = useState(false)
+  const [refreshData, setRefreshData] = useState(false);
 
   const handleScroll = (event: any) => {
     const scrollPosition = event.nativeEvent.contentOffset.x;  // Lấy vị trí lướt ngang hiện tại
@@ -245,6 +250,15 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
         itemIDs = res.postDetail.itemid;
         owner = res.postDetail.owner;
         setIsUserPost(res.postDetail.owner == auth.id);
+        // if(res.postDetail.timeend)
+
+        const today = dayjs()
+        const specificDay = dayjs(res.postDetail.timeend)
+        if(specificDay.isBefore(today)){
+          setVisiblePostOutdated(true)
+        }else{
+          setVisiblePostOutdated(false)
+        }
         if (setIsOwnPost) {
           setIsOwnPost(auth.id !== res.postDetail.owner);
         }
@@ -306,7 +320,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
     useFocusEffect(
       useCallback(() => {
         fetchAllData();
-      }, [postID, fetchFlag])
+      }, [postID, fetchFlag, refreshData])
     );
   
     useEffect(() => {
@@ -327,6 +341,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
     setGoToReceiveForm(false);
     navigation.navigate('ReceiveFormScreen', {
       postID: postID,
+      handleRefresh
     });
     // setPost(null);
   }
@@ -339,12 +354,13 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
       receivetype: receivemethod,
       receivetypeid: receivetypeid,
       warehouseid: warehouseid,
+      handleRefresh
     });
     // setPost(null);
-    <ReceiveForm
-      postID = {postID}
-      setIsFetchData = {setIsFetchData}
-    />
+    // <ReceiveForm
+    //   postID = {postID}
+    //   setIsFetchData = {setIsFetchData}
+    // />
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
@@ -668,6 +684,11 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
           post !== null && 
           <ReportModal visible={visibleModalReport} setVisible={setVisibleModalReport} title={post?.title} reportType={2} userID={null} postID={postID} reporterID={auth.id} warehouseID={post.warehouseid}/>
         }
+        {
+          post !== null && auth.id == post.owner &&
+          <PostOutdatedModal visible={visiblePostOutdated} setVisible={setVisiblePostOutdated} refreshData={refreshData} setRefreshDate={setRefreshData} postid={postID}/>
+        }
+        
         
       </ScrollView>
     )

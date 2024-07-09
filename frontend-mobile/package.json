@@ -32,6 +32,7 @@
     "axios": "^1.6.8",
     "buffer": "^6.0.3",
     "date-fns": "^3.6.0",
+    "dayjs": "^1.11.11",
     "expo": "~50.0.14",
     "expo-auth-session": "~5.4.0",
     "expo-barcode-scanner": "~12.9.3",

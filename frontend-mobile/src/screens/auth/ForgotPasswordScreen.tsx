@@ -70,8 +70,8 @@ const ForgotPasswordScreen = () => {
       isScroll
     >
       <SectionComponent>
-        <TextComponent text="Đặt lại mật khẩu" title  size={24} color={appColors.primary} />
-        <SpaceComponent height={12} />
+        <TextComponent text="Đặt lại mật khẩu" title  size={32} color={appColors.primary} styles={{textAlign: "center"}} />
+        <SpaceComponent height={21} />
         <TextComponent text="Vui lòng nhập địa chỉ email của bạn để yêu cầu đặt lại mật khẩu" />
         <SpaceComponent height={16} />
         <InputComponent

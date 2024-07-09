@@ -20,6 +20,7 @@ import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store';
 import { getProfileAction, updateProfileAction } from '../../../redux/actions/userActions';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MapSelectAddress from '../../../components/Map/MapSelectAddress';
+import { useSearchParams } from 'react-router-dom';
 
 const defaultTheme = createTheme({
   palette: {
@@ -46,6 +47,9 @@ function Profile() {
 
   const [location, setLocation] = useState<any>(null)
   
+  const [searchParams] = useSearchParams();
+  const profileID: any = searchParams.get('profileID')
+
   const {
     isLoading: updateLoading,
     isError: editError,
@@ -82,18 +86,24 @@ function Profile() {
   // useEffect
   useEffect(() => {
     if (!initialized.current) {
-      initialized.current = true;
       const fetchUserInfo = async () => {
         if (authInfo?.id) {
-          dispatch(getProfileAction(authInfo.id));
+          
+          if(authInfo?.id === profileID){
+            dispatch(getProfileAction(authInfo.id));
+          }else{
+            dispatch(getProfileAction(profileID));
+          }
+          
         }
       };
 
       fetchUserInfo();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+   
+  }, [profileID]);
+  
   useEffect(() => {
     if (userInfo) {
       setValue('firstName', userInfo?.firstName);

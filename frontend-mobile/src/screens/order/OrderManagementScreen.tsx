@@ -1,61 +1,54 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { View, Text } from 'react-native';
 import GiveOrderScreen from '../../components/OrderManagement/GiveOrderScreen';
 import ReceiveOrderScreen from '../../components/OrderManagement/ReceiveOrderScreen';
+import { RowComponent, SectionComponent } from '../../components';
+import FilterOrder from '../../components/OrderManagement/FilterOrder';
+import { appColors } from '../../constants/appColors';
+import { fontFamilies } from '../../constants/fontFamilies';
+import { filterValue } from '../home/components/ItemTabComponent';
+import { category } from '../../constants/appCategories';
+import TabComponent from '../../components/TabComponent';
 
 const SubTabs = createMaterialTopTabNavigator();
 
 function OrderManagementScreen() {
+  const [filterUserPostValue, setFilterUserPostValue] = useState<filterValue>({
+    distance: -1,
+    time: -1,
+    category: category,
+    sort: "Mới nhất"
+  });
+
+  const [filterWarehouseValue, setFilterWarehouseValue] = useState<filterValue>({
+    distance: -1,
+    time: -1,
+    category: category,
+    sort: "Mới nhất"
+  });
+
   return (
-    <SubTabs.Navigator 
-      style={styles.tabs}
-      screenOptions={({ route }) => ({
-        tabBarLabelStyle: styles.tabLabel,
-        tabBarIndicatorStyle: styles.tabIndicator,
-        tabBarActiveTintColor: '#552466',
-        tabBarInactiveTintColor: '#666',
-      })}
+    <SubTabs.Navigator
+      tabBar={props => (
+        <TabComponent
+          {...props}
+          filterUserPostValue={filterUserPostValue}
+          filterWarehouseValue={filterWarehouseValue}
+          setFilterUserPostValue={setFilterUserPostValue}
+          setFilterWarehouseValue={setFilterWarehouseValue}
+        />
+      )}
     >
-      <SubTabs.Screen
-        name="OrderGive"
-        component={GiveOrderScreen}
-        options={{
-          tabBarLabel: 'Đồ cho',
-          tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-        }}
-      />
-      <SubTabs.Screen
-        name="OrderReceive"
-        component={ReceiveOrderScreen}
-        options={{
-          tabBarLabel: 'Đồ nhận',
-          tabBarStyle: styles.tabItem, // Áp dụng style cho tab này
-        }}
-      />
+      <SubTabs.Screen name="Đồ cho">
+        {(props) => <GiveOrderScreen {...props} filterValue={filterUserPostValue} />}
+      </SubTabs.Screen>
+      <SubTabs.Screen name="Đồ nhận">
+        {(props) => <ReceiveOrderScreen {...props} filterValue={filterWarehouseValue} />}
+      </SubTabs.Screen>
     </SubTabs.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  tabs: {
-    flexDirection: 'column',
-    backgroundColor: '#fff'
-  },
-  tabItem: {
-    width: '70%',
-    backgroundColor: 'transparent',
-  },
-  tabLabel: {
-    textTransform: 'capitalize',
-    fontWeight: 'bold',
-    fontSize: 17,
-  },
-  tabIndicator: {
-    backgroundColor: '#552466',
-    height: 3,
-  },
-});
 
 export default OrderManagementScreen;

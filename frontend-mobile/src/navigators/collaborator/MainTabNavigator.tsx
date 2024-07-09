@@ -6,6 +6,7 @@ import { appColors } from "../../constants/appColors";
 import HomeNavigator from "./HomeNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import StatisticNavigator from "./statisticNavigator";
+import React from "react";
 
 const MainTabNavigator = () => {
     
