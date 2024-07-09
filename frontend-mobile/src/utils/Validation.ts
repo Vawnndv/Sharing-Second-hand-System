@@ -109,9 +109,10 @@ export class Validator {
       case 'phonenumber':
         if (!values.phonenumber) {
           message ='Vui lòng nhập số điện thoại';
-        } else if (values.phonenumber.length < 12 && values.phonenumber.length > 10) {
+        } else if (values.phonenumber.length < 10 || values.phonenumber.length > 12) {
           message = 'Số điện thoại không hợp lệ'
         } else {
+          console.log(values.phonenumber.length)
           message = '';
         }
         break;

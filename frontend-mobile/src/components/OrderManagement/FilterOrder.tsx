@@ -2,6 +2,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import FilterModal from '../../modals/FilterModal';
 import React, { useState } from 'react';
+import { appColors } from '../../constants/appColors';
 
 
 export default function FilterOrder({filterValue, setFilterValue}: any) {
@@ -10,7 +11,7 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
   const hideModal = () => setVisible(false);
 
   return (
-    <View style={styles.filter}>
+    <View>
       <TouchableOpacity 
         // onPress={() => {
         //   router.navigate({
@@ -19,9 +20,10 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
         //     },
         //   });
         // }}
+        style={styles.filter}
         onPress={showModal}
       >
-        <Ionicons name="options" size={26} color={'#552466'}/>
+        <Ionicons name="options" size={26} color={appColors.primary}/>
       </TouchableOpacity>
 
       <FilterModal visible={visible} setVisible={setVisible} hideModal={hideModal} showModal={showModal} filterValue={filterValue} setFilterValue={setFilterValue}/>
@@ -31,10 +33,15 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
 
 const styles = StyleSheet.create({
   filter: {
-    height: 40,
-    backgroundColor: '#fff',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingHorizontal: 20
+    // height: 40,
+    // backgroundColor: '#fff',
+    // display: 'flex',
+    // justifyContent: 'center',
+    // paddingHorizontal: 20
+
+    paddingVertical: 5, 
+    paddingHorizontal: 20, 
+    backgroundColor: appColors.white5, 
+    borderRadius: 15
   }
 });

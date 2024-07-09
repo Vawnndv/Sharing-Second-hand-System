@@ -199,6 +199,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
             onChange={val => handleChangeValue('phonenumber', val)}
             allowClear
             affix={<SimpleLineIcons name="phone" size={22} color={appColors.gray} />}
+            type={'numeric'}
             onEnd={() => formValidator('phonenumber')}
             error={errorMessage['phonenumber']}
           />     
@@ -231,18 +232,15 @@ const EditProfileScreen = ({navigation, route}: any) => {
               is24Hour={true}
               display="default"
               // minimumDate={mindate} // Đặt ngày tối thiểu có thể chọn cho DatePicker
-              // maximumDate={moment(startDate).add(2, 'months').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
+              maximumDate={moment().subtract(16, 'years').toDate()} // Đặt ngày tối đa có thể chọn cho DatePicker
               onChange={onChangeDate}
             />
           )}
         </SectionComponent>
-        <SpaceComponent height={16} />
-        {errorRegister ? (
+        {errorRegister && (
         <SectionComponent>
           <TextComponent text={errorRegister} color={appColors.danger} />
         </SectionComponent>
-      ) : (
-        <SpaceComponent height={16} />
       )}
         <SectionComponent>
           <ButtonComponent

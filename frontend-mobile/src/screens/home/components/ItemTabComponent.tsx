@@ -16,6 +16,7 @@ import { category } from '../../../constants/appCategories';
 import axiosClient from '../../../apis/axiosClient';
 import userAPI from '../../../apis/userApi';
 import { updateCountOrder, updateLikePosts, updateReceivePosts } from '../../../redux/reducers/userReducers';
+import TabComponent from '../../../components/TabComponent';
 
 export interface filterValue {
   distance: number;
@@ -32,12 +33,26 @@ const ItemTabComponent = ({navigation}: any) => {
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [warehousesID, setWarehousesID] = useState([])
-  const [filterValue, setFilterValue] = useState<filterValue>({
+  const [filterUserPostValue, setFilterUserPostValue] = useState<filterValue>({
     distance: -1,
     time: -1,
     category: category,
     sort: "Mới nhất"
   })
+
+  const [filterWarehouseValue, setFilterWarehouseValue] = useState<filterValue>({
+    distance: -1,
+    time: -1,
+    category: category,
+    sort: "Mới nhất"
+  })
+
+  // const [filterValue, setFilterValue] = useState<filterValue>({
+  //   distance: -1,
+  //   time: -1,
+  //   category: category,
+  //   sort: "Mới nhất"
+  // })
 
   const [isNewUser, setIsNewUser] = useState(false)
 
@@ -127,71 +142,23 @@ const ItemTabComponent = ({navigation}: any) => {
 
   return (
     <SubTabs.Navigator
-      style={styles.tabs}
-      tabBar={({ state, descriptors, navigation, position }) => (
-      <View style={styles.tabBar}>
-        <RowComponent>
-          {/* Render các tab */}
-          {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
-            const label =
-              options.tabBarLabel !== undefined
-                ? options.tabBarLabel
-                : options.title !== undefined
-                ? options.title
-                : route.name;
-
-          const isFocused = state.index === index;
-          const inputRange = state.routes.map((_, i) => i);
-
-          const outputRange = inputRange.map(i => (i === index ? 1 : 0)); 
-            const translateX = position.interpolate({
-              inputRange,
-              outputRange,
-            });
-
-            return (
-              <SectionComponent 
-                key={index}
-                styles={{
-                  paddingBottom: 4,
-                }}
-              >
-                <Text
-                  onPress={() => {
-                    navigation.navigate(route.name);
-                  }}
-                  style={[
-                    styles.tabLabel,
-                    { color: isFocused ? appColors.primary : '#666', marginBottom: isFocused ? 4 : 7 },
-                  ]}
-                >
-                  {typeof label === 'function' ? label({ focused: isFocused, color: appColors.primary, children: '' }) : label}
-                </Text>
-                {isFocused && <Animated.View style={[styles.tabIndicator, { transform: [{ translateX }] }]} />}
-              </SectionComponent>
-            );
-          })}
-        </RowComponent>
-        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue}/>
-          {state.index === 1 && (
-            <TouchableOpacity
-              style={{ paddingVertical: 5, paddingHorizontal: 20, backgroundColor: appColors.white5, borderRadius: 15 }}
-              onPress={() => handleNavigateMapSelectWarehouses(navigation)}
-            >
-              <MaterialCommunityIcons name='map-search' size={25} color={appColors.primary2}/>
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-      )}
+    tabBar={props => (
+      <TabComponent
+        {...props}
+        filterUserPostValue={filterUserPostValue}
+        filterWarehouseValue={filterWarehouseValue}
+        setFilterUserPostValue={setFilterUserPostValue}
+        setFilterWarehouseValue={setFilterWarehouseValue}
+        handleNavigateMapSelectWarehouses={handleNavigateMapSelectWarehouses}
+        isHome={true}
+      />
+    )}
     >
       <SubTabs.Screen name="Bài Đăng">
-        {(props) => <UserPostComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
+        {(props) => <UserPostComponent  {...props} filterValue={filterUserPostValue} warehousesID={warehousesID} />}
       </SubTabs.Screen>
       <SubTabs.Screen name="Lưu kho">
-        {(props) => <WarehouseComponent  {...props} filterValue={filterValue} warehousesID={warehousesID} />}
+        {(props) => <WarehouseComponent  {...props} filterValue={filterWarehouseValue} warehousesID={warehousesID} />}
       </SubTabs.Screen>
     </SubTabs.Navigator>
   );
@@ -200,29 +167,3 @@ const ItemTabComponent = ({navigation}: any) => {
 
 export default ItemTabComponent;
   
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: 'transparent', // Để phù hợp với màu nền của FilterComponent
-  },
-  tabs: {
-    flexDirection: 'column',
-    backgroundColor: '#fff'
-  },
-
-  tabItem: {
-    width: '60%',
-    backgroundColor: 'transparent',
-  },
-
-  tabLabel: {
-    textTransform: 'capitalize',
-    color: appColors.primary2,
-    fontSize: 20,
-    fontFamily: fontFamilies.bold,
-  },
-
-  tabIndicator: {
-    backgroundColor: appColors.primary,
-    height: 3,
-  },
-});

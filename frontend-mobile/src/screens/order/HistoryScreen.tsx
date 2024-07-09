@@ -4,7 +4,7 @@ import HistoryManagementScreen from './HistoryManagementScreen'
 
 const HistoryScreen = () => {
   return (
-    <ContainerComponent back right title='Lịch sử giao dịch'>
+    <ContainerComponent back title='Lịch sử giao dịch'>
       <HistoryManagementScreen/>
     </ContainerComponent>
   )

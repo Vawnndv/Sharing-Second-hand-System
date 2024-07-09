@@ -25,16 +25,16 @@ interface Item {
 }
 
 
-export default function GiveOrderScreen({ navigation, route }: any) {
+export default function GiveOrderScreen({ navigation, route, filterValue  }: any) {
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [filterValue, setFilterValue] = useState({
-    distance: -1,
-    time: -1,
-    category: category,
-    sort: "Mới nhất",
-  });
+  // const [filterValue, setFilterValue] = useState({
+  //   distance: -1,
+  //   time: -1,
+  //   category: category,
+  //   sort: "Mới nhất",
+  // });
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
@@ -130,7 +130,7 @@ export default function GiveOrderScreen({ navigation, route }: any) {
 
   return (
     <View style={styles.container}>
-      <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue} />
+      {/* <FilterOrder filterValue={filterValue} setFilterValue={setFilterValue} /> */}
       <View style={styles.content}>
         <FlatList
           data={orderGive}
