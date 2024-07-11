@@ -312,6 +312,7 @@ const MultiStepForm = () => {
       } catch (error) {
         console.log(error);
         Alert.alert('Lỗi', 'Lỗi khi tạo bài viết và sản phẩm. Vui lòng thử lại.');
+        navigation.navigate('HomeScreen');
       } finally{
         setCurrentStep(1);
         setFormDataStepOne({ ...formDataStepOne,  itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho'  })
