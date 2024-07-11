@@ -122,7 +122,7 @@ axiosClient.interceptors.response.use(
       }
     } else {
       // throw new Error(error.response.data.message);
-      throw new Error('Lôi mạng');
+      throw new Error('Lỗi mạng');
     }
   }
 );
