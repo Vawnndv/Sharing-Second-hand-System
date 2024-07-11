@@ -22,14 +22,14 @@ interface GPTRequest {
   messages: Message[];
 }
 
-async function getGPTDescription(itemType:string, imageUrls: string[]): Promise<string> {
+async function getGPTDescription(itemName: string, itemType:string, imageUrls: string[]): Promise<string> {
   const apiKey = OPENAI_API_KEY;
   const apiUrl = 'https://api.openai.com/v1/chat/completions';
 
   const messageContent: MessageContent[] = [
     {
       type: 'text',
-      text: `Hãy xem xét những tấm ảnh sau, từ đó cho ra 1 đoạn mô tả trực tiếp ngắn về những món đồ thuộc loại ${itemType} khoảng 30 từ (đặc điểm món đồ... dùng để điền trong bài đăng mô tả về sản phẩm đó trong ứng dụng của tôi)`
+      text: `Hãy xem xét những tấm ảnh sau, từ đó cho ra 1 đoạn mô tả trực tiếp ngắn về món đồ ${itemName} thuộc loại ${itemType} khoảng 30 từ (đặc điểm món đồ... dùng để điền trong bài đăng mô tả về sản phẩm đó trong ứng dụng của tôi)`
     },
     ...imageUrls.map(url => ({
       type: 'image_url' as const,

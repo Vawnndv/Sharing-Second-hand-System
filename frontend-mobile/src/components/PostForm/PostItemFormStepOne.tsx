@@ -290,7 +290,7 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
         for(let i = 0; i< count; i++){
           itemTypesArray.push({
             value: res.itemTypes[i].itemtypeid,
-            label: '  ' + res.itemTypes[i].nametype
+            label: res.itemTypes[i].nametype
           })
         }
         setItemTypesDropdown(itemTypesArray);
@@ -416,7 +416,7 @@ const pickImage = async () => {
         let categoryLabel: any = null;
 
         itemTypesDropdown.map( (itemtype: any, index: any) => {
-            if(itemtype.label === '  ' + itemCategory){
+            if(itemtype.label === itemCategory){
               categoryID = itemtype.value;
               categoryLabel = itemCategory;
             }
@@ -716,6 +716,7 @@ const predictImage = async (imageUri: any) => {
       setWarehouseSelected: setWarehouseSelected
     })
   }
+  console.log("'"+formData.itemCategoryLabel+"'", "'"+selectedItemTypeDropdown+"'")
 
 
   return (
@@ -822,7 +823,7 @@ const predictImage = async (imageUri: any) => {
           maxHeight={windowHeight*0.2}
           labelField="label"
           valueField="value"
-          placeholder={ formData.itemCategoryLabel ? '  ' +  formData.itemCategoryLabel : selectedItemTypeDropdown ? ' ' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
+          placeholder={ formData.itemCategoryLabel ? '  ' +  formData.itemCategoryLabel : selectedItemTypeDropdown ? '' + selectedItemTypeDropdown : !isFocusSelectedItemType ? '  Chọn loại món đồ' : '...'}
           // searchPlaceholder="Tìm kiếm..."
           value={selectedItemTypeDropdown}
           onFocus={() => {

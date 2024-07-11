@@ -42,11 +42,12 @@ interface StepTwoProps {
   itemPhotos: any[],
   itemCategory: string,
   countClickGenerate: number,
-  setCountClickGenerate: any
+  setCountClickGenerate: any,
+  itemName: string
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory, countClickGenerate, setCountClickGenerate }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory, countClickGenerate, setCountClickGenerate, itemName }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
@@ -306,7 +307,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         })
         const categoryName = category[parseInt(itemCategory) - 1]
         console.log(imageUrls, categoryName)
-        const response = await getGPTDescription(categoryName, imageUrls)
+        const response = await getGPTDescription(itemName, categoryName, imageUrls)
         setFormData({ ...formData, postDescription: response });
         handleValidate(response,'postdescription')
         setCountClickGenerate(countClickGenerate + 1);
