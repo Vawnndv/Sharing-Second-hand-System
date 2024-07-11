@@ -28,14 +28,39 @@ import linking from './linking';
 import axiosClient from './src/apis/axiosClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // Keep the splash screen visible while we fetch resources
+import * as Notifications from 'expo-notifications';
 
-const prefix = Linking.createURL('/');
+// const prefix = Linking.createURL('/');
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   
   const [appIsReady, setAppIsReady] = useState(false);
+  useEffect(() => {
+    const handleNotificationResponse = (response: any) => {
+      const url = response.notification.request.content.data.url;
+      if (url) {
+        Linking.openURL(`frontend-mobile://${url}`);
+      }
+    };
+
+    const subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+
+    return () => subscription.remove();
+  }, []);
+
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+  React.useEffect(() => {
+    if (
+      lastNotificationResponse &&
+      lastNotificationResponse.notification.request.content.data.url &&
+      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      console.log(lastNotificationResponse.notification.request.content.data.url)
+      Linking.openURL(lastNotificationResponse.notification.request.content.data.url);
+    }
+  }, [lastNotificationResponse]);
 
   // const [fontsLoaded, setFontsLoaded] = useState(false);
   const count = useRef(0);

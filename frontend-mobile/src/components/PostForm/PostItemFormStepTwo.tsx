@@ -42,18 +42,28 @@ interface StepTwoProps {
   itemPhotos: any[],
   itemCategory: string,
   countClickGenerate: number,
-  setCountClickGenerate: any
+  setCountClickGenerate: any,
+  itemName: string
 }
 
 
-const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory, countClickGenerate, setCountClickGenerate }) => {
+const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, errorMessage, setErrorMessage, location, setLocation, itemPhotos, itemCategory, countClickGenerate, setCountClickGenerate, itemName }) => {
 
   const [isStartDatePickerVisible, setStartDatePickerVisibility] = useState(false);
   const [isEndDatePickerVisible, setEndDatePickerVisibility] = useState(false);
   const [minEndDate, setMinEndDate] = useState<Date>(new Date());
 
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(() => {
+    const today = new Date();
+    return today;
+  });
+
+  const [endDate, setEndDate] = useState<Date | null>(() => {
+    const today = new Date();
+    const twoWeeksLater = new Date(today);
+    twoWeeksLater.setDate(today.getDate() + 14);
+    return twoWeeksLater;
+  });
 
   const [profile, setProfile] = useState<ProfileModel>();
   const [isLoading, setIsLoading] = useState(false);
@@ -306,7 +316,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         })
         const categoryName = category[parseInt(itemCategory) - 1]
         console.log(imageUrls, categoryName)
-        const response = await getGPTDescription(categoryName, imageUrls)
+        const response = await getGPTDescription(itemName, categoryName, imageUrls)
         setFormData({ ...formData, postDescription: response });
         handleValidate(response,'postdescription')
         setCountClickGenerate(countClickGenerate + 1);
@@ -321,14 +331,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     
     setIsLoading(false);
   }
-
-  // if (isLoading) {
-  //   return (
-  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-  //       <ActivityIndicator size="large" />
-  //     </View>
-  //   );
-  // }
 
 
   return (
@@ -385,7 +387,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         {(errorMessage.postDescription) && <TextComponent text={errorMessage.postDescription}  color={appColors.danger} styles={{marginBottom: 9, textAlign: 'right'}}/>}
       <TouchableOpacity onPress={showStartDatePicker}>
         <TextInput
-          label="Ngày bắt đầu"
+          label="Ngày bắt đầu cho"
           value={startDate ? moment(startDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           style={styles.input}
           editable={false} // Người dùng không thể chỉnh sửa trực tiếp
@@ -414,7 +416,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
       <TouchableOpacity onPress={showEndDatePicker}>
         <TextInput
-          label="Ngày kết thúc"
+          label="Ngày kết thúc cho"
           value={endDate ? moment(endDate).format('DD-MM-YYYY') : ''} // Hiển thị ngày được chọn dưới dạng YYYY-MM-DD
           // onBlur={() => handleValidate(formData.postEndDate,'postenddate')}
           style={styles.input}

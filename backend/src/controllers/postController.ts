@@ -12,7 +12,7 @@ export const getAllPostFromUserPost = asyncHandle(async (req, res) => {
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
-    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: [] });
   }
 });
 
@@ -27,7 +27,7 @@ export const getAllPostFromWarehouse  = asyncHandle(async (req, res) => {
   if (allPosts) {
     res.status(200).json({ message: 'Get all posts successfully', allPosts });
   } else {
-    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: null });
+    res.status(200).json({ message: 'Không có bài đăng nào', allPosts: [] });
   }
 });
 

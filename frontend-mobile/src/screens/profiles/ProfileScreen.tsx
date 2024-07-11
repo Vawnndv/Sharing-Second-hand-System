@@ -231,18 +231,18 @@ const ProfileScreen = ({navigation, route}: any) => {
               // <RowComponent justify='center'>
                 <SectionComponent>
                   <ButtonComponent
-                    // styles={{
-                    //   borderWidth: 1,
-                    //   borderColor: appColors.primary,
-                    //   backgroundColor: appColors.white,
-                    // }}
+                    styles={{
+                      borderWidth: 1,
+                      borderColor: appColors.primary,
+                      backgroundColor: appColors.white,
+                    }}
                     text="Sửa thông tin"
                     onPress={() =>
                       navigation.navigate('EditProfileScreen', {
                         profile,
                       })
                     }
-                    // textColor={appColors.primary}
+                    textColor={appColors.primary}
                     type="primary"
                   />
     

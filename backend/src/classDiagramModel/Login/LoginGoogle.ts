@@ -12,7 +12,9 @@ export class LoginGoogle implements ILogin {
     /// code phone login here
     const existingUser = await Account.findUserByEmail(email);
     
-    return existingUser;
+    return {
+      existingUser
+    };
   }
     
 }
