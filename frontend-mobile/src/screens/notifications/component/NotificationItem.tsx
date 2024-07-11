@@ -71,23 +71,23 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
               // Linking.openURL(`frontend-mobile://order/detail/${136}`)
               // Linking.openURL(`frontend-mobile://main/home/post/detail/${item.postid}`);
               if (item.link) {
-                // Linking.openURL(`frontend-mobile://${item.link}`)
-                const parts = item.link.split('/');
-                if( parts[0] === 'order') {
-                  navigation.navigate('MyOrder', {
-                    screen: 'ViewDetailOrder',
-                    params: {
-                      orderid: parts[1]
-                    },
-                  });
-                } else {
-                  navigation.navigate('Home', {
-                    screen: 'ItemDetailScreen',
-                    params: {
-                      postID: parts[1]
-                    },
-                  });
-                }
+                Linking.openURL(`frontend-mobile://${item.link}`)
+                // const parts = item.link.split('/');
+                // if( parts[0] === 'order') {
+                //   navigation.navigate('MyOrder', {
+                //     screen: 'ViewDetailOrder',
+                //     params: {
+                //       orderid: parts[1]
+                //     },
+                //   });
+                // } else {
+                //   navigation.navigate('Home', {
+                //     screen: 'ItemDetailScreen',
+                //     params: {
+                //       postID: parts[1]
+                //     },
+                //   });
+                // }
             }
             updateRead(item.id);
           }}

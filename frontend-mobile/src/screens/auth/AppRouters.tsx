@@ -17,51 +17,65 @@ const AppRouters = () => {
   const dispatch = useDispatch();
   const navigation: any  = useNavigation();
 
-  
-  useEffect(() => {
-    let isMounted = true;
+  // useEffect(() => {
+  //   const handleNotificationResponse = (response: any) => {
+  //     const url = response.notification.request.content.data.url;
+  //     if (url) {
+  //       const parts = url.split('/');
+  //       if( parts[0] === 'order') {
+  //         navigation.navigate('MyOrder', {
+  //           screen: 'ViewDetailOrder',
+  //           params: {
+  //             orderid: parts[1]
+  //           },
+  //         });
+  //       } else {
+  //         navigation.navigate('Home', {
+  //           screen: 'ItemDetailScreen',
+  //           params: {
+  //             postID: parts[1]
+  //           },
+  //         });
+  //       }
+  //       // Linking.openURL(`frontend-mobile://${url}`);
+  //     }
+  //   };
 
-    function redirect(notification: Notifications.Notification) {
-      const url = notification.request.content.data?.url;
-      // console.log(notification.request.content.data)
-      if (url) {
-        Linking.openURL(`frontend-mobile://${url}`)
-        // const parts = url.split('/');
-        // if( parts[0] === 'order') {
-        //   navigation.navigate('MyOrder', {
-        //     screen: 'ViewDetailOrder',
-        //     params: {
-        //       orderid: parts[1]
-        //     },
-        //   });
-        // } else {
-        //   navigation.navigate('Home', {
-        //     screen: 'ItemDetailScreen',
-        //     params: {
-        //       postID: parts[1]
-        //     },
-        //   });
-        // }
-      }
-    }
+  //   const subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
 
-    Notifications.getLastNotificationResponseAsync()
-      .then(response => {
-        if (!isMounted || !response?.notification) {
-          return;
-        }
-        redirect(response?.notification);
-      });
+  //   return () => subscription.remove();
+  // }, []);
 
-    const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-      redirect(response.notification);
-    });
+  // useEffect(() => {
+  //   const handleInitialNotification = async () => {
+  //     const initialNotification = await Notifications.getLastNotificationResponseAsync();
+  //     if (initialNotification) {
+  //       console.log(initialNotification.notification.request.content.data, 'bcd');
+  //       const url = initialNotification.notification.request.content.data.url;
+  //       if (url) {
+  //          const parts = url.split('/');
+  //               if( parts[0] === 'order') {
+  //                 navigation.navigate('MyOrder', {
+  //                   screen: 'ViewDetailOrder',
+  //                   params: {
+  //                     orderid: parts[1]
+  //                   },
+  //                 });
+  //               } else {
+  //                 navigation.navigate('Home', {
+  //                   screen: 'ItemDetailScreen',
+  //                   params: {
+  //                     postID: parts[1]
+  //                   },
+  //                 });
+  //               }
+  //         // Linking.openURL(`frontend-mobile://${url}`);
+  //       }
+  //     }
+  //   };
 
-    return () => {
-      isMounted = false;
-      subscription.remove(); // Hủy bỏ listener khi component bị unmount
-    };
-  }, []); 
+  //   handleInitialNotification();
+  // }, []);
   
   useEffect(() => {
     checkLogin();
