@@ -112,7 +112,7 @@ const MultiStepForm = () => {
       case 1:
         return <StepOne setStep={setCurrentStep} formData={formDataStepOne} setFormData={setFormDataStepOne} warehouseSelected={warehouseSelected} setWarehouseSelected={setWarehouseSelected}/>;
       case 2:
-        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos} itemCategory={formDataStepOne.itemCategory} countClickGenerate={countClickGenerate} setCountClickGenerate={setCountClickGenerate}/>;
+        return <StepTwo setStep={setCurrentStep} formData={formDataStepTwo} setFormData={setFormDataStepTwo} errorMessage={errorMessage} setErrorMessage={setErrorMessage} location={location} setLocation={setLocation} itemPhotos={formDataStepOne.itemPhotos} itemCategory={formDataStepOne.itemCategory} countClickGenerate={countClickGenerate} setCountClickGenerate={setCountClickGenerate} itemName={formDataStepOne.itemName}/>;
       // Có thể thêm các case khác cho các bước tiếp theo
       default:
         return null;
