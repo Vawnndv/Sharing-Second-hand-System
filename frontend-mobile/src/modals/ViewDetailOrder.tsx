@@ -317,6 +317,16 @@ export default function ViewDetailOrder({navigation, route}: any) {
     setVisible(true)
     setIsShowQR(true)
   }
+
+  const navigateToUserProfile = (userID: string) => {
+    navigation.navigate(
+      'ProfileScreen',
+      {
+        id: userID,
+        // isNavigate
+      },
+    );
+  }
   
   return (
     <ContainerComponent back title={data?.status}>
@@ -385,8 +395,41 @@ export default function ViewDetailOrder({navigation, route}: any) {
                 </IconButton>
               }
 
-              <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
-              </IconButton>
+              <View style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                flex: 1
+              }}>
+                <IconButton style={{marginVertical: 10}} icon="qrcode" mode="outlined" onPress={handleShowQR}>
+                </IconButton>
+
+                <View style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'flex-end',
+                  flexGrow: 1,
+                }}>
+                  <TouchableOpacity style={{
+                    padding: 10,
+                    backgroundColor: appColors.primary,
+                    borderRadius: 10
+                  }}>
+                     {
+                      data && (
+                        data.usergiveid == auth.id ?
+                        <Text style={{color: 'white'}} onPress={() => navigateToUserProfile(data.userreceiveid)}>Thông tin người nhận</Text>
+                        : 
+                        <Text style={{color: 'white'}} onPress={() => navigateToUserProfile(data.usergiveid)}>Thông tin người cho</Text>
+                      )
+                    }
+                  </TouchableOpacity>
+                </View>
+                
+              </View>
+
+              
             </View>
 
             <View style={styles.process}>
@@ -474,6 +517,8 @@ export default function ViewDetailOrder({navigation, route}: any) {
     
   },
   image: {
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
     width: '30%',
     height: '100%',
     objectFit: 'cover',
