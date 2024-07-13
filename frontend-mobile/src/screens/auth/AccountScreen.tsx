@@ -89,6 +89,7 @@ const AccountScreen = () => {
   return (
     <>
       <ContainerComponent back isScroll title="Đổi mật khẩu">
+        <SpaceComponent height={14} />
         <SectionComponent>
           {user.isPassword && <InputComponent
               value={values.oldPassword}
@@ -102,7 +103,7 @@ const AccountScreen = () => {
             />}
           <InputComponent
               value={values.newPassword}
-              placeholder="Mật khẩu mới"
+              placeholder={user.isPassword ? "Mật khẩu mới" : "Mật khẩu"}
               onChange={val => handleChangeValue('newPassword', val)}
               allowClear
               isPassword
@@ -112,7 +113,7 @@ const AccountScreen = () => {
             />
           <InputComponent
             value={values.confirmNewPassword}
-            placeholder="Nhập lại mật khẩu mới"
+            placeholder={user.isPassword ? "Nhập lại mật khẩu mới" : "Nhập lại mật khẩu"}
             onChange={val => handleChangeValue('confirmNewPassword', val)}
             allowClear
             isPassword
@@ -130,7 +131,7 @@ const AccountScreen = () => {
         <SectionComponent>
           <ButtonComponent
             onPress={handleRegister}
-            text="CHANGE PASSWORD"
+            text={user.isPassword ? "Đổi MẬT KHẨU" : "ĐẶT MẬT KHẨU"}
             type="primary"
             iconFlex="right"
             disable={isDisable}

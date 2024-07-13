@@ -52,7 +52,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
   useEffect(() => {
     if (
       errorMessage.firstname || errorMessage.lastname ||
-      errorMessage.phonenumber || !values.firstname || !values.lastname || !values.phonenumber
+      errorMessage.phonenumber || errorMessage.dob || !values.firstname || !values.lastname || !values.phonenumber
     ) {
       setIsDisable(true);
     } else {
@@ -163,7 +163,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
             onGalleryPress={() => PickImage(hasGalleryPermission,false,setImage, () => setModalVisible(false))}
             onRemovePress={() => removeImage()}
             isLoading={false}
-            title='Profile photo'    
+            title='Đổi ảnh đại diện'    
           />
         </SectionComponent>
         <SpaceComponent height={21} />
@@ -245,7 +245,7 @@ const EditProfileScreen = ({navigation, route}: any) => {
         <SectionComponent>
           <ButtonComponent
             onPress={handleChangeProfile}
-            text="SAVE"
+            text="LƯU"
             type="primary"
             disable={isDisable}           
           />

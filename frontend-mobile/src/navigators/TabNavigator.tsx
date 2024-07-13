@@ -16,6 +16,7 @@ import { db } from '../../firebaseConfig';
 import { useSelector } from 'react-redux';
 import { authSelector } from '../redux/reducers/authReducers';
 import { processRooms } from '../utils/messageUtils';
+import { globalStyles } from '../styles/globalStyles';
 
 const TabNavigator = () => {
   const Tab = createBottomTabNavigator();
@@ -55,9 +56,10 @@ const TabNavigator = () => {
               icon = <Scan size={size} color={color} variant={variant} />
               break;
             case 'Add':
-              icon = <CircleComponent size={52} styles={{
+              icon = <CircleComponent size={52} styles={[ globalStyles.shadow,
+                    {
                       marginTop: Platform.OS === 'ios' ? -50 : -60
-                    }}>
+                    }]}>
                       <AddSquare size={24} color={appColors.white} variant="Bold" />
                     </CircleComponent>
               break;
