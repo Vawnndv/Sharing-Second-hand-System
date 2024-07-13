@@ -497,7 +497,7 @@ const handleReceive = async () => {
       }
       
       
-      Alert.alert('Thành công', 'Gửi yêu cầu nhận hàng thành công');
+      Alert.alert('Thành công', 'Gửi yêu cầu xin đồ thành công');
 
       navigation.navigate('ItemDetailScreen', {
         postID: postID,
@@ -505,8 +505,8 @@ const handleReceive = async () => {
       })    
     }
       catch (error) {
-      console.error('Error gửi yêu cầu nhận hàng thất bại:', error);
-      Alert.alert('Thất bại', 'Gửi yêu cầu nhận hàng thất bại.');
+      console.error('Error gửi yêu cầu xin đồ thất bại:', error);
+      Alert.alert('Thất bại', 'Gửi yêu cầu xin đồ thất bại.');
     }
   }
   else{
@@ -565,6 +565,9 @@ const handleReceive = async () => {
           // console.log(response.orderCreated);
           Alert.alert('Thất bại', 'Món đồ đã có người nhận.');
           setIsCompleted(true);
+          if(handleRefresh){
+            handleRefresh();
+          }
           navigation.navigate('Home', {screen: 'HomeScreen'});
         }
         else{

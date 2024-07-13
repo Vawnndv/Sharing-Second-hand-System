@@ -299,6 +299,9 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
   const handleGoogleLogin = await guest.login(email, '');
   const existingUser = handleGoogleLogin.existingUser;
 
+  const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.existingUser.userid);
+  const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.existingUser.userid, refreshToken);
+
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
 
@@ -310,6 +313,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: existingUser.avatar,
       roleID: existingUser.roleid,
       fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(existingUser.userid),
     };
 
@@ -337,6 +341,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: newUser.avatar,
       roleID: newUser.roleid,
       fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(newUser.userid),
     };
 
