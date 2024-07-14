@@ -20,7 +20,7 @@ const ChatManagementScreen = ({ setUnreadCount, route }: any) => {
          tabBar={props => (
           <TabComponent
             {...props}
-            isHome={true}
+            isHome={!isMenuNavigate}
           />
         )}
         >

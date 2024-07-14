@@ -9,10 +9,12 @@ import { removeUser } from "../redux/reducers/userReducers";
 
 const showToast = (message: string) => {
   if (Platform.OS === 'android') {
-    ToastAndroid.showWithGravity(
+    ToastAndroid.showWithGravityAndOffset(
       message,
       ToastAndroid.SHORT,
       ToastAndroid.BOTTOM,
+      0, // xOffset
+      50  // yOffset
     );
   } else {
     // For iOS or other platforms, you can handle differently if needed
