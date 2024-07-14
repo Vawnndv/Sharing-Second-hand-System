@@ -213,10 +213,12 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         if(image !== null){
             setIsLoading(true);
             if(!visibleRating){
-                handlePredict()
-                if(orders[0].order.item !== currentCategory){
+                console.log(orders[0].order.item.nametype + '-' +currentCategory)
+                if(orders[0].order.item.nametype !== currentCategory){
                     // console.log(orders[0].order.giver.userID)
                     setVisibleConfirmCategory(true)
+                }else{
+                    setVisibleRating(true)
                 }
             }
             
@@ -261,6 +263,10 @@ export default function OrderDetailsScreen({navigation, route}: any) {
             updateReceiver()
         }
     }, [confirm])
+
+    useEffect(() => {
+        handlePredict()
+    }, [image])
 
     useEffect(() => {
         const fetchAPI = async () => {

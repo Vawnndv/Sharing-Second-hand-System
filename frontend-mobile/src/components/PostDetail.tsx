@@ -129,6 +129,8 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(itemImages.length > 1 ? true : false);
 
+  const [isUserLikePost, setIsUserLikePost] = useState(false);
+
   const [amountLike, setAmountLike] = useState(0)
 
   const [visiblePostOutdated, setVisiblePostOutdated] = useState(false)

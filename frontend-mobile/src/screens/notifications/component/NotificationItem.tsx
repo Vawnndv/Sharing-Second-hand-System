@@ -16,14 +16,14 @@ import 'moment/locale/vi';
 type UserItemPros = {
     item: NotificationModel;
     index: number;
+    isLoadingDelete: string;
     onDeletePressed: (id: string) => void;
     updateRead: (id: string) => void;
 };
 
-const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItemPros) => {
+const NotificationItem = ({ item, index, onDeletePressed, updateRead, isLoadingDelete }: UserItemPros) => {
   const navigation: any = useNavigation();
   const swipeableRef = useRef<Swipeable>(null);
-
   const renderRightActions = (progress: any, dragX: any) => {
     const trans = dragX.interpolate({
       inputRange: [-100, 0],
@@ -91,7 +91,7 @@ const NotificationItem = ({ item, index, onDeletePressed, updateRead }: UserItem
             }
             updateRead(item.id);
           }}
-          styles={{ padding: 12, backgroundColor: item.isRead ? '#ffffff' : '#d0e3ff' }}
+          styles={{ padding: 12, backgroundColor: item.isRead ? isLoadingDelete === item.id ? appColors.gray5 : '#ffffff' : '#d0e3ff' }}
         >
           <AvatarComponent
             username={item.name}

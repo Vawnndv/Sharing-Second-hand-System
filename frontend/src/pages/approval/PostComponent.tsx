@@ -53,6 +53,7 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
 
             
                 setPosts(responsePosts.allPosts)
+                console.log(responsePosts.allPosts)
                 setIsLoading(false)
             }catch(error){
                 console.log(error)
@@ -68,7 +69,10 @@ function PostComponent({filterValue, warehousesID, status, statusTotalPosts, can
     };
 
     const isEmpty = () => {
-        if(posts === null || posts.length === 0){
+        if(!posts){
+            return false
+        }
+        if( posts.length === 0 ) {
             return false
         }
         return true

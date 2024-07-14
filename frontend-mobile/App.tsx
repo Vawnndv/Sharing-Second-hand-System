@@ -58,7 +58,7 @@ export default function App() {
       lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
       console.log(lastNotificationResponse.notification.request.content.data.url)
-      Linking.openURL(lastNotificationResponse.notification.request.content.data.url);
+      Linking.openURL(`frontend-mobile://${lastNotificationResponse.notification.request.content.data.url}`);
     }
   }, [lastNotificationResponse]);
 
