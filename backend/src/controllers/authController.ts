@@ -8,7 +8,7 @@ import { Request, Response } from 'express';
 
 import { Account } from '../classDiagramModel/Account';
 import { GmailLogin } from '../classDiagramModel/Login/GmailLogin';
-// import { LoginGoogle } from '../classDiagramModel/Login/LoginGoogle';
+import { LoginGoogle } from '../classDiagramModel/Login/LoginGoogle';
 import { Guest } from '../classDiagramModel/Guest';
 import { User } from '../classDiagramModel/User';
 
@@ -294,10 +294,16 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
 export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
   const { email, firstname, lastname, avatar } = req.body;
 
-  const existingUser = await Account.findUserByEmail(email);
+  // const existingUser = await Account.findUserByEmail(email);
+  const guest = new Guest(new LoginGoogle());
+  const handleGoogleLogin = await guest.login(email, '');
+  const existingUser = handleGoogleLogin.existingUser;
 
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+
+    const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.existingUser.userid);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.existingUser.userid, refreshToken);
 
     const data = {
       id: existingUser.userid,
@@ -307,6 +313,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: existingUser.avatar,
       roleID: existingUser.roleid,
       fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(existingUser.userid),
     };
 
@@ -326,6 +333,9 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 
     const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
 
+    const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.newUser.userid);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.newUser.userid, refreshToken);
+
     const data =  {
       id: newUser.userid,
       email: newUser.email,
@@ -334,6 +344,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       avatar: newUser.avatar,
       roleID: newUser.roleid,
       fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(newUser.userid),
     };
 
@@ -348,6 +359,7 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
     }
   }
 });
+
 export const removeFcmToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, fcmtoken } = req.body;
 
