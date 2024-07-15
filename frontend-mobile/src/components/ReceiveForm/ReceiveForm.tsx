@@ -748,7 +748,7 @@ const handleGive = async () =>{
           name: `${auth?.firstName} ${auth.lastName}`,
           // postid: postID,
           avatar: auth.avatar,
-          link: `post/${postID}`,
+          link: receiver.receiverid === receiveid ? `post/${postID}` : '',
           title: 'Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
             `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 

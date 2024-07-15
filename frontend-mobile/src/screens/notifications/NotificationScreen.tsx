@@ -18,10 +18,27 @@ import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler'
 import { StyleSheet } from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import NotificationItem from './component/NotificationItem';
+import { Platform, ToastAndroid } from "react-native";
+
+const showToast = (message: string) => {
+  if (Platform.OS === 'android') {
+    ToastAndroid.showWithGravityAndOffset(
+      message,
+      ToastAndroid.SHORT,
+      ToastAndroid.BOTTOM,
+      0, // xOffset
+      50  // yOffset
+    );
+  } else {
+    // For iOS or other platforms, you can handle differently if needed
+    alert(message);
+  }
+};
 
 const NotificationScreen = () => {
   const auth = useSelector(authSelector);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingDelete, setIsLoadingDelete] = useState('');
   const [notificationList, setNotificationList] = useState<NotificationModel[]>([]);
   const [readCount, setReadCount] = useState<number>(0);
 
@@ -98,6 +115,7 @@ const NotificationScreen = () => {
   
   const onDeletePressed = async (id: string) => {
     try {
+      setIsLoadingDelete(id);
       const docRef = doc(db, "receivers", auth.id.toString(), "notification", id);
   
       // Get the document snapshot from Firestore
@@ -111,7 +129,8 @@ const NotificationScreen = () => {
   
       // Delete the document
       await deleteDoc(docRef);
-  
+      showToast('Đã xóa')
+      setIsLoadingDelete('');
     } catch (err) {
       console.error('Error deleting notification:', err);
     }
@@ -144,6 +163,7 @@ const NotificationScreen = () => {
             <NotificationItem
               item={item}
               index={index}
+              isLoadingDelete={isLoadingDelete}
               onDeletePressed={onDeletePressed}
               updateRead={updateRead}
             />

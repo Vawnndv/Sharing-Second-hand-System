@@ -7,7 +7,7 @@ const SearchFilter = ({navigation, data, searchQuery, setSearchQuery} : any) => 
   return (
     <View style={styles.container}>
       <FlatList 
-        style={{height: appInfo.sizes.HEIGHT}}
+        style={{height: appInfo.sizes.HEIGHT - appInfo.sizes.HEIGHT * 0.2}}
         data={data}
         showsVerticalScrollIndicator={false} // Ẩn thanh cuộn dọc
         renderItem={({item}) => {

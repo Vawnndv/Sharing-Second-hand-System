@@ -521,7 +521,7 @@ export class CollaboratorPostManager extends PostManager {
             wh.warehousename,
             itt.nametype,
             gr.give_receivetype,
-            ts.statusname as status,
+            ts.statusname,
             po.updatedat,
             us.firstname,
             us.lastname
@@ -649,6 +649,7 @@ export class CollaboratorPostManager extends PostManager {
         )
         AND (od.givetypeid = 1 )
         AND (po.statusid = 14)
+        AND (od.status != 'Hoàn tất')
         GROUP BY
             us.userid,
             us.firstname,
@@ -719,7 +720,6 @@ export class CollaboratorPostManager extends PostManager {
           FROM "workat"
           WHERE userid = ${userID}
         )
-        AND (od.givetypeid=3 OR od.givetypeid=4 )
         AND (po.statusid = 14 OR po.statusid = 12)
         GROUP BY
             us.userid,
