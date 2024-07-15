@@ -316,7 +316,7 @@ export default function AddPost() {
     setDescription('')
     setItemCategory(1)
     setItemName('')
-    setDate([today,today])
+    setDate([today,nextWeek])
     setItemNewImages([])
   };
 
