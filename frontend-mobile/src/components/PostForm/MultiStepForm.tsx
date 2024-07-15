@@ -19,6 +19,7 @@ import { LoadingModal } from '../../modals';
 import axiosClient from '../../apis/axiosClient';
 import { appColors } from '../../constants/appColors';
 import ButtonComponent from '../ButtonComponent';
+import moment from 'moment';
 
 
 interface FormDataStepOne {
@@ -81,8 +82,12 @@ const MultiStepForm = () => {
 
   const navigation: any = useNavigation();
   const [currentStep, setCurrentStep] = useState(1);
+  const today = new Date();
+  const twoWeeksLater = new Date(today);
+  twoWeeksLater.setDate(today.getDate() + 14);
+
   const [formDataStepOne, setFormDataStepOne] = useState<FormDataStepOne>({ itemName: '', itemPhotos: [], itemCategory: 'Chọn loại món đồ', itemCategoryLabel: 'Chọn loại món đồ', itemQuantity: '', itemDescription: '', methodGive: 'Chọn phương thức cho', methodsBringItemToWarehouse: 'Chọn phương thức mang đồ đến kho', warehouseAddress: 'Chọn kho' });
-  const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: '', postEndDate: '', postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
+  const [formDataStepTwo, setFormDataStepTwo] = useState<FormDataStepTwo>({ postTitle: '', postDescription: '', postStartDate: moment(today).format('YYYY-MM-DD'), postEndDate:  moment(twoWeeksLater).format('YYYY-MM-DD'), postAddress: '', postPhoneNumber: '' /* khởi tạo các trường khác */ });
   const [isCompleted, setIsCompleted] = useState(false);
   const [isValidSubmit, setIsValidSubmit] = useState(false);
 
@@ -182,8 +187,8 @@ const MultiStepForm = () => {
     if (
       !errorMessage.postTitle && 
       !errorMessage.postDescription && 
-      !errorMessage.postStartDate && 
-      !errorMessage.postEndDate && 
+      // !errorMessage.postStartDate && 
+      // !errorMessage.postEndDate && 
       !errorMessage.postPhoneNumber && 
       !errorMessage.postAddress && 
       formDataStepTwo.postTitle && 
@@ -367,7 +372,7 @@ const MultiStepForm = () => {
       <LoadingModal visible={isLoading} />
 
       <View style={styles.screenContainer}>
-        <ScrollView  style={styles.container}>
+        <ScrollView  style={styles.container} scrollsToTop>
         <View style={styles.header}>
             <Text style={styles.title}>CHIA SẺ KHO BÁU CỦA BẠN</Text>
             {currentStep > 1 && (

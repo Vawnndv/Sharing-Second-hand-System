@@ -161,7 +161,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   }, [startDate]);
 
   useEffect(() => {
-    
     if (formData.postStartDate){
       setStartDate(new Date(Date.parse(formData.postStartDate)));
     }
@@ -169,7 +168,21 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     if(formData.postEndDate){
       setEndDate(new Date(Date.parse(formData.postEndDate)));
     }
+
   },[formData.postStartDate, formData.postEndDate])
+
+  useEffect(() => {
+    if(startDate){
+      setFormData({ ...formData,  postStartDate: moment(startDate).format('YYYY-MM-DD') }); // Cập nhật formData
+      setErrorMessage({...errorMessage, postStartDate: ''});
+    }
+    if(endDate){
+      setFormData({ ...formData,  postEndDate: moment(endDate).format('YYYY-MM-DD') }); // Cập nhật formData
+      setErrorMessage({...errorMessage, postEndDate: ''});
+
+    }
+  },[startDate, endDate])
+
 
   useEffect(() =>{
     if(location){
@@ -191,13 +204,14 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
   };
 
 
-
   const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate ? selectedDate : startDate;
     setStartDatePickerVisibility(Platform.OS === 'ios');
     setStartDate(currentDate);
     setEndDate(null);
     setFormData({ ...formData,  postStartDate: moment(currentDate).format('YYYY-MM-DD') });
+    setFormData({ ...formData,  postEndDate: '' });
+
     setErrorMessage({...errorMessage, postStartDate: ''});
     setErrorMessage({...errorMessage, postEndDate: ''});
 
@@ -334,7 +348,7 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
 
 
   return (
-    <ScrollView style = {styles.container}>
+    <ScrollView style = {styles.container} scrollsToTop>
       <LoadingModal visible={isLoading} />
       <Text style={styles.title}>Thông tin bài đăng sản phẩm </Text>
       <TextInput
