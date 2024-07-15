@@ -299,11 +299,11 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
   const handleGoogleLogin = await guest.login(email, '');
   const existingUser = handleGoogleLogin.existingUser;
 
-  const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.existingUser.userid);
-  const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.existingUser.userid, refreshToken);
-
   if (existingUser) {
     const fcmTokens = await Account.getFcmTokenListOfUser(existingUser.userid);  
+
+    const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.existingUser.userid);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.existingUser.userid, refreshToken);
 
     const data = {
       id: existingUser.userid,
@@ -332,6 +332,9 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
     );
 
     const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
+
+    const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.newUser.userid);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.newUser.userid, refreshToken);
 
     const data =  {
       id: newUser.userid,
