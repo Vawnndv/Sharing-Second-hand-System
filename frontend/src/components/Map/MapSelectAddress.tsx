@@ -14,8 +14,6 @@ import Axios from '../../redux/APIs/Axios';
 import { useSelector } from 'react-redux';
 import home from '../../assets/home.png'
 import  './styles.scss'
-
-const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
 // const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
 // const API_KEY = 'AIzaSyBW-S8iBG0D-d2QahuXvJbtvkUOpy2A8OY'
 
@@ -115,7 +113,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: API_KEY
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY ? process.env.GOOGLE_MAP_API_KEY : ''
   })
 
   const [map, setMap] = useState<any>(null)
