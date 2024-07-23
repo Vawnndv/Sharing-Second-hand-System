@@ -8,10 +8,6 @@ import { useLocation } from 'react-router-dom';
 import { CheckBox } from '@mui/icons-material';
 import { Checkbox, Stack, Typography } from '@mui/material';
 
-
-// const API_KEY = 'AIzaSyA73cwXhM4O2ATAhqDCbs7B_7UogxxAlYM'
-const API_KEY = 'AIzaSyBo988K53_gLTRL0MHoiZGkIjOUoJheyEQ'
-
 const containerStyle = {
   width: '100%',
   height: '100%'
@@ -26,7 +22,7 @@ function MapSelectWarehouses({warehouses, warehousesSelected, handleSelectWareho
   
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: API_KEY
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY ? process.env.GOOGLE_MAP_API_KEY : ''
   })
 
   const [map, setMap] = useState<any>(null)
