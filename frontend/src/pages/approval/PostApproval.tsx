@@ -89,7 +89,7 @@ function PostApproval() {
             </TabList>
           </Box>
           <TabPanel value="1">
-            <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Chờ xét duyệt" statusTotalPosts="waitForApprove" canApproval/>
+            <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Chờ xét duyệt" statusTotalPosts="waitForApprove" canApproval canDelete/>
           </TabPanel>
           <TabPanel value="2">
             <PostComponent filterValue={filterValue} warehousesID={warehousesID} status="Vừa duyệt" statusTotalPosts="justApprove" canDelete/>
