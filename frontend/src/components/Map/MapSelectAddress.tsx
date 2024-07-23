@@ -113,7 +113,7 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
 
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
-    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY
+    googleMapsApiKey: process.env.GOOGLE_MAP_API_KEY ? process.env.GOOGLE_MAP_API_KEY : ''
   })
 
   const [map, setMap] = useState<any>(null)
