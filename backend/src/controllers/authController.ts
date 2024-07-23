@@ -333,8 +333,8 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
 
     const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
 
-    const refreshToken = await getJsonWebRefreshToken(handleGoogleLogin.newUser.userid);
-    const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGoogleLogin.newUser.userid, refreshToken);
+    const refreshToken = await getJsonWebRefreshToken(newUser.userid);
+    const refreshtoken = await User.userManager.addRefreshTokenToUser(newUser.userid, refreshToken);
 
     const data =  {
       id: newUser.userid,
