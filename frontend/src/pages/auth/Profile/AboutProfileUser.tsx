@@ -94,7 +94,7 @@ function AboutProfileUser() {
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={12} container alignItems="center" justifyContent="center">
                         <Box display="flex" justifyContent="center" alignItems="center" width="100%">
-                            <ImagePreview image={userInfo?.avatar || ''} name="user-image" isAboutProfile />
+                            <ImagePreview image={userInfo?.avatar} name={userInfo?.firstName ? userInfo?.firstName : userInfo?.email} isAboutProfile />
                         </Box>
                     </Grid>
                     <Grid item xs={12} sx={{ width: '100%', mt: 1, flexDirection:'column', justifyContent:'center', alignItems: 'center'}}>
@@ -115,16 +115,7 @@ function AboutProfileUser() {
                               readOnly: true,
                           }}
                         />
-                        <Button
-                         sx={{
-                          ml: 1,
-                          py: 1.8
-                         }}
-                         color='error'
-                         variant='contained' endIcon={<BlockIcon/>}>Cấm tài khoản</Button>
                     </Box>
-                        
-                        
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
@@ -169,7 +160,7 @@ function AboutProfileUser() {
                             <DatePicker
                                 sx={{ width: '100%' }}
                                 label="Ngày sinh"
-                                value={dayjs(userInfo?.dob)}
+                                value={userInfo?.dob ? dayjs(userInfo?.dob) : null}
                                 onChange={() => {}}
                                 slots={{
                                     // eslint-disable-next-line react/no-unstable-nested-components
@@ -201,6 +192,14 @@ function AboutProfileUser() {
                         />
                     </Grid>
                 </Grid>
+                <Button
+                    sx={{
+                      mt: 3, mb: 2,
+                      py: 1.8
+                    }}
+                    color='error'
+                    fullWidth
+                    variant='contained' endIcon={<BlockIcon/>}>Cấm tài khoản</Button>
               </Box>
             )}
           </Box>

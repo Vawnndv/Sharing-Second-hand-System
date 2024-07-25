@@ -29,6 +29,7 @@ import { logoutAction } from '../redux/actions/authActions'
 import Notification from '../components/notification/Notification'
 import { collection, doc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'
+import AvatarComponent from '../components/AvatarComponent'
 
 export default function Header({setIndex}: any) {
   const MyDispatch: AppDispatch = useAppDispatch();
@@ -290,7 +291,7 @@ export default function Header({setIndex}: any) {
               onClick={(e) => handleProfileMenuOpen(e)}
               color="inherit"
             >
-              <Avatar alt="Remy Sharp" src={`${userInfo?.avatar ? userInfo?.avatar : "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
+              <AvatarComponent avatar={userInfo?.avatar}/>
             </IconButton>
             <IconButton
               size="large"

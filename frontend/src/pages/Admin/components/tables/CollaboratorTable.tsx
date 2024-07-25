@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
+import { Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef, GridToolbar, getGridSingleSelectOperators, getGridStringOperators, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { Add, Delete, Edit } from '@mui/icons-material'
@@ -21,6 +21,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import AvatarComponent from '../../../../components/AvatarComponent'
 // import { HandleNotification } from '../../../../utils/handleNotification'
 
 interface Props {
@@ -130,7 +131,7 @@ function CollaboratorTable(props: Props) {
         field: 'avatar',
         headerName: 'Ảnh',
         width: 60,
-        renderCell: (params) => <Avatar src={params.row.avatar} />,
+        renderCell: (params) => <AvatarComponent avatar={params.row.avatar} username={params.row.firstname ? params.row.firstname : params.row.email}/>,
         sortable: false,
         filterable: false,
       }

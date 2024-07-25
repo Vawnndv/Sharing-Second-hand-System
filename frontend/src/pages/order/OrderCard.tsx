@@ -3,11 +3,12 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
-import { Avatar, Box, CardActionArea,  } from '@mui/material';
+import { Box, CardActionArea,  } from '@mui/material';
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import moment from 'moment';
 import 'moment/locale/vi';
 import { useNavigate } from 'react-router-dom';
+import AvatarComponent from '../../components/AvatarComponent';
 // import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 // import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
@@ -42,8 +43,9 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
           }
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Avatar alt="Avatar" src={order.avatar} component='div' 
-                onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}/>
+              <AvatarComponent avatar={order.avatar} onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)} username={order.firstname} />
+              {/* <Avatar alt="Avatar" src={order.avatar} component='div' 
+                onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}/> */}
               <Box sx={{ ml: 1 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
 
