@@ -25,6 +25,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
 
   const handleNavigateToUserProfile = (userID: string, event: any) => {
     event.stopPropagation();
+    console.log(order)
     navigate(`/about-profile?profileID=${userID}`)
   }
 

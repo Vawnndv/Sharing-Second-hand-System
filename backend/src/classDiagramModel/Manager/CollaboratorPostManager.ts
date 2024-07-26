@@ -427,7 +427,7 @@ export class CollaboratorPostManager extends PostManager {
             SELECT DISTINCT ON (itemid) * FROM Image
         ) img ON img.itemid = po.itemid
 
-        WHERE (ts.statusname LIKE 'Đã hủy')
+        WHERE (ts.statusname LIKE 'Hủy')
         AND po.warehouseid = (
           SELECT warehouseid
           FROM "workat"
