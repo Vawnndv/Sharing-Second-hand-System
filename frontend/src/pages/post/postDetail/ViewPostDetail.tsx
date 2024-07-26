@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import { HandleNotification } from '../../../utils/handleNotification';
 import { RootState } from '../../../redux/store';
 import moment from 'moment';
+import AvatarComponent from '../../../components/AvatarComponent';
 
 function ShowImages({ images }: any) {
     
@@ -429,10 +430,11 @@ function ViewPostDetail() {
                                     alignItems='center'
                                     gap={3}
                                     style={{width: '100%'}}>
-                                        <Avatar sx={{width: 80, height: 80, cursor: 'pointer'}} 
+                                        <AvatarComponent avatar={profile.avatar} onClick={(event: any) => handleNavigateToUserProfile(post.owner, event)} username={profile.firstname} size={80}/>
+                                        {/* <Avatar sx={{width: 80, height: 80, cursor: 'pointer'}} 
                                             component='div'
                                             onClick={(event: any) => handleNavigateToUserProfile(post.owner, event)}
-                                            src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/>
+                                            src={`${profile.avatar !== "" ? profile.avatar : 'https://ps.w.org/user-avatar-reloaded/assets/icon-256x256.png?rev=2540745'}`}/> */}
                                         <Stack
                                             flexDirection='column'
                                             justifyContent='center'

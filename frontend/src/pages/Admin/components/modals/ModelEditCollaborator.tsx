@@ -237,7 +237,7 @@ function ModalEditCollaborator(props: Props) {
             </Grid>
 
             <Stack direction='row' justifyContent='end' mt={4} spacing={2}>
-              <Button variant='contained' color='error' onClick={() => {handleOpen(); setUserRow(null)}}>Hủy</Button>
+              <Button variant='contained' color='error' onClick={() => {handleOpen(); setUserRow(null)}}>Bỏ qua</Button>
               {!isEdit && (<Button variant='contained' color='success' onClick={() => {handleOpen(); setUserRow(null); resetCollaboratorPassword()}}>Đặt lại mật khẩu</Button>)}
               {!isEdit && (
                 <Button variant='contained' onClick={() => setIsEdit(true)}>Chỉnh sửa</Button>

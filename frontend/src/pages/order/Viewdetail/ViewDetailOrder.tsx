@@ -117,7 +117,7 @@ function ViewDetailOrder() {
                   order.imgconfirmreceive && order.imgconfirmreceive !== ' ' &&
                   <Box sx={{mb: 2}}>
                     <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                      <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày nhận người nhận: </Typography>
+                      <Typography gutterBottom variant="body1" fontWeight='bold'>Ngày nhận: </Typography>
                       <Typography ml={1} gutterBottom variant="body1" fontWeight='bold' color='primary.main'>
                         {formatDateTime(data[data.length - 1].createdat)}
                       </Typography>

@@ -1,7 +1,7 @@
 import { Feather, MaterialIcons } from '@expo/vector-icons';
 import { Clock } from 'iconsax-react-native';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 import { AvatarComponent, ButtonComponent, ContainerComponent, RowComponent, SectionComponent, SpaceComponent, TextComponent } from '../../components';
 import { appColors } from '../../constants/appColors';
 import { fontFamilies } from '../../constants/fontFamilies';
@@ -156,6 +156,14 @@ const NotificationScreen = () => {
     >
       {isLoading ? (
         <LoadingComponent isLoading={isLoading} />
+      ) : notificationList.length === 0 ? (
+        <View style={{display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Image
+          source={require('../../../assets/images/shopping.png')}
+          style={styles.image} 
+          resizeMode="contain"
+        />
+      </View>
       ) : (
         <FlatList
           data={notificationList}
@@ -175,3 +183,10 @@ const NotificationScreen = () => {
 };
 
 export default NotificationScreen;
+
+const styles = StyleSheet.create({
+  image: {
+    width: 100,
+    height: 80,
+  }
+})

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
+import { Box, Grid, IconButton, Tooltip, Typography, Button } from '@mui/material'
 import { DataGrid, GridColDef, GridToolbar, getGridSingleSelectOperators, getGridStringOperators, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { Delete } from '@mui/icons-material'
@@ -19,6 +19,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
+import { IoMdEye } from "react-icons/io";
+import ModelViewUser from '../modals/ModelViewUser'
+import AvatarComponent from '../../../../components/AvatarComponent'
 
 interface Props {
   deleteHandler: (user: any) => void;
@@ -40,7 +43,9 @@ function UserTable(props: Props) {
   const { deleteHandler, isLoading, users, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel } = props;
 
   const { userInfo } = useSelector((state: RootState) => state.userLogin);
-
+  
+  const [userRow, setUserRow] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState<any>([]);
   const [open, setOpen] = useState(false);
   const [isBanLoading, setIsBanLoading] = useState(false);
@@ -48,6 +53,10 @@ function UserTable(props: Props) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+  const handleOpen = () => {
+    setIsOpen(!isOpen);
+  }
+  
   useEffect(() => {
     setData(users);
   }, [users]);
@@ -99,7 +108,7 @@ function UserTable(props: Props) {
         field: 'avatar',
         headerName: 'Ảnh',
         width: 60,
-        renderCell: (params) => <Avatar src={params.row.avatar} />,
+        renderCell: (params) => <AvatarComponent avatar={params.row.avatar} username={params.row.firstname ? params.row.firstname : params.row.email}/>,
         sortable: false,
         filterable: false,
       },
@@ -169,6 +178,11 @@ function UserTable(props: Props) {
         width: 120,
         renderCell: (params: any) => (
           <Box>
+            <Tooltip title="Xem thông tin">
+            <IconButton disabled={params.row.id === userInfo?.id} onClick={() => { handleOpen(); setUserRow(params.row) }}>
+                <IoMdEye />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Khóa người dùng">
               <IconButton onClick={() => handleOpenDialog(params.row, !params.row.isbanned)}>
                 {params.row.isbanned ? <TbLock /> : <TbLockOpen />}
@@ -188,6 +202,13 @@ function UserTable(props: Props) {
 
   return (
     <Grid container justifyContent="center" sx={{ mt: 1, mb: 5, p: 4 }}>
+        <ModelViewUser
+            isOpen={isOpen}
+            handleOpen={handleOpen}
+            userRow={userRow}
+            setUserRow={setUserRow}
+            // setIsOpen={setIsOpen}
+        />
       <Grid item xs={12}>
         <Box sx={{ width: '100%', textAlign: 'center' }}>
           <Typography variant="h3" component="h3" sx={{ textAlign: 'center', mt: 3, mb: 3 }}>

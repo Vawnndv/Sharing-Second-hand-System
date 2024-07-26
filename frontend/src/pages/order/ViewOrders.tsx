@@ -106,7 +106,7 @@ export default function ViewOrders({ filterValue, locationOfItem, status }: any)
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
               {orders.map((order: any, index: number) => (
                 <Grid item xs={12} sm={6} md={4} key={index}>
-                  <OrderCard order={order} />
+                  <OrderCard order={order} locationOfItem={locationOfItem} />
                 </Grid>
               ))}
             </Grid>

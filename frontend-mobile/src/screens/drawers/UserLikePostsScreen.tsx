@@ -88,7 +88,7 @@ const UserLikePostsScreen = () => {
         <View style={styles.container}>
             { isEmpty ? (
                 <View style={{display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Image
+                    <Image
                     source={require('../../../assets/images/shopping.png')}
                     style={styles.image} 
                     resizeMode="contain"

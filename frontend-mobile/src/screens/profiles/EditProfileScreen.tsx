@@ -176,22 +176,22 @@ const EditProfileScreen = ({navigation, route}: any) => {
             affix={<Fontisto name="email" size={22} color={appColors.gray} />}
           />
           <InputComponent
-            value={values.firstname}
-            placeholder="Họ của bạn"
-            onChange={val => handleChangeValue('firstname', val)}
-            allowClear
-            affix={<User size={22} color={appColors.gray} />}
-            onEnd={() => formValidator('firstname')}
-            error={errorMessage['firstname']}
-          />
-          <InputComponent
             value={values.lastname}
-            placeholder="Tên của bạn"
+            placeholder="Họ của bạn"
             onChange={val => handleChangeValue('lastname', val)}
             allowClear
             affix={<User size={22} color={appColors.gray} />}
             onEnd={() => formValidator('lastname')}
             error={errorMessage['lastname']}
+          />
+          <InputComponent
+            value={values.firstname}
+            placeholder="Tên của bạn"
+            onChange={val => handleChangeValue('firstname', val)}
+            allowClear
+            affix={<User size={22} color={appColors.gray} />}
+            onEnd={() => formValidator('firstname')}
+            error={errorMessage['firstname']}
           />
           <InputComponent
             value={values.phonenumber}
