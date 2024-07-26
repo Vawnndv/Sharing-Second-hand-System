@@ -1269,6 +1269,10 @@ export class OrderManager {
         u.avatar,
         u.firstname,
         u.lastname,
+        ur.avatar AS avatarReceive,
+        ur.firstname AS firstnameReceive,
+        ur.lastname AS lastnameReceive,
+        o.givetypeid,
         po.postid,
         po.title,
         po.createdat,
@@ -1287,6 +1291,7 @@ export class OrderManager {
         Orders o
     LEFT JOIN Posts po ON po.postid = o.postid
     LEFT JOIN "User" u ON po.owner = u.userid
+    LEFT JOIN "User" ur ON o.userreceiveid = ur.userid
     LEFT JOIN Item it ON it.itemid = po.itemid
     LEFT JOIN Image img ON img.itemid = it.itemid
     LEFT JOIN Address ad ON ad.addressid = po.addressid
@@ -1305,6 +1310,10 @@ export class OrderManager {
         u.avatar,
         u.firstname,
         u.lastname,
+        ur.avatar,
+        ur.firstname,
+        ur.lastname,
+        o.givetypeid,
         po.postid,
         po.title,
         po.createdat,
