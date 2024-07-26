@@ -1266,6 +1266,7 @@ export class OrderManager {
     const client = await pool.connect();
     let query = `
     SELECT
+        u.userid,
         u.avatar,
         u.firstname,
         u.lastname,
@@ -1307,6 +1308,7 @@ export class OrderManager {
       ${isOverdue === true ? "AND po.timeend < CURRENT_TIMESTAMP" : "AND po.timeend >= CURRENT_TIMESTAMP"}
       ${buildRoleCheckQuery(method)}
     GROUP BY
+        u.userid,
         u.avatar,
         u.firstname,
         u.lastname,
