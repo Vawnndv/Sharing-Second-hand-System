@@ -188,7 +188,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                   <SimpleLineIcons name="location-pin" size={26} color={appColors.gray} />
                 </View>
                 <View style={styles.textContainer}>
-                  <TextComponent text={profile.address}/>
+                  <TextComponent text={auth.address ? auth.address : profile.address}/>
                 </View>
               </View>
               <View style={styles.separator} />
