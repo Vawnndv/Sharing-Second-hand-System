@@ -47,7 +47,7 @@ export default function ReportModal({ visible, setVisible, title, reportType, us
                     <TouchableWithoutFeedback onPress={() => {}}>
                         <View style={styles.modalView}>
                             <Text style={{ fontSize: 15 }}>
-                                Bạn đang cáo về {reportType === 1 ? 'người dùng ' : 'bài viết '} 
+                                Bạn đang báo cáo về {reportType === 1 ? 'người dùng ' : 'bài viết '} 
                                 <Text style={{ fontSize: 15, fontWeight: 'bold' }}>{title}</Text> !
                             </Text>
                             <Text style={{ fontSize: 15 }}>

@@ -439,7 +439,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: 'Xin sản phẩm của bạn',
-          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin chi tiết`
         })
 
         dispatch(addStatusReceivePost(postID))
@@ -454,7 +454,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: 'Xin sản phẩm của bạn',
-          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin chi tiết`
         })
 
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
@@ -469,7 +469,7 @@ const handleReceive = async () => {
             avatar: auth.avatar,
             link: `post/${postID}`,
             title: 'Xin sản phẩm của bạn',
-            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin chi tiết!`
           })
         })
       }
@@ -575,7 +575,7 @@ const handleReceive = async () => {
               avatar: auth.avatar,
               link: `post/${postID}`,
               title: 'Xin sản phẩm của bạn',
-              body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
+              body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin chi tiết!`
             })
           })
       
@@ -721,7 +721,7 @@ const handleGive = async () =>{
           link: receiver.receiverid === receiveid ? `post/${postID}` : '',
           title: 'Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
-            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin chi tiết` : 
             `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
         })
       })

@@ -109,7 +109,7 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
                         originalLocation: location,
                         setOriginalLocation: setLocation
                     })}>
-                    <Text style={{color: 'white'}}>Chọn trên bản đồ</Text>
+                    <Text style={{color: 'white'}}>Xem trên bản đồ</Text>
                 </TouchableOpacity>
             </View>
         </View>
