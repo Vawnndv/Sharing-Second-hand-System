@@ -79,11 +79,11 @@ const DrawerCustom = ({navigation}: any) => {
       title: 'Liên hệ',
       icon: <AntDesign name="contacts" size={size} color={color} />,
     },
-    {
-      key: 'Help',
-      title: 'Trợ giúp',
-      icon: <Feather name="help-circle" size={size} color={color} />,
-    },
+    // {
+    //   key: 'Help',
+    //   title: 'Trợ giúp',
+    //   icon: <Feather name="help-circle" size={size} color={color} />,
+    // },
     {
       key: 'SignOut',
       title: 'Đăng xuất',
