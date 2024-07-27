@@ -283,7 +283,7 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
     if (updateUser) {
       await handleSendMail(data).then(() => {
         res.status(200).json({
-          message: 'Send my new password successfully!!!',
+          message: 'Gửi mật khẩu mới thành công. Vui lòng kiểm tra email của bạn',
           data: {},
         });
       });

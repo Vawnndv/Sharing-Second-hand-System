@@ -311,7 +311,7 @@ function Profile() {
                   </Grid>
 
                 </Grid>
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1.8 }}>
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 2 }}>
                   {updateLoading ? 'Đang cập nhật ...' : 'Cập nhật'}
                 </Button>
               </Box>

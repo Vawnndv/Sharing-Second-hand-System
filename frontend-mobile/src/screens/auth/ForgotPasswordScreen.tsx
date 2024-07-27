@@ -82,7 +82,6 @@ const ForgotPasswordScreen = () => {
           allowClear
           onEnd={() => formValidator('email')}
           error={errorMessage['email']}
-
         />
       </SectionComponent>
       {errorForgotPassword ? (

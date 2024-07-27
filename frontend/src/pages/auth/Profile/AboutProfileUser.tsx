@@ -195,7 +195,7 @@ function AboutProfileUser() {
                 <Button
                     sx={{
                       mt: 3, mb: 2,
-                      py: 1.8
+                      py: 2
                     }}
                     color='error'
                     fullWidth

@@ -78,11 +78,10 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
   if (user) {
     const checkPassword = (oldPassword.trim().length === 0 && user.password.trim().length === 0) ? true :  await bcrypt.compare(oldPassword, user.password);
 
-    
     if (checkPassword) {
       if (oldPassword === newPassword) {
         res.status(400);
-        throw new Error('New password must different from old password!!!');
+        throw new Error('Mật khẩu mới phải được đặt khác mật khẩu cũ');
       }
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -91,7 +90,7 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 
       if (updateUser) {
         res.status(200).json({
-          message: 'Password changed successfully!!!',
+          message: 'Thay đổi mật khẩu thành công.',
           data: {},
         });
       } else {
@@ -100,7 +99,7 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
       }
     } else {
       res.status(400);
-      throw new Error('Invalid old password!!!');
+      throw new Error('Mật khẩu cũ không hợp lệ.');
     } 
   } else {
     res.status(401);
