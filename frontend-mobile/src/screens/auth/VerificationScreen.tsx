@@ -10,6 +10,7 @@ import authenticationAPI from '../../apis/authApi';
 import { useDispatch } from 'react-redux';
 import { addAuth } from '../../redux/reducers/authReducers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { usePushNotifications } from '../../utils/usePushNotification';
 
 const VerificationScreen = ({navigation, route}: any) => {
   const limitTime = 120;
@@ -92,6 +93,7 @@ const VerificationScreen = ({navigation, route}: any) => {
           dispatch(addAuth(res.data));
 
           await AsyncStorage.setItem('auth', JSON.stringify(res.data));
+          await usePushNotifications.registerForPushNotificationsAsync();
         } catch (error) {
           setErrorMessage('Địa chỉ email đã tồn tại!!!');
           console.log(`Can not create new user ${error}`);
