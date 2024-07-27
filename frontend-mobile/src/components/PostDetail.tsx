@@ -553,7 +553,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                     {/* Hiển thị ngày đăng */}
                     <View style={styles.timeContainer}>
                       <SimpleLineIcons name="clock" size={16} color="grey" />
-                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.createdat).fromNow()}</Text>
+                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.createdat).subtract(7, 'hours').fromNow()}</Text>
 
                     </View>
                   </View>
