@@ -166,7 +166,7 @@ const VerificationScreen = ({navigation, route}: any) => {
         <ButtonComponent
           disable={newCode.length !== 4}
           onPress={handleVerification}
-          text="Continue"
+          text="Tiếp tục"
           type="primary"
           iconFlex="right"
           icon={
@@ -195,7 +195,7 @@ const VerificationScreen = ({navigation, route}: any) => {
       <SectionComponent>
         {limit > 0 ? (
           <RowComponent justify="center">
-            <TextComponent text="Re-send code in " flex={0} />
+            <TextComponent text="Mã hết hạn sau " flex={0} />
             <TextComponent 
               text={`${String((limit - (limit % 60)) / 60).padStart(2, '0')}:${String(limit - (limit - (limit % 60))).padStart(2, '0')}`}
               color={appColors.link}
@@ -203,7 +203,7 @@ const VerificationScreen = ({navigation, route}: any) => {
             />
           </RowComponent>
         ) : (
-          <RowComponent>
+          <RowComponent justify='center'>
             <ButtonComponent
               type="link"
               text="Gửi lại mã xác minh qua email"
