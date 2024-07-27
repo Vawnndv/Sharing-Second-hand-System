@@ -191,7 +191,7 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
-              <RowComponent justify='space-between'>
+              <RowComponent>
                 <TextComponent text={item.name} size={16} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
