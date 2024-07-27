@@ -45,7 +45,7 @@ function Profile() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const [imageUpdateUrl, setImageUpdateUrl] = useState('');
 
-  const [location, setLocation] = useState<any>(null)
+  const [location, setLocation] = useState<any>('');
   
   const [searchParams] = useSearchParams();
   const profileID: any = searchParams.get('profileID')
@@ -106,6 +106,7 @@ function Profile() {
   
   useEffect(() => {
     if (userInfo) {
+      console.log(userInfo)
       setValue('firstName', userInfo?.firstName);
       setValue('lastName', userInfo?.lastName);
       setValue('email', userInfo?.email);
@@ -122,6 +123,8 @@ function Profile() {
       setValue('lastName', editUserInfo?.lastName);
       setValue('email', editUserInfo?.email);
       setValue('phone', editUserInfo?.phoneNumber);
+      setValue('address', location.address);
+
       if (editUserInfo?.dob !== '') {
         setDate(dayjs(editUserInfo?.dob));
       }
@@ -210,7 +213,8 @@ function Profile() {
                   </Grid>
                   {/* image preview */}
                   <Grid item xs={12} sm={3}>
-                    <ImagePreview image={imageUrl} name="user-image" />
+                    {/* <ImagePreview image={imageUrl} name="user-image" /> */}
+                    <ImagePreview image={imageUrl} />
                   </Grid>
                   <Grid item xs={12}>
                     <TextField fullWidth {...register('email')} id="email" label="Địa chỉ email" name="email"  InputProps={{
@@ -278,10 +282,10 @@ function Profile() {
                         id="address"
                         label="Địa chỉ"
                         //   name="address"
-                        value={userInfo?.address || ''}
+                        // value={location.address}
                         {...register('address')}
-                        error={!!errors.lastName}
-                        helperText={errors.lastName?.message || ''}
+                        error={!!errors.address}
+                        helperText={errors.address?.message || ''}
                         InputProps={{
                           readOnly: true,
                       }}

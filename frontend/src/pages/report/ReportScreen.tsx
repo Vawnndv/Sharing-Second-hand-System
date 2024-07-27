@@ -15,7 +15,7 @@ function ReportScreen() {
   };
 
   return (
-    <Box sx={{ width: '100%', typography: 'body1', px: 10, py: 5 }}>
+    <Box sx={{minHeight: '100vh', typography: 'body1', px: 10, py: 5 }}>
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <TabList onChange={handleChange} aria-label="lab API tabs example"

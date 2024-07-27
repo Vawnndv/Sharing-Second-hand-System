@@ -78,10 +78,10 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
     }
   }, [location.pathname, index]);
 
-  const handleNavigateToUserProfile = (userID: string) => {
-    // event.stopPropagation();
-    navigate(`/profile?profileID=${userID}`)
-  }
+  // const handleNavigateToUserProfile = (userID: string) => {
+  //   // event.stopPropagation();
+  //   navigate(`/profile?profileID=${userID}`)
+  // }
 
   return (
     <div>
@@ -91,7 +91,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
           spacing={1}
           className={`menu ${isOpenMenu && 'hidden'}`}
         >
-          <Stack
+          {/* <Stack
             direction="row"
             alignItems="center"
             spacing={1}
@@ -110,7 +110,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
             >
               {userInfo?.firstName} {userInfo?.lastName} 
             </Typography>
-          </Stack>
+          </Stack> */}
 
           <Stack
             direction="row"
@@ -271,7 +271,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
           spacing={1}
           className={`menu ${isOpenMenu && 'hidden'}`}
         >
-          <Stack
+          {/* <Stack
             direction="row"
             alignItems="center"
             spacing={1}
@@ -288,7 +288,7 @@ function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
             >
               John
             </Typography>
-          </Stack>
+          </Stack> */}
 
           <Stack
             direction="row"

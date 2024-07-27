@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { Grid, CircularProgress } from '@mui/material';
+import { Grid, CircularProgress, Box, Typography } from '@mui/material';
 import InventoryCard from './InventoryCard';
 import { getOrdersCollaborator } from '../../redux/services/inventoryServices';
 import { useSelector } from 'react-redux';
@@ -55,7 +55,11 @@ function ViewInventoryList({searchQuery, filterValue, typeCard, status} : any) {
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
           <CircularProgress />
         </Grid>
-      ) : (
+      ) : inventoryList.length === 0 ? (
+        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Typography variant="h6">Không có phiếu nào</Typography>
+        </Grid>
+      ) :(
         // Render mỗi mục trong inventoryList vào component InventoryCard
         inventoryList.map((item, index) => (
           <Grid item key={index} xs={12}>

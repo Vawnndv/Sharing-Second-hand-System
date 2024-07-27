@@ -66,13 +66,13 @@ const ProfileValidation = yup.object().shape({
     .max(20, 'Họ của bạn không được quá 20 ký tự')
     .matches(/^[a-zA-ZÀ-ỹ ]*$/, 'Họ chỉ được chứa các ký tự chữ cái'),
   email: yup.string().email().required('Vui lòng nhập đại chỉ email').trim(),
-  address: yup.string().email().required('Vui lòng nhập đại chỉ').trim(),
+  address: yup.string().required('Vui lòng nhập đại chỉ').trim(),
   phone: yup
-    .string()
-    .trim()
-    .matches(/^[0-9]*$/, 'Only contain numbers')
-    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
-
+  .string()
+  .trim()
+  .required('Vui lòng nhập số điện thoại')
+  .matches(/^[0-9]*$/, 'Chỉ chứa các ký tự số')
+  .matches(/^$|^[0-9]{10,11}$/, 'Số điện thoại phải có từ 10 đến 11 chữ số'),
 });
 
 const ForgotPasswordValidation = yup.object().shape({
@@ -117,30 +117,29 @@ const EditUserInfoValidation = yup.object().shape({
   warehouseName: yup
     .string()
     .trim()
-    .required('Please select an warehouse work'),
+    .required('Vui lòng chọn kho làm việc'),
 });
 
 const CreateWarehouseValidation = yup.object().shape({
   warehousename: yup
     .string()
-    .required('Warehouse name is required')
-    .max(20, 'Warehouse name must be less than 20 characters'),
+    .required('Vui lòng nhập tên kho')
+    .max(20, 'Tên kho phải ít hơn 20 ký tự'),
 
     address: yup
     .string()
-    .required('Address is required'),
+    .required('Vui lòng nhập địa chỉ kho'),
 
     avatar: yup
     .string()
-    .required('Avatar is required'),
+    .required('Vui lòng chọn ảnh kho'),
 
     phonenumber: yup
     .string()
     .trim()
-    .required('Phone number is required')
-    .matches(/^[0-9]*$/, 'Only contain numbers')
-    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
-
+    .required('Vui lòng nhập số điện thoại')
+    .matches(/^[0-9]*$/, 'Chỉ chứa các ký tự số')
+    .matches(/^$|^[0-9]{10,11}$/, 'Số điện thoại phải có từ 10 đến 11 chữ số'),
 });
 
 
@@ -148,14 +147,17 @@ const EditWarehouseInfoValidation = yup.object().shape({
   warehouseid: yup
     .string(),
 
-  warehousename: yup
+    warehousename: yup
     .string()
-    .max(20, 'Warehouse name must be less than 20 characters'),
+    .required('Vui lòng nhập tên kho')
+    .max(20, 'Tên kho phải ít hơn 20 ký tự'),
 
     phonenumber: yup
     .string()
-    .matches(/^[0-9]*$/, 'Only contain numbers')
-    .matches(/^$|^[0-9]{10,11}$/, 'Phone number must be 10 to 11 digits'),
+    .trim()
+    .required('Vui lòng nhập số điện thoại')
+    .matches(/^[0-9]*$/, 'Chỉ chứa các ký tự số')
+    .matches(/^$|^[0-9]{10,11}$/, 'Số điện thoại phải có từ 10 đến 11 chữ số'),
 
     address: yup
     .string(),

@@ -57,7 +57,7 @@ export default function OrderCard({order, locationOfItem, isPost, canApproval, c
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
                       onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>
-                        {order.username ? order.username : `${isShowReceiver ? order.firstnamereceive : order.firstname} ${isShowReceiver ? order.lastnamereceive : order.lastname}`}</Typography>
+                        {order.username ? order.username : `${isShowReceiver ? order.firstnamereceive : order.firstname ?? ''} ${isShowReceiver ? order.lastnamereceive : order.lastname ?? ''}`}</Typography>
                     :
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
