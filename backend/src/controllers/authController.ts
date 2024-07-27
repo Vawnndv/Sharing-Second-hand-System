@@ -172,6 +172,11 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
     1,
   );
 
+  const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
+  
+  const refreshToken = await getJsonWebRefreshToken(newUser.userid);
+  const refreshtoken = await User.userManager.addRefreshTokenToUser(newUser.userid, refreshToken);
+  
   res.status(200).json({
     message: 'Register new user successfully',
     data: {
@@ -181,6 +186,8 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
       lastName: newUser.lastname,
       avatar: newUser.avatar,
       roleID: newUser.roleid, 
+      fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(newUser.userid),
     },
   });
@@ -213,7 +220,6 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
   const refreshToken = await getJsonWebRefreshToken(handleGmailLogin.existingUser.userid);
 
   if (platform === 'web' && handleGmailLogin.existingUser.roleid > 1) {
-    console.log(refreshToken);
     const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',

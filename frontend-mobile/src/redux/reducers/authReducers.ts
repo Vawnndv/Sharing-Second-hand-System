@@ -7,11 +7,13 @@ interface AuthState {
   roleID: string;
   fcmTokens: string[];
   deviceid: string;
+  address: string;
 };
 
 const initialState: AuthState = {
   id: '',
   email: '',
+  address: '',
   accessToken: '',
   roleID: '',
   fcmTokens: [],
