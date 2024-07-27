@@ -21,22 +21,6 @@ const initalPosition = {
   longitudeDelta: 0.02 * width / height
 }
 
-// const warehouses = [
-//     {
-//         warehouseid: 19,
-//         warehousename: 'Kho số 1',
-//         address: 'Đại học khoa học tự nhiên',
-//         latitude: 10.763025311133902,
-//         longitude: 106.68249312376167
-//     },
-//     {
-//         warehouseid: 20,
-//         warehousename: 'Kho số 2',
-//         address: 'Nhà thi đấu Phú Thọ',
-//         latitude: 10.7688298,
-//         longitude: 106.6577947
-//     }
-// ]
 
 
 
@@ -80,7 +64,6 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
 
     const {warehouses, setWarehouseSelected}: any = route.params;
 
-    // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [radioSelect, setRadioSelect] = useState(warehouses[0].warehouseid)
     const [location, setLocation] = useState<any>(null);
 
@@ -102,7 +85,6 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
           }
           setLocation(locationTarget)
           moveCameraToCoordinate(locationTarget)
-        //   setLocation(location);
     }
 
     // thực hiện hiển thị tại vị trí người dùng trước
@@ -133,7 +115,6 @@ export default function MapSelectWarehouseGive({navigation, route}: any) {
         }
         setWarehouseSelected(warehouseSeleted)
         navigation.goBack()
-        // navigation.goBack()
     }
     
     const handleSelectWarehouse = (whid: any) => {

@@ -43,9 +43,7 @@ export function App() {
     const callAPI = async () => {
       try{
         const response: any = await Axios.get('/posts/getAllPosts/outdated');
-        console.log(response.allPost);
         for(let i = 0; i < response.allPost.length; i+=1){
-          console.log("item.title", response.allPost[i].title)
           // eslint-disable-next-line no-await-in-loop
           await HandleNotification.sendNotification({
             userReceiverId: response.allPost[i].owner,
@@ -58,22 +56,7 @@ export function App() {
             body: `Bài viết của bạn "${response.allPost[i].title}" đã hết hạn! Vui lòng gia hạn bài viết này bằng cách vào trang chi tiết bài viết!`,
           })
         }
-        // if(response.allPost.length > 0){
-        //   // eslint-disable-next-line array-callback-return
-        //   response.allPost.map(async (item: any) => {
-        //     console.log("item.title", item.title)
-        //     await HandleNotification.sendNotification({
-        //       userReceiverId: item.owner,
-        //       userSendId: userInfo?.id,
-        //       postid: '',
-        //       avatar: userInfo?.avatar,
-        //       link: `post/${item.postid}`,
-        //       name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-        //       body: `Bài viết của bạn "${item.title}" đã hết hạn! Vui lòng gia hạn bài viết này bằng cách vào trang chi tiết bài viết!`,
-        //     })
-        //   })
-        // }
-        console.log(response.allPost)
+  
       }catch(error){
         console.log(error)
       }
@@ -84,7 +67,6 @@ export function App() {
     const nowTime = now.getTime();
     const next9am = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0, 0, 0).getTime();
     const timeTo9am = next9am > nowTime ? next9am - nowTime : next9am + 86400000 - nowTime;
-    console.log(timeTo9am)
     const timeoutId = setTimeout(() => {
       // Gọi API lúc 7h sáng
       

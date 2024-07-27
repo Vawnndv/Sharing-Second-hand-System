@@ -37,27 +37,6 @@ const OrderComponent: React.FC<OrderFunctionProbs> = ({
     orderID,
     collboratorReceiveID,
     imagePath}) => {
-    // Xây dựng và trả về JSX.Element tương ứng với thông tin của đơn hàng
-
-
-        // const pinOrderhandle = async() => {
-        //     const collabID = status === 'Chờ cộng tác viên lấy hàng' ? collboratorReceiveID : null
-        //     const statusOrder = status === 'Chờ cộng tác viên lấy hàng' ? 'Hàng đang được đến lấy' : 'Chờ cộng tác viên lấy hàng'
-        //     console.log(collabID, statusOrder)
-        //     await axios.put(`${appInfo.BASE_URL}/updateStatusOrder/${orderID}`,{
-        //         status: statusOrder
-        //     });
-        //     const response = await axios.put(`${appInfo.BASE_URL}/updatePinOrder/${orderID}`,{
-        //         collaboratorReceiveID: collabID
-        //     });
-        //     console.log(response)
-        //     if(response.data.statusPin === false){
-        //         alert('Đơn hàng đã được người khác chọn!')
-        //     }else{
-        //         alert('Chọn đơn hàng thành công')
-        //     }
-        //     setChangeOrdersGiving(!changeOrdersGiving)
-        // }
 
         return (
         <View style={[styles.order, {backgroundColor: status === 'Hàng đang được đến lấy' ? "#E9FFE9" : appColors.white2}]}>

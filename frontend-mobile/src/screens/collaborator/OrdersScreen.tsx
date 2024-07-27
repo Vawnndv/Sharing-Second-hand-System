@@ -108,15 +108,6 @@ export default function OrdersScreen({navigation}: any) {
     }
 
 
-    // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', () => {
-    //       // Thực hiện các hành động cần thiết khi màn hình được focus
-    //       console.log('Home Screen Reloaded:');
-    //       setRefresh(prevRefresh => !prevRefresh);
-    //     });
-    //     return unsubscribe;
-    //   }, [navigation]);
-
     
     const onRefresh = useCallback(() => {
         setRefreshing(true);

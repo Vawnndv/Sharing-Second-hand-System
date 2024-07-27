@@ -46,7 +46,6 @@ const getJsonWebRefreshToken = async (id: number) => {
   const payload = {
     id,
   };
-  console.log(id);
   const secret = process.env.REFRESH_TOKEN_KEY;
 
   // Kiểm tra xem REFRESH_TOKEN_KEY đã được định nghĩa hay chưa
@@ -113,7 +112,6 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
 export const refreshAccessToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, deviceid } = req.body;
 
-  console.log(req.body, '13123');
   if (!userid || !deviceid) {
     res.status(400).json({ message: 'userid and deviceid are required' });
     return;
@@ -139,7 +137,6 @@ export const refreshAccessToken = asyncHandle(async (req: Request, res: Response
       res.status(403).json({ message: 'Not authorized, token failed!' });
     } else {
       const accessToken = await getJsonWebAccessToken(userid);
-      console.log(accessToken);
 
       res.status(200).json({ 
         message: 'Access token refreshed successfully',

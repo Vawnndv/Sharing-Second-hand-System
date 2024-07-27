@@ -85,7 +85,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
       }
       const metadata = await response.json();
       setLabels(metadata.labels);   
-      console.log('model Loaded !!!!!');
 
     } catch (error) {
       console.error('Error loading the model', error);
@@ -174,7 +173,6 @@ export default function ViewDetailOrder({navigation, route}: any) {
           label: predictedLabel,
           probability: Math.max(...predictionArray[0])
         };
-        console.log('predict Result: ', predictionResult.label + ' ' + predictionResult.probability);
         setIsLoadingUpload(false);
 
   

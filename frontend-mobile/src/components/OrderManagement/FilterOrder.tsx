@@ -13,13 +13,6 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
   return (
     <View>
       <TouchableOpacity 
-        // onPress={() => {
-        //   router.navigate({
-        //     pathname: "/(modals)/FilterOrder",
-        //     params: {
-        //     },
-        //   });
-        // }}
         style={styles.filter}
         onPress={showModal}
       >
@@ -33,11 +26,6 @@ export default function FilterOrder({filterValue, setFilterValue}: any) {
 
 const styles = StyleSheet.create({
   filter: {
-    // height: 40,
-    // backgroundColor: '#fff',
-    // display: 'flex',
-    // justifyContent: 'center',
-    // paddingHorizontal: 20
 
     paddingVertical: 5, 
     paddingHorizontal: 20, 

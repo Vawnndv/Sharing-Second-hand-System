@@ -111,8 +111,6 @@ function Password() {
                     id="oldPassword"
                     label="Mật khẩu cũ"
                     type="password"
-                    // name="oldPassword"
-                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...register('oldPassword')}
                     error={!!errors.oldPassword}
                     helperText={errors.oldPassword?.message || ''}

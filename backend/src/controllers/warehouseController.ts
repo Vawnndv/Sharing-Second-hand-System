@@ -68,8 +68,6 @@ export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
         }
       }
       whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
-      console.log(whereClause);
-      console.log(havingClause);
       havingClause = havingClause.slice(0, -4); // Remove trailing 'OR'
     }
 
@@ -85,7 +83,6 @@ export const getAllWarehousesAllInfo = asyncHandle(async (req, res) => {
         } else if (sort.field == 'address') {
           orderByClause += `a.${sort.field} ${sort.sort === 'asc' ? 'ASC' : 'DESC'}, `;
         }
-        console.log(orderByClause);
       }
       orderByClause = orderByClause.slice(0, -2); // Remove trailing comma and space
     }

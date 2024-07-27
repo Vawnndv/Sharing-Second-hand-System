@@ -50,12 +50,12 @@ export class Post {
   }
 
   public update(): boolean {
-    // code here
+    
     return true;
   }
 
   public delete(): boolean {
-    // code here
+    
     return true;
   }
 

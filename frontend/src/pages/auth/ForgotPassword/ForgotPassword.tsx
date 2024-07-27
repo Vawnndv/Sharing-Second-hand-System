@@ -26,7 +26,6 @@ function ForgotPassword() {
   const [err, setErr] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Validate user
   const {
     register,
     handleSubmit,

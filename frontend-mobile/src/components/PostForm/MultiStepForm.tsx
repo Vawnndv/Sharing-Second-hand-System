@@ -357,14 +357,6 @@ const MultiStepForm = () => {
     }
   };
 
-  // if (isCompleted) {
-  //   return (
-  //     <ContainerComponent right>
-  //       {/* <StatisticScreen/> */}
-  //       <ItemTabComponent />
-  //     </ContainerComponent>
-  //   )
-  // }
 
   return (
     <ScrollView>

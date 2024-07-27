@@ -31,9 +31,7 @@ const initialLocation = {
 
 function SuggestComponent({suggests, handleClickLocation}: any) {
 
-  const handleClick = () => {
-    console.log('click location')
-  }
+
   return (
     <Stack
       flexDirection='column'
@@ -169,7 +167,6 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
         longitude: lng,
         address: data.display_name
       })
-      console.log(data.display_name);
       if(isUser === true){
         try {
           const response = await Axios.post(`/map/set_user_location`, {
@@ -196,31 +193,9 @@ function MapSelectAddress({setLocation, handleClose, isUser}: any) {
   const handleConfirmAddress = async () => {
     const center = getCenter()
 
-
-      // setLocation({
-      //   latitude: center.lat(),
-      //   longitude: center.lng(),
-      //   address: inputSearch
-      // })
       getAddressFromLatLng(center.lat(), center.lng())
       handleClose()
-      // try {
-      
-      //   if(isUser === true) {
-      //     // const response: any = await Axios.post(`/map/set_user_location`,{
-      //     //   userID: userLogin.userInfo.id,
-      //     //   latitude: center.lat(),
-      //     //   longitude: center.lng(),
-      //     //   address: inputSearch
-      //     // })
-      //   } else{
-      //     // set warehouse address here
-      //   }
-        
-        
-      // } catch (error) {
-      //   console.log(error) 
-      // }
+
       
       // eslint-disable-next-line no-alert
       alert('Cập nhật vị trí thành công!')

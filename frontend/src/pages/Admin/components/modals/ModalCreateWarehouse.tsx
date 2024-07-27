@@ -112,19 +112,7 @@ function ModalCreateCollaborator(props: Props) {
     setValue('address', location.address)
     setValue('avatar', imageUrl)
   }, [imageUrl])
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     dispatch(getAllCollaboratorsAction(0, pageState.pageSize, filterModel, sortModel))
-  //     setIsOpen(!isOpen)
-  //     dispatch({ type: 'UPDATE_USER_RESET' })
-  //   }
-  //   if (isError) {
-  //     toast.error(isError)
-  //     // setIsOpen(!isOpen)
-  //     dispatch({ type: 'UPDATE_USER_RESET' })
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isSuccess, isError, dispatch, setIsOpen])
+
 
   const onSubmit = async (data: any) => {
     try {

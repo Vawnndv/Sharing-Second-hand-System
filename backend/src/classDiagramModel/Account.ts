@@ -49,7 +49,7 @@ export class Account {
   }
 
   public editProfile(): void {
-    // code here
+
   }
 
   
@@ -124,7 +124,6 @@ export class Account {
       }
 
       return result.rows[0];
-      // return new Item(row.itemId, row.name, row.quantity);
     } catch(error) {
       console.log(error);
       return null;

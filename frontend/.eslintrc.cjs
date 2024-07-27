@@ -60,18 +60,7 @@ module.exports = {
         "ignoreRestSiblings": false
       }
     ],
-    // "prettier/prettier": [
-    //   "warn",
-    //   {
-    //     "bracketSpacing": true,
-    //     "printWidth": 140,
-    //     "singleQuote": true,
-    //     "trailingComma": "none",
-    //     "tabWidth": 2,
-    //     "useTabs": false,
-    //     "endOfLine": "auto"
-    //   }
-    // ]
+
     "react-hooks/exhaustive-deps": "off"
   },
 };

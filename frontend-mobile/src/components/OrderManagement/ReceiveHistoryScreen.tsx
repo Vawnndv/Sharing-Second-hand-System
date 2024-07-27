@@ -28,21 +28,9 @@ export default function ReceiveHistoryScreen({ navigation, route, filterValue }:
   const [isLoading, setIsLoading] = useState(false);
   const [orderReceive, setOrderReceive] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  // const [filterValue, setFilterValue] = useState({
-  //   distance: -1,
-  //   time: -1,
-  //   category: category,
-  //   sort: "Mới nhất",
-  // });
-
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     getOrderList();
-  //   }, [filterValue])
-  // );
 
   useEffect(() => {
     getOrderList();

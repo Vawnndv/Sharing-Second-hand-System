@@ -1,11 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
-// import { mapOrder } from './utils/sorts.ts';
 import routerItem from './routes/itemRouter';
 import orderCollaboratorRoute from './routes/orderCollaboratorRoute';
-import  pool  from './config/DatabaseConfig'; // Import pool kết nối từ file dbConfig.ts
-// import authRouter from './routes/v1/authRouter';
+import  pool  from './config/DatabaseConfig'; 
 import routerPost from './routes/postRouter';
 import authRouter from './routes/authRouter';
 import orderRouter from './routes/orderRouter';

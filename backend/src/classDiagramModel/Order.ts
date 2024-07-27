@@ -69,9 +69,6 @@ export class Order {
     this.post = post
     this.addressGive = addressGive;
     this.addressReceive = addressReceive;
-    // this.item = item;
-    // this.trace = trace;
-    // this.currentStatus = currentStatus;
   }
 
   public updateStatus(status: string, time: string) {
@@ -79,7 +76,7 @@ export class Order {
   }
 
   public deleteOrder(): void {
-    // code here
+    
   }
 
   public setGiver(giver: User): void{

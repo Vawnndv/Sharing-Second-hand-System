@@ -64,11 +64,6 @@ const DrawerCustom = ({navigation}: any) => {
       title: 'Đổi mật khẩu',
       icon: <Ionicons name="settings-outline" size={size} color={color} />,
     },
-    // {
-    //   key: 'MyProfile',
-    //   title: 'Thông tin tài khoản',
-    //   icon: <User size={size} color={color} />,
-    // },
     {
       key: 'Location',
       title: 'Vị trí',
@@ -79,11 +74,6 @@ const DrawerCustom = ({navigation}: any) => {
       title: 'Liên hệ',
       icon: <AntDesign name="contacts" size={size} color={color} />,
     },
-    // {
-    //   key: 'Help',
-    //   title: 'Trợ giúp',
-    //   icon: <Feather name="help-circle" size={size} color={color} />,
-    // },
     {
       key: 'SignOut',
       title: 'Đăng xuất',
@@ -114,7 +104,6 @@ const DrawerCustom = ({navigation}: any) => {
       await AsyncStorage.clear();
       dispatch(removeAuth({}));
       dispatch(removeUser({}));
-      console.log(`Log out error: ${error}`);
     }
   }
 
@@ -141,14 +130,6 @@ const DrawerCustom = ({navigation}: any) => {
         });
         break;
 
-      // case 'MyProfile':
-      //   navigation.navigate('Profile', {
-      //     screen: 'ProfileScreen',
-      //     params: {
-      //       id: auth.id,
-      //     },
-      //   });
-      //   break;
       default:
         navigation.navigate(key);
         break;

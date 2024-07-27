@@ -8,12 +8,6 @@ import { getCollaboratorsTotalService } from '../../../redux/services/collaborat
 // import { styled } from '@mui/material/styles'
 import { getWarehouseNameList } from '../../../redux/services/warehouseService'
 
-
-// const StyledClassTable = styled('div')({
-//     transform: 'scale(0.9)',
-//     transformOrigin: 'top left',
-//     width: 'calc(100% / 0.9)'
-//   })
   
 function Collaborators() {
     const dispatch: AppDispatch = useAppDispatch();

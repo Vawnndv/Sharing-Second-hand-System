@@ -243,33 +243,8 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
 });
 
 
-//  ************** ADMIN CONTROLLERS **************
-// @des Get all users
-// @route GET /api/users
-// export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
-//   console.log(req.query);
-//   const { page, pageSize } = req.query;
-//   if (typeof page === 'string' && page && typeof pageSize === 'string' && pageSize) {
-//     console.log(req.query);
-//     const total = await User.userManager.totalAllUser();
-
-//     const response = await User.userManager.getAllUser(page, pageSize);
-//     res.status(200).json({
-//       message: 'get user address successfully',
-//       data: {
-//         users: response ?? [],
-//         total: total.total_users ?? 0,
-//       },
-//     });
-//   } else {
-//     res.status(404);
-//     throw new Error('Missing page and pageSize');
-//   }
-// });
-
 export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-  console.log(req.body);
 
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';

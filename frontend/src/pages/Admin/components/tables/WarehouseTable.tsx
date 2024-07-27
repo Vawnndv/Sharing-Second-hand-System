@@ -5,15 +5,9 @@ import { Avatar, Box, Grid, IconButton, Tooltip, Typography, Button, Dialog, use
 import { DataGrid, GridColDef, GridToolbar, getGridSingleSelectOperators, getGridStringOperators, gridClasses } from '@mui/x-data-grid'
 import { grey } from '@mui/material/colors'
 import { Add, Delete, Edit } from '@mui/icons-material'
-// import { useSelector } from 'react-redux'
-// import { RootState } from '../../../../redux/store'
 import { DateFormat } from '../../../../components/notification/Empty'
 import CustomNoRowsOverlay from './CustomNoRowsOverlay'
 import { viVN } from '@mui/x-data-grid/locales';
-// import ModalEditCollaborator from '../modals/ModelEditCollaborator'
-// import { banUserService } from '../../../../redux/services/userServices'
-// import toast from 'react-hot-toast'
-// import { TbLock, TbLockOpen } from "react-icons/tb";
 import ModalCreateWarehouse from '../modals/ModalCreateWarehouse'
 import ModalEditWarehouse from '../modals/ModalEditWarehouse'
 import { TbLock, TbLockOpen } from 'react-icons/tb'
@@ -49,9 +43,7 @@ interface Props {
 function WarehouseTable(props: Props) {
   const {deleteHandler, isLoading, warehouses, total, deleteSelectedHandler, selectionModel, setSelectionModel, pageState, setPageState, setFilterModel, setSortModel, filterModel, sortModel, isAddNewWarehouse, isUpdateWarehouse, setIsAddNewWarehouse, setIsUpdateWarehouse, setIsLoading} = props;
 
-  // const { userInfo } = useSelector(
-  //   (state: RootState) => state.userLogin
-  // );
+
 
   const [data, setData] = useState<any>([]); 
   const [isOpen, setIsOpen] = useState(false);
@@ -66,7 +58,6 @@ function WarehouseTable(props: Props) {
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
-    // setIsUpdateWarehouse(true);
   }
 
   useEffect(() => {
@@ -81,7 +72,6 @@ function WarehouseTable(props: Props) {
 
   const handleOpenModalCreate = () => {
     setIsOpenModalCreate(!isOpenModalCreate);
-    // setIsAddNewWarehouse(true);
   }
 
   const handleOpenDialog = (warehouse: any) => {
@@ -157,7 +147,6 @@ function WarehouseTable(props: Props) {
         getTooltip: (params: any) => params.value,
         filterOperators: getGridStringOperators().filter(operator => operator.value === 'contains'),
       },
-      // { field: 'address', headerName: 'Address', width: 250, getTooltip: (params: any) => params.value },
       {
         field: 'createdat',
         headerName: 'Ngày tạo',
@@ -216,14 +205,7 @@ function WarehouseTable(props: Props) {
                 <Edit />
               </IconButton>
             </Tooltip>
-            {/* <Tooltip title="Delete this room">
-              <IconButton
-                // disabled={params.row.warehouseid === userInfo?.id}
-                onClick={() => deleteHandler(params.row)}
-              >
-                <Delete />
-              </IconButton>
-            </Tooltip> */}
+            
           </Box>
         )
       }
@@ -294,7 +276,6 @@ function WarehouseTable(props: Props) {
             rowCount={total}
             loading={isLoading}
             getRowId={(row) => row.warehouseid}
-            // pagination
             paginationMode="server"
             sortingMode="server"
             filterMode="server"
@@ -305,7 +286,6 @@ function WarehouseTable(props: Props) {
             onSortModelChange={setSortModel}
             onFilterModelChange={setFilterModel}
             pageSizeOptions={[5, 10, 20]}
-            // checkboxSelection
             getRowSpacing={(params: any) => ({
               top: params.isFirstVisible ? 0 : 1,
               bottom: params.isLastVisible ? 0 : 1
@@ -330,10 +310,6 @@ function WarehouseTable(props: Props) {
               noRowsOverlay: CustomNoRowsOverlay
 
             }}
-            // columnVisibilityModel={{
-            //   teacherClasses: !isOpenMenu,
-            //   studentClasses: !isOpenMenu
-            // }}
             onRowSelectionModelChange={handleRowSelection}
           />
         </Box>

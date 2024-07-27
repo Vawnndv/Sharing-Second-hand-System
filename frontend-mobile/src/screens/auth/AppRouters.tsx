@@ -17,65 +17,6 @@ const AppRouters = () => {
   const dispatch = useDispatch();
   const navigation: any  = useNavigation();
 
-  // useEffect(() => {
-  //   const handleNotificationResponse = (response: any) => {
-  //     const url = response.notification.request.content.data.url;
-  //     if (url) {
-  //       const parts = url.split('/');
-  //       if( parts[0] === 'order') {
-  //         navigation.navigate('MyOrder', {
-  //           screen: 'ViewDetailOrder',
-  //           params: {
-  //             orderid: parts[1]
-  //           },
-  //         });
-  //       } else {
-  //         navigation.navigate('Home', {
-  //           screen: 'ItemDetailScreen',
-  //           params: {
-  //             postID: parts[1]
-  //           },
-  //         });
-  //       }
-  //       // Linking.openURL(`frontend-mobile://${url}`);
-  //     }
-  //   };
-
-  //   const subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
-
-  //   return () => subscription.remove();
-  // }, []);
-
-  // useEffect(() => {
-  //   const handleInitialNotification = async () => {
-  //     const initialNotification = await Notifications.getLastNotificationResponseAsync();
-  //     if (initialNotification) {
-  //       console.log(initialNotification.notification.request.content.data, 'bcd');
-  //       const url = initialNotification.notification.request.content.data.url;
-  //       if (url) {
-  //          const parts = url.split('/');
-  //               if( parts[0] === 'order') {
-  //                 navigation.navigate('MyOrder', {
-  //                   screen: 'ViewDetailOrder',
-  //                   params: {
-  //                     orderid: parts[1]
-  //                   },
-  //                 });
-  //               } else {
-  //                 navigation.navigate('Home', {
-  //                   screen: 'ItemDetailScreen',
-  //                   params: {
-  //                     postID: parts[1]
-  //                   },
-  //                 });
-  //               }
-  //         // Linking.openURL(`frontend-mobile://${url}`);
-  //       }
-  //     }
-  //   };
-
-  //   handleInitialNotification();
-  // }, []);
   
   useEffect(() => {
     checkLogin();
