@@ -4,7 +4,8 @@ import './style.scss';
 
 import { Stack, Typography, IconButton } from '@mui/material';
 import moment from 'moment';
-import 'moment/locale/vi';
+// import 'moment/locale/vi';
+import 'moment/dist/locale/vi';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { NotificationModel } from './Notification';
 import { useNavigate } from 'react-router-dom';
