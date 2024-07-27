@@ -9,11 +9,13 @@ import moment from 'moment';
 import 'moment/locale/vi';
 import { useNavigate } from 'react-router-dom';
 import AvatarComponent from '../../components/AvatarComponent';
+import { useState } from 'react';
 // import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 // import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 
-export default function OrderCard({order, isPost, canApproval, canDelete, isWaitForPost}: any) {
+export default function OrderCard({order, locationOfItem, isPost, canApproval, canDelete, isWaitForPost}: any) {
   const navigate = useNavigate();
+  const [isShowReceiver] = useState(locationOfItem === 1 && (order.givetypeid === 1 || order.givetypeid === 3 || order.givetypeid === 4))
 
   const handleCardClick = () => {
     if(isPost){
@@ -26,6 +28,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
 
   const handleNavigateToUserProfile = (userID: string, event: any) => {
     event.stopPropagation();
+    console.log(order)
     navigate(`/about-profile?profileID=${userID}`)
   }
 
@@ -43,7 +46,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
           }
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <AvatarComponent avatar={order.avatar} onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)} username={order.firstname} />
+              <AvatarComponent avatar={isShowReceiver ? order.avatarreceive : order.avatar} onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)} username={order.firstname} />
               {/* <Avatar alt="Avatar" src={order.avatar} component='div' 
                 onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}/> */}
               <Box sx={{ ml: 1 }}>
@@ -54,7 +57,7 @@ export default function OrderCard({order, isPost, canApproval, canDelete, isWait
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
                       onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>
-                        {order.username ? order.username : `${order.firstname} ${order.lastname}`}</Typography>
+                        {order.username ? order.username : `${isShowReceiver ? order.firstnamereceive : order.firstname} ${isShowReceiver ? order.lastnamereceive : order.lastname}`}</Typography>
                     :
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
