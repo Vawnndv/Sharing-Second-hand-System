@@ -67,7 +67,7 @@ const ConfimReceiveModal = (props: Props) => {
             avatar: auth.avatar,
             link: `order/${orderid}`,
             title: 'Đã xác nhận nhận đồ',
-            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin chi tiết!`
           })
         })
       }else{
@@ -78,7 +78,7 @@ const ConfimReceiveModal = (props: Props) => {
           avatar: auth.avatar,
           link: `order/${orderid}`,
           title: 'Đã xác nhận nhận đồ',
-          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin chi tiết!`
         })
       }
       setVisibleRatingModal(true);

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import userAPI from '../apis/userApi'; // Adjust the import according to your project structure
 import { NotificationModel } from '../models/NotificationModel';
 import authenticationAPI from '../apis/authApi';
@@ -16,7 +16,7 @@ Notifications.setNotificationHandler({
 });
 
 function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
+  Alert.alert('Thông báo', errorMessage);
   throw new Error(errorMessage);
 }
 
@@ -39,7 +39,7 @@ export class usePushNotifications {
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
-        handleRegistrationError('Permission not granted to get push token for push notification!');
+        handleRegistrationError('Ứng dụng chưa được cấp phép để hiển thị thông báo nổi!');
         return;
       }
       const projectId =
