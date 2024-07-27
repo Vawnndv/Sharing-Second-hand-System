@@ -176,9 +176,6 @@ export const EditPostComponent: React.FC<EditPostComponent> = ({ route, title, t
       try {
 
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
-        // const res = await itemsAPI.HandleAuthentication(
-        //   `/${itemID}`,
-        // );
         if (!res) {
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
@@ -221,16 +218,6 @@ useEffect(() => {
   }
 },[itemImagesAdd,itemImagesDelete]);
 
-// useEffect(() =>{
-//   if( post.longitude){
-//     setLocation({
-//       addressid: post.addressid,
-//       address: post.address,
-//       longitude: parseFloat(post.longitude),
-//       // latitude: parseFloat(post.latitude),
-//     });
-//   }
-// },[post])
 
 
 const onChangeStartDate = (event: any, selectedDate: Date | undefined) => {
@@ -393,12 +380,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
           type: asset.mimeType
         }
       });
-      // const finalResult = {
-      //   ri: result.assets[0].uri,
-      //   name: new Date().getTime(),
-      //   type: result.assets[0].mimeType,
-      // }
-      // setImage(finalResult);
 
       setItemImages( [...itemImages, ...imageData] ); // Cập nhật đường dẫn của các ảnh vào formData
       setItemImagesAdd( [...itemImagesAdd, ...imageData] ); // Cập nhật đường dẫn của các ảnh vào formData
@@ -498,12 +479,8 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
             <TextInput
               label="Nội dung của bài đăng"
               value={newDescription}
-              // onBlur={() => handleValidate(formData.postDescription,'postdescription')}
               onChangeText={(text) => {
-                // setFormData({ ...formData, postDescription: text });
                 setNewDescription(text);
-                // setErrorMessage({...errorMessage, postDescription: ''});
-                // handleValidate(text,'postdescription');
 
               }}
               style={styles.input}
@@ -511,7 +488,6 @@ const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
               activeUnderlineColor="blue" // Màu của gạch chân khi đang focus
               multiline={true} // Cho phép nhập nhiều dòng văn bản
               numberOfLines={1} // Số dòng tối đa hiển thị trên TextInput khi không focus
-              // error={errorMessage.postDescription? true : false}
               theme={{
                 colors: {
                   error: appColors.danger, 

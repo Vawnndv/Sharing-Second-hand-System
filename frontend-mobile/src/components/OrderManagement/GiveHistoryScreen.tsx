@@ -27,21 +27,9 @@ export default function GiveHistoryScreen({ navigation, route, filterValue }: an
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  // const [filterValue, setFilterValue] = useState({
-  //   distance: -1,
-  //   time: -1,
-  //   category: category,
-  //   sort: "Mới nhất",
-  // });
 
   const auth = useSelector(authSelector);
   const userID = auth.id;
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     getOrderList();
-  //   }, [filterValue])
-  // );
 
   useEffect(() => {
     getOrderList();

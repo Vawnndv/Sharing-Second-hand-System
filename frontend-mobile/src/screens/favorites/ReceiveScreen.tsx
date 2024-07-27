@@ -31,15 +31,7 @@ const ReceiveScreen = () => {
         setData([]);
     }, [refresh, user.isReceivePostRefresh])
 
-    // useEffect(
-    //     React.useCallback(() => {
-    //         // Hàm này sẽ được gọi mỗi khi màn hình được focus
-    //         setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    //         setPage(0);
-    //         setIsEmpty(false);
-    //         setData([]);
-    //     }, [refresh])
-    // );
+
 
     useEffect(() => {
         if (shouldFetchData) {
@@ -58,7 +50,6 @@ const ReceiveScreen = () => {
             const res: any = await postsAPI.HandlePost(`/listReceive?page=${page}&limit=${LIMIT}&userId=${auth.id}`);
 
             const newData: any = res.allPosts;
-            console.log(newData)
             if (newData.length <= 0 && page === 0)
                 setIsEmpty(true)
     

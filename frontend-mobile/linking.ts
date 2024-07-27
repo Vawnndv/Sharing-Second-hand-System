@@ -1,17 +1,5 @@
 const config = {
   screens: {
-    // NotFound: '*',
-
-    // SearchScreen: {
-    //   path: 'searchscreen',
-    //   screens: {
-    //     Search: 'search'
-    //   }
-    // },
-
-    // ItemDetailScreen: {path: 'detail/:postID', parse: {
-    //   postID: (postID: string) => `${postID}`,
-    // }},
 
     Main: {
       path: '',

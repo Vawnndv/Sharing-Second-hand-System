@@ -31,13 +31,6 @@ const ProfileScreen = ({navigation, route}: any) => {
   const user = useSelector(userSelector);
 
   
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // Thực hiện các hành động cần thiết khi màn hình được focus
-  //     setRefresh(prevRefresh => !prevRefresh);
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
 
   useEffect(() => {
     if (auth) {

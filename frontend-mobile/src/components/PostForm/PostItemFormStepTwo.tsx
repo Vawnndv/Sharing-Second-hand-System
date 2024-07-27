@@ -101,9 +101,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
     const fetchUserAddressData = async () =>{
       try {
         const response = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
         if (!response) {
           throw new Error('Failed to fetch user info'); // Xử lý lỗi nếu request không thành công
         }
@@ -296,27 +293,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
         setFormData({ ...formData, postPhoneNumber: text });
       }
     }
-
-    // if(typeCheck == 'postaddress'){
-    //   if (!formData.postAddress) {
-    //     updatedErrorMessage.postAddress = 'Vui lòng nhập địa chỉ.';
-    //     setFormData({ ...formData, postAddress: '' });
-
-    //   } else {
-    //     updatedErrorMessage.postAddress = '';
-    //   }
-    // }
-
-    // if(typeCheck == 'postenddate'){
-    //   if (!startDate){
-    //     updatedErrorMessage.postEndDate = 'Vui lòng chọn ngày bắt đầu trước.';
-    //   }
-    //   else if (!text && startDate) {
-    //     updatedErrorMessage.postEndDate = 'Vui lòng chọn ngày kết thức.';
-    //   } else {
-    //     updatedErrorMessage.postEndDate = '';
-    //   }
-    // }
     setErrorMessage(updatedErrorMessage);
 
   }

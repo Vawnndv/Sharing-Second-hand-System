@@ -62,7 +62,6 @@ export default function MapSettingAddress({navigation, route}: any) {
 
     const [isLoading, setIsLoading] = useState(false)
 
-    // const [refresh, setRefresh] = useState(false)
 
     const auth = useSelector(authSelector);
     const navitation = useNavigation()
@@ -85,7 +84,6 @@ export default function MapSettingAddress({navigation, route}: any) {
                 })
             }else{
                 let location: any = await ExpoLocation.getCurrentPositionAsync({});
-                //   (location)
                 const locationTarget = {
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude
@@ -120,14 +118,12 @@ export default function MapSettingAddress({navigation, route}: any) {
           }
     
           let location: any = await ExpoLocation.getCurrentPositionAsync({});
-        //   (location)
           const locationTarget = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
           }
           setLocation(locationTarget)
           moveCameraToCoordinate(locationTarget)
-        //   setLocation(location);
     }
 
     const searchLocation = async (text: string) => {
@@ -146,7 +142,6 @@ export default function MapSettingAddress({navigation, route}: any) {
     
     const handleChangeTextSearch = (text: string) => {
         setInputSearch(text)
-        // fetchAutoSuggest(text)
     }
 
     // dùng để di chuyển camera khi click vào 1 kết quả
@@ -171,7 +166,6 @@ export default function MapSettingAddress({navigation, route}: any) {
         setInputSearch(display_name)
         Keyboard.dismiss()
         moveCameraToCoordinate(locationTarget)
-        // setIsFocusSearch(false)
     }
 
     const handleClear = () => {
@@ -193,11 +187,7 @@ export default function MapSettingAddress({navigation, route}: any) {
         const data = await response.json();
         if (data && data.display_name) {
           return data.display_name
-          
-          // setAddress(data.display_name);
-        } else {
-          console.log('No results found');
-        }
+        } 
       };
     
     const handleGetCenterMyLocation = async () => {
@@ -267,14 +257,6 @@ export default function MapSettingAddress({navigation, route}: any) {
         }
     }, [])
 
-    // useEffect(() => {
-    //     const unsubscribe = navigation.addListener('focus', () => {
-    //       // Thực hiện các hành động cần thiết khi màn hình được focus
-    //       console.log('Map Setting Address Screen Reloaded:');
-    //       setRefresh(prevRefresh => !prevRefresh);
-    //     });
-    //     return unsubscribe;
-    //   }, [navigation]);
     return (
         <ContainerComponent back title='Cài đặt vị trí của bạn'>
       
@@ -365,10 +347,6 @@ export default function MapSettingAddress({navigation, route}: any) {
                 {
                     (useTo === 'setAddress')
                     &&
-                    // <TouchableOpacity style={styles.myLocationButton}
-                    //     onPress={() => handleGetCenterMyLocation()}>
-                    //     <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí của tôi</Text>
-                    // </TouchableOpacity>
                     <ButtonComponent
                         disable={false}
                         onPress={() => handleGetCenterMyLocation()}
@@ -382,10 +360,6 @@ export default function MapSettingAddress({navigation, route}: any) {
                 {
                     (useTo === 'setPostAddress')
                     &&
-                    // <TouchableOpacity style={styles.myLocationButton}
-                    //     onPress={() => handleGetCenterGiveLocation()}>
-                    //     <Text style={{fontSize: 18, color: 'white'}}>Xác nhận vị trí cho</Text>
-                    // </TouchableOpacity>
                     <ButtonComponent
                         disable={false}
                         onPress={() => handleGetCenterGiveLocation()}

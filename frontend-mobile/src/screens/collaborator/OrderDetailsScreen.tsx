@@ -70,7 +70,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         try {
         await tf.ready();  
         setModel(await tf.loadLayersModel(modelURL + 'model.json'));
-        console.log('model Loaded !!!!!');
 
         } catch (error) {
         console.error('Error loading the model', error);
@@ -141,7 +140,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
               label: predictedLabel,
               probability: Math.max(...predictionArray[0])
             };
-            console.log('predict Result: ', predictionResult.label + ' ' + predictionResult.probability);
             setIsLoading(false);
     
       
@@ -213,7 +211,6 @@ export default function OrderDetailsScreen({navigation, route}: any) {
         if(image !== null){
             setIsLoading(true);
             if(!visibleRating){
-                console.log(orders[0].order.item.nametype + '-' +currentCategory)
                 if(orders[0].order.item.nametype !== currentCategory){
                     // console.log(orders[0].order.giver.userID)
                     setVisibleConfirmCategory(true)

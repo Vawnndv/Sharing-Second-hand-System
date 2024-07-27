@@ -7,20 +7,6 @@ import './styles.scss';
 import { category } from '../../constant/appCategories';
 
 
-// const distance = [
-//     5,
-//     15,
-//     25,
-//     -1,
-// ]
-
-// const time = [
-//     3,
-//     14,
-//     30,
-//     -1,
-// ]
-
 function FilterComponent({isShowFilter, filterValue, setFilterValue}: any) {
 
     const [distanceSelect, setDistanceSelect] = useState('-1')

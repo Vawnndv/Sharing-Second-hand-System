@@ -35,24 +35,11 @@ export class Item {
     return -1
   }
 
-
-  // static async createItem(name: string, quantity: number, itemtypeID: number): Promise<void> {
-  //   const client = await pool.connect();
-  //   try {
-  //     await client.query('INSERT INTO items(name, quantity, itemtypeID) VALUES($1, $2, $3)', [name, quantity, itemtypeID]) ;
-  //   } finally {
-  //     client.release();
-  //   }
-  // }
-
-  
-  
-
   public updateItem(itemID: string, name: string, quantity: number): void {
-    // code here
+    
   }
 
   public deleteItem(): void {
-    // code here
+    
   }
 }

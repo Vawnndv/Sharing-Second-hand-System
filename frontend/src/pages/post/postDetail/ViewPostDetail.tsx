@@ -80,8 +80,7 @@ function ViewPostDetail() {
         (state: RootState) => state.userLogin
       );
 
-    // const [isUserPost, setIsUserPost] = useState(false);
-    // const [itemID, setItemID] = useState();
+
     useEffect(() => {
         const fetchAllData = async () => {
           setIsLoading(true)
@@ -89,22 +88,16 @@ function ViewPostDetail() {
           let owner = null;
           let warehouseid: any = null;
           try {
-            // console.log(postID);
-            // setIsLoading(true);
+
             const res: any = await Axios.get(`/posts/${postid}`)
-            // const res = await postsAPI.HandlePost(
-            //   `/${postID}`,
-            // );
+
             if (!res) {
               throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
             }
             setPost(res.postDetail); // Cập nhật state với dữ liệu nhận được từ API
-            // setItemID(res.postDetail.itemid);
             itemIDs = res.postDetail.itemid;
             owner = res.postDetail.owner;
             warehouseid = res.postDetail.warehouseid;
-            // console.log(post?.title +  ' ' + res.data.postDetail.latitude);
-            // setIsUserPost(res.postDetail.owner === '37');
           } catch (error) {
             console.error('Error fetching post details:', error);
           }

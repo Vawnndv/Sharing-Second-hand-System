@@ -58,7 +58,6 @@ const userSlice = createSlice({
     },
 
     addStatusReceivePost: (state, action) => {
-      console.log(action.payload)
       const index = state.userData.statsReceivePosts.findIndex(element => Math.abs(element) === Math.abs(action.payload));
 
       if (index !== -1) {
@@ -74,7 +73,6 @@ const userSlice = createSlice({
         state.userData.receivePosts.push(action.payload);
       }
       // Add new payload
-      console.log(action.payload)
       state.userData.statsReceivePosts.push(action.payload);
       state.userData.isReceivePostRefresh = true;
     },
@@ -85,7 +83,6 @@ const userSlice = createSlice({
     },
 
     addStatusLikePost: (state, action) => {
-      console.log(action.payload)
       const index = state.userData.statusLikePosts.findIndex(element => Math.abs(element) === Math.abs(action.payload));
 
       if (index !== -1) {
@@ -102,7 +99,6 @@ const userSlice = createSlice({
         state.userData.isLikePostRefresh = true;
       }
       // Add new payload
-      console.log(action.payload)
       state.userData.statusLikePosts.push(action.payload);
     },
 

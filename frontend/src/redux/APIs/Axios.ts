@@ -26,7 +26,6 @@ const Axios = axios.create({
 });
 
 Axios.interceptors.request.use(async (config: any) => {
-  console.log(process.env.BASE_URL);
 
   const accesstoken = await getAccessToken();
 
@@ -69,7 +68,6 @@ Axios.interceptors.response.use(
             deviceid: auth.deviceid
           });
           if (res.accessToken) {
-            console.log(res.accessToken);
 
             const refreshUser = {
               ...auth,
@@ -88,7 +86,6 @@ Axios.interceptors.response.use(
             return await Axios(originalRequest);
           }
         } catch (refreshError) {
-          console.log(refreshError)
           await handleLogout();
           toast.error('Phiên đăng nhập đã hết hạn');
         }

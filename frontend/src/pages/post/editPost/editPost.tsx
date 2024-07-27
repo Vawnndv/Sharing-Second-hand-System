@@ -330,17 +330,7 @@ function EditPost() {
             toast.success(`Lỗi đăng bài`);     
         }
         setIsLoading(false)
-        // try{
-        //     const res = await axios.post(`http://localhost:8080/posts/update-post-status`, {
-        //         postid: newPostid,
-        //         statusid: 12,
-        //         isApproveAction: true,
-        //     })
-        //     toast.success(`Update status sucessfully`);      
-        //     navigate(-1);
-        // } catch (error) {
-        //     console.log(error);
-        // }
+  
     }
 
     const handleRenderDescriptionGPT = async () => {
