@@ -168,7 +168,7 @@ function Profile() {
       <Grid
         container
         sx={{
-          minHeight: '120vh',
+          minHeight: '100vh',
           padding: '32px 0',
           backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
           backgroundRepeat: 'no-repeat',
@@ -194,7 +194,8 @@ function Profile() {
               sx={{
                 fontSize: '40px',
                 fontWeight: 'bold',
-                color: 'primary.main'
+                color: 'primary.main',
+                textAlign: 'center'
               }}
             >
               Chỉnh sửa thông tin
@@ -306,8 +307,8 @@ function Profile() {
                   </Grid>
 
                 </Grid>
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1 }}>
-                  {updateLoading ? 'Đang tải...' : 'Cập nhật'}
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, py: 1.8 }}>
+                  {updateLoading ? 'Đang cập nhật ...' : 'Cập nhật'}
                 </Button>
               </Box>
             )}
