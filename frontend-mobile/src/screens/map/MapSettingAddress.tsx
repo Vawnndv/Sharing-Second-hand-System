@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from 'react';
 import { EvilIcons, Ionicons, MaterialIcons, FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useDebounce } from '../../hooks/useDebounce';
 import { appInfo } from '../../constants/appInfos';
-import { useSelector } from 'react-redux';
-import { authSelector } from '../../redux/reducers/authReducers';
+import { useDispatch, useSelector } from 'react-redux';
+import { authSelector, updateAuth } from '../../redux/reducers/authReducers';
 import { LoadingModal } from '../../modals';
 import { isLoading } from 'expo-font';
 import { useNavigation } from '@react-navigation/native';
@@ -49,6 +49,7 @@ const LocationComponent = ({name, address, handleClick}: any) => {
 
 // use to: setAddress, setPostAddress, no
 export default function MapSettingAddress({navigation, route}: any) {
+    const dispatch = useDispatch();
 
     const {originalLocation, useTo, setOriginalLocation} = route.params
 
@@ -206,6 +207,8 @@ export default function MapSettingAddress({navigation, route}: any) {
                     longitude: center.longitude,
                     address: address
                 })
+                dispatch(updateAuth({address}));
+
                 setIsLoading(true)
                 Alert.alert('Thông báo', 'Xác nhận vị trí thành công!')
                 navitation.goBack()
