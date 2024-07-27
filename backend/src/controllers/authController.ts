@@ -325,10 +325,33 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       data,
     });
   } else {
+    let firstName = '';
+    let lastName = '';
+    if (!firstname && lastname) {
+      const arrayString = lastname.split(' ');
+      if (arrayString.length > 1) {
+        firstName = arrayString[0];
+        lastName = arrayString.slice(1).join(' '); // Lấy tất cả phần tử trừ phần tử đầu
+      } else {
+        lastName = lastname;
+      }
+    } else if (firstname  && !lastname) {
+      const arrayString = firstname.split(' ');
+      if (arrayString.length > 1) {
+        firstName = arrayString.slice(0, -1).join(' '); // Lấy tất cả phần tử trừ phần tử cuối
+        lastName = arrayString[arrayString.length - 1];
+      } else {
+        firstName = firstname;
+      }
+    } else {
+      firstName = firstname || '';
+      lastName = lastname || '';
+    }
+
     const newUser = await Account.createItem(
       email,
-      firstname, 
-      lastname,
+      firstName, 
+      lastName,
       '',
       avatar,
       1,

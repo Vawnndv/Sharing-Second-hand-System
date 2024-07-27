@@ -50,17 +50,20 @@ export default function App() {
     return () => subscription.remove();
   }, []);
 
-  const lastNotificationResponse = Notifications.useLastNotificationResponse();
-  React.useEffect(() => {
-    if (
-      lastNotificationResponse &&
-      lastNotificationResponse.notification.request.content.data.url &&
-      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
-    ) {
-      console.log(lastNotificationResponse.notification.request.content.data.url)
-      Linking.openURL(`frontend-mobile://${lastNotificationResponse.notification.request.content.data.url}`);
-    }
-  }, [lastNotificationResponse]);
+  useEffect(() => {
+    const handleInitialNotification = async () => {
+      const initialNotification = await Notifications.getLastNotificationResponseAsync();
+      if (initialNotification) {
+        
+        const url = initialNotification.notification.request.content.data.url;
+        if (url) {
+          Linking.openURL(`frontend-mobile://${url}`);
+        }
+      }
+    };
+
+    handleInitialNotification();
+  }, []);
 
   // const [fontsLoaded, setFontsLoaded] = useState(false);
   const count = useRef(0);
