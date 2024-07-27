@@ -21,7 +21,7 @@ const MainTabNavigator = () => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: appColors.white,
-                marginBottom: 6
+                paddingBottom: 6
                 },
                 tabBarIcon: ({focused, color, size}) => {
                 let icon: ReactNode;
