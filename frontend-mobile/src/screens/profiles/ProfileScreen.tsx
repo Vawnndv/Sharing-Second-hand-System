@@ -31,13 +31,6 @@ const ProfileScreen = ({navigation, route}: any) => {
   const user = useSelector(userSelector);
 
   
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     // Thực hiện các hành động cần thiết khi màn hình được focus
-  //     setRefresh(prevRefresh => !prevRefresh);
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
 
   useEffect(() => {
     if (auth) {
@@ -188,7 +181,7 @@ const ProfileScreen = ({navigation, route}: any) => {
                   <SimpleLineIcons name="location-pin" size={26} color={appColors.gray} />
                 </View>
                 <View style={styles.textContainer}>
-                  <TextComponent text={profile.address}/>
+                  <TextComponent text={auth.address ? auth.address : profile.address}/>
                 </View>
               </View>
               <View style={styles.separator} />

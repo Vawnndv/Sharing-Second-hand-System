@@ -225,14 +225,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
   },[formData, formData.itemCategory])
 
 
-  // const loadLabels = () => {
-  //   const metadata = require('../../../assets/model/metadata.json');
-  //   if (metadata && metadata.labels) {
-  //     setLabels(metadata.labels);
-  //   }
-
-  //   const labelRes = fetch(modelURL + 'metadata.json');
-  // };
 
 
   useEffect(() =>{
@@ -278,9 +270,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/types`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`, 
-        // );
         if (!res) {
           throw new Error('Failed to fetch item types'); // Xử lý lỗi nếu request không thành công
         }
@@ -301,9 +290,6 @@ const StepOne: React.FC<StepOneProps> = ({ setStep, formData, setFormData, wareh
 
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
         if (!res) {
           throw new Error('Failed to fetch warehouses'); // Xử lý lỗi nếu request không thành công
         }
@@ -693,22 +679,11 @@ const predictImage = async (imageUri: any) => {
       //   if (isBringItemToWarehouse && !errorMessage.warehouseAddress && formData.warehouseAddress !== 'Chọn kho') {
           setStep(2);
         }
-      // // } 
-      // if (!isWarehouseGive || !isBringItemToWarehouse) {
-      //   setStep(2);
-      // }
-    // }
 
     // Tiếp tục xử lý submit form ở đây
   };
 
 
-
-  // if (isLoading) {
-  //   return (
-  //       <LoadingModal visible={isLoading} />
-  //     )
-  // }
   
   const handleSelectWarehouse = () => {
     navigation.navigate('MapSelectWarehouseGiveScreen', {

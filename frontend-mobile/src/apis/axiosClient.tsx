@@ -47,7 +47,6 @@ const handleLogout = async () => {
     dispatch(removeUser({}));
   } catch (error) {
      await AsyncStorage.clear();
-    console.log(`Logout error: ${error}`);
   }
 };
 

@@ -46,7 +46,7 @@ export default function OrderCard({order, locationOfItem, isPost, canApproval, c
           }
           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <AvatarComponent avatar={isShowReceiver ? order.avatarreceive : order.avatar} onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)} username={order.firstname} />
+              <AvatarComponent avatar={isShowReceiver ? order.avatarreceive : order.avatar} onClick={(event: any) => handleNavigateToUserProfile(isShowReceiver ? order.useridreceive : order.userid, event)} username={order.firstname} />
               {/* <Avatar alt="Avatar" src={order.avatar} component='div' 
                 onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}/> */}
               <Box sx={{ ml: 1 }}>
@@ -56,12 +56,12 @@ export default function OrderCard({order, locationOfItem, isPost, canApproval, c
                     order.username === undefined ? 
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
-                      onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>
+                      onClick={(event: any) => handleNavigateToUserProfile(isShowReceiver ? order.useridreceive : order.userid, event)}>
                         {order.username ? order.username : `${isShowReceiver ? order.firstnamereceive : order.firstname} ${isShowReceiver ? order.lastnamereceive : order.lastname}`}</Typography>
                     :
                     <Typography fontWeight="bold" variant="body1" color="initial"
                       component='div'
-                      onClick={(event: any) => handleNavigateToUserProfile(order.userid, event)}>{order.name ? order.name : `${order.name}`}</Typography>
+                      onClick={(event: any) => handleNavigateToUserProfile(isShowReceiver ? order.useridreceive : order.userid, event)}>{order.name ? order.name : `${order.name}`}</Typography>
                   }
                   
                   

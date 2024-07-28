@@ -47,12 +47,6 @@ const ItemTabComponent = ({navigation}: any) => {
     sort: "Mới nhất"
   })
 
-  // const [filterValue, setFilterValue] = useState<filterValue>({
-  //   distance: -1,
-  //   time: -1,
-  //   category: category,
-  //   sort: "Mới nhất"
-  // })
 
   const [isNewUser, setIsNewUser] = useState(false)
 
@@ -60,7 +54,6 @@ const ItemTabComponent = ({navigation}: any) => {
     const getUserAddress = async () => {
       const response: any = await axiosClient.get(`${appInfo.BASE_URL}/user/get-user-address?userId=${auth.id}`)
       if(response.data === null){
-        // setIsNewUser(true)
         navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
       }
     }
@@ -72,7 +65,6 @@ const ItemTabComponent = ({navigation}: any) => {
       try {
         const response: any = await userAPI.HandleUser(`/get-like-posts?userId=${auth.id}`);
         if(response.data === null){
-          // setIsNewUser(true)
           dispatch(updateLikePosts([]));
         } else {
           dispatch(updateLikePosts(response.data));
@@ -119,11 +111,6 @@ const ItemTabComponent = ({navigation}: any) => {
     
   }, [])
 
-  // useEffect(() => {
-  //   if(isNewUser){
-  //     navigation.navigate('MapSettingAddressScreen',{useTo: 'setAddress'});
-  //   }
-  // }, [isNewUser])
 
   const handleNavigateMapSelectWarehouses = (navigation: any) => {
     navigation.navigate('MapSelectWarehouseScreen', {
@@ -132,12 +119,6 @@ const ItemTabComponent = ({navigation}: any) => {
       checkWarehouses,
       setCheckWarehouses
     })
-    // navigation.navigate('MapSelectWarehouseGiveScreen', {
-    //   warehouses: warehouses,
-    //   setWarehousesID: setWarehousesID,
-    //   checkWarehouses,
-    //   setCheckWarehouses
-    // })
   }
 
   return (

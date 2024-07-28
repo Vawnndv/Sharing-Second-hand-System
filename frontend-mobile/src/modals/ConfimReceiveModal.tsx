@@ -42,22 +42,6 @@ const ConfimReceiveModal = (props: Props) => {
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    // const {width,height} = image;
-
-    // let isHeightSmaller = width > height ? true : false;
-
-    // let scaleX = width / 224;
-    // let scaleY = height/ 224;
-    // let h = 224;
-    // let w = 224;
-    // if(isHeightSmaller){
-    //   w = scaleX * 224 / scaleY;
-    // }
-    // else{
-    //   h = scaleY * 224 / scaleX;
-    // }
-
-    // Resize ảnh
     
 
     
@@ -83,7 +67,7 @@ const ConfimReceiveModal = (props: Props) => {
             avatar: auth.avatar,
             link: `order/${orderid}`,
             title: 'Đã xác nhận nhận đồ',
-            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin chi tiết!`
           })
         })
       }else{
@@ -91,11 +75,10 @@ const ConfimReceiveModal = (props: Props) => {
           userReceiverId: owner,
           userSendId: auth.id,
           name: `${auth?.firstName} ${auth.lastName}`,
-          // postid: postID,
           avatar: auth.avatar,
           link: `order/${orderid}`,
           title: 'Đã xác nhận nhận đồ',
-          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin cho tiết!`
+          body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin chi tiết!`
         })
       }
       setVisibleRatingModal(true);

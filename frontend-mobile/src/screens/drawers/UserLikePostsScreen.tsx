@@ -32,15 +32,6 @@ const UserLikePostsScreen = () => {
 
     }, [refresh, user.isLikePostRefresh])
 
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //         // Hàm này sẽ được gọi mỗi khi màn hình được focus
-    //         setShouldFetchData(true); // Đánh dấu rằng cần fetch dữ liệu mới
-    //         setPage(0);
-    //         setIsEmpty(false);
-    //         setData([]);
-    //     }, [refresh])
-    // );
 
     useEffect(() => {
         if (shouldFetchData) {
@@ -59,7 +50,6 @@ const UserLikePostsScreen = () => {
             const res: any = await postsAPI.HandlePost(`/get-user-like-posts?page=${page}&limit=${LIMIT}&userId=${auth.id}`);
 
             const newData: any = res.allPosts;
-            console.log(newData)
             if (newData.length <= 0 && page === 0)
                 setIsEmpty(true)
     

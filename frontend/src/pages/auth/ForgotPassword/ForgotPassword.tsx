@@ -26,7 +26,6 @@ function ForgotPassword() {
   const [err, setErr] = useState('');
   const [success, setSuccess] = useState('');
 
-  // Validate user
   const {
     register,
     handleSubmit,
@@ -115,7 +114,7 @@ function ForgotPassword() {
                   />
                 </Grid>
               </Grid>
-              <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ mt: 3, mb: 2, py: 1 }}>
+              <Button type="submit" fullWidth variant="contained" disabled={isLoading} sx={{ mt: 3, mb: 2, py: 2 }}>
                 Quên mật khẩu
               </Button>
               <Grid container sx={{ justifyContent: 'center', mt: 2 }}>

@@ -46,7 +46,6 @@ const getJsonWebRefreshToken = async (id: number) => {
   const payload = {
     id,
   };
-  console.log(id);
   const secret = process.env.REFRESH_TOKEN_KEY;
 
   // Kiểm tra xem REFRESH_TOKEN_KEY đã được định nghĩa hay chưa
@@ -113,7 +112,6 @@ export const verification = asyncHandle(async (req: Request, res: Response) => {
 export const refreshAccessToken = asyncHandle(async (req: Request, res: Response) => {
   const { userid, deviceid } = req.body;
 
-  console.log(req.body, '13123');
   if (!userid || !deviceid) {
     res.status(400).json({ message: 'userid and deviceid are required' });
     return;
@@ -139,7 +137,6 @@ export const refreshAccessToken = asyncHandle(async (req: Request, res: Response
       res.status(403).json({ message: 'Not authorized, token failed!' });
     } else {
       const accessToken = await getJsonWebAccessToken(userid);
-      console.log(accessToken);
 
       res.status(200).json({ 
         message: 'Access token refreshed successfully',
@@ -172,6 +169,11 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
     1,
   );
 
+  const fcmTokens = await Account.getFcmTokenListOfUser(newUser.userid);  
+  
+  const refreshToken = await getJsonWebRefreshToken(newUser.userid);
+  const refreshtoken = await User.userManager.addRefreshTokenToUser(newUser.userid, refreshToken);
+  
   res.status(200).json({
     message: 'Register new user successfully',
     data: {
@@ -181,6 +183,8 @@ export const register = asyncHandle(async (req: Request, res: Response) => {
       lastName: newUser.lastname,
       avatar: newUser.avatar,
       roleID: newUser.roleid, 
+      fcmTokens: fcmTokens ?? [],
+      deviceid: refreshtoken.deviceid,
       accessToken: await getJsonWebAccessToken(newUser.userid),
     },
   });
@@ -213,7 +217,6 @@ export const login = asyncHandle(async (req: Request, res: Response) => {
   const refreshToken = await getJsonWebRefreshToken(handleGmailLogin.existingUser.userid);
 
   if (platform === 'web' && handleGmailLogin.existingUser.roleid > 1) {
-    console.log(refreshToken);
     const refreshtoken = await User.userManager.addRefreshTokenToUser(handleGmailLogin.existingUser.userid, refreshToken);
     res.status(200).json({
       message: 'Login successfully!!!',
@@ -277,7 +280,7 @@ export const forgotPassword = asyncHandle(async (req: Request, res: Response) =>
     if (updateUser) {
       await handleSendMail(data).then(() => {
         res.status(200).json({
-          message: 'Send my new password successfully!!!',
+          message: 'Gửi mật khẩu mới thành công. Vui lòng kiểm tra email của bạn',
           data: {},
         });
       });
@@ -322,10 +325,33 @@ export const handleLoginWithGoogle = asyncHandle(async (req, res) => {
       data,
     });
   } else {
+    let firstName = '';
+    let lastName = '';
+    if (!firstname && lastname) {
+      const arrayString = lastname.split(' ');
+      if (arrayString.length > 1) {
+        firstName = arrayString[0];
+        lastName = arrayString.slice(1).join(' '); // Lấy tất cả phần tử trừ phần tử đầu
+      } else {
+        lastName = lastname;
+      }
+    } else if (firstname  && !lastname) {
+      const arrayString = firstname.split(' ');
+      if (arrayString.length > 1) {
+        firstName = arrayString.slice(0, -1).join(' '); // Lấy tất cả phần tử trừ phần tử cuối
+        lastName = arrayString[arrayString.length - 1];
+      } else {
+        firstName = firstname;
+      }
+    } else {
+      firstName = firstname || '';
+      lastName = lastname || '';
+    }
+
     const newUser = await Account.createItem(
       email,
-      firstname, 
-      lastname,
+      firstName, 
+      lastName,
       '',
       avatar,
       1,

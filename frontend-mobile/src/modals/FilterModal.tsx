@@ -3,10 +3,6 @@ import FilterComponent from "../components/FilterComponent";
 import React from "react";
 
 export default function FilterModal({visible, setVisible, hideModal, showModal, filterValue, setFilterValue}: any) {
-    // const [visible, setVisible] = useState(false);
-
-    // const showModal = () => setVisible(true);
-    // const hideModal = () => setVisible(false);
 
     return (
         <View style={styles.container}>

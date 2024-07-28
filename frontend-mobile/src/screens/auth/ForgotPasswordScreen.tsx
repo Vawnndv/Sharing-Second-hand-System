@@ -55,7 +55,6 @@ const ForgotPasswordScreen = () => {
     } catch (error: unknown) {
       if (error instanceof Error) {
         setErrorForgotPassword(error.message);
-        console.log(error.message)
       } else {
         setErrorForgotPassword("Network Error");
       }
@@ -82,7 +81,6 @@ const ForgotPasswordScreen = () => {
           allowClear
           onEnd={() => formValidator('email')}
           error={errorMessage['email']}
-
         />
       </SectionComponent>
       {errorForgotPassword ? (

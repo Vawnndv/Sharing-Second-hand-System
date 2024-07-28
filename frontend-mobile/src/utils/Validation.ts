@@ -112,7 +112,6 @@ export class Validator {
         } else if (values.phonenumber.length < 10 || values.phonenumber.length > 12) {
           message = 'Số điện thoại không hợp lệ'
         } else {
-          console.log(values.phonenumber.length)
           message = '';
         }
         break;

@@ -97,7 +97,6 @@ const UserPostComponent: React.FC<Props> = ({filterValue, warehousesID}) => {
           setData((prevData) => [...prevData, ...newData]); // Nối dữ liệu mới với dữ liệu cũ
         }
           
-        // dispatch(removeStatusReceivePost());
         getUserCountOrder();
     } catch (error) {
       console.log(error);

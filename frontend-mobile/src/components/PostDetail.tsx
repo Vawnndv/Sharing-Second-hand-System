@@ -241,9 +241,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
 
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
@@ -282,9 +279,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
       try {
 
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/items/images/${itemIDs}`)
-        // const res = await itemsAPI.HandleAuthentication(
-        //   `/${itemID}`,
-        // );
         if (!res) {
           throw new Error('Failed to fetch item details'); // Xử lý lỗi nếu request không thành công
         }
@@ -358,11 +352,6 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
       warehouseid: warehouseid,
       handleRefresh
     });
-    // setPost(null);
-    // <ReceiveForm
-    //   postID = {postID}
-    //   setIsFetchData = {setIsFetchData}
-    // />
   }
 
   if(!goToChat && !isLoading && !goToReceiveForm && !goToGiveForm){
@@ -553,7 +542,7 @@ const PostDetail: React.FC<PostDetailProps> = ( {navigation, route, postID, fetc
                     {/* Hiển thị ngày đăng */}
                     <View style={styles.timeContainer}>
                       <SimpleLineIcons name="clock" size={16} color="grey" />
-                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.createdat).fromNow()}</Text>
+                      <Text style={{marginLeft: 3, fontSize: 13, color: 'gray'}}>{moment(post?.createdat).subtract(7, 'hours').fromNow()}</Text>
 
                     </View>
                   </View>

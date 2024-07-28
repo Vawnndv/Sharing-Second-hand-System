@@ -71,12 +71,6 @@ function ModalEditWarehouse(props: Props) {
 
   const navigate = useNavigate();
 
-//   const warehouseLocation: WarehouseLocation = {
-//     address: "123 Main St, Anytown, AN",
-//     longitude: 123.4567,
-//     latitude: 312.219,
-//     addressid: 14
-// };
 
 
   const {

@@ -76,25 +76,6 @@ router.post('/uploadImage', upload.single('file'), async (req: Request, res: Res
       }
     });
 
-    // Đặt thời gian xóa sau 5 phút
-    // const deleteParams = {
-    //   Bucket: bucket,
-    //   Key: req.body.name,
-    //   DeleteAfter: new Date(Date.now() + 2 * 60 * 1000).toISOString(), // 5 phút sau
-    // };
-    
-    // await s3.putObjectTagging({
-    //   Bucket: deleteParams.Bucket,
-    //   Key: deleteParams.Key,
-    //   Tagging: {
-    //     TagSet: [
-    //       {
-    //         Key: 'DeleteAfter',
-    //         Value: deleteParams.DeleteAfter,
-    //       },
-    //     ],
-    //   },
-    // }).promise();
 
   } else {
     console.log('error');

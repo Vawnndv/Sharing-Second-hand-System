@@ -102,15 +102,7 @@ function CollaboratorTable(props: Props) {
           setData(updatedUsers);
           toast.success(`${text} tài khoản của cộng tác viên ${selectedUser.lastname} ${selectedUser.firstname} thành công`);
           setIsBanLoading(false);
-          //   await HandleNotification.sendNotification({
-          //     userReceiverId: updatedUsers[userIndex].userid,
-          //     userSendId: userInfo?.id,
-          //     avatar: userInfo?.avatar,
-          //     link: '',
-          //     title: 'Khóa tài khoản',
-          //     name: `${userInfo?.firstName} ${userInfo?.lastName}`,
-          //     body: 'Tài khoản của bạn đã bị ban. Xin vui lòng liên hệ admin để xử lý',
-          //   })
+
         }
       } catch (error: unknown) {
         console.log(error);
@@ -335,10 +327,7 @@ function CollaboratorTable(props: Props) {
               noRowsOverlay: CustomNoRowsOverlay
 
             }}
-            // columnVisibilityModel={{
-            //   teacherClasses: !isOpenMenu,
-            //   studentClasses: !isOpenMenu
-            // }}
+
             onRowSelectionModelChange={handleRowSelection}
           />
         </Box>

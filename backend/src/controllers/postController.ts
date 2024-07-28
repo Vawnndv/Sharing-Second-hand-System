@@ -61,23 +61,6 @@ export const getAllPostByStatus  = asyncHandle(async (req, res) => {
   }
 });
 
-// export const getFilterPostList = asyncHandle(async (req, res) => {
-//   const userID : any = req.query.userID;
-//   const distance : any = req.query.distance;
-//   const time : any = req.query.time;
-//   const category : any = req.query.category;
-//   const sort : any = req.query.sort;
-//   const latitude : any = req.query.latitude;
-//   const longitude : any = req.query.longitude;
-  
-//   try {
-//     const orderList = await  PostManager.getOrderList(userID, distance, time, category, sort, latitude, longitude);
-//     res.status(200).json({ message: 'Get orders list success:', data: orderList });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// });
 
 
 export const getPostDetails = asyncHandle(async (req, res) => {
@@ -330,17 +313,6 @@ export const  EditPost = asyncHandle(async (req, res) => {
 
 
   try {
-    // Gọi phương thức viewDetailsPost từ lớp Post để lấy chi tiết bài đăng từ cơ sở dữ liệu
-    // if (isAddImage) {
-    //   for (let i = 0; i < imageAddArray.length; i++) {
-    //     await ItemManager.uploadImageItem(imageAddArray[i].path, itemid);
-    //   }
-    //   addImage = true;
-    // }
-    // if (!isAddImage) {
-    //   addImage = true;
-    // }
-
     if (!isDeleteImage) {
       deleteImage = true;
     }

@@ -331,27 +331,9 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       } finally {
       }
 
-      // try {
-      //   setIsLoading(true);
-      //   const res = await axios.get(`${appInfo.BASE_URL}/order/getOrder/${postID}`)
-      //   // const res = await postsAPI.HandlePost(
-      //   //   `/${postID}`,
-      //   // );
-      //   if (!res) {
-      //     throw new Error('Failed to fetch order'); // Xử lý lỗi nếu request không thành công
-      //   }
-      //   setOrder(res.data.order); // Cập nhật state với dữ liệu nhận được từ API
-      // } catch (error) {
-      //   console.error('Error fetching order:', error);
-      // } finally {
-      //   setIsLoading(false);
-      // }
 
       try {
         const res: any = await axiosClient.get(`${appInfo.BASE_URL}/posts/${postID}`)
-        // const res = await postsAPI.HandlePost(
-        //   `/${postID}`,
-        // );
         if (!res) {
           throw new Error('Failed to fetch post details'); // Xử lý lỗi nếu request không thành công
         }
@@ -366,9 +348,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
       if(warehouseid !== 0 && warehouseid){
         try {
           const res: any = await axiosClient.get(`${appInfo.BASE_URL}/warehouse/getWarehouse/${warehouseid}`)
-          // const res = await postsAPI.HandlePost(
-          //   `/${postID}`,
-          // );
           if (!res) {
             throw new Error('Failed to fetch warehouse'); // Xử lý lỗi nếu request không thành công
           }
@@ -390,7 +369,6 @@ export const ReceiveForm: React.FC<Props> = ({ navigation, route, postID, receiv
 }, [postID])
 
 useEffect( () => {
-  // if(!isUserPost){
 
   if(post){
 
@@ -461,7 +439,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: 'Xin sản phẩm của bạn',
-          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin chi tiết`
         })
 
         dispatch(addStatusReceivePost(postID))
@@ -476,7 +454,7 @@ const handleReceive = async () => {
           avatar: auth.avatar,
           link: `post/${postID}`,
           title: 'Xin sản phẩm của bạn',
-          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin cho tiết`
+          body: `đã xin món đồ "${post.name}" của bạn. Nhấn vào để xem thông tin chi tiết`
         })
 
         const resGetCollab:any = await axiosClient.post(`${appInfo.BASE_URL}/collaborator/collaborator-list/byWarehouse`, {
@@ -491,7 +469,7 @@ const handleReceive = async () => {
             avatar: auth.avatar,
             link: `post/${postID}`,
             title: 'Xin sản phẩm của bạn',
-            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin cho tiết!`
+            body:`đã xin món đồ "${post.name}" thông qua kho. Nhấn vào để xem thông tin chi tiết!`
           })
         })
       }
@@ -572,7 +550,6 @@ const handleReceive = async () => {
         }
         else{
           orderID = response.orderCreated.orderid;    
-            // if(receivetype === )
       
           const responseTrace = await axiosClient.post(`${appInfo.BASE_URL}/order/createTrace`, {
             currentstatus: status,
@@ -598,7 +575,7 @@ const handleReceive = async () => {
               avatar: auth.avatar,
               link: `post/${postID}`,
               title: 'Xin sản phẩm của bạn',
-              body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin cho tiết!`
+              body:`đã xin món đồ "${post.name}" của kho. Nhấn vào để xem thông tin chi tiết!`
             })
           })
       
@@ -616,13 +593,6 @@ const handleReceive = async () => {
         Alert.alert('Thất bại', 'Nhận món đồ thất bại.');
           setIsCompleted(false);
       }
-    
-  // else {
-  //     console.log(res.postDetail.statusid)
-  //     Alert.alert('Thất bại', 'Món đồ đã có người nhận.');
-  //     setIsCompleted(true);
-  //     navigation.navigate('Home', {screen: 'HomeScreen'});
-  //   }
   }
   setIsLoading(false)
 
@@ -751,7 +721,7 @@ const handleGive = async () =>{
           link: receiver.receiverid === receiveid ? `post/${postID}` : '',
           title: 'Đã cho sản phẩm',
           body: receiver.receiverid === receiveid ? 
-            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin cho tiết` : 
+            `đã cho món đồ ${post.name} cho bạn. Nhấn vào để xem thông tin chi tiết` : 
             `Thật đáng tiếc, ${auth?.firstName} ${auth.lastName} đã cho món đồ ${post.name} cho người khác!`
         })
       })
@@ -769,11 +739,6 @@ const handleGive = async () =>{
     Alert.alert('Thất bại', 'Cho món đồ thất bại.');
       setIsCompleted(false);
   }
-
-  // if(receivetype === 'Cho nhận trực tiếp'){
-  //   givetypeid = receivetypeid;
-  //   givetype = receivetype;
-  // }
 
 
   }
@@ -796,16 +761,6 @@ const handleGive = async () =>{
 
     setErrorMessage({...errorMessage, warehouseSelected: ''});
   }
-
-  // if (isLoading) {
-  //   return (
-  //     <LoadingModal visible={isLoading} />
-
-  //   );
-  // }
-
-
-
 
   return (
   <ScrollView style = {styles.container}>

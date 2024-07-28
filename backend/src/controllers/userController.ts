@@ -78,11 +78,10 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
   if (user) {
     const checkPassword = (oldPassword.trim().length === 0 && user.password.trim().length === 0) ? true :  await bcrypt.compare(oldPassword, user.password);
 
-    
     if (checkPassword) {
       if (oldPassword === newPassword) {
         res.status(400);
-        throw new Error('New password must different from old password!!!');
+        throw new Error('Mật khẩu mới phải được đặt khác mật khẩu cũ');
       }
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -91,7 +90,7 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
 
       if (updateUser) {
         res.status(200).json({
-          message: 'Password changed successfully!!!',
+          message: 'Thay đổi mật khẩu thành công.',
           data: {},
         });
       } else {
@@ -100,7 +99,7 @@ export const changeUserPassword = asyncHandle(async (req: Request, res: Response
       }
     } else {
       res.status(400);
-      throw new Error('Invalid old password!!!');
+      throw new Error('Mật khẩu cũ không hợp lệ.');
     } 
   } else {
     res.status(401);
@@ -244,33 +243,8 @@ export const getUserFcmTokens = asyncHandle(async (req: Request, res: Response) 
 });
 
 
-//  ************** ADMIN CONTROLLERS **************
-// @des Get all users
-// @route GET /api/users
-// export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
-//   console.log(req.query);
-//   const { page, pageSize } = req.query;
-//   if (typeof page === 'string' && page && typeof pageSize === 'string' && pageSize) {
-//     console.log(req.query);
-//     const total = await User.userManager.totalAllUser();
-
-//     const response = await User.userManager.getAllUser(page, pageSize);
-//     res.status(200).json({
-//       message: 'get user address successfully',
-//       data: {
-//         users: response ?? [],
-//         total: total.total_users ?? 0,
-//       },
-//     });
-//   } else {
-//     res.status(404);
-//     throw new Error('Missing page and pageSize');
-//   }
-// });
-
 export const getAllUser = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-  console.log(req.body);
 
   // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';

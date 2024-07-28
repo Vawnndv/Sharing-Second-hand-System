@@ -76,7 +76,8 @@ function Password() {
       <Grid
         container
         sx={{
-          height: '100vh',
+          minHeight: '100vh',
+          padding: '32px 0',
           backgroundImage: 'url(https://source.unsplash.com/random?wallpapers)',
           backgroundRepeat: 'no-repeat',
           backgroundColor: (t) => (t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900]),
@@ -99,7 +100,7 @@ function Password() {
             }}
           >
             <Typography component="h1" variant="h5" sx={{ fontSize: '40px', fontWeight: 'bold', color: 'primary.main' }}>
-              Change Password
+              Thay đổi mật khẩu
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 3 }}>
               <Grid container spacing={2}>
@@ -108,10 +109,8 @@ function Password() {
                     required
                     fullWidth
                     id="oldPassword"
-                    label="Old Password"
+                    label="Mật khẩu cũ"
                     type="password"
-                    // name="oldPassword"
-                    // eslint-disable-next-line react/jsx-props-no-spreading
                     {...register('oldPassword')}
                     error={!!errors.oldPassword}
                     helperText={errors.oldPassword?.message || ''}
@@ -122,7 +121,7 @@ function Password() {
                     required
                     fullWidth
                     // name="newPassword"
-                    label="New Password"
+                    label="Mật khẩu mới"
                     type="password"
                     id="newPassword"
                     {...register('newPassword')}
@@ -135,7 +134,7 @@ function Password() {
                     required
                     fullWidth
                     // name="confirmPassword"
-                    label="Confirm Password"
+                    label="Nhật lại mật khẩu mới"
                     type="password"
                     id="confirmPassword"
                     {...register('confirmPassword')}
@@ -149,9 +148,9 @@ function Password() {
                 disabled={isLoading} 
                 fullWidth 
                 variant="contained" 
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 3, mb: 2 , py: 1.8}}
                 >
-                  {isLoading ? 'Changing...' : 'Change Password'}
+                  {isLoading ? 'Đang đổi mật khẩu ...' : 'Đổi mật khẩu'}
               </Button>
             </Box>
           </Box>

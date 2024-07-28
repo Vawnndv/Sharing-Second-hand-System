@@ -111,7 +111,6 @@ function Statistic() {
     const today = dayjs();
     const threeDaysAgo = dayjs().subtract(3, 'days')
     const [date, setDate] = React.useState<[Dayjs, Dayjs]>([threeDaysAgo, today]);
-    console.log(date)
     const handleChange = (event: any, newValue: any) => {
         setTabValue(newValue);
     };

@@ -111,11 +111,11 @@ export default function ViewOrders({ filterValue, locationOfItem, status }: any)
               ))}
             </Grid>
           )}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+          {orders.length > 0 && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
             <Stack>
               <Pagination count={Math.ceil(totalItems / LIMIT)} page={page} onChange={handleChange} />
             </Stack>
-          </Box>
+          </Box>}
         </>
       )}
     </Box>

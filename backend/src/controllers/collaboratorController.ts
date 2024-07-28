@@ -9,8 +9,6 @@ import { Admin } from '../classDiagramModel/Admin';
 
 export const getAllCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {}, sortModel = [], page = 0, pageSize = 5 } = req.body;
-  console.log(req.body);
-  // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {
     whereClause = ' AND ';
@@ -26,7 +24,6 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
     whereClause = whereClause.slice(0, -4); // Remove trailing 'OR'
   }
 
-  // Build ORDER BY clause based on sortModel (replace with your logic)
   let orderByClause = '';
   if (sortModel && sortModel.length > 0) {
     orderByClause = ' ORDER BY ';
@@ -41,9 +38,7 @@ export const getAllCollaborator = asyncHandle(async (req: Request, res: Response
     orderByClause = ' ORDER BY u.createdat DESC ';
   }
 
-  console.log(whereClause);
   const response = await Admin.userManager.getAllCollaborators(page, pageSize, whereClause, orderByClause);
-  // res.json({ Collaborators: Collaborators.rows, total: totalCollaborators.rows[0].count });
 
   res.status(200).json({
     message: 'get Collaborator address successfully',
@@ -164,7 +159,6 @@ export const adminResetCollaboratorPassword = asyncHandle(async (req: Request, r
 
 export const getTotalCollaborator = asyncHandle(async (req: Request, res: Response) => {
   const { filterModel = {} } = req.body;
-  // Build WHERE clause based on filterModel (replace with your logic)
   let whereClause = '';
   if (filterModel.items && filterModel.items.length > 0) {
     whereClause = ' AND ';
@@ -180,7 +174,6 @@ export const getTotalCollaborator = asyncHandle(async (req: Request, res: Respon
   }
 
   const total = await Admin.userManager.totalAllCollaborators(whereClause);
-  // res.json({ users: users.rows, total: totalUsers.rows[0].count });
   res.status(200).json({
     message: 'get Collaborator address successfully',
     data: {

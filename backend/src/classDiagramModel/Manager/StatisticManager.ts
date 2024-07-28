@@ -119,26 +119,6 @@ export class StatisticManager {
       ) AND it.nametype = $1
         AND DATE(o.updatedat) = $2
       `
-    // const results = []
-    // if(type === 'import'){
-    //   for(let i = 0; i < category.length; i+=1){
-    //     const result : QueryResult = await client.query(queryImport, [category[i]]);
-    //     results.push({
-    //       label: category[i],
-    //       quantity: result.rows[0].quantity
-    //     })
-    //   }
-    // }else{
-    //   for(let i = 0; i < category.length; i+=1){
-    //     const result : QueryResult = await client.query(queryExport, [category[i]]);
-    //     results.push({
-    //       label: category[i],
-    //       quantity: result.rows[0].quantity
-    //     })
-    //   }
-    // }
-
-    // return results
 
     const dateStart = dayjs(timeStart)
     const dateEnd = dayjs(timeEnd)
@@ -329,13 +309,6 @@ export class StatisticManager {
 
     try{
 
-      // let queryWarehouseImport = ``
-      // warehouses.map((warehouse: any, index: number) => {
-      //   queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
-      //   if(index < warehouses.length - 1){
-      //     queryWarehouseImport += `OR `
-      //   }
-      // })
       const queryImport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -352,13 +325,6 @@ export class StatisticManager {
         AND o.updatedat >= '${timeStart}'
       `
 
-      // let queryWarehouseExport = ``
-      // warehouses.map((warehouse: any, index: number) => {
-      //   queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
-      //   if(index < warehouses.length - 1){
-      //     queryWarehouseExport += `OR `
-      //   }
-      // })
       const queryExport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -426,13 +392,7 @@ export class StatisticManager {
 
     try{
 
-      // let queryWarehouseImport = ``
-      // warehouses.map((warehouse: any, index: number) => {
-      //   queryWarehouseImport += `ic.warehouseid = ${warehouse.warehouseid} `
-      //   if(index < warehouses.length - 1){
-      //     queryWarehouseImport += `OR `
-      //   }
-      // })
+
       const queryImport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -448,13 +408,6 @@ export class StatisticManager {
         AND DATE(o.updatedat) = $3
       `
 
-      // let queryWarehouseExport = ``
-      // warehouses.map((warehouse: any, index: number) => {
-      //   queryWarehouseExport += `oc.warehouseid = ${warehouse.warehouseid} `
-      //   if(index < warehouses.length - 1){
-      //     queryWarehouseExport += `OR `
-      //   }
-      // })
       const queryExport = `
       SELECT CASE
         WHEN sum(i.quantity) IS NULL THEN 0
@@ -589,14 +542,6 @@ export class StatisticManager {
         input_quantity, output_quantity;
       `
     const finalResults = []
-    
-    // for(let i = 0; i < category.length; i+=1){
-    //   const result : QueryResult = await client.query(query, [category[i]]);
-    //   results.push({
-    //     label: category[i],
-    //     quantity: result.rows[0].quantity
-    //   })
-    // }
 
     for(let i = 0; i < warehouses.length; i+=1){
       let results = [];

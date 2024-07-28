@@ -199,14 +199,14 @@ export default function Header({setIndex}: any) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      {/* <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
             <MailIcon />
           </Badge>
         </IconButton>
         <p>Messages</p>
-      </MenuItem>
+      </MenuItem> */}
       <MenuItem>
         <IconButton
           size="large"
@@ -216,7 +216,7 @@ export default function Header({setIndex}: any) {
             <NotificationsIcon onClick={( e ) => handleClickAncorEl( e ) }/>
           </Badge>
         </IconButton>
-        <p>Notifications</p>
+        <p>Thông báo</p>
       </MenuItem>
       <Popover
         anchorEl={anchorElNoti}
@@ -241,7 +241,7 @@ export default function Header({setIndex}: any) {
           aria-haspopup="true"
           color="inherit"
         >
-          <Avatar alt="Remy Sharp" src={`${ userInfo?.avatar ?? "https://i.pinimg.com/736x/b7/91/44/b79144e03dc4996ce319ff59118caf65.jpg"}`} style={{marginRight: "20px"}}/>
+          <AvatarComponent avatar={userInfo?.avatar}/>
         </IconButton>
         <p>Profile</p>
       </MenuItem>
@@ -281,7 +281,7 @@ export default function Header({setIndex}: any) {
           </IconButton>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex', alignItems: 'center', gap: 2 } }}>
-            <Typography>Hi, {userInfo?.lastName} {userInfo?.firstName}</Typography>
+            <Typography>Hi, {userInfo?.firstName} {userInfo?.lastName}</Typography>
             <IconButton
               size="large"
               edge="end"

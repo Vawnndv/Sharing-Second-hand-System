@@ -84,7 +84,7 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
         <View style={styles.mapContainer}>
             <View style={[styles.wrapper, {}]}>
                 <View style={{display: 'flex', flexDirection: 'row', width: '100%', marginBottom: 2, padding: 5}}>
-                    <Text style={{fontFamily: fontFamilies.regular, flex: 1}}>Uớc tính: </Text>
+                    <Text style={{fontFamily: fontFamilies.regular, flex: 1}}>Ước tính: </Text>
                     <Text style={{fontFamily: fontFamilies.regular}}>{convertMeterToKilometer(distance)}</Text>
                 </View>
                 <MapView
@@ -109,7 +109,7 @@ export default function ShowMapComponent({location, setLocation, useTo} : any) {
                         originalLocation: location,
                         setOriginalLocation: setLocation
                     })}>
-                    <Text style={{color: 'white'}}>Chọn trên bản đồ</Text>
+                    <Text style={{color: 'white'}}>Xem trên bản đồ</Text>
                 </TouchableOpacity>
             </View>
         </View>

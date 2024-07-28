@@ -191,13 +191,13 @@ const CardItemResult: React.FC<Props> = ({ data, handleEndReached, isLoading, se
             />
             <SpaceComponent width={12} />
             <View style={[globalStyles.col]}>
-              <RowComponent justify='space-between'>
+              <RowComponent>
                 <TextComponent text={item.name} size={16} font={fontFamilies.medium} />
                 <SpaceComponent width={10} />
                 <RowComponent>
                   <Clock size={14} color={appColors.black} />
                   <SpaceComponent width={4} />
-                  <TextComponent text={`${moment(item.createdat).fromNow()}`} font={fontFamilies.light} />
+                  <TextComponent text={`${moment(item.createdat).subtract(7, 'hours').fromNow()}`} font={fontFamilies.light} />
                 </RowComponent>
               </RowComponent>
               <SpaceComponent height={4} />

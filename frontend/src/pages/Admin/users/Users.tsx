@@ -2,16 +2,11 @@ import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import { deleteUserAction, getAllUsersAction } from '../../../redux/actions/userActions'
-// import { styled } from '@mui/system'
 import { AppDispatch, RootState, useAppDispatch } from '../../../redux/store'
 import UserTable from '../components/tables/UserTable'
 import { getUsersTotalService } from '../../../redux/services/userServices'
 
-// const StyledClassTable = styled('div')({
-//   transform: 'scale(0.9)',
-//   transformOrigin: 'top left',
-//   width: 'calc(100% / 0.9)'
-// })
+
 
 function Users() {
   const dispatch: AppDispatch = useAppDispatch();
@@ -49,12 +44,9 @@ function Users() {
     }
   }
 
-  // useEffect
   useEffect(() => {
     getTotalUser();
   }, [filterModel])
-
-   // useEffect
    useEffect(() => {
     dispatch(getAllUsersAction(pageState.page, pageState.pageSize, filterModel, sortModel))
     
@@ -64,7 +56,6 @@ function Users() {
     }
   }, [pageState, sortModel, filterModel, isSuccess])
   
-  // delete user handler
   const deleteUserHandler = (user: any) => {
     // eslint-disable-next-line no-alert
     if (window.confirm(`Bạn có chắc chắn muốn xóa người dùng ${  user.lastname}?`)) {

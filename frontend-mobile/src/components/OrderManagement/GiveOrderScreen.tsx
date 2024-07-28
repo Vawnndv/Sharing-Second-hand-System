@@ -29,26 +29,9 @@ export default function GiveOrderScreen({ navigation, route, filterValue  }: any
   const [isLoading, setIsLoading] = useState(false);
   const [orderGive, setOrderGive] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  // const [filterValue, setFilterValue] = useState({
-  //   distance: -1,
-  //   time: -1,
-  //   category: category,
-  //   sort: "Mới nhất",
-  // });
   const auth = useSelector(authSelector);
   const userID = auth.id;
 
-  // useEffect(() => {
-  //   if (route.params && route.params.reload) {
-  //     getOrderList();
-  //   }
-  // }, [route.params]);
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     getOrderList();
-  //   }, [filterValue])
-  // );
 
   useEffect(() => {
     getOrderList();

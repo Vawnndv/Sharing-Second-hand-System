@@ -150,12 +150,6 @@ export class OrderManager {
     try {
       let values: any = [userID]
       let queryType =`AND o.status = '${type}'`
-      // if(type === 'Hàng đã nhập kho'){
-      //   queryType = `
-      //     AND o.status != 'Hàng đang được đến lấy'
-      //     AND o.collaboratorreceiveid IS NOT NULL
-      //   `
-      // }
       if(typeCard === "outputcard"){
         queryType = ''
       }
@@ -1107,25 +1101,15 @@ export class OrderManager {
       const statusid_waitForReceiver = '3';
 
 
-      // const createTraceHistoryPostItemResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_postItem)
-      // console.log('Trace History Post Item inserted successfully:', createTraceHistoryPostItemResult);
-      // const createTraceHistoryWaitForApproveResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForApporve)
-      // console.log('Trace History Wait For Approve inserted successfully:', createTraceHistoryWaitForApproveResult);
       if(currentstatus == 'Chờ người cho giao hàng'){
-        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
-        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForGiverResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForGiver)
       }
 
       if(currentstatus == 'Chờ cộng tác viên lấy hàng'){
-        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
-        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForCollaboratorResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForCollaborator)
       }
 
       if(currentstatus == 'Chờ người nhận lấy hàng'){
-        // const createTraceHistoryApprovedResult = await OrderManager.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_approved)
-        // console.log('Trace History Approved inserted successfully:', createTraceHistoryApprovedResult);
         const createTraceHistoryWaitForReceiverResult = await this.updateStatusOfOrder(result.rows[0].orderid.toString(), statusid_waitForReceiver)
       }
       return result.rows[0];
@@ -1273,6 +1257,7 @@ export class OrderManager {
         ur.avatar AS avatarReceive,
         ur.firstname AS firstnameReceive,
         ur.lastname AS lastnameReceive,
+        ur.userid AS useridReceive,
         o.givetypeid,
         po.postid,
         po.title,
@@ -1315,6 +1300,7 @@ export class OrderManager {
         ur.avatar,
         ur.firstname,
         ur.lastname,
+        ur.userid,
         o.givetypeid,
         po.postid,
         po.title,

@@ -22,22 +22,6 @@ const initalPosition = {
   longitudeDelta: 0.02 * width / height
 }
 
-// const warehouses = [
-//     {
-//         warehouseid: 19,
-//         warehousename: 'Kho số 1',
-//         address: 'Đại học khoa học tự nhiên',
-//         latitude: 10.763025311133902,
-//         longitude: 106.68249312376167
-//     },
-//     {
-//         warehouseid: 20,
-//         warehousename: 'Kho số 2',
-//         address: 'Nhà thi đấu Phú Thọ',
-//         latitude: 10.7688298,
-//         longitude: 106.6577947
-//     }
-// ]
 
 const stylesConfirmComponent = StyleSheet.create({
     container: {
@@ -80,7 +64,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
 
     const [warehouses, setWarehouses] = useState<any>([])
 
-    // const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(Array.from({length: warehouses.length}, () => false))
     const [checkWarehousesOnMap, setCheckWarehousesOnMap] = useState(checkWarehouses)
     const [location, setLocation] = useState<any>(null);
 
@@ -102,7 +85,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
           }
           setLocation(locationTarget)
           moveCameraToCoordinate(locationTarget)
-        //   setLocation(location);
     }
 
     const getWarehouses = async () => {
@@ -152,7 +134,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
             route.params.setWarehousesID(listWarehouseID);
         }
         setCheckWarehouses(checkWarehousesOnMap)
-        // setWarehousesID(listWarehouseID)
         navigation.goBack()
     }
 
@@ -237,7 +218,6 @@ export default function MapSelectWarehouse({navigation, route}: any) {
         isChecked: boolean;
     }
     
-    console.log("HELLO")
 
     const WarehouseMarker: React.FC<WarehouseMarkerProps> = React.memo(({ item, index, onPress, isChecked }) => {
         return (
@@ -363,7 +343,6 @@ const styles = StyleSheet.create({
         backgroundColor: appColors.primary,
         paddingHorizontal: 25,
         paddingVertical: 15,
-        // alignSelf: 'flex-end', // Thiết lập alignSelf là flex-start
         marginBottom: 5,
         elevation: 8,
         shadowColor: 'black',
