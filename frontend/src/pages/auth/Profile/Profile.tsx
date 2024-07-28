@@ -106,12 +106,11 @@ function Profile() {
   
   useEffect(() => {
     if (userInfo) {
-      console.log(userInfo)
       setValue('firstName', userInfo?.firstName);
       setValue('lastName', userInfo?.lastName);
       setValue('email', userInfo?.email);
       setValue('phone', userInfo?.phoneNumber);
-      setValue('address', userInfo.address ?? '');
+      setValue('address', userInfo?.address ?? '');
       if (userInfo?.dob !== '') {
         setDate(dayjs(userInfo?.dob));
       }
@@ -123,7 +122,7 @@ function Profile() {
       setValue('lastName', editUserInfo?.lastName);
       setValue('email', editUserInfo?.email);
       setValue('phone', editUserInfo?.phoneNumber);
-      setValue('address', location.address);
+      setValue('address', editUserInfo?.address ?? '');
 
       if (editUserInfo?.dob !== '') {
         setDate(dayjs(editUserInfo?.dob));
