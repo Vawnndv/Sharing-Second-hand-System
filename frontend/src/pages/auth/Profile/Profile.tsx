@@ -271,6 +271,7 @@ function Profile() {
                             setDate(newValue)
                           }
                           format="DD/MM/YYYY"
+                          maxDate={dayjs().subtract(16, 'year')}
                         />
                       </DemoContainer>
                     </LocalizationProvider>
