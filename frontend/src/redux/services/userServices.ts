@@ -20,7 +20,7 @@ const updateProfileService = async (user: any): Promise<any>  => {
   if (data) {
     localStorage.setItem('userInfo', JSON.stringify(data));
   }
-  return data;
+  return {...data, address: user.address};
 }
 
 // Get profile API call
