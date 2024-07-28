@@ -13,7 +13,7 @@ import StepLabel from '@mui/material/StepLabel';
 import { formatDateTime } from '../../../utils/FormatDateTime';
 
 function ViewDetailOrder() {
-  moment.locale();
+  moment.locale('vi');
   const { orderid } = useParams();
   const orderID: any = orderid
   const [order, setOrder] = useState<any>();
