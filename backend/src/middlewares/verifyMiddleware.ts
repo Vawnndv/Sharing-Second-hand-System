@@ -33,6 +33,10 @@ const protect = async (req: AuthenticatedRequest, res: Response, next: NextFunct
             return res.status(403).json({ message: 'Tài khoản của bạn đã bị khóa' });
           }
 
+          if (!user.email) {
+            return res.status(403).json({ message: 'Tài khoản của bạn đã bị xóa' });
+          }
+          
           req.user = user;
           next();
         } else {
