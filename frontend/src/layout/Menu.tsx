@@ -1,24 +1,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Avatar, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 // import React, { useState } from 'react';
-import HomeIcon from '@mui/icons-material/Home';
-import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
-import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ArticleIcon from '@mui/icons-material/Article';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import ContactPageIcon from '@mui/icons-material/ContactPage';
+import ContentPasteSearchIcon from '@mui/icons-material/ContentPasteSearch';
+import Groups2Icon from '@mui/icons-material/Groups2';
+import HomeIcon from '@mui/icons-material/Home';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import PageviewIcon from '@mui/icons-material/Pageview';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
-import ContactPageIcon from '@mui/icons-material/ContactPage';
+import StackedLineChartIcon from '@mui/icons-material/StackedLineChart';
 import WarehouseIcon from '@mui/icons-material/Warehouse';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import Groups2Icon from '@mui/icons-material/Groups2';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 // import MenuIcon from '@mui/icons-material/Menu';
-import './styles.scss';
-import { useSelector } from 'react-redux';
-import { RootState } from '../redux/store';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { RootState } from '../redux/store';
+import './styles.scss';
 // import { handleClickMenu } from '../redux/actions/menuActions';
 
 function Menu({ index, setIndex, indexAdmin, setIndexAdmin }: any) {
