@@ -27,7 +27,6 @@ const AccountScreen = () => {
   const [isDisable, setIsDisable] = useState(true);
   
   const user = useSelector(authSelector);
-  console.log(user);
   useFocusEffect(
       React.useCallback(() => {
       if (!user.isPassword) {

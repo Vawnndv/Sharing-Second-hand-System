@@ -61,7 +61,6 @@ const LoginScreen = ({navigation}: any) => {
         {platform: 'mobile', email: values.email , password: values.password},
         'post'
       );
-      console.log(res);
       dispatch(addAuth(res.data));
       setIsDisable(true);
       setErrorLogin('');
