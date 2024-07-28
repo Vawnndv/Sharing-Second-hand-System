@@ -65,7 +65,6 @@ function HomeUserPosts({filterValue, warehousesID}: any) {
     };
 
     const isEmpty = () => {
-        console.log(posts)
         if(posts === null || posts.length === 0){
             console.log(false)
             return false

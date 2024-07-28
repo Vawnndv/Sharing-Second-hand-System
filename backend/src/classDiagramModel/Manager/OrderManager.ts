@@ -792,7 +792,6 @@ export class OrderManager {
     
     try {
       const result: QueryResult = await client.query(query, values);
-      console.log('Get orders finish list success:', result.rows);
       return result.rows
     } catch (error) {
       console.error('Error get orders:', error);

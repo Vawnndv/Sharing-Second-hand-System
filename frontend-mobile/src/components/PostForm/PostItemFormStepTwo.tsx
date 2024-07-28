@@ -305,7 +305,6 @@ const StepTwo: React.FC<StepTwoProps> = ({ setStep, formData, setFormData, error
           return img.url
         })
         const categoryName = category[parseInt(itemCategory) - 1]
-        console.log(imageUrls, categoryName)
         const response = await getGPTDescription(itemName, categoryName, imageUrls)
         setFormData({ ...formData, postDescription: response });
         handleValidate(response,'postdescription')

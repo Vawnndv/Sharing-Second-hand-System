@@ -691,7 +691,6 @@ const predictImage = async (imageUri: any) => {
       setWarehouseSelected: setWarehouseSelected
     })
   }
-  console.log("'"+formData.itemCategoryLabel+"'", "'"+selectedItemTypeDropdown+"'")
 
 
   return (
