@@ -165,7 +165,7 @@ function ModalCreateCollaborator(props: Props) {
             component="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
+            <Typography id="modal-modal-title" variant="h5" component="h2" sx={{ fontWeight:'bold', color:'primary.main'}}>
                 Tạo kho
             </Typography>
 

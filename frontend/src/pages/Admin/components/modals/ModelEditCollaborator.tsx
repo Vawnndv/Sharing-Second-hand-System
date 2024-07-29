@@ -144,7 +144,7 @@ function ModalEditCollaborator(props: Props) {
             onSubmit={handleSubmit(onSubmit)}
           >
                 
-            <Typography id="modal-modal-title" variant="h4" sx={{ fontWeight:'bold', color: 'primary.main'}}>
+            <Typography id="modal-modal-title" variant="h5" sx={{ fontWeight:'bold', color: 'primary.main'}}>
                 Cập nhật thông tin cộng tác viên
             </Typography>
 
