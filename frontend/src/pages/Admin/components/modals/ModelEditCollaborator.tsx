@@ -203,7 +203,7 @@ function ModalEditCollaborator(props: Props) {
               <DemoContainer components={['DatePicker']}>
                 <DatePicker
                   sx={{ width: '100%' }}
-                  label='Date of birth'
+                  label='Ngày sinh'
                   disabled={!isEdit}
                   value={date}
                   onChange={newValue =>

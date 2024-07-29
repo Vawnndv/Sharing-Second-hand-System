@@ -167,6 +167,7 @@ function ModalCreateCollaborator(props: Props) {
             >
               <DemoContainer components={['DatePicker']}>
                 <DatePicker
+                  sx={{ width: '100%' }}
                   label='Ngày sinh'
                   value={date}
                   onChange={newValue =>
