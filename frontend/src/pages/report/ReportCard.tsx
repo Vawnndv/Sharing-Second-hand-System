@@ -5,6 +5,7 @@ import { getRoomId } from '../../utils/GetRoomID';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface ReportCardProps {
   report: {
@@ -31,6 +32,7 @@ function ReportCard({ report, onNavigateToChat, onViewPostDetails, onResolve }: 
     (state: RootState) => state.userLogin
   );
 
+  const navigate = useNavigate();
   const userID = userInfo?.id
 
   return (
@@ -60,7 +62,10 @@ function ReportCard({ report, onNavigateToChat, onViewPostDetails, onResolve }: 
             }} sx={{ mr: 3, my: 1 }}>Xem chi tiết bài đăng</Button>
           </>
         ) : (
+          <>
           <Typography variant="body2" color="textSecondary" sx={{ mr: 3, my: 1 }}>Mã người dùng: {report.userid}</Typography>
+          <Button variant="outlined" sx={{ mr: 3}} onClick={() => navigate(`/about-profile?profileID=${report.userid}`)}>Xem thông tin người dùng</Button>
+          </>
         )}
         <Button variant="outlined" color="secondary" onClick={onResolve}>Đã giải quyết</Button>
       </CardContent>

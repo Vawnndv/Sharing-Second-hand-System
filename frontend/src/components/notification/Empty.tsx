@@ -22,6 +22,6 @@ export const shortUppercaseId = (id: string): string => {
 };
 
 export const DateFormat = (date: Date | string): string => {
-  moment.locale();
+  moment.locale('vi');
   return moment(date).format('LL');
 };

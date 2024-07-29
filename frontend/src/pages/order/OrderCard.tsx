@@ -31,7 +31,7 @@ export default function OrderCard({order, locationOfItem, isPost, canApproval, c
     navigate(`/about-profile?profileID=${userID}`)
   }
 
-  moment.locale();
+  moment.locale('vi');
   return (
     <Card sx={{ maxWidth: 345 }} style={{boxShadow: '1px 2px 3px #6D6D6D'}}>
       <CardActionArea onClick={handleCardClick}>
