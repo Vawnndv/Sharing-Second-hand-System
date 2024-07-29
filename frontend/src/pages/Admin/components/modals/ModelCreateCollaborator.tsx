@@ -112,7 +112,7 @@ function ModalCreateCollaborator(props: Props) {
             component="form"
             onSubmit={handleSubmit(onSubmit)}
           >
-            <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ fontWeight:'bold', color:'#005B48' }}>
+            <Typography id="modal-modal-title" variant="h5" component="h2" sx={{ fontWeight:'bold', color:'primary.main' }}>
                 Thêm cộng tác viên mới
             </Typography>
 
@@ -167,6 +167,7 @@ function ModalCreateCollaborator(props: Props) {
             >
               <DemoContainer components={['DatePicker']}>
                 <DatePicker
+                  sx={{ width: '100%' }}
                   label='Ngày sinh'
                   value={date}
                   onChange={newValue =>
