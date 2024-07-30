@@ -443,7 +443,7 @@ function ViewPostDetail() {
                                                     justifyContent='center'
                                                     alignItems='center'
                                                     gap={0.5}>
-                                                    <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {moment(post?.createdat).fromNow()}</Typography>
+                                                    <AccessTimeIcon sx={{width: 30, height: 30}}/> <Typography variant='body2'> {moment(post?.createdat).subtract(7, 'hours').fromNow()}</Typography>
                                                 </Stack>
                                                 
                                         </Stack>

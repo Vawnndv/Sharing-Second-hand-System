@@ -174,7 +174,7 @@ function ModalCreateCollaborator(props: Props) {
                   <Uploader setImageUrl={setImageUrl} imageUrl={imageUrl} imageUpdateUrl={imageUpdateUrl} {...register('avatar')}/>
                 </Grid>
                 <Grid item xs={12} sm={3} >
-                  <ImagePreview image={imageUrl} name="user-image"/>
+                  <ImagePreview image={imageUrl} />
                 </Grid>
             </Grid>
 

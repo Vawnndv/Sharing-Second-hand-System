@@ -9,11 +9,17 @@ import ChatRoom from './ChatRoom';
 import { Container, IconButton, InputAdornment, TextField } from '@mui/material';
 import { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
 
 function ChatScreen() {
   const [value, setValue] = React.useState('1');
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const { userInfo } = useSelector(
+    (state: RootState) => state.userLogin
+  );
 
   const handleSearch = () => {
     setSearchQuery(searchInput);
@@ -72,7 +78,10 @@ function ChatScreen() {
           >
             <Tab label="Cộng tác viên" value="1" />
             <Tab label="Người dùng" value="2" />
-            <Tab label="Kho" value="3" />
+            {
+              userInfo?.roleID === 2 &&
+              <Tab label="Kho" value="3" />
+            }
           </TabList>
         </Box>
         <TabPanel sx={{m: 0, p: 0, mt: 1}} value="1">
@@ -81,9 +90,12 @@ function ChatScreen() {
         <TabPanel sx={{m: 0, p: 0, mt: 1}} value="2">
           <ChatList searchQuery={searchQuery} typeChat={2} />
         </TabPanel>
-        <TabPanel sx={{m: 0, p: 0, mt: 1}} value="3">
-          <ChatRoom typeChat={3}/>
-        </TabPanel>
+        {
+          userInfo?.roleID === 2 &&
+          <TabPanel sx={{m: 0, p: 0, mt: 1}} value="3">
+            <ChatRoom typeChat={3}/>
+          </TabPanel>
+        }
       </TabContext>
     </Box>
   );

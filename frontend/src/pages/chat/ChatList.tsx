@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, CircularProgress, List, ListItem } from '@mui/material';
-import { getChatListCollaborator, getChatListUser } from '../../redux/services/chatServices';  
+import { getAllChatListCollaborator, getChatListCollaborator, getChatListUser } from '../../redux/services/chatServices';  
 import ChatItem from './ChatItem';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
@@ -39,7 +39,10 @@ function ChatList({ searchQuery, typeChat }: { searchQuery: string; typeChat: nu
       try {
         let response;
         if (typeChat === 1) {
-          response = await getChatListCollaborator(userID, searchQuery);
+          if (userInfo?.roleID === 3)
+            response = await getAllChatListCollaborator(userID, searchQuery);
+          else
+            response = await getChatListCollaborator(userID, searchQuery);
         } else {
           response = await getChatListUser(userID, searchQuery);
         }

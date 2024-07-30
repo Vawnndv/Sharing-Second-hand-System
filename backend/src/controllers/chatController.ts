@@ -53,6 +53,20 @@ export const getChatListCollaborator = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllChatListCollaborator = async (req: Request, res: Response) => {
+  const userID : any = req.query.userID;
+  const searchQuery : any = req.query.searchQuery;
+  
+  try {
+    const userList = await Account.chatManager.getAllChatListCollaborator(userID, searchQuery);
+    res.status(200).json({ message: 'Get list success:', data: userList });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 export const getChatListUser = async (req: Request, res: Response) => {
   const userID : any = req.query.userID;
   const searchQuery : any = req.query.searchQuery;

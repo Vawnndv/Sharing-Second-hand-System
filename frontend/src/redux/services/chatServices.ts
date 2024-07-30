@@ -8,6 +8,14 @@ const getChatListCollaborator = async (userID: string, searchQuery: string): Pro
   };
 }
 
+// getAllChatListCollaborator API call
+const getAllChatListCollaborator = async (userID: string, searchQuery: string): Promise<any>  => {
+  const { data }: any = await Axios.get(`/chat/getAllChatListCollaborator?userID=${userID}&searchQuery=${searchQuery}`)
+  return {
+    data
+  };
+}
+
 // getChatListUser API call
 const getChatListUser = async (userID: string, searchQuery: string): Promise<any>  => {
   const { data }: any = await Axios.get(`/chat/getChatListUser?userID=${userID}&searchQuery=${searchQuery}`)
@@ -49,5 +57,6 @@ export {
   getChatListUser,
   getChatWarehouse,
   createNewChatUser,
-  getWareHouseByUserID
+  getWareHouseByUserID,
+  getAllChatListCollaborator
 }

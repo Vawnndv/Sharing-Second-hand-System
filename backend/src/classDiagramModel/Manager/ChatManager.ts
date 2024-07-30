@@ -135,6 +135,26 @@ export class ChatManager {
     }
   };
 
+  public async getAllChatListCollaborator (userID: string, searchQuery: string): Promise<any> {
+
+    const client = await pool.connect();
+    let query = `
+      SELECT u.*
+      FROM "User" u
+      WHERE 
+      u.roleid = 2 AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'));
+    `
+    try {
+      const result: QueryResult = await client.query(query);
+      return result.rows
+    } catch (error) {
+      console.error('Error get users chat:', error);
+      return false
+    } finally {
+      client.release(); // Release client sau khi sử dụng
+    }
+  };
+
   public async getChatListUser (userID: string, searchQuery: string): Promise<any> {
 
     const client = await pool.connect();
