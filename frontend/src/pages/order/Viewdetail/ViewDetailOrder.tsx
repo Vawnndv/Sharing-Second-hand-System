@@ -70,7 +70,7 @@ function ViewDetailOrder() {
                 </Box>
                 <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                   <AccessTimeOutlinedIcon fontSize="small" />
-                  <Typography ml={1} variant="body2" color="initial" fontStyle='italic'>{moment(order?.createdat).fromNow()}</Typography>
+                  <Typography ml={1} variant="body2" color="initial" fontStyle='italic'>{moment(order?.createdat).subtract(7, 'hours').fromNow()}</Typography>
                 </Box>
               </Box>
             </Box>
