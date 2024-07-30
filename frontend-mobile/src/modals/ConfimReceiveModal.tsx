@@ -31,10 +31,11 @@ interface Props {
   name: string,
   visibleRatingModal: any;
   setVisibleRatingModal: any;
+  itemid: any
 }
 
 const ConfimReceiveModal = (props: Props) => {
-  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name, visibleRatingModal, setVisibleRatingModal } = props;
+  const { setModalConfirmVisible, modalConfirmVisible, image, orderid, owner, isWarehousePost, warehouseID, auth, name, visibleRatingModal, setVisibleRatingModal, itemid } = props;
   const [isLoading, setIsLoading] = useState(false);
 
   
@@ -42,8 +43,6 @@ const ConfimReceiveModal = (props: Props) => {
 
   const handleConfirm = async () => {
     setIsLoading(true);
-    
-
     
     const {url} = await UploadImageToAws3(image, false);
     try {
@@ -69,6 +68,13 @@ const ConfimReceiveModal = (props: Props) => {
             title: 'Đã xác nhận nhận đồ',
             body:`đã xác nhận nhận món đồ "${name}". Nhấn vào để xem thông tin chi tiết!`
           })
+        })
+
+        const resCreateOutputCard: any = await axiosClient.post(`${appInfo.BASE_URL}/card/createOutputCard`, {
+          warehouseid: warehouseID, 
+          userreceiveid: auth.id, 
+          orderid, 
+          itemid
         })
       }else{
         await HandleNotification.sendNotification({
