@@ -2,12 +2,53 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import { getOrderDetailsCollaborator } from '../../redux/services/inventoryServices';
-import { Box, CircularProgress, Divider, Grid, Typography } from '@mui/material';
+import { Box, CircularProgress, Divider, Grid, Paper, Typography } from '@mui/material';
 import FmdGoodOutlinedIcon from '@mui/icons-material/FmdGoodOutlined';
 import item from '../../assets/item.png';
 import deliveryBike from '../../assets/delivery-bike.png'
 import deliveryTruck from '../../assets/delivery-truck.png'
 import { formatDateTime } from '../../utils/FormatDateTime';
+import Carousel from 'react-material-ui-carousel';
+
+function ShowImages({ images }: any) {
+  return (
+    <Carousel
+      animation="slide"
+      swipe
+      autoPlay={false}
+      navButtonsAlwaysVisible
+      indicators
+      cycleNavigation
+      navButtonsProps={{
+        style: {
+          background: 'transparent',
+          color: 'black',
+          borderRadius: 0,
+          margin: 0,
+          position: 'relative',
+        },
+      }}
+    >
+      {images.map((image: any, index: any) => (
+        <Paper
+          key={index}
+          sx={{
+            height: 500,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <img
+            src={image.path}
+            alt=""
+            style={{ objectFit: 'cover', width: '100%', height: '90vh' }}
+          />
+        </Paper>
+      ))}
+    </Carousel>
+  );
+}
 
 function ViewInventoryDetail() {
   const { orderid, typeCard } = useParams();
@@ -44,7 +85,7 @@ function ViewInventoryDetail() {
           </Grid>
           <Grid item xs={11.5} sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', }}>
             <Typography variant='body1' fontWeight='bold'>Nguời cho</Typography>
-            <Typography variant='body1'>{order?.order.giver.firstName} {order?.order.giver.lastName} - {order?.order.giver.phoneNumber}</Typography>
+            <Typography variant='body1'>{order?.order.giver?.firstName} {order?.order.giver?.lastName} - {order?.order.giver?.phoneNumber}</Typography>
             <Typography variant='body1'>{order?.order.addressGive.address}</Typography>
           </Grid>
         </Grid>
@@ -55,7 +96,7 @@ function ViewInventoryDetail() {
           </Grid>
           <Grid item xs={11.5} sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', }}>
             <Typography variant='body1' fontWeight='bold'>Nguời nhận</Typography>
-            <Typography variant='body1'>{order?.order.receiver.firstName} {order?.order.receiver.lastName} - {order?.order.receiver.phoneNumber}</Typography>
+            <Typography variant='body1'>{order?.order.receiver?.firstName} {order?.order.receiver?.lastName} - {order?.order.receiver?.phoneNumber}</Typography>
             <Typography variant='body1'>{order?.order.addressReceive.address}</Typography>
           </Grid>
         </Grid>
@@ -92,9 +133,7 @@ function ViewInventoryDetail() {
           </Grid>
         </Grid>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={order?.image} alt="Image" style={{ maxWidth: '300px', height: 'auto' }} />
-        </Box>
+        <ShowImages images={order?.image}/>
 
         <Divider />
 
