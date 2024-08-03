@@ -121,7 +121,7 @@ export class ChatManager {
       WHERE w.warehouseid = (
           SELECT warehouseid
           FROM Workat
-          WHERE userid = $1) AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'))
+          WHERE userid = $1) AND (LOWER(u.FirstName) LIKE LOWER('%${searchQuery}%') OR LOWER(u.LastName) LIKE LOWER('%${searchQuery}%'))
           AND u.userId != ${userID}
     `
     try {
@@ -142,7 +142,7 @@ export class ChatManager {
       SELECT u.*
       FROM "User" u
       WHERE 
-      u.roleid = 2 AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'));
+      u.roleid = 2 AND (LOWER(u.FirstName) LIKE LOWER('%${searchQuery}%') OR LOWER(u.LastName) LIKE LOWER('%${searchQuery}%'));
     `
     try {
       const result: QueryResult = await client.query(query);
@@ -162,7 +162,7 @@ export class ChatManager {
       SELECT u.*
       FROM "User" u
       WHERE 
-      u.roleid = 1 AND (u.FirstName LIKE LOWER('%${searchQuery}%') OR u.LastName LIKE LOWER('%${searchQuery}%'));
+      u.roleid = 1 AND (LOWER(u.FirstName) LIKE LOWER('%${searchQuery}%') OR LOWER(u.LastName) LIKE LOWER('%${searchQuery}%'));
     `
     try {
       const result: QueryResult = await client.query(query);

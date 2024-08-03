@@ -49,6 +49,7 @@ interface Data {
   iswarehousepost: boolean,
   name: string,
   nametype: string
+  itemid: string
 }
 
 export default function ViewDetailOrder({navigation, route}: any) {
@@ -467,8 +468,8 @@ export default function ViewDetailOrder({navigation, route}: any) {
         {/* Use a light status bar on iOS to account for the black space above the modal */}
         <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
         {data && <ConfimReceiveModal setModalConfirmVisible={setModalConfirmVisible} modalConfirmVisible={modalConfirmVisible}
-         image={image} orderid={data.orderid} owner={data.usergiveid} warehouseID={data.warehouseid} 
-         isWarehousePost={data.iswarehousepost} auth={auth} name={data.name} visibleRatingModal={visibleRating} setVisibleRatingModal={setVisibleRating}/>}
+      image={image} orderid={data.orderid} owner={data.usergiveid} warehouseID={data.warehouseid}
+      isWarehousePost={data.iswarehousepost} auth={auth} name={data.name} visibleRatingModal={visibleRating} setVisibleRatingModal={setVisibleRating} itemid={data.itemid}/>}
 
         {data && <ConfirmCategoryReceiveModal setVisible={setVisibleConfirmCategory} visible={visibleConfirmCategory} setImage={setImage} 
         setVisibleConfirmReceiveModal={setModalConfirmVisible} categoryGive={data.nametype} currentCategory={currentCategory} />}
