@@ -286,9 +286,8 @@ function EditPost() {
                     newPostid = res.data.postCreated.postid;
                     
                     itemImages.map(async (image: any) => {
-                        const data: any = await UploadImageToAws3(image, false);
                         const responseUploadImage = await Axios.post(`/items/upload-image`,{
-                          path: data.url,
+                          path: image.path,
                           itemID: resCreateItem.item.itemid
                         })
               
