@@ -246,18 +246,18 @@ function EditPost() {
         }
     }
 
+    console.log("itemImages",itemImages)
+
     const handleRepost = async () =>{
         setIsLoading(true)
         const newTitle: any = title;
         const newDescription: any = description;
-        let newPostid: any = null;
 
         let isSuccessRepost = true
         if((itemImages.length + itemNewImages.length > 0) &&
             title !== '' && description !== '' && ( phoneNumber.length === 10 || phoneNumber.length === 11 ) &&
             location !== null){
 
-                
                 try{
                     const resGetItemDetail: any = await Axios.get(`/items/${post.itemid}`)
                     const resCreateItem: any = await Axios.post(`/items`, {
@@ -283,14 +283,13 @@ function EditPost() {
                         warehouseid: post.warehouseid,
                         phonenumber: phoneNumber
                     });
-                    newPostid = res.data.postCreated.postid;
                     
                     itemImages.map(async (image: any) => {
                         const responseUploadImage = await Axios.post(`/items/upload-image`,{
                           path: image.path,
                           itemID: resCreateItem.item.itemid
                         })
-              
+                        console.log("responseUploadImage", responseUploadImage)
                     })
 
                     itemNewImages.map(async (image: any) => {
@@ -299,7 +298,7 @@ function EditPost() {
                           path: data.url,
                           itemID: resCreateItem.item.itemid
                         })
-              
+                        console.log("responseUploadImage", responseUploadImage)
                     })
                     
                 }
