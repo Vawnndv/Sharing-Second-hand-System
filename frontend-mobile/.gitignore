@@ -39,3 +39,4 @@ env.d.ts
 # typescript
 *.tsbuildinfo
 
+eas.json
